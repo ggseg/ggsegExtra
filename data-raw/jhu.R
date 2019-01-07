@@ -22,8 +22,9 @@ tmp = data.frame(area = c("Anterior thalamic radiation", "Corticospinal tract","
                  acronym=c("atr","cst","ccg","cab","fmajor","fminor","ifof","ilf","slf","unc","slft", "csf"))
 
 jhu = jhu %>%
+  select(-area) %>% 
   left_join(tmp) %>%
-  rename(label=aparc) %>%
-  select(lat, long, area, hemi, side, acronym, atlas, everything()) %>%
-  select(-meas, -piece)
+  #rename(label=aparc) %>%
+  #select(-meas, -piece) %>% 
+  select(lat, long, area, hemi, side, acronym, atlas, everything())
 save(jhu, file="data/jhu.RData", compress = "xz")

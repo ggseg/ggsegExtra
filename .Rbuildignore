@@ -1,0 +1,11 @@
+^Meta$
+^doc$
+^codecov\.yml$
+^data-raw$
+^README*
+^appveyor\.yml$
+^\.travis\.yml$
+^LICENSE\.md$
+^.*\.Rproj$
+^\.Rproj\.user$
+img
