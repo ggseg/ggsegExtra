@@ -18,4 +18,4 @@ Suggests:
     devtools
 VignetteBuilder: knitr
 Remotes: 
-    ggseg
+    LCBC-UiO/ggseg
