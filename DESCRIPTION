@@ -7,13 +7,15 @@ Description: This package mainly contains two plotting functions: `ggseg` and `g
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
-Depends: R (>= 2.10),
-    ggseg
+Depends: R (>= 2.10)
 LazyData: true
 Suggests:
     knitr,
     rmarkdown,
     covr,
     testthat,
+    ggseg,
     devtools
 VignetteBuilder: knitr
+Remotes: 
+    ggseg

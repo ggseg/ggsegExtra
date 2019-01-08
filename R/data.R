@@ -3,7 +3,6 @@
 #' @docType data
 #' @name glasser
 #' @keywords datasets
-#' @import ggseg
 #'
 #' @references Glasser et al. (2016) Nature, volume 536, pages 171–178
 #' (\href{https://www.nature.com/articles/nature18933}{PubMed})
