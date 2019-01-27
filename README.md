@@ -3,11 +3,9 @@ Extra atlases for ggseg-package
 Athanasia Mowinckel & Didac Vidal Pineiro
 
 [![Travis build
-status](https://travis-ci.com/LCBC-UiO/ggsegExtra?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
+status](https://travis-ci.com/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
 [![Coverage
-status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/github/LCBC-UiO/ggsegExtra?branch=master)
+status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
 
 This package contains extra atlases for the use in the [ggseg]()
 plotting package in R. \#\# Atlases There are currently three atlases
