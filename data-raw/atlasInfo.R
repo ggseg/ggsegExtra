@@ -1,14 +1,18 @@
 library(ggseg)
 library(tidyverse)
-atlas.info = list(dkt = dkt,
-                  yeo7 = yeo7,
-                  yeo17 = yeo17,
-                  glasser = glasser,
-                  jhu = jhu,
-                  aseg = aseg,
-                  midsagittal = midsagittal) %>%
-  lapply(function(x) x %>% select(area,hemi,side,label) %>% unique %>% na.omit())
-
+atlas.info = list(
+  dkt = dkt,
+  aseg = aseg,
+  yeo7 = yeo7,
+  yeo17 = yeo17,
+  glasser = glasser,
+  jhu = jhu,
+  midsagittal = midsagittal) %>%
+  lapply(function(x) x %>% 
+           select(one_of(c("area","hemi","side","label"))) %>% 
+           unique %>% 
+           na.omit())
+usethis::use_data(atlas.info, internal=FALSE, overwrite=TRUE, compress="xz")
 ### WOrk in progress. get all data in one tibble?
 # d <- data(package = "ggseg")
 # ## names of data sets in the package
@@ -37,4 +41,4 @@ atlas.info = list(dkt = dkt,
 # }
 #
 # atlas.info = d
-save(atlas.info, file="data/atlas.info.RData", compress = "xz")
+# save(atlas.info, file="data/atlas.info.RData", compress = "xz")

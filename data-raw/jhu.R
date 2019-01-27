@@ -1,5 +1,4 @@
 jhu = geobrain_JHU %>%
-jhu = geobrain_JHU %>%
   mutate(aparc = gsub("ifl", "ilf", aparc)) %>%
   separate(aparc, c("hemi","acronym"), remove = FALSE) %>%
   mutate(acronym = ifelse(!hemi %in% c("lh","rh"), hemi, acronym),
@@ -27,4 +26,19 @@ jhu = jhu %>%
   #rename(label=aparc) %>%
   #select(-meas, -piece) %>% 
   select(lat, long, area, hemi, side, acronym, atlas, everything())
-save(jhu, file="data/jhu.RData", compress = "xz")
+
+
+jhu <- jhu %>%
+  select(-group) %>%
+  mutate(pos = NA)
+
+jhu$pos[1] <- list(x = 1)
+jhu$pos[[1]] = list(
+  dispersed = list(x = list(breaks = c(7.5, 10.75, 14),
+                            labels = c("upper coronal","axial", "lower coronal")),
+                   y = list(breaks = NULL,
+                            labels = NULL),
+                   labs = list(x = "side",
+                               y = NULL))
+)
+usethis::use_data(jhu, internal = FALSE, overwrite = TRUE)

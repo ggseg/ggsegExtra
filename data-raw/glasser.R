@@ -1,3 +1,5 @@
+library(tidyverse)
+
 glasser = geobrain_hcp %>%
   separate(aparc, c("hemi","area", "DEL"), sep="_", remove = F) %>%
   select(-DEL, -piece, -meas) %>%
@@ -10,4 +12,24 @@ glasser = geobrain_hcp %>%
          area = ifelse(grepl("\\?", area), NA, area)) %>%
   rename(label=aparc) %>%
   select(long, lat, id, hemi, area, side, label, everything())
-save(glasser, file="data/glasser.RData", compress = "xz")
+
+glasser <- glasser %>%
+  select(-group) %>%
+  mutate(pos = NA)
+
+glasser$pos[1] <- list(x = 1)
+glasser$pos[[1]] = list(
+  stacked = list(x = list(breaks = c(1.1, 4.5),
+                          labels = c("lateral","medial")),
+                 y = list(breaks = c(0.9, 3.4),
+                          labels = c("left","right")),
+                 labs = list(x = "side",
+                             y = "hemisphere")),
+  dispersed = list(x = list(breaks = c(3, 9.1),
+                            labels = c("left","right")),
+                   y = list(breaks = NULL,
+                            labels = NULL),
+                   labs = list(x = "hemisphere",
+                               y = NULL))
+)
+usethis::use_data(glasser, internal = FALSE, overwrite = TRUE)

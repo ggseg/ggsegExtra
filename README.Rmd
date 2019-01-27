@@ -10,6 +10,7 @@ output: github_document
   
 ```{r setup, include=FALSE}
 library(ggseg)
+library(ggsegExtra)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -17,13 +18,23 @@ This package contains extra atlases for the use in the [ggseg]() plotting packag
 ## Atlases
 There are currently three atlases available in the package:  
 
+### 2d polygon atlases
 1. `midsagittal` - mid-sagittal slice showing the cerebellum, 3^rd^ and 4^th^ ventricles, corpus callosum etc.
 2. `glasser` - HCP cortical segmentation (Glasser et al. 2015)  
 3. `jhu`- JHU white-matter tractography atlas  
+4. `yeo7`- Yeo et al. 7 resting state networks
+5. `yeo17`- Yeo et al. 17 resting state networks
+
+### 3d mesh atlases
+1. `glasser_3d` - HCP cortical segmentation (Glasser et al. 2015)  
+2. `desterieux_3d` - Desterieux et al. cortical segmentation
+3. `yeo7_3d` - Yeo et al. 7 resting state networks
+4. `yeo17_3d`- Yeo et al. 17 resting state networks
+6. `schaefer7`- Schaefer et al. 7 resting state networks
+7. `schaefer17`- Schaefer et al. 17 resting state networks
 
 We are working on creating a detailed description in the wiki on how to create and contribute atlases to the package.
-The `ggseg` function already allows you to provide it with a data.frame of a custom atlas if you have it, but is must
-correspond to certain specifications to work.
+The `ggseg` function already allows you to provide it with a data.frame of a custom atlas if you have it, but it must correspond to certain specifications to work.
 
 Please see the [wiki](https://github.com/LCBC-UiO/ggseg/wiki/Creating-and-contributing-atlases) for information on adding atlases, or inspect the included datasets for requirements. 
 If anything is unclear in the wiki, give us a shout out in the issues!
@@ -44,7 +55,7 @@ While we would love getting help in creating new atlases, you may also request a
 
 ### Included atlases and palettes
 ```{r glasser, fig.height=12, echo=F}
-ggseg(atlas=glasser,position="stacked", mapping=aes(fill=area)) +
+ggseg(atlas=glasser, position="stacked", mapping=aes(fill=area)) +
   scale_fill_brain("glasser") +
   ggtitle("HCP cortical segmentation (glasser)") +
   theme(legend.position = "bottom")+

@@ -1,5 +1,8 @@
 ^Meta$
 ^doc$
+^docs$
+^pkgdown$
+^README_files$
 ^codecov\.yml$
 ^data-raw$
 ^README*
