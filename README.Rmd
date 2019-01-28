@@ -4,8 +4,8 @@ author: "Athanasia Mowinckel & Didac Vidal Pineiro"
 output: github_document
 ---
 
-  [![Travis build status](https://travis-ci.com/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
-  [![Coverage status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
+  [![Build Status](https://travis-ci.org/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.org/LCBC-UiO/ggsegExtra)
+  [![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
   
 ```{r setup, include=FALSE}
 library(ggseg)
@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 This package contains extra atlases for the use in the [ggseg]() plotting package in R.
+
 ## Atlases
 There are currently three atlases available in the package:  
 
@@ -51,29 +52,6 @@ devtools::install_github("LCBC-UiO/ggseg")
 ### Report bugs or requests  
 Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggseg/issues), or requesting new atlases. 
 While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
-
-### Included atlases and palettes
-```{r glasser, fig.height=12, echo=F}
-ggseg(atlas=glasser, position="stacked", mapping=aes(fill=area)) +
-  scale_fill_brain("glasser") +
-  ggtitle("HCP cortical segmentation (glasser)") +
-  theme(legend.position = "bottom")+
-  guides(fill=guide_legend(ncol=8))
-```
-
-```{r midsagittal, echo=F}
-ggseg(atlas=midsagittal, mapping=aes(fill=area)) +
-  scale_fill_brain("midsagittal") +
-  ggtitle("Mid-sagittal subdortical, cerebellum, & corpus callosum")
-```
-
-```{r jhu, echo=F}
-ggseg(atlas=jhu, mapping=aes(fill=area)) +
-  scale_fill_brain("jhu") +
-  ggtitle("JHU white-matter tractography atlas") +
-  theme(legend.position = "bottom")+
-  guides(fill=guide_legend(ncol=2))
-```
 
 
 
