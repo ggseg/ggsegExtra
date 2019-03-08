@@ -1,39 +1,6 @@
-brain.pals = list(
-  dkt  = c(`banks superior temporal`	= "#196428",
-           `caudal anterior cingulate`	= "#7D64A0",
-           `caudal middle frontal`	= "#641900",
-           cuneus	= "#DC1464",
-           entorhinal	= "#DC140A",
-           fusiform	= "#B4DC8C",
-           `inferior parietal`	= "#DC3CDC",
-           `inferior temporal`	= "#B42878",
-           `isthmus cingulate`	= "#8C148C",
-           `lateral occipital`	= "#141E8C",
-           `lateral orbitofrontal`	= "#234B32",
-           lingual	= "#E18C8C",
-           `medial orbito frontal`	= "#C8234B",
-           `middle temporal`	= "#A06432",
-           parahippocampal	= "#14DC3C",
-           `para central`	= "#3CDC3C",
-           `pars opercularis`	= "#DCB48C",
-           `pars orbitalis`	= "#146432",
-           `pars triangularis`	= "#DC3C14",
-           pericalcarine	= "#78643C",
-           `post central`	= "#DC1414",
-           `posterior cingulate`	= "#DCB4DC",
-           `pre central`	= "#3C14DC",
-           precuneus	= "#A08CB4",
-           `rostral anterior cingulate`	= "#50148C",
-           `rostral middle frontal`	= "#4B327D",
-           `superior frontal`	= "#14DCA0",
-           `superior parietal`	= "#14B48C",
-           `superior temporal`	= "#8CDCDC",
-           supramarginal	= "#50A014",
-           `frontal pole`	= "#640064",
-           `temporal pole`	= "#464646",
-           `transverse temporal`	= "#9696C8",
-           insula	= "#FFC020"
-  ),
+brain_pals = list(
+  dkt = ggseg::brain_pals$dkt,
+  aseg = ggseg::brain_pals$aseg,
   yeo7 = c(visual = "#a153a2",
            somatomotor = "#6fabd2",
            `dorsal attention`= "#2c8b4b",
@@ -60,15 +27,6 @@ brain.pals = list(
             `default A` = "#fff937",
             `default B` = "#cb4051"
   ),
-  aseg =  c(amygdala	= "#67FFFF",
-            caudate	= "#7ABADC",
-            hippocampus	= "#DCD814",
-            `lateral ventricle`	= "#781286",
-            pallidum	= "#0D30FF",
-            putamen	= "#EC0DB0",
-            `thalamus proper`	= "#00760E",
-            `ventral DC`	= "#A52A2A"
-  ),
   midsagittal = c(`3rd ventricle` =	"#CCB68E",
                   `4th ventricle` =	"#2ACCA4",
                   `brain stem` = "#779FB0",
@@ -80,17 +38,6 @@ brain.pals = list(
                   `cerebellum cortex`	= "#E69422",
                   `cerebellum white matter`	= "#DCF8A4",
                   `cerebral cortex`	= "#CD3E4E"
-  ),
-  tracula = c(fmajor	= "#CC6666",
-              fminor	= "#CC6666",
-              atr	= "#FFFF66",
-              cab	= "#99CC00",
-              ccg	= "#009999",
-              cst	= "#CC99FF",
-              ilf	= "#FF9933",
-              slfp =	"#CCCCCC",
-              slft	= "#99FFFF",
-              unc	= "#6699FF"
   ),
   glasser = c(
     V1 = "#3F05FF",
@@ -276,26 +223,31 @@ brain.pals = list(
   ),
   jhu = c(
     `Anterior thalamic radiation` = "#cf7bc7",
-      `Corticospinal tract` = "#83b74d",
-      `Cingulum (cingulate gyrus)` = "#bb6639",
-      `Cingulum (hippocampus)` = "#56b772",
-      `Forceps major` = "#563686",
-      `Forceps minor` =  "#c79f3a",
-      `Inferior fronto-occipital fasciculus` = "#6781d8",
-      `Inferior longitudinal fasciculus` = "#748434",
-      `Superior longitudinal fasciculus` = "#b2457c",
-      `Uncinate fasciculus` = "#43c9b0",
-      `Superior longitudinal fasciculus (temporal part)` = "#b8434e",
-      `Cerebral spinal fluid` = "grey20"
+    `Corticospinal tract` = "#83b74d",
+    `Cingulum (cingulate gyrus)` = "#bb6639",
+    `Cingulum (hippocampus)` = "#56b772",
+    `Forceps major` = "#563686",
+    `Forceps minor` =  "#c79f3a",
+    `Inferior fronto-occipital fasciculus` = "#6781d8",
+    `Inferior longitudinal fasciculus` = "#748434",
+    `Superior longitudinal fasciculus` = "#b2457c",
+    `Uncinate fasciculus` = "#43c9b0",
+    `Superior longitudinal fasciculus (temporal part)` = "#b8434e",
+    `Cerebral spinal fluid` = "grey20"
+  ),  
+  tracula = c(
+    `Anterior thalamic radiation` = "#d9d933",
+    `Corticospinal tract` = "#D296FB",
+    `Cingulum (cingulate gyrus)` = "#009A9B",
+    `Cingulum (angular bundle)` = "#98CA07",
+    `Forceps major` = "#AA7484",
+    `Forceps minor` =  "#C96963",
+    `Inferior longitudinal fasciculus` = "#949C2E",
+    `Superior longitudinal fasciculus` = "#9f9bc7",
+    `Uncinate fasciculus` = "#6996FE",
+    `Superior longitudinal fasciculus (temporal part)` = "#98FCFF",
+    `Cerebral spinal fluid` = "grey20"
   )
 )
-save(brain.pals, file="data/brain.pals.RData",
-     compress = "bzip2")
-
-brain.pal.info <- data.frame(atlas=names(unlist(lapply(brain.pals,length))),
-                             maxcol=unname(unlist(lapply(brain.pals,length))),
-                             category="qual",
-                             colorblind=FALSE)
-save(brain.pal.info, file="data/brain.pal.info.RData",
-     compress = "bzip2")
+usethis::use_data(brain_pals, internal = FALSE, overwrite = TRUE)
 

@@ -1,6 +1,6 @@
 library(ggseg)
 library(tidyverse)
-atlas.info = list(
+atlas_info = list(
   dkt = dkt,
   aseg = aseg,
   yeo7 = yeo7,
@@ -12,7 +12,7 @@ atlas.info = list(
            select(one_of(c("area","hemi","side","label"))) %>% 
            unique %>% 
            na.omit())
-usethis::use_data(atlas.info, internal=FALSE, overwrite=TRUE, compress="xz")
+usethis::use_data(atlas_info, internal=FALSE, overwrite=TRUE, compress="xz")
 ### WOrk in progress. get all data in one tibble?
 # d <- data(package = "ggseg")
 # ## names of data sets in the package

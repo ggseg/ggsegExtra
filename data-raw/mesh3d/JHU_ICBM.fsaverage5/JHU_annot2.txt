@@ -1,0 +1,96 @@
+1
+Middle cerebellar peduncle:100
+2
+Pontine crossing tract (a part of MCP):100
+3
+Genu of corpus callosum:100
+4
+Body of corpus callosum:100
+5
+Splenium of corpus callosum:100
+6
+Fornix (column and body of fornix):100
+7
+Corticospinal tract R:100
+8
+Corticospinal tract L:100
+9
+Medial lemniscus R:100
+10
+Medial lemniscus L:100
+11
+Inferior cerebellar peduncle R  :100
+12
+Inferior cerebellar peduncle L:100
+13
+Superior cerebellar peduncle R:100
+14
+Superior cerebellar peduncle L:100
+15
+Cerebral peduncle R:100
+16
+Cerebral peduncle L:100
+17
+Anterior limb of internal capsule R:100
+18
+Anterior limb of internal capsule L:100
+19
+Posterior limb of internal capsule R:100
+20
+Posterior limb of internal capsule L:100
+21
+Retrolenticular part of internal capsule R:100
+22
+Retrolenticular part of internal capsule L:100
+23
+Anterior corona radiata R:100
+24
+Anterior corona radiata L:100
+25
+Superior corona radiata R:100
+26
+Superior corona radiata L:100
+27
+Posterior corona radiata R:100
+28
+Posterior corona radiata L:100
+29
+Posterior thalamic radiation (include optic radiation) R:100
+30
+Posterior thalamic radiation (include optic radiation) L:100
+31
+Sagittal stratum (include inferior longitidinal fasciculus and inferior fronto-occipital fasciculus) R:100
+32
+Sagittal stratum (include inferior longitidinal fasciculus and inferior fronto-occipital fasciculus) L:100
+33
+External capsule R:100
+34
+External capsule L:100
+35
+Cingulum (cingulate gyrus) R:100
+36
+Cingulum (cingulate gyrus) L:100
+37
+Cingulum (hippocampus) R:100
+38
+Cingulum (hippocampus) L:100
+39
+Fornix (cres) / Stria terminalis (can not be resolved with current resolution) R:100
+40
+Fornix (cres) / Stria terminalis (can not be resolved with current resolution) L:100
+41
+Superior longitudinal fasciculus R:100
+42
+Superior longitudinal fasciculus L:100
+43
+Superior fronto-occipital fasciculus (could be a part of anterior internal capsule) R:100
+44
+Superior fronto-occipital fasciculus (could be a part of anterior internal capsule) L:100
+45
+Uncinate fasciculus R:100
+46
+Uncinate fasciculus L:100
+47
+Tapetum R:100
+48
+Tapetum L:100

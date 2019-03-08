@@ -1,0 +1,21 @@
+Var1;filename (*.ply);JHU;R;G;B;A;Tracula;R;G;B;A;annot
+1;JHU-ICBM-vis-2mm.nii_001;Anterior thalamic radiation L;153;255;0;0;Left Anterior Thalamic Radiation;255;255;97;0;lh_atr
+2;JHU-ICBM-vis-2mm.nii_002;Anterior thalamic radiation R;217;0;255;0;Right Anterior Thalamic Radiation;253;252;103;0;rh_atr
+3;JHU-ICBM-vis-2mm.nii_003;Corticospinal tract L;0;38;255;0;Left Corticospinal Tract;210;150;251;0;lh_cst
+4;JHU-ICBM-vis-2mm.nii_004;Corticospinal tract R;60;0;255;0;Right Corticospinal Tract;200;156;254;0;rh_cst
+5;JHU-ICBM-vis-2mm.nii_005;Cingulum (cingulate gyrus) L;255;0;149;0;Left Cingulum - Cingulate Gyrus;0;154;155;0;lh_ccg
+6;JHU-ICBM-vis-2mm.nii_006;Cingulum (cingulate gyrus) R;0;255;64;0;Right Cingulum - Cingulate Gyrus;9;152;142;0;rh_ccg
+7;JHU-ICBM-vis-2mm.nii_007;Cingulum (hippocampus) L;255;0;128;0;Left Cingulum - Angular Bundle;152;202;7;0;lh_cab
+8;JHU-ICBM-vis-2mm.nii_008;Cingulum (hippocampus) R;255;204;0;0;Right Cingulum - Angular Bundle;152;204;7;0;rh_cab
+9;JHU-ICBM-vis-2mm.nii_009;Forceps major;255;0;128;0;Corpus Callosum Forceps Major;170;116;132;0;fmaj
+10;JHU-ICBM-vis-2mm.nii_010;Forceps minor;196;255;0;0;Corpus Callosum Forceps Minor;201;105;99;0;fmin
+11;JHU-ICBM-vis-2mm.nii_011;Inferior fronto-occipital fasciculus L;0;64;255;0;NA;NA;NA;NA;NA;lh_fof
+12;JHU-ICBM-vis-2mm.nii_012;Inferior fronto-occipital fasciculus R;0;64;255;0;NA;NA;NA;NA;NA;rh_fof
+13;JHU-ICBM-vis-2mm.nii_013;Inferior longitudinal fasciculus L;255;0;106;0;Left Inferior Longitudinal Fasciculus;248;156;46;0;lh_ilf
+14;JHU-ICBM-vis-2mm.nii_014;Inferior longitudinal fasciculus R;255;191;0;0;Right Inferior Longitudinal Fasciculus;255;149;51;0;rh_ilf
+15;JHU-ICBM-vis-2mm.nii_015;Superior longitudinal fasciculus L;255;0;34;0;Left Superior Longitudinal Fasciculus - Parietal;203;204;206;0;lh_slf
+16;JHU-ICBM-vis-2mm.nii_016;Superior longitudinal fasciculus R;234;255;0;0;Right Superior Longitudinal Fasciculus - Parietal;209;202;200;0;rh_slf
+17;JHU-ICBM-vis-2mm.nii_017;Uncinate fasciculus L;0;64;255;0;Left Uncinate Fasciculus;105;150;254;0;lh_cnf
+18;JHU-ICBM-vis-2mm.nii_018;Uncinate fasciculus R;0;64;255;0;Right Uncinate Fasciculus;97;153;252;0;rh_unf
+19;JHU-ICBM-vis-2mm.nii_019;Superior longitudinal fasciculus (temporal part) L;255;68;0;0;Left Superior Longitudinal Fasciculus - Temporal;152;252;255;0;lh_slft
+20;JHU-ICBM-vis-2mm.nii_020;Superior longitudinal fasciculus (temporal part) R;255;0;64;0;Roght Superior Longitudinal Fasciculus - Temporal;152;255;255;0;rh_slft

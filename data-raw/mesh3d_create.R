@@ -1,3 +1,5 @@
+source("data-raw/get_surface.R")
+
 ## Yeo 7 ----
 yeo7_3d = get_surface("data-raw/mesh3d/Yeo20117NetworksN1000/", atlasname = "yeo7_3d")
 
@@ -14,7 +16,7 @@ t = yeo7 %>%
   na.omit()
 
 yeo7_3d = yeo7_3d %>%
-  mutate(data = map(data, ~left_join(., t, by="label")))
+  mutate(data = map(data, ~left_join(., t, by="label"))) 
 save(yeo7_3d, file="data/yeo7_3d.RData", compress = "xz")
 
 
@@ -135,3 +137,23 @@ usethis::use_data(desterieux_3d, glasser_3d, schaefer17_3d, schaefer7_3d,
 
 
 
+
+
+## jhu ----
+icbm_3d = get_surface("data-raw/mesh3d/JHU-ICBM-vis-2mm.nii.fsaverage5//", atlasname = "icbm_3d")
+
+t = data.frame(ggseg::brain.pals$yeo7)
+names(t)[1] = "colour"
+t = t %>%
+  rownames_to_column(var = "area") %>%
+  mutate_all(as.character)
+
+t = yeo7 %>%
+  left_join(t) %>%
+  select(label, area, colour) %>%
+  distinct() %>%
+  na.omit()
+
+yeo7_3d = yeo7_3d %>%
+  mutate(data = map(data, ~left_join(., t, by="label")))
+save(yeo7_3d, file="data/yeo7_3d.RData", compress = "xz")

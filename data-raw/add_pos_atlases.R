@@ -12,7 +12,8 @@ midsagittal$pos[[i]] = list(
                    labs = list(x = "midline sagittal",
                                y = NULL))
 )
-usethis::use_data(midsagittal,
+midsagittal <- ggseg:::as_ggseg_atlas(midsagittal)
+usethis::use_data(midsagittal, compress = "xz",
                   internal = FALSE, overwrite = TRUE)
 
 
@@ -35,7 +36,8 @@ for(i in 1:nrow(yeo7)){
                    labs = list(x = "hemisphere",
                                y = NULL))
 )
-usethis::use_data(yeo7,
+yeo7 <- ggseg:::as_ggseg_atlas(yeo7)
+usethis::use_data(yeo7, compress = "xz",
                   internal = FALSE, overwrite = TRUE)
 
 # yeo17 ----
@@ -59,5 +61,6 @@ for(i in 1:nrow(yeo17)){
                                y = NULL))
 )
 }
+yeo17 <- ggseg:::as_ggseg_atlas(yeo17)
 usethis::use_data(yeo17,
-                  internal = FALSE, overwrite = TRUE)
+                  internal = FALSE, overwrite = TRUE, compress = "xz")
