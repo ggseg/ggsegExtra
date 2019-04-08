@@ -1,6 +1,5 @@
-Extra atlases for ggseg-package
-================
-Athanasia Mowinckel & Didac Vidal Pineiro
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 [![Build
 Status](https://travis-ci.org/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.org/LCBC-UiO/ggsegExtra)
@@ -71,10 +70,10 @@ library(ggsegExtra)
 ### Report bugs or requests
 
 Don’t hesitate to ask for support using [github
-issues](https://github.com/LCBC-UiO/ggseg/issues), or requesting new
-atlases. While we would love getting help in creating new atlases, you
-may also request atlases through the issues, and we will try to get to
-it.
+issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting
+new atlases. While we would love getting help in creating new atlases,
+you may also request atlases through the issues, and we will try to get
+to it.
 
 # Funding
 

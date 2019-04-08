@@ -9,7 +9,7 @@ test_that("Check that adapt_scales is working", {
   
   expect_equal(mode(adapt_scales(yeo7 %>% unnest(ggseg))), "list")
   expect_equal(mode(adapt_scales(yeo17 %>% unnest(ggseg))), "list")
- # expect_equal(mode(adapt_scales(glasser %>% unnest(ggseg))), "list")
+  expect_equal(mode(adapt_scales(glasser %>% unnest(ggseg))), "list")
   expect_equal(mode(adapt_scales(tracula %>% unnest(ggseg))), "list")
   expect_equal(mode(adapt_scales(jhu %>% unnest(ggseg))), "list")
 })
