@@ -8,5 +8,4 @@ test_that("check new palettes work", {
   expect_equal(length(brain_pal("midsagittal")), 11)
   expect_equal(length(brain_pal("jhu")), 12)
   expect_equal(length(brain_pal("glasser")), 180)
-
-  })
+})
