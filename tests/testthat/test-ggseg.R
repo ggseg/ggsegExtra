@@ -16,4 +16,5 @@ test_that("Check that polygon atlases are working", {
   expect_is(ggseg(atlas = midsagittal),c("gg","ggplot"))
   expect_is(ggseg(atlas = jhu),c("gg","ggplot"))
   expect_is(ggseg(atlas = tracula),c("gg","ggplot"))
+  expect_is(ggseg(atlas = hoCort),c("gg","ggplot"))
 })

@@ -12,4 +12,5 @@ test_that("Check that adapt_scales is working", {
   expect_equal(mode(adapt_scales(glasser %>% unnest(ggseg))), "list")
   expect_equal(mode(adapt_scales(tracula %>% unnest(ggseg))), "list")
   expect_equal(mode(adapt_scales(jhu %>% unnest(ggseg))), "list")
+  expect_equal(mode(adapt_scales(hoCort %>% unnest(ggseg))), "list")
 })

@@ -24,8 +24,7 @@ Parcellation from JHU
 data(jhu)
 }
 \references{
-Hua et al., Tract probability maps in stereotaxic spaces:
-analysis of white matter anatomy and tract-specific quantification. NeuroImage, 39(1):336-347 (2008)
+Hua et al. (2008) NeuroImage, 39(1):336-347 
 (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})
 }
 \keyword{datasets}
