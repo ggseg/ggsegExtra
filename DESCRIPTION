@@ -14,8 +14,12 @@ Suggests:
     rmarkdown,
     covr,
     testthat,
+    dplyr,
+    tidyr,
     ggseg,
     devtools
 VignetteBuilder: knitr
 Remotes: 
     LCBC-UiO/ggseg
+URL: https://github.com/LCBC-UiO/ggsegExtra
+BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues
