@@ -9,20 +9,31 @@ hoCort <- ho.df.final %>%
                           side == "med" ~ "medial"),
          area = ifelse(grepl("wall", area), NA, area),
          pos = NA,
-         atlas = "hoCort") 
+         atlas = "hoCort",
+         area = gsub(" division", "", area),
+         area = gsub("anterior", "ant.", area),
+         area = gsub("posterior", "post.", area),
+         area = gsub(" formerly Supplementary Motor Cortex ", "", area),
+         area = gsub("Inferior", "Inf.", area),
+         area = gsub("inferior", "inf.", area),
+         area = gsub("Superior", "Sup.", area),
+         area = gsub("Lateral", "Lat.", area),
+         area = gsub("Middle", "Mid.", area),
+         area = gsub(" part", "", area),
+         ) 
 
 hoCort$pos[1] <- list(x = 1)
 for(i in 1:nrow(hoCort)){
   hoCort$pos[[i]] = list(
     stacked = list(
       x = list(breaks = c(250, 900), 
-               labels = c("left", "right")), 
+               labels = c("lateral", "medial")), 
       y = list(breaks = c(200,  600), 
-               labels = c("lateral", "medial")), labs = list(
+               labels = c("left", "right")), labs = list(
                  y = "side", x = "hemisphere")), 
     dispersed = list(
       x = list(
-        breaks = c(519.272418189545, 1841.89700704225), 
+        breaks = c(580, 1800), 
         labels = c("left", "right")), 
       y = list(breaks = NULL, labels = ""), 
       labs = list(y = NULL, x = "hemisphere")))
