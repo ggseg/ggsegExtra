@@ -3,13 +3,13 @@
 \docType{data}
 \name{tracula_3d}
 \alias{tracula_3d}
-\title{Parcellation from of white matter}
+\title{White matter tract parcellations}
 \format{An object of class \code{ggseg_atlas} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1 rows and 4 columns.}
 \usage{
 tracula_3d
 }
 \description{
-Parcellation from of white matter
+White matter tract parcellations
 }
 \examples{
 data(tracula_3d)

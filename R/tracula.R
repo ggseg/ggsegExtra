@@ -1,6 +1,6 @@
 ## 2d polygons ----
 
-#' Parcellation from of white matter 
+#' White matter tract parcellations
 #'
 #' @docType data
 #' @name tracula
@@ -28,7 +28,7 @@
 
 
 ### 3d meshes ----
-#' Parcellation from of white matter 
+#' White matter tract parcellations
 #'
 #' @docType data
 #' @name tracula_3d

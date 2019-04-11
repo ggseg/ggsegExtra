@@ -25,7 +25,7 @@
 "jhu"
 
 ### 3d meshes ----
-#' Parcellation from of JHU
+#' Parcellation from JHU
 #'
 #' @docType data
 #' @name jhu_3d

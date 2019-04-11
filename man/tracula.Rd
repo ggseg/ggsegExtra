@@ -3,7 +3,7 @@
 \docType{data}
 \name{tracula}
 \alias{tracula}
-\title{Parcellation from of white matter}
+\title{White matter tract parcellations}
 \format{A data.frame with 11341 observations and 11 variables
 \describe{
   \item{long}{coordinates for the x-axis}
@@ -18,7 +18,7 @@
 tracula
 }
 \description{
-Parcellation from of white matter
+White matter tract parcellations
 }
 \examples{
 data(tracula)
