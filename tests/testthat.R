@@ -1,7 +1,4 @@
 library(testthat)
-library(dplyr)
-library(tidyr)
-library(ggseg)
 
 test_check("ggsegExtra")
 

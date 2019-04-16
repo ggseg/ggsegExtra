@@ -2,7 +2,7 @@ library(tidyverse)
 library(ggseg)
 devtools::load_all(".")
 
-load("data-raw/geobrain_Chencth.Rda")
+load("data-raw/polygon/geobrain_Chencth.Rda")
 chenTh <- geobrain_Chencth %>% 
   mutate(label = paste(hemi, gsub(" ", "_", aparc), sep = "_"),
          hemi = case_when(hemi == "lh" ~ "left",
@@ -33,22 +33,22 @@ chenTh <- chenTh %>%
                        long - diff, long))
 
 
-chenTh$pos[1] <- list(x = 1)
-for(i in 1:nrow(chenTh)){
-  chenTh$pos[[i]] = list(
-    stacked = list(
-      x = list(breaks = c(1.7, 6.5), 
-               labels = c("lateral", "medial")), 
-      y = list(breaks = c(1,  4.5), 
-               labels = c("left", "right")), labs = list(
-                 y = "side", x = "hemisphere")), 
-    dispersed = list(
-      x = list(
-        breaks = c(4, 13.5), 
-        labels = c("left", "right")), 
-      y = list(breaks = NULL, labels = ""), 
-      labs = list(y = NULL, x = "hemisphere")))
-}
+# chenTh$pos[1] <- list(x = 1)
+# for(i in 1:nrow(chenTh)){
+#   chenTh$pos[[i]] = list(
+#     stacked = list(
+#       x = list(breaks = c(1.7, 6.5), 
+#                labels = c("lateral", "medial")), 
+#       y = list(breaks = c(1,  4.5), 
+#                labels = c("left", "right")), labs = list(
+#                  y = "side", x = "hemisphere")), 
+#     dispersed = list(
+#       x = list(
+#         breaks = c(4, 13.5), 
+#         labels = c("left", "right")), 
+#       y = list(breaks = NULL, labels = ""), 
+#       labs = list(y = NULL, x = "hemisphere")))
+# }
 chenTh <- as_ggseg_atlas(chenTh)
 usethis::use_data(chenTh, internal = FALSE, overwrite = TRUE, compress = "xz")
 
@@ -87,22 +87,22 @@ chenAr <- chenAr %>%
                        long - diff, long))
 
 
-chenAr$pos[1] <- list(x = 1)
-for(i in 1:nrow(chenAr)){
-  chenAr$pos[[i]] = list(
-    stacked = list(
-      x = list(breaks = c(1.7, 6.5), 
-               labels = c("lateral", "medial")), 
-      y = list(breaks = c(1,  4.5), 
-               labels = c("left", "right")), labs = list(
-                 y = "side", x = "hemisphere")), 
-    dispersed = list(
-      x = list(
-        breaks = c(4, 13.5), 
-        labels = c("left", "right")), 
-      y = list(breaks = NULL, labels = ""), 
-      labs = list(y = NULL, x = "hemisphere")))
-}
+# chenAr$pos[1] <- list(x = 1)
+# for(i in 1:nrow(chenAr)){
+#   chenAr$pos[[i]] = list(
+#     stacked = list(
+#       x = list(breaks = c(1.7, 6.5), 
+#                labels = c("lateral", "medial")), 
+#       y = list(breaks = c(1,  4.5), 
+#                labels = c("left", "right")), labs = list(
+#                  y = "side", x = "hemisphere")), 
+#     dispersed = list(
+#       x = list(
+#         breaks = c(4, 13.5), 
+#         labels = c("left", "right")), 
+#       y = list(breaks = NULL, labels = ""), 
+#       labs = list(y = NULL, x = "hemisphere")))
+# }
 chenAr <- as_ggseg_atlas(chenAr)
 usethis::use_data(chenAr, internal = FALSE, overwrite = TRUE, compress = "xz")
 

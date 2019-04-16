@@ -7,7 +7,8 @@ Description: This package mainly contains two plotting functions: `ggseg` and `g
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
-Depends: R (>= 2.10)
+Depends: R (>= 2.10),
+    ggseg
 LazyData: true
 Suggests:
     knitr,
@@ -16,7 +17,6 @@ Suggests:
     testthat,
     dplyr,
     tidyr,
-    ggseg,
     devtools
 VignetteBuilder: knitr
 Remotes: 

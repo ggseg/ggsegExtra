@@ -17,23 +17,27 @@ glasser <- glasser %>%
   select(-group) %>%
   mutate(pos = NA)
 
-glasser <- unnest(glasser, ggseg)
-glasser$.pos[1] <- list(x = 1)
-for(i in 1:nrow(glasser)){
-  glasser$.pos[[i]] = list(
-    stacked = list(x = list(breaks = c(1.1, 4.5),
-                            labels = c("lateral","medial")),
-                   y = list(breaks = c(0.9, 3.4),
-                            labels = c("left","right")),
-                   labs = list(x = "side",
-                               y = "hemisphere")),
-    dispersed = list(x = list(breaks = c(3, 9.1),
-                              labels = c("left","right")),
-                     y = list(breaks = NULL,
-                              labels = NULL),
-                     labs = list(x = "hemisphere",
-                                 y = NULL))
-  )
-}
+# glasser <- unnest(glasser, ggseg)
+# glasser$.pos[1] <- list(x = 1)
+# for(i in 1:nrow(glasser)){
+#   glasser$.pos[[i]] = list(
+#     stacked = list(x = list(breaks = c(1.1, 4.5),
+#                             labels = c("lateral","medial")),
+#                    y = list(breaks = c(0.9, 3.4),
+#                             labels = c("left","right")),
+#                    labs = list(x = "side",
+#                                y = "hemisphere")),
+#     dispersed = list(x = list(breaks = c(3, 9.1),
+#                               labels = c("left","right")),
+#                      y = list(breaks = NULL,
+#                               labels = NULL),
+#                      labs = list(x = "hemisphere",
+#                                  y = NULL))
+#   )
+# }
+
+glasser <- glasser %>% 
+  unnest(ggseg) %>% 
+  select(-.pos)
 glasser <- as_ggseg_atlas(glasser)
 usethis::use_data(glasser, internal = FALSE, overwrite = TRUE, compress = "xz")
