@@ -1,5 +1,5 @@
 Package: ggsegExtra
-Title: Plotting tool for brain atlases
+Title: Extra datasets for the ggseg-plotting tool
 Version: 1.5
 Authors@R: c(person("Athanasia Mo", "Mowinckel", email = "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre")),
  person("Didac Vidal", "Pineiro", email = "d.v.pineiro@psykologi.uio.no", role = c("aut")))
