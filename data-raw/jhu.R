@@ -30,14 +30,15 @@ jhu = jhu %>%
   select(lat, long, area, hemi, side, acronym, atlas, everything())
 
 jhu <- jhu %>%
-  # select(-group) %>%
-  mutate(pos = list(x = 1))
+  unnest(ggseg) %>% 
+  select(-.pos) %>%
+  mutate(.pos = list(x = 1))
 
 for(i in 1:nrow(jhu)){
-  jhu$pos[[i]] = list(
+  jhu$.pos[[i]] = list(
     stacked = list(),
     dispersed = list(x = list(breaks = c(7.5, 10.75, 14),
-                              labels = c("upper coronal","axial", "lower coronal")),
+                              labels = c("upper axial","coronal", "lower axial")),
                      y = list(breaks = NULL,
                               labels = NULL),
                      labs = list(x = "side",
@@ -46,13 +47,18 @@ for(i in 1:nrow(jhu)){
 }
 
 jhu <- jhu %>%
-  select(one_of(names(ggseg::dkt))) %>% 
-  ggseg:::as_ggseg_atlas() %>% 
+  #select(one_of(names(ggseg::dkt))) %>% 
+  ggseg:::as_ggseg_atlas()
+
+jhu <- jhu %>% 
+  unnest(ggseg) %>% 
   mutate(side = case_when(
     side == "upper coronal" ~ "upper axial",
     side == "lower coronal" ~ "lower axial",
     side == "axial" ~ "coronal"
-  )) 
+  )) %>% 
+  #select(-.pos) %>% 
+  ggseg::as_ggseg_atlas()
 
 usethis::use_data(jhu, internal = FALSE, overwrite = TRUE, compress = "xz")
 
