@@ -9,7 +9,7 @@
 #' @references Yendiki et al. (2011) Automated probabilistic reconstruction of 
 #' white-matter pathways in health and disease using an atlas of the underlying anatomy.  
 #' Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
-#' (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})
+#' (\href{https://www.ncbi.nlm.nih.gov/pubmed/22016733}{PubMed})
 #'
 #' @format A data.frame with 11341 observations and 11 variables
 #' \describe{
