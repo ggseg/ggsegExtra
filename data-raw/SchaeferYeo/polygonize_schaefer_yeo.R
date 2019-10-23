@@ -10,8 +10,8 @@ library(tidyverse)
 
 setwd(paste0(here::here(), "/data-raw/SchaeferYeo"))
 
-## The number of parcels in the atlas
-nparcels <- 400
+## The number of parcels in the atlas. Set to change to 400, 600, etc.
+nparcels <- 200
 
 ## the amount of buffering to expand polygons slightly to close gaps
 buffer_dist <- 1
@@ -22,9 +22,9 @@ geometry_rh = neurosurf::read_surf("fsaverage6/rh.inflated")
 
 ## read in left and right annotations for 17 network with nparcels
 annot_lh=neurosurf::read_freesurfer_annot(
-  paste0("SchaeferYeo/lh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geometry_lh)
+  paste0("annot/lh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geometry_lh)
 annot_rh=neurosurf::read_freesurfer_annot(
-  paste0("SchaeferYeo/rh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geometry_rh)
+  paste0("annot/rh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geometry_rh)
 
 
 ## function to convert ROI rasters to polygons
@@ -68,10 +68,10 @@ mkContours <- function(rst){
 do_snapshots <- function(hemi, side) {
   if (hemi == "left") {
     geom  <- neurosurf::read_surf(paste0("fsaverage6/lh.inflated"))
-    annot <- neurosurf::read_freesurfer_annot(paste0("SchaeferYeo/lh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geom)
+    annot <- neurosurf::read_freesurfer_annot(paste0("annot/lh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geom)
   } else {
     geom  <- neurosurf::read_surf("fsaverage6/rh.inflated")
-    annot <- neurosurf::read_freesurfer_annot(paste0("SchaeferYeo/rh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geom)
+    annot <- neurosurf::read_freesurfer_annot(paste0("annot/rh.Schaefer2018_", nparcels, "Parcels_17Networks_order.annot"), geom)
   }
 
   ids <- sort(unique(annot@data))
@@ -172,13 +172,13 @@ df_final <- df_final %>% mutate(atlas="SchaeferYeo400") %>%
   dplyr::select(-geometry) %>% dplyr::rename(area=region)
 
 if (nparcels == 200) {
-  Schaefer17_200 <- as_ggseg_atlas(df_final)
+  Schaefer17_200 <- ggseg::as_ggseg_atlas(df_final)
   usethis::use_data(Schaefer17_200, internal = FALSE, overwrite = TRUE, compress = "xz")
 } else if (nparcels == 400) {
   Schaefer17_400 <- as_ggseg_atlas(df_final)
   usethis::use_data(Schaefer17_400, internal = FALSE, overwrite = TRUE, compress = "xz")
 }
-##ggseg(atlas=df_final, color="black", size=.5, position="stacked",mapping=aes(fill=area)) +
+##ggseg(atlas=Schaefer17_200, color="black", size=.5, position="stacked",mapping=aes(fill=area, alpha=.5)) +
 ##  theme(legend.position = "none") + theme_darkbrain()
 #ggseg(atlas=glasser, color="black", size=.5, position="stacked",mapping=aes(fill=area)) +
 #  theme(legend.position = "none") + theme_darkbrain()
