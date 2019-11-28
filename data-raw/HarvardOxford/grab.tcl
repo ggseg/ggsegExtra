@@ -1,8 +1,8 @@
 # surfparc_makeimages.tcl
 
 set subjectsdir $home
-set  subjectdir "$home/$subject"
-set    imagedir "$subjectdir/screencaps"
+set subjectdir "$home/$subject"
+set imagedir "$subjectdir/screencaps"
 
 puts "Subject Dir: $subjectdir"
 puts "Hemi: $hemi"

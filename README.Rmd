@@ -13,18 +13,25 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- badges: start -->
   [![Build Status](https://travis-ci.org/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.org/LCBC-UiO/ggsegExtra)
+  [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
   [![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
+[![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+<!-- badges: end -->
+
   
 ```{r setup, include=FALSE}
 library(ggseg)
-library(ggsegExtra)
+library(ggseg3d)
+devtools::load_all(".")
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
 
-This package contains extra atlases for the use in the [ggseg]() plotting package in R.
+This package contains extra atlases for the use in the [ggseg](https://github.com/LCBC-UiO/ggseg) and [ggseg3d](https://github.com/LCBC-UiO/ggseg3d) plotting packages in R.
 
 ## Atlases
 There are currently three atlases available in the package:  
@@ -57,17 +64,19 @@ If anything is unclear in the wiki, give us a shout out in the issues!
 
 
 ## Use
-You will need to use the `ggseg` package to use these atlases, or wrangle them your self.
+You will need to use the `ggseg` or `ggseg3d` package to use these atlases, or wrangle them your self.
 You can access it [here](https://lcbc-uio.github.io/ggseg/ggseg.html), or via R:
 
 ```{r eval=F}
-devtools::install_github("LCBC-UiO/ggseg")
+remotes::install_github("LCBC-UiO/ggseg")
+remotes::install_github("LCBC-UiO/ggseg3d")
 ```
 
-Make sure to always load the ggsegExtra package _after_ the ggseg package.
+Make sure to always load the ggsegExtra package _after_ the ggseg packages.
 
 ```{r eval=F}
 library(ggseg)
+library(ggseg3d)
 library(ggsegExtra)
 ```
 

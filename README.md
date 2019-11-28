@@ -1,15 +1,25 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+
 [![Build
 Status](https://travis-ci.org/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.org/LCBC-UiO/ggsegExtra)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
 [![Coverage
 Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+<!-- badges: end -->
 
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />
 
-This package contains extra atlases for the use in the [ggseg]()
-plotting package in R.
+This package contains extra atlases for the use in the
+[ggseg](https://github.com/LCBC-UiO/ggseg) and
+[ggseg3d](https://github.com/LCBC-UiO/ggseg3d) plotting packages in R.
 
 ## Atlases
 
@@ -36,7 +46,7 @@ There are currently three atlases available in the package:
 7.  `tracula_3d` - Yendiki et al. probabilistic white matter
     tractopraphy  
 8.  `jhu_3d`- Hua et al. 2008, JHU white-matter tractography atlas  
-9.  `icbm_3d`- JHU labels from Mori et al. (2005)
+9.  `icbm_3d`- JHU labels from Mori et al. (2005)
 
 We are working on creating a detailed description in the wiki on how to
 create and contribute atlases to the package. The `ggseg` function
@@ -51,19 +61,21 @@ the issues\!
 
 ## Use
 
-You will need to use the `ggseg` package to use these atlases, or
-wrangle them your self. You can access it
+You will need to use the `ggseg` or `ggseg3d` package to use these
+atlases, or wrangle them your self. You can access it
 [here](https://lcbc-uio.github.io/ggseg/ggseg.html), or via R:
 
 ``` r
-devtools::install_github("LCBC-UiO/ggseg")
+remotes::install_github("LCBC-UiO/ggseg")
+remotes::install_github("LCBC-UiO/ggseg3d")
 ```
 
 Make sure to always load the ggsegExtra package *after* the ggseg
-package.
+packages.
 
 ``` r
 library(ggseg)
+library(ggseg3d)
 library(ggsegExtra)
 ```
 

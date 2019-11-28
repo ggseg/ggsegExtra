@@ -1,10 +1,24 @@
 # Experiments turning raster images into polygons
 # Need to go back and split it left/right
+library(fslr)
 library(tidyverse)
 library(raster)
 library(stars)
 library(sf)
 library(rmapshaper)
+
+
+mri_vol2surf("HarvardOxford-Cortical", 
+  outfile = "test.rh.mgh",
+  opts = c("--mni152reg", "--hemi rh", "--projfrac 0.5"),
+  verbose = TRUE)
+  
+mri_vol2surf("HarvardOxford-Cortical", 
+             outfile = "test.lh.mgh",
+             opts = c("--mni152reg", "--hemi lh", "--projfrac 0.5"),
+             verbose = TRUE) 
+
+
 
 #pics <- list.files(pattern=".+_1\\.png", path="PicsDesikan/", full.names = TRUE)
 pics <- list.files(pattern="^.h_.+\\.tif", path="PicsHarvardOxford/", full.names = TRUE)
@@ -27,7 +41,7 @@ map_dbl(rasterobjs, cellStats, stat=max)
 ## check the maximum value
 cellStats(rasterobjs[[1]], stat = max)
 mkContours <- function(rstobj){
-  mx <- cellStats(rstobj, stat=max)
+  mx <- raster::cellStats(rstobj, stat=max)
   # Filter out the blank images
   if (mx < 200) {
     return(NULL)
@@ -38,7 +52,7 @@ mkContours <- function(rstobj){
   ## levels = 50 is to remove the occasional edge point that has
   ## non zero hue.
   #cntr <- raster::rasterToPolygons(rstobj, fun = function(X)X>100, dissolve=TRUE)
-  g <- st_as_sf(st_as_stars(tmp.rst), merge=TRUE, connect8=TRUE)
+  g <- sf::st_as_sf(sf::st_as_stars(tmp.rst), merge=TRUE, connect8=TRUE)
   ## Is it a multipolygon? Keep the biggest bit
   ## Small parts are usually corner connected single voxels
   if (nrow(g)>1) {
@@ -50,7 +64,7 @@ mkContours <- function(rstobj){
   names(g)[[1]] <- "region"
   g$region <- names(rstobj)
   return(g)
-
+  
 }
 
 
@@ -64,7 +78,7 @@ ho.df <- filter(ho.df, kp)
 ho.df <- bind_cols(contourobjsDF, ho.df)
 ## Now we need to place them into their own panes
 ## Bounding box for all
-bball <- st_bbox(ho.df)
+bball <- sf::st_bbox(ho.df)
 ho.df <-  mutate(ho.df, geometry=geometry - bball[c("xmin", "ymin")])
 
 ## ifelse approach doesn't seem to work, so split it up
@@ -82,7 +96,7 @@ ho.dfC <- ho.df %>%
 
 ho.dfD <- ho.df %>% 
   filter(hemi=="lh", side=="lat")
-  
+
 ho.df.panes <- rbind(ho.dfD, ho.dfA, ho.dfB, ho.dfC)
 #ho.df.panes.simple <- st_simplify(ho.df.panes, preserveTopology = TRUE, dTolerance=0.75)
 ho.df.panes.simple <- rmapshaper::ms_simplify(ho.df.panes)
@@ -104,6 +118,7 @@ ho.df.final <- mutate(ho.df.panes.simple,
 ho.df.final$geometry <- NULL
 ho.df.final <- unnest(ho.df.final, .drop=TRUE)
 ho.df.final <- rename(ho.df.final, long=X, lat=Y)
-ggseg(atlas=ho.df.final, mapping=aes(fill=area), color="white") + theme(legend.position = "none")
+ggseg(atlas=ho.df.final, mapping=aes(fill=area), color="white") + 
+  theme(legend.position = "none")
 
 save(ho.df.panes.simple, ho.df.final, file="ho_atlases.Rda")

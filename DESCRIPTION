@@ -8,18 +8,20 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 Depends: R (>= 2.10),
-    ggseg
+    ggseg,
+    ggseg3d
 LazyData: true
 Suggests:
     knitr,
     rmarkdown,
     covr,
     testthat,
-    dplyr,
     tidyr,
+    dplyr,
     devtools
 VignetteBuilder: knitr
 Remotes: 
-    LCBC-UiO/ggseg
+    LCBC-UiO/ggseg,
+    LCBC-UiO/ggseg3d
 URL: https://github.com/LCBC-UiO/ggsegExtra
 BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues

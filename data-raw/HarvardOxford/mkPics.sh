@@ -9,7 +9,7 @@ trap 'rm -rf ${TD}; exit 0' 0 1 2 3 14 15
 
 # Desikan atlas version
 #export DEST=PicsDesikan
-export DEST=PicsHarvardOxford
+export DEST=Pics_${pics}
 
 mkdir -p ${DEST}
 # modules for local setup
