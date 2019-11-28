@@ -14,9 +14,9 @@ knitr::opts_chunk$set(
 ```
 
 <!-- badges: start -->
-  [![Build Status](https://travis-ci.org/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.org/LCBC-UiO/ggsegExtra)
-  [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
-  [![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
+[![Travis build Status](https://travis-ci.com/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
+[![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->

@@ -3,8 +3,8 @@
 
 <!-- badges: start -->
 
-[![Build
-Status](https://travis-ci.org/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.org/LCBC-UiO/ggsegExtra)
+[![Travis build
+Status](https://travis-ci.com/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
 [![Coverage
