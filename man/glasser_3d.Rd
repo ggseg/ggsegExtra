@@ -27,4 +27,12 @@ data(glasser_3d)
 Glasser et al. (2016) Nature, volume 536, pages 171–178
 (\href{https://www.nature.com/articles/nature18933}{PubMed})
 }
+\seealso{
+Other ggseg3d_atlases: \code{\link{desterieux_3d}},
+  \code{\link{icbm_3d}}, \code{\link{jhu_3d}},
+  \code{\link{schaefer17_3d}}, \code{\link{schaefer7_3d}},
+  \code{\link{tracula_3d}}, \code{\link{yeo17_3d}},
+  \code{\link{yeo7_3d}}
+}
+\concept{ggseg3d_atlases}
 \keyword{datasets}

@@ -19,4 +19,12 @@ Hua et al., Tract probability maps in stereotaxic spaces:
 analysis of white matter anatomy and tract-specific quantification. NeuroImage, 39(1):336-347 (2008)
 (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})
 }
+\seealso{
+Other ggseg3d_atlases: \code{\link{desterieux_3d}},
+  \code{\link{glasser_3d}}, \code{\link{icbm_3d}},
+  \code{\link{schaefer17_3d}}, \code{\link{schaefer7_3d}},
+  \code{\link{tracula_3d}}, \code{\link{yeo17_3d}},
+  \code{\link{yeo7_3d}}
+}
+\concept{ggseg3d_atlases}
 \keyword{datasets}

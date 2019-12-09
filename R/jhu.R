@@ -1,11 +1,11 @@
 ## 2d polygons ----
 
-#' Parcellation from JHU
+#' JHU parcellation
 #'
 #' @docType data
 #' @name jhu
 #' @keywords datasets
-#'
+#' @family ggseg_atlases
 #' @references Hua et al. (2008) NeuroImage, 39(1):336-347 
 #' (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})
 #'
@@ -30,7 +30,7 @@
 #' @docType data
 #' @name jhu_3d
 #' @keywords datasets
-#'
+#' @family ggseg3d_atlases
 #' @references Hua et al., Tract probability maps in stereotaxic spaces:
 #' analysis of white matter anatomy and tract-specific quantification. NeuroImage, 39(1):336-347 (2008)
 #' (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})

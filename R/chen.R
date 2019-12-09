@@ -5,6 +5,7 @@
 #' @docType data
 #' @name chenTh
 #' @keywords datasets
+#' @family ggseg_atlases
 #'
 #' @references Chen et al. (2013) PNAS, 110 (42) 17089-17094; 
 #' (\href{https://doi.org/10.1073/pnas.1308091110 }{PubMed})
@@ -29,7 +30,8 @@
 #' @docType data
 #' @name chenAr
 #' @keywords datasets
-#'
+#' @family ggseg_atlases
+#' 
 #' @references Chen et al. (2013) PNAS, 110 (42) 17089-17094; 
 #' (\href{https://doi.org/10.1073/pnas.1308091110 }{PubMed})
 #'
@@ -54,7 +56,7 @@
 #' #' @docType data
 #' #' @name chenTh_3d
 #' #' @keywords datasets
-#' #'
+#' #' @family ggseg3d_atlases
 #' #' @references Chen et al. (2013) PNAS, 110 (42) 17089-17094;
 #' #' (\href{https://doi.org/10.1073/pnas.1308091110 }{PubMed})
 #' #'
@@ -68,7 +70,7 @@
 #' #' @docType data
 #' #' @name chenAr_3d
 #' #' @keywords datasets
-#' #'
+#' #' @family ggseg3d_atlases
 #' #' @references Chen et al. (2013) PNAS, 110 (42) 17089-17094;
 #' #' (\href{https://doi.org/10.1073/pnas.1308091110 }{PubMed})
 #' #'

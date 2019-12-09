@@ -3,13 +3,13 @@
 \docType{data}
 \name{icbm_3d}
 \alias{icbm_3d}
-\title{Parcellation from of white matter}
+\title{ICBM white matter parcellation}
 \format{An object of class \code{ggseg_atlas} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1 rows and 4 columns.}
 \usage{
 icbm_3d
 }
 \description{
-Parcellation from of white matter
+ICBM white matter parcellation
 }
 \examples{
 data(icbm_3d)
@@ -18,4 +18,12 @@ data(icbm_3d)
 Mori et al., MRI Atlas of Human White Matter. Elsevier, Amsterdam, The Netherlands (2005) 
 (\href{https://www.elsevier.com/books/mri-atlas-of-human-white-matter/mori/978-0-444-51741-8}{PubMed})
 }
+\seealso{
+Other ggseg3d_atlases: \code{\link{desterieux_3d}},
+  \code{\link{glasser_3d}}, \code{\link{jhu_3d}},
+  \code{\link{schaefer17_3d}}, \code{\link{schaefer7_3d}},
+  \code{\link{tracula_3d}}, \code{\link{yeo17_3d}},
+  \code{\link{yeo7_3d}}
+}
+\concept{ggseg3d_atlases}
 \keyword{datasets}

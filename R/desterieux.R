@@ -8,7 +8,7 @@
 #' @docType data
 #' @name desterieux_3d
 #' @usage data(desterieux_3d)
-#'
+#' @family ggseg3d_atlases
 #' @keywords datasets
 #'
 #' @references Desterieux, Fischl, Dale,& Halgren (2010) Neuroimage. 53(1): 1–15. doi: 0.1016/j.neuroimage.2010.06.010

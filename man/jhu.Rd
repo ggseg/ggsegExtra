@@ -3,7 +3,7 @@
 \docType{data}
 \name{jhu}
 \alias{jhu}
-\title{Parcellation from JHU}
+\title{JHU parcellation}
 \format{A data.frame with 11341 observations and 11 variables
 \describe{
   \item{long}{coordinates for the x-axis}
@@ -18,7 +18,7 @@
 jhu
 }
 \description{
-Parcellation from JHU
+JHU parcellation
 }
 \examples{
 data(jhu)
@@ -27,4 +27,11 @@ data(jhu)
 Hua et al. (2008) NeuroImage, 39(1):336-347 
 (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})
 }
+\seealso{
+Other ggseg_atlases: \code{\link{chenAr}},
+  \code{\link{chenTh}}, \code{\link{glasser}},
+  \code{\link{hoCort}}, \code{\link{tracula}},
+  \code{\link{yeo17}}, \code{\link{yeo7}}
+}
+\concept{ggseg_atlases}
 \keyword{datasets}

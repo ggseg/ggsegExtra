@@ -1,11 +1,11 @@
 ## 2d polygons ----
 
-#' White matter tract parcellations
+#' Automated probabilistic reconstruction of white-matter pathways
 #'
 #' @docType data
 #' @name tracula
 #' @keywords datasets
-#'
+#' @family ggseg_atlases
 #' @references Yendiki et al. (2011) Automated probabilistic reconstruction of 
 #' white-matter pathways in health and disease using an atlas of the underlying anatomy.  
 #' Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
@@ -33,7 +33,7 @@
 #' @docType data
 #' @name tracula_3d
 #' @keywords datasets
-#'
+#' @family ggseg3d_atlases
 #' @references Yendiki et al. (2011) Automated probabilistic reconstruction of 
 #' white-matter pathways in health and disease using an atlas of the underlying anatomy.  
 #' Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023

@@ -1,6 +1,6 @@
 ### 3d meshes ----
 
-#' Schaefer 7 Resting-state Cortical Parcellations
+#' Local-Global 7 Parcellation of the Human Cerebral Cortex
 #'
 #' Mesh data for the 7 resting-state networks of
 #' the Schaefer et al. (2018) networks.
@@ -8,7 +8,7 @@
 #' @docType data
 #' @name schaefer7_3d
 #' @usage data(schaefer7_3d)
-#'
+#' @family ggseg3d_atlases
 #' @keywords datasets
 #'
 #'
@@ -36,7 +36,7 @@
 
 
 
-#' Schaefer 17 Resting-state Cortical Parcellations
+#' Local-Global 17 Parcellation of the Human Cerebral Cortex
 #'
 #' Mesh data for the 17 resting-state networks of
 #' the Schaefer et al. (2018) networks.
@@ -44,7 +44,7 @@
 #' @docType data
 #' @name schaefer17_3d
 #' @usage data(schaefer17_3d)
-#'
+#' @family ggseg3d_atlases
 #' @keywords datasets
 #'
 #' @references Schaefer et al. (2018) Cereb Cortex. 2018 Sep 1;28(9):3095-3114. doi: 10.1093/cercor/bhx179

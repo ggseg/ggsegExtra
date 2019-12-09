@@ -20,4 +20,12 @@ white-matter pathways in health and disease using an atlas of the underlying ana
 Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
 (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2724595/}{PubMed})
 }
+\seealso{
+Other ggseg3d_atlases: \code{\link{desterieux_3d}},
+  \code{\link{glasser_3d}}, \code{\link{icbm_3d}},
+  \code{\link{jhu_3d}}, \code{\link{schaefer17_3d}},
+  \code{\link{schaefer7_3d}}, \code{\link{yeo17_3d}},
+  \code{\link{yeo7_3d}}
+}
+\concept{ggseg3d_atlases}
 \keyword{datasets}

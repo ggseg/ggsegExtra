@@ -1,11 +1,11 @@
 ## 2d polygons ----
 
-#' Parcellation from the Human Connectome Project
+#' HPC - Multi-modal parcellation of human cerebral cortex
 #'
 #' @docType data
 #' @name glasser
 #' @keywords datasets
-#'
+#' @family ggseg_atlases
 #' @references Glasser et al. (2016) Nature, volume 536, pages 171–178
 #' (\href{https://www.nature.com/articles/nature18933}{PubMed})
 #'
@@ -32,7 +32,7 @@
 #' @docType data
 #' @name glasser_3d
 #' @keywords datasets
-#'
+#' @family ggseg3d_atlases
 #' @references Glasser et al. (2016) Nature, volume 536, pages 171–178
 #' (\href{https://www.nature.com/articles/nature18933}{PubMed})
 #'

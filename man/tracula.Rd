@@ -3,7 +3,7 @@
 \docType{data}
 \name{tracula}
 \alias{tracula}
-\title{White matter tract parcellations}
+\title{Automated probabilistic reconstruction of white-matter pathways}
 \format{A data.frame with 11341 observations and 11 variables
 \describe{
   \item{long}{coordinates for the x-axis}
@@ -18,7 +18,7 @@
 tracula
 }
 \description{
-White matter tract parcellations
+Automated probabilistic reconstruction of white-matter pathways
 }
 \examples{
 data(tracula)
@@ -29,4 +29,11 @@ white-matter pathways in health and disease using an atlas of the underlying ana
 Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
 (\href{https://www.ncbi.nlm.nih.gov/pubmed/22016733}{PubMed})
 }
+\seealso{
+Other ggseg_atlases: \code{\link{chenAr}},
+  \code{\link{chenTh}}, \code{\link{glasser}},
+  \code{\link{hoCort}}, \code{\link{jhu}},
+  \code{\link{yeo17}}, \code{\link{yeo7}}
+}
+\concept{ggseg_atlases}
 \keyword{datasets}
