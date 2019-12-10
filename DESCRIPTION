@@ -6,12 +6,12 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel", email = "a.m.mowinckel@psykolog
 Description: This package mainly contains two plotting functions: `ggseg` and `ggseg3d`, and data.frames or tibbles of different brain atlases for plotting. By far, the largestbit of the package is the data for each of the atlases.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 6.1.1
-Depends: R (>= 2.10),
-    ggseg,
-    ggseg3d
+RoxygenNote: 7.0.1
+Depends: R (>= 2.10)
 LazyData: true
 Suggests:
+    ggseg,
+    ggseg3d,
     knitr,
     rmarkdown,
     covr,

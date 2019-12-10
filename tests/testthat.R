@@ -1,4 +1,6 @@
 library(testthat)
+library(ggseg)
+library(ggseg3d)
 
 test_check("ggsegExtra")
 
