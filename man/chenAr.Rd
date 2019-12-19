@@ -30,8 +30,9 @@ Chen et al. (2013) PNAS, 110 (42) 17089-17094;
 \seealso{
 Other ggseg_atlases: \code{\link{chenTh}},
   \code{\link{glasser}}, \code{\link{hoCort}},
-  \code{\link{jhu}}, \code{\link{tracula}},
-  \code{\link{yeo17}}, \code{\link{yeo7}}
+  \code{\link{jhu}}, \code{\link{schaefer17_200}},
+  \code{\link{tracula}}, \code{\link{yeo17}},
+  \code{\link{yeo7}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}

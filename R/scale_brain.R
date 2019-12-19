@@ -19,6 +19,7 @@
 #' @rdname scale_brain
 #' @export
 #' @importFrom ggplot2 scale_colour_manual scale_fill_manual scale_colour_manual
+#' @importFrom ggseg brain_pal
 #' @examples
 #' scale_brain()
 #' scale_colour_brain()

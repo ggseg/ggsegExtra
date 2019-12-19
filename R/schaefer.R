@@ -1,3 +1,37 @@
+### 2d polygons ----
+
+#' Local-Global 17 Parcellation of the Human Cerebral Cortex
+#'
+#' Polygon data for the 17 resting-state networks of
+#' the Schaefer et al. (2018) networks, in a 200 area parcellation
+#'
+#' @docType data
+#' @name schaefer17_200
+#' @usage data(schaefer17_200)
+#' @family ggseg_atlases
+#'
+#' @keywords datasets
+#'
+#' @references Makris,et al. (2006) Schizophrenia research 83(2-3):155-151
+#' (\href{https://doi.org/10.1016/j.schres.2005.11.020}{PubMed})
+#'
+#' @format A data.frame with 8203 observations and 10 variables
+#' \describe{
+#'   \item{long}{coordinates for the x-axis}
+#'   \item{lat}{coordinates for the y-axis}
+#'   \item{area}{name of network}
+#'   \item{hemi}{name of the hemisphere (left, right)}
+#'   \item{side}{which side to view (medial, lateral)}
+#'   \item{network}{network number (1:7)}
+#'   \item{label}{unique name to each node}
+#'   \item{atlas}{name of the atlas}
+#' }
+#'
+#' @examples
+#' data(schaefer17_200)
+"schaefer17_200"
+
+
 ### 3d meshes ----
 
 #' Local-Global 7 Parcellation of the Human Cerebral Cortex

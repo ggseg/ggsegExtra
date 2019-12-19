@@ -6,6 +6,7 @@
 ^codecov\.yml$
 ^data-raw$
 ^extras$
+^src$
 ^README*
 ^appveyor\.yml$
 ^\.travis\.yml$

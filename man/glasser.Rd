@@ -30,8 +30,9 @@ Glasser et al. (2016) Nature, volume 536, pages 171–178
 \seealso{
 Other ggseg_atlases: \code{\link{chenAr}},
   \code{\link{chenTh}}, \code{\link{hoCort}},
-  \code{\link{jhu}}, \code{\link{tracula}},
-  \code{\link{yeo17}}, \code{\link{yeo7}}
+  \code{\link{jhu}}, \code{\link{schaefer17_200}},
+  \code{\link{tracula}}, \code{\link{yeo17}},
+  \code{\link{yeo7}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}
