@@ -1,16 +1,18 @@
 ### 3d meshes ----
 
-#' Hippocampal posterior-anterior segmentation
+#' Desterieux cortical parcellations
 #'
-#' Mesh data for the anterior and posterior 
-#' segmentations of the hippocampus
+#' Mesh data for Desterieux cortical parcellations, also known as the
+#' aparc 2009 parcellations of Freesurfer
 #'
 #' @docType data
-#' @name hc_pa_3d
-#' @usage data(hc_pa_3d)
+#' @name desterieux_3d
+#' @usage data(desterieux_3d)
 #' @family ggseg3d_atlases
 #' @keywords datasets
 #'
+#' @references Desterieux, Fischl, Dale,& Halgren (2010) Neuroimage. 53(1): 1–15. doi: 0.1016/j.neuroimage.2010.06.010
+#' (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2937159/}{PubMed})
 #'
 #' @format A tibble with 4 observations and a nested data.frame
 #' \describe{
@@ -28,5 +30,5 @@
 #'   \item{colour}{HEX colour of region}
 #' }
 #' @examples
-#' data(hc_pa_3d)
-"hc_pa_3d"
+#' data(desterieux_3d)
+"desterieux_3d"

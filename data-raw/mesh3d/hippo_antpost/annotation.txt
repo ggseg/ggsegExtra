@@ -1,0 +1,4 @@
+Hipp_ant_post_001	Right-Anterior-Hippocampus	220 216 18 
+Hipp_ant_post_002	Right-Posterior-Hippocampus	220 216 19
+Hipp_ant_post_003	Left-Anterior-Hippocampus	220 216 21
+Hipp_ant_post_004	Left-Posterior-Hippocampus	220 216 22
