@@ -33,8 +33,7 @@ Yeo et al. (2011) J. Neurophysiology 16(3):1125-1165
 Other ggseg_atlases: \code{\link{chenAr}},
   \code{\link{chenTh}}, \code{\link{glasser}},
   \code{\link{hoCort}}, \code{\link{jhu}},
-  \code{\link{schaefer17_200}}, \code{\link{tracula}},
-  \code{\link{yeo17}}
+  \code{\link{tracula}}, \code{\link{yeo17}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}
