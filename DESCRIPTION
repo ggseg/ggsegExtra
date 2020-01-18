@@ -7,21 +7,21 @@ Description: This package mainly contains two plotting functions: `ggseg` and `g
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
-Depends: R (>= 2.10),
-    ggseg,
-    ggseg3d
+Depends: R (>= 2.10)
 LazyData: true
 Suggests:
+    ggseg,
+    ggseg3d,
     knitr,
     rmarkdown,
     covr,
     testthat,
-    tidyr,
     dplyr,
+    tidyr,
     devtools
 VignetteBuilder: knitr
 Remotes: 
-    LCBC-UiO/ggseg,
+    LCBC-UiO/ggseg
     LCBC-UiO/ggseg3d
 URL: https://github.com/LCBC-UiO/ggsegExtra
 BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues

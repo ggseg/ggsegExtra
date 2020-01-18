@@ -1,4 +1,5 @@
-library(dplyr)
+context("test-ggseg:::adapt_scales")
+
 test_that("Check that ggseg:::adapt_scales is working", {
   expect_is(ggseg(atlas = yeo17, mapping=aes(fill=area),adapt_scales = F ) +
               scale_brain("yeo17"),c("gg","ggplot"))

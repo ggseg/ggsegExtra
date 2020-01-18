@@ -1,22 +1,25 @@
 # Experiments turning raster images into polygons
 # Need to go back and split it left/right
 library(fslr)
+library(freesurfer)
 library(tidyverse)
 library(raster)
 library(stars)
 library(sf)
 library(rmapshaper)
 
+infile <- paste0(fslr::fsldir(), 
+"/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz")
 
-mri_vol2surf("HarvardOxford-Cortical", 
-  outfile = "test.rh.mgh",
-  opts = c("--mni152reg", "--hemi rh", "--projfrac 0.5"),
-  verbose = TRUE)
-  
-mri_vol2surf("HarvardOxford-Cortical", 
+mri_vol2surf(infile, 
+             outfile = "test.rh.mgh",
+             opts = c("--mni152reg", "--hemi rh", "--projfrac 0.5"),
+             verbose = FALSE)
+
+mri_vol2surf(infile, 
              outfile = "test.lh.mgh",
              opts = c("--mni152reg", "--hemi lh", "--projfrac 0.5"),
-             verbose = TRUE) 
+             verbose = FALSE) 
 
 
 

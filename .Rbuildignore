@@ -5,7 +5,6 @@
 ^README_files$
 ^codecov\.yml$
 ^data-raw$
-^extras$
 ^README*
 ^appveyor\.yml$
 ^\.travis\.yml$
@@ -14,4 +13,3 @@
 ^\.Rproj\.user$
 img
 ^README\.Rmd$
-^_pkgdown\.yml$
