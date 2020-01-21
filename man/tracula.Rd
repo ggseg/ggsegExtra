@@ -32,8 +32,9 @@ Front. Neuroinform. 5:23. doi: 10.3389/fninf.2011.00023
 \seealso{
 Other ggseg_atlases: \code{\link{chenAr}},
   \code{\link{chenTh}}, \code{\link{glasser}},
-  \code{\link{hoCort}}, \code{\link{jhu}},
-  \code{\link{yeo17}}, \code{\link{yeo7}}
+  \code{\link{hc_pa_3d}}, \code{\link{hoCort}},
+  \code{\link{jhu}}, \code{\link{yeo17}},
+  \code{\link{yeo7}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}

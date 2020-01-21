@@ -35,10 +35,10 @@ Yeo et al. (2011) J. Neurophysiology 16(3):1125-1165
 }
 \seealso{
 Other ggseg3d_atlases: \code{\link{desterieux_3d}},
-  \code{\link{glasser_3d}}, \code{\link{hc_pa_3d}},
-  \code{\link{icbm_3d}}, \code{\link{jhu_3d}},
-  \code{\link{schaefer17_3d}}, \code{\link{schaefer7_3d}},
-  \code{\link{tracula_3d}}, \code{\link{yeo7_3d}}
+  \code{\link{glasser_3d}}, \code{\link{icbm_3d}},
+  \code{\link{jhu_3d}}, \code{\link{schaefer17_3d}},
+  \code{\link{schaefer7_3d}}, \code{\link{tracula_3d}},
+  \code{\link{yeo7_3d}}
 }
 \concept{ggseg3d_atlases}
 \keyword{datasets}

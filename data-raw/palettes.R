@@ -1,6 +1,4 @@
 brain_pals = list(
-  dkt = ggseg::brain_pals$dkt,
-  aseg = ggseg::brain_pals$aseg,
   yeo7 = c(visual = "#a153a2",
            somatomotor = "#6fabd2",
            `dorsal attention`= "#2c8b4b",
@@ -26,18 +24,6 @@ brain_pals = list(
             `default C` = "#041b80",
             `default A` = "#fff937",
             `default B` = "#cb4051"
-  ),
-  midsagittal = c(`3rd ventricle` =	"#CCB68E",
-                  `4th ventricle` =	"#2ACCA4",
-                  `brain stem` = "#779FB0",
-                  `CC anterior` ="#0000FF",
-                  `CC central` = "#0000A0",
-                  `CC mid anterior`	= "#0000D0",
-                  `CC mid posterior` = "#000070",
-                  `CC posterior` = "#000040",
-                  `cerebellum cortex`	= "#E69422",
-                  `cerebellum white matter`	= "#DCF8A4",
-                  `cerebral cortex`	= "#CD3E4E"
   ),
   glasser = c(
     V1 = "#3F05FF",
@@ -277,5 +263,5 @@ brain_pals = list(
     `ventromedial occipital` = "#7f0900"
   )
 )
-usethis::use_data(brain_pals, internal = FALSE, overwrite = TRUE)
+usethis::use_data(brain_pals, internal = TRUE, overwrite = TRUE)
 

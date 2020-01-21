@@ -1,34 +1,35 @@
 ### 3d meshes ----
 
-#' Desterieux cortical parcellations
+#' Freesurfer ASEG with posterior-anterior hippocampus
 #'
-#' Mesh data for Desterieux cortical parcellations, also known as the
-#' aparc 2009 parcellations of Freesurfer
+#' Coordinate data for the subcortical parcellations implemented
+#' in Freesurfer, with a division of the hippocampus in posterior
+#' and anterior segments.
 #'
 #' @docType data
-#' @name desterieux_3d
-#' @usage data(desterieux_3d)
-#' @family ggseg3d_atlases
+#' @name hc_pa_3d
+#' @usage data(hc_pa_3d)
+#' @family ggseg_atlases
+#'
 #' @keywords datasets
 #'
-#' @references Desterieux, Fischl, Dale,& Halgren (2010) Neuroimage. 53(1): 1–15. doi: 0.1016/j.neuroimage.2010.06.010
-#' (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2937159/}{PubMed})
+#' @references Fischl et al., (2002). Neuron, 33:341-355
+#' (\href{https://www.ncbi.nlm.nih.gov/pubmed/11832223}{PubMed})
 #'
-#' @format A tibble with 4 observations and a nested data.frame
+#' @format A data.frame with 2702 observations and 9 variables
 #' \describe{
-#'   \item{surf}{type of surface (`inflated` or `white`)}
-#'   \item{hemi}{hemisphere (`left`` or `right`)}
-#'   \item{data}{data.frame of necessary variables for plotting
-#'   }
-#'
-#'   \item{atlas}{String. atlas name}
-#'   \item{roi}{numbered region from surface}
-#'   \item{annot}{concatenated region name}
-#'   \item{label}{label `hemi_annot` of the region}
-#'   \item{mesh}{list of meshes in two lists: vb and it}
-#'   \item{area}{name of area in full}
-#'   \item{colour}{HEX colour of region}
+#'   \item{lat}{coordinates for the x-axis}
+#'   \item{long}{coordinates for the y-axis}
+#'   \item{area}{acronym of network}
+#'   \item{name}{full name of network}
+#'   \item{hemi}{name of the hemisphere (left, right)}
+#'   \item{side}{which side to view (medial, lateral,axial)}
+#'   \item{atlas}{name of the atlas}
 #' }
+#'
 #' @examples
-#' data(desterieux_3d)
-"desterieux_3d"
+#' data(hc_pa_3d)
+"hc_pa_3d"
+
+
+

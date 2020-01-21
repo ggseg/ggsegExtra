@@ -16,9 +16,9 @@ RoxygenNote: 6.1.1
 Depends: R (>= 2.10)
 LazyData: true
 Imports: 
-    ggseg,
-    ggplot2
 Suggests:
+    ggseg,
+    ggplot2,
     ggseg3d,
     knitr,
     rmarkdown,
