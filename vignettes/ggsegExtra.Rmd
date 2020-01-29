@@ -1,0 +1,102 @@
+---
+title: "Using ggsegExtra atlases"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ggsegExtra}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r "setup", include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+devtools::load_all(".")
+```
+
+
+
+Using the ggseExtra package requires the two main ggseg-packages, containing the functions needed to plot the data. 
+ggsegExtra is purely a repository of data-sets that fit with the functions in those main packages.
+
+```{r, eval=FALSE}
+library(ggsegExtra)
+```
+```{r "load-pkgs"}
+library(ggseg)
+library(ggseg3d)
+```
+
+## 2d atlases with ggseg
+
+You should be able to easily switch the atlases, after loading ggsegExtra, so rather plot one of the ggsegExtra atlases directly to the function.
+
+```{r "ggseg"}
+ggseg(atlas = yeo7, 
+      mapping=aes(fill = area))
+
+ggseg(atlas = glasser, show.legend = FALSE,
+      mapping=aes(fill = area))
+```
+
+If you want to make sure it looks properly like the atlas you are after, or you want to plot an example of the original plot. 
+Most of the datasets also have corresponding palettes from the papers they were introduced from.
+These colour-scales can be applied through the `scale_X_brain` functions.
+
+
+```{r "ggseg-scale"}
+ggseg(atlas = yeo7, 
+      mapping=aes(fill = area)) +
+  scale_fill_brain("yeo7", package="ggsegExtra")
+
+ggseg(atlas = glasser, show.legend = FALSE,
+      mapping=aes(fill = area)) +
+  scale_fill_brain("glasser", package="ggsegExtra")
+```
+
+## 3d plots with ggseg3d
+
+The same goes for ggseg3d, the new atlases, now available through the ggsegExtra package, can be plotted with the ggseg3d function and its helpers. 
+
+```{r "jhu-noneval", eval=FALSE}
+ggseg3d(atlas = jhu_3d) %>% 
+  add_glassbrain()
+```
+```{r "jhu-orca", include=FALSE}
+p <- ggseg3d(atlas=jhu_3d) %>% 
+  add_glassbrain() %>% 
+  plotly::add_annotations( text="Screen capture",
+                  legendtitle=TRUE, showarrow=FALSE,
+                  font = list(color = 'darkgrey',
+                              family = 'sans serif',
+                              size = 50)) 
+plotly::orca(p, "figures/jhu-plot.png")
+```
+```{r "jhu-incl", echo=FALSE}
+knitr::include_graphics("figures/jhu-plot.png")
+```
+
+
+```{r "glasser-noneval", eval=FALSE}
+ggseg3d(atlas = glasser_3d)
+```
+```{r "glasser-orca", include=FALSE}
+p <- ggseg3d(atlas=glasser_3d) %>% 
+  plotly::add_annotations( text="Screen capture",
+                  legendtitle=TRUE, showarrow=FALSE,
+                  font = list(color = 'darkgrey',
+                              family = 'sans serif',
+                              size = 50)) 
+plotly::orca(p, "figures/glasser-plot.png")
+```
+```{r "glasser-incl", echo=FALSE}
+knitr::include_graphics("figures/glasser-plot.png")
+```
+
+
+## Finding all the datasets available in ggsegExtra
+```{r}
+data(package = "ggsegExtra")$results[,"Item"]
+```
+

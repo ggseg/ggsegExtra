@@ -19,11 +19,15 @@ Mori et al., MRI Atlas of Human White Matter. Elsevier, Amsterdam, The Netherlan
 (\href{https://www.elsevier.com/books/mri-atlas-of-human-white-matter/mori/978-0-444-51741-8}{PubMed})
 }
 \seealso{
-Other ggseg3d_atlases: \code{\link{desterieux_3d}},
-  \code{\link{glasser_3d}}, \code{\link{jhu_3d}},
-  \code{\link{schaefer17_3d}}, \code{\link{schaefer7_3d}},
-  \code{\link{tracula_3d}}, \code{\link{yeo17_3d}},
-  \code{\link{yeo7_3d}}
+Other ggseg3d_atlases: 
+\code{\link{desterieux_3d}},
+\code{\link{glasser_3d}},
+\code{\link{jhu_3d}},
+\code{\link{schaefer17_3d}},
+\code{\link{schaefer7_3d}},
+\code{\link{tracula_3d}},
+\code{\link{yeo17_3d}},
+\code{\link{yeo7_3d}}
 }
 \concept{ggseg3d_atlases}
 \keyword{datasets}

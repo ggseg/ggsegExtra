@@ -30,11 +30,15 @@ Yeo et al. (2011) J. Neurophysiology 16(3):1125-1165
 (\href{https://www.ncbi.nlm.nih.gov/pubmed/21653723}{PubMed})
 }
 \seealso{
-Other ggseg_atlases: \code{\link{chenAr}},
-  \code{\link{chenTh}}, \code{\link{glasser}},
-  \code{\link{hc_pa_3d}}, \code{\link{hoCort}},
-  \code{\link{jhu}}, \code{\link{tracula}},
-  \code{\link{yeo17}}
+Other ggseg_atlases: 
+\code{\link{chenAr}},
+\code{\link{chenTh}},
+\code{\link{glasser}},
+\code{\link{hc_pa_3d}},
+\code{\link{hoCort}},
+\code{\link{jhu}},
+\code{\link{tracula}},
+\code{\link{yeo17}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}

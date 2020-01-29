@@ -30,11 +30,15 @@ Fischl et al., (2002). Neuron, 33:341-355
 (\href{https://www.ncbi.nlm.nih.gov/pubmed/11832223}{PubMed})
 }
 \seealso{
-Other ggseg_atlases: \code{\link{chenAr}},
-  \code{\link{chenTh}}, \code{\link{glasser}},
-  \code{\link{hoCort}}, \code{\link{jhu}},
-  \code{\link{tracula}}, \code{\link{yeo17}},
-  \code{\link{yeo7}}
+Other ggseg_atlases: 
+\code{\link{chenAr}},
+\code{\link{chenTh}},
+\code{\link{glasser}},
+\code{\link{hoCort}},
+\code{\link{jhu}},
+\code{\link{tracula}},
+\code{\link{yeo17}},
+\code{\link{yeo7}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}

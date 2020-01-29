@@ -34,11 +34,15 @@ Desterieux, Fischl, Dale,& Halgren (2010) Neuroimage. 53(1): 1–15. doi: 0.1016
 (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2937159/}{PubMed})
 }
 \seealso{
-Other ggseg3d_atlases: \code{\link{glasser_3d}},
-  \code{\link{icbm_3d}}, \code{\link{jhu_3d}},
-  \code{\link{schaefer17_3d}}, \code{\link{schaefer7_3d}},
-  \code{\link{tracula_3d}}, \code{\link{yeo17_3d}},
-  \code{\link{yeo7_3d}}
+Other ggseg3d_atlases: 
+\code{\link{glasser_3d}},
+\code{\link{icbm_3d}},
+\code{\link{jhu_3d}},
+\code{\link{schaefer17_3d}},
+\code{\link{schaefer7_3d}},
+\code{\link{tracula_3d}},
+\code{\link{yeo17_3d}},
+\code{\link{yeo7_3d}}
 }
 \concept{ggseg3d_atlases}
 \keyword{datasets}

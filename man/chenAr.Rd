@@ -28,11 +28,15 @@ Chen et al. (2013) PNAS, 110 (42) 17089-17094;
 (\href{https://doi.org/10.1073/pnas.1308091110 }{PubMed})
 }
 \seealso{
-Other ggseg_atlases: \code{\link{chenTh}},
-  \code{\link{glasser}}, \code{\link{hc_pa_3d}},
-  \code{\link{hoCort}}, \code{\link{jhu}},
-  \code{\link{tracula}}, \code{\link{yeo17}},
-  \code{\link{yeo7}}
+Other ggseg_atlases: 
+\code{\link{chenTh}},
+\code{\link{glasser}},
+\code{\link{hc_pa_3d}},
+\code{\link{hoCort}},
+\code{\link{jhu}},
+\code{\link{tracula}},
+\code{\link{yeo17}},
+\code{\link{yeo7}}
 }
 \concept{ggseg_atlases}
 \keyword{datasets}
