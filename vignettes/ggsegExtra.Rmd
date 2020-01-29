@@ -64,14 +64,14 @@ ggseg3d(atlas = jhu_3d) %>%
   add_glassbrain()
 ```
 ```{r "jhu-orca", include=FALSE}
-p <- ggseg3d(atlas=jhu_3d) %>% 
-  add_glassbrain() %>% 
-  plotly::add_annotations( text="Screen capture",
-                  legendtitle=TRUE, showarrow=FALSE,
-                  font = list(color = 'darkgrey',
-                              family = 'sans serif',
-                              size = 50)) 
-plotly::orca(p, "figures/jhu-plot.png")
+# p <- ggseg3d(atlas=jhu_3d) %>% 
+#   add_glassbrain() %>% 
+#   plotly::add_annotations( text="Screen capture",
+#                   legendtitle=TRUE, showarrow=FALSE,
+#                   font = list(color = 'darkgrey',
+#                               family = 'sans serif',
+#                               size = 50)) 
+# plotly::orca(p, "figures/jhu-plot.png")
 ```
 ```{r "jhu-incl", echo=FALSE}
 knitr::include_graphics("figures/jhu-plot.png")
@@ -82,13 +82,13 @@ knitr::include_graphics("figures/jhu-plot.png")
 ggseg3d(atlas = glasser_3d)
 ```
 ```{r "glasser-orca", include=FALSE}
-p <- ggseg3d(atlas=glasser_3d) %>% 
-  plotly::add_annotations( text="Screen capture",
-                  legendtitle=TRUE, showarrow=FALSE,
-                  font = list(color = 'darkgrey',
-                              family = 'sans serif',
-                              size = 50)) 
-plotly::orca(p, "figures/glasser-plot.png")
+# p <- ggseg3d(atlas=glasser_3d) %>% 
+#   plotly::add_annotations( text="Screen capture",
+#                   legendtitle=TRUE, showarrow=FALSE,
+#                   font = list(color = 'darkgrey',
+#                               family = 'sans serif',
+#                               size = 50)) 
+# plotly::orca(p, "figures/glasser-plot.png")
 ```
 ```{r "glasser-incl", echo=FALSE}
 knitr::include_graphics("figures/glasser-plot.png")
