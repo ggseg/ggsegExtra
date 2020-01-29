@@ -88,33 +88,3 @@ ctab_line <- function(idx, name, R, G, B, A){
   
   sprintf("% 3s  % -30s  % 3s % 3s % 3s % 3s", idx, name, R, G, B, A)
 }
-
-run_tcl <- function(region, indir, hemisphere, outdir, verbose = TRUE){
-
-  labfile <- paste0(indir, "/", hemisphere, "_", region, ".label")
-  
-  if(!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-  
-  xpts <- paste0("export INLABFILE=", labfile,
-                 "; export REGNAME=", region,
-                 "; export TD=", outdir, "; ")
-
-  
-  tcl_script <- system.file("bash_scripts", "snapshot.tcl", package = "ggsegExtra")
-  
-  fs_cmd <- paste0(freesurfer::get_fs(),
-                   "tksurfer")
-  
-  cmd <- paste(
-    xpts,
-    fs_cmd,
-    "fsaverage ",
-    hemisphere, "inflated",
-    "-tcl", tcl_script,
-    "-title", region
-  )
-  
-  k <- system(cmd, intern=!verbose)
-  
-  invisible(k)
-}

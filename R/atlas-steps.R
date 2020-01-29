@@ -41,7 +41,6 @@ atlas_lab2ctab <- function(outdir, verbose){
 }
 
 atlas_labelgii <- function(outdir, annotdir){
-  
   for(hemi in c("rh", "lh")){
     freesurfer::mris_convert_annot(
       infile = paste0(freesurfer::fs_subj_dir(),"/fsaverage/surf/",hemi, ".inflated"),
