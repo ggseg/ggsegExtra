@@ -25,8 +25,11 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
   labels <- unname(labels)
   labels <- c("unknown", labels)
   
-  atlas_df <- dplyr::tibble(idx = 0:(length(labels)-1), 
-                            labels = labels)
+  atlas_df <- dplyr::tibble(
+    idx = 0:(length(labels)-1), 
+    labels = labels
+  )
+  
   suppressWarnings(
     FS <- readr::read_table2(
       file.path(freesurfer::fs_dir(), 
@@ -39,7 +42,7 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
   suppressWarnings(
     FS <- dplyr::mutate_at(FS, vars(R,G,B,A), as.numeric)
   )
-
+  
   FS <- dplyr::filter_at(FS, vars(R,G,B,A), not_na)
   FS <- dplyr::mutate(FS, 
                       hex = rgb(R, G, B, A, maxColorValue = 255))
@@ -49,14 +52,13 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
   
   colours <- dplyr::slice(FS, start:(start+nrow(atlas_df)-1))
   
-  atlas_df <- dplyr::bind_cols(atlas_df, dplyr::select(colours, hex))
+  atlas_df <- dplyr::bind_cols(atlas_df, dplyr::select(colours, -1:-2))
   
   atlas_df <- dplyr::mutate(atlas_df, 
                             labels = janitor::make_clean_names(labels))
   
-  if(!is.null(path)) readr::write_delim(atlas_df,
-                                        paste0(path, ".ctab"), 
-                                        col_names = FALSE)
+  if(!is.null(path)) write_ctab(dplyr::select(atlas_df, -hex),
+                                path)
   
   ## Want the colours to be distinct - do any editing here.
   ## HLS transform could be an option.
@@ -64,4 +66,3 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
 }
 
 not_na <- function(x){!is.na(x)}
-

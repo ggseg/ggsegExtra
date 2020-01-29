@@ -9,9 +9,10 @@ trap 'rm -rf ${TD}; exit 0' 0 1 2 3 14 15
 
 # Desikan atlas version
 #export DEST=PicsDesikan
-export DEST=Pics_${pics}
+export DEST=pics/${pics}
 
 mkdir -p ${DEST}
+
 # modules for local setup
 # Note, need a recent version of imagemagick for connected component stuff
 # to work properly.

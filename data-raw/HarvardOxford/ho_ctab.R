@@ -49,8 +49,8 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
   atlas_df <- dplyr::mutate(atlas_df, 
                             labels = janitor::make_clean_names(labels))
   
-  if(!is.null(path)) readr::write_delim(atlas_df,
-                                        paste0(path, ".ctab"), 
+  if(!is.null(path)) gdata::write.fwf(atlas_df,
+                                        path, 
                                         col_names = FALSE)
   
   ## Want the colours to be distinct - do any editing here.

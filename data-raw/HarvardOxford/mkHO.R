@@ -1,127 +1,64 @@
-# Experiments turning raster images into polygons
-# Need to go back and split it left/right
-library(fslr)
-library(freesurfer)
-library(tidyverse)
-library(raster)
-library(stars)
-library(sf)
-library(rmapshaper)
 
-infile <- paste0(fslr::fsldir(), 
-"/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz")
+# Set input file/atlas
+infile <- paste0(fslr::fsldir(), "/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz")
 
-mri_vol2surf(infile, 
-             outfile = "test.rh.mgh",
-             opts = c("--mni152reg", "--hemi rh", "--projfrac 0.5"),
-             verbose = FALSE)
+# Set output folder for all outputs
+outdir <- "~/Desktop/ho-cort3/"
+verbose <- TRUE
+projfrac = 0
+smoothing = 2
 
-mri_vol2surf(infile, 
-             outfile = "test.lh.mgh",
-             opts = c("--mni152reg", "--hemi lh", "--projfrac 0.5"),
-             verbose = FALSE) 
+# create colour annotation file
+if(!dir.exists(paste0(outdir, "annots/"))) dir.create(paste0(outdir, "annots/"), recursive = TRUE)
+annot_lab <- get_fsl_colour("HarvardOxford-Cortical",
+                           paste0(outdir, "annots/annots.ctab"))
 
+atlas_vol2surf(infile, outdir, projfrac, verbose)
 
+# labels ----
+k <- atlas_vol2label(annot_lab, outdir, verbose)
 
-#pics <- list.files(pattern=".+_1\\.png", path="PicsDesikan/", full.names = TRUE)
-pics <- list.files(pattern="^.h_.+\\.tif", path="PicsHarvardOxford/", full.names = TRUE)
+# ctab ----
+atlas_lab2ctab(outdir, verbose)
 
-region <- basename(pics)
-region <- stringr::str_remove(region, "\\.tif")
-origlabel <- region
+# convert to gifti
+atlas_labelgii(infile = paste0(freesurfer::fs_subj_dir(),"/fsaverage/surf/lh.inflated"),
+               outfile = paste0(outdir, "/labels/fsaverage_lh.gii"),
+               annot = "~/Desktop/ho-cort3/annots/lh.annot")
 
-hemi <- stringr::str_extract(region, "^.h")
-region <- stringr::str_remove(region, "^.h_")
-side <- stringr::str_extract(region, "...$")
-region <- stringr::str_remove(region, "_...$")
-origlabel <- stringr::str_remove(origlabel, "_...$")
-ho.df <- tibble(area=region, hemi=hemi, side=side, label=origlabel)
-ho.df <- mutate(ho.df, area=stringr::str_replace_all(area, "\\.+", " "))
+# mris_convert --annot ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii
+# mris_convert --annot ../label/lh.ho.annot ../surf/lh.inflated ./fsaverage_lh.label.gii
+# 
+# mris_convert --annot ../label/rh.aparc.annot ../surf/rh.inflated ./fsaverage_aparc_rh.label.gii
+# mris_convert --annot ../label/lh.aparc.annot ../surf/lh.inflated ./fsaverage_aparc_lh.label.gii
+# 
+# ./smooth_labels.sh fsaverage_lh_10.label.gii inflated_lh.surf.gii fsaverage_lh_10.smooth.label.gii
+# ./smooth_labels.sh fsaverage_rh_10.label.gii inflated_rh.surf.gii fsaverage_rh_10.smooth.label.gii
+# 
 
-rasterobjs <- map(pics, raster)
-map_dbl(rasterobjs, cellStats, stat=max)
+# tcl ----
+atlas_tcl(annot_lab, outdir, verbose)
 
-## check the maximum value
-cellStats(rasterobjs[[1]], stat = max)
-mkContours <- function(rstobj){
-  mx <- raster::cellStats(rstobj, stat=max)
-  # Filter out the blank images
-  if (mx < 200) {
-    return(NULL)
-  }
-  tmp.rst <- rstobj
-  tmp.rst[tmp.rst == 0] <- NA
-  
-  ## levels = 50 is to remove the occasional edge point that has
-  ## non zero hue.
-  #cntr <- raster::rasterToPolygons(rstobj, fun = function(X)X>100, dissolve=TRUE)
-  g <- sf::st_as_sf(sf::st_as_stars(tmp.rst), merge=TRUE, connect8=TRUE)
-  ## Is it a multipolygon? Keep the biggest bit
-  ## Small parts are usually corner connected single voxels
-  if (nrow(g)>1) {
-    gpa <- st_area(g)
-    biggest <- which.max(gpa)
-    g <- g[biggest,]
-  }
-  g <-st_sf(g)
-  names(g)[[1]] <- "region"
-  g$region <- names(rstobj)
-  return(g)
-  
-}
+# isolate colour ----
+atlas_isolate(outdir, smoothing, verbose)
 
+# raster ----
+rasterobjs <- atlas_raster(outdir)
 
-contourobjs <- map(rasterobjs, mkContours)
-kp <- !map_lgl(contourobjs, is.null)
+# combine to make df
+atlas_df <- atlas_raster2sf(rasterobjs)
 
-contourobjsDF <- do.call(rbind, contourobjs)
+atlas_df_gg <- atlas_sf2gg(atlas_df, "ho")
 
+ggseg(atlas = atlas_df_gg, mapping=aes(fill=area), 
+      colour="grey", alpha = .7,
+      position = "stacked")
 
-ho.df <- filter(ho.df, kp)
-ho.df <- bind_cols(contourobjsDF, ho.df)
-## Now we need to place them into their own panes
-## Bounding box for all
-bball <- sf::st_bbox(ho.df)
-ho.df <-  mutate(ho.df, geometry=geometry - bball[c("xmin", "ymin")])
+# save(atlas_df_gg,  file="ho_atlases.Rda")
 
-## ifelse approach doesn't seem to work, so split it up
-ho.dfA <- ho.df %>% 
-  filter(hemi=="lh", side=="med") %>% 
-  mutate(geometry=geometry+c(600,0))
+# k <- nifti_2_atlas(infile, outdir, annot_lab, atlas_name = "ho-cort", smoothing = 6)
 
-ho.dfB <- ho.df %>% 
-  filter(hemi=="rh", side=="med") %>% 
-  mutate(geometry=geometry+c(2*600,0))
+ggseg(atlas = atlas_df_gg, mapping=aes(fill=area), colour="grey",
+        position = "stacked")
 
-ho.dfC <- ho.df %>% 
-  filter(hemi=="rh", side=="lat") %>% 
-  mutate(geometry=geometry+c(3*600,0))
-
-ho.dfD <- ho.df %>% 
-  filter(hemi=="lh", side=="lat")
-
-ho.df.panes <- rbind(ho.dfD, ho.dfA, ho.dfB, ho.dfC)
-#ho.df.panes.simple <- st_simplify(ho.df.panes, preserveTopology = TRUE, dTolerance=0.75)
-ho.df.panes.simple <- rmapshaper::ms_simplify(ho.df.panes)
-
-plot(ho.df.panes.simple)
-
-library(ggseg)
-library(ggsegExtra)
-
-## Not sure whether the range of values really matters. The other atlases look like they
-## may be giving the coordinates in physical units of some sort.
-## Lets pretend each picture is 10cm square. Divide point values by 60 at the end.
-
-ho.df.final <- mutate(ho.df.panes.simple, 
-                      id=1:nrow(ho.df.panes.simple),
-                      coords = map(geometry, ~(st_coordinates(.x)[, c("X", "Y")])),
-                      coords = map(coords, as.tibble),
-                      coords = map(coords, ~mutate(.x, order=1:nrow(.x))))
-ho.df.final$geometry <- NULL
-ho.df.final <- unnest(ho.df.final, .drop=TRUE)
-ho.df.final <- rename(ho.df.final, long=X, lat=Y)
-ggseg(atlas=ho.df.final, mapping=aes(fill=area), color="white") + 
-  theme(legend.position = "none")
-
-save(ho.df.panes.simple, ho.df.final, file="ho_atlases.Rda")
+# save(atlas_df_gg,  file="ho_atlases.Rda")

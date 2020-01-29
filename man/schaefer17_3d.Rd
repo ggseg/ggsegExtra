@@ -34,11 +34,15 @@ Schaefer et al. (2018) Cereb Cortex. 2018 Sep 1;28(9):3095-3114. doi: 10.1093/ce
 (\href{https://www.ncbi.nlm.nih.gov/pubmed/28981612}{PubMed})
 }
 \seealso{
-Other ggseg3d_atlases: \code{\link{desterieux_3d}},
-  \code{\link{glasser_3d}}, \code{\link{icbm_3d}},
-  \code{\link{jhu_3d}}, \code{\link{schaefer7_3d}},
-  \code{\link{tracula_3d}}, \code{\link{yeo17_3d}},
-  \code{\link{yeo7_3d}}
+Other ggseg3d_atlases: 
+\code{\link{desterieux_3d}},
+\code{\link{glasser_3d}},
+\code{\link{icbm_3d}},
+\code{\link{jhu_3d}},
+\code{\link{schaefer7_3d}},
+\code{\link{tracula_3d}},
+\code{\link{yeo17_3d}},
+\code{\link{yeo7_3d}}
 }
 \concept{ggseg3d_atlases}
 \keyword{datasets}
