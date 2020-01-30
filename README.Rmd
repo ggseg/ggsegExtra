@@ -78,16 +78,14 @@ You will need to use the `ggseg` or `ggseg3d` package to use these atlases, or w
 ```{r eval=F}
 remotes::install_github("LCBC-UiO/ggseg")
 remotes::install_github("LCBC-UiO/ggseg3d")
-```
-
-Make sure to always load the ggsegExtra package _after_ the ggseg packages.
-
-```{r eval=F}
 library(ggseg)
 library(ggseg3d)
 library(ggsegExtra)
 ```
 
+## Code of Conduct
+
+Please note that the ggsegExtra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests  
 Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting new atlases. 

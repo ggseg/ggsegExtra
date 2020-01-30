@@ -23,7 +23,7 @@ This package contains extra atlases for the use in the
 
 ## Atlases
 
-There are currently 12 atlases available in the package:
+There are currently 13 atlases available in the package:
 
 | Title | Dataset    | Mesh | Polygon | citation                |
 | :---- | :--------- | :--- | :------ | :---------------------- |
@@ -31,6 +31,7 @@ There are currently 12 atlases available in the package:
 |       | chenTh     | No   | Yes     | Chen et al. (2013)      |
 |       | desterieux | Yes  | No      | Destrieux et al. (2010) |
 |       | glasser    | Yes  | Yes     | Glasser et al. (2016)   |
+|       | hc\_pa     | Yes  | No      |                         |
 |       | hoCort     | No   | Yes     | Makris et al. (2006)    |
 |       | icbm       | Yes  | No      | Mori et al. (2005)      |
 |       | jhu        | Yes  | Yes     | Hua et al. (2008)       |
@@ -63,16 +64,17 @@ atlases, or wrangle them your self.
 ``` r
 remotes::install_github("LCBC-UiO/ggseg")
 remotes::install_github("LCBC-UiO/ggseg3d")
-```
-
-Make sure to always load the ggsegExtra package *after* the ggseg
-packages.
-
-``` r
 library(ggseg)
 library(ggseg3d)
 library(ggsegExtra)
 ```
+
+## Code of Conduct
+
+Please note that the ggsegExtra project is released with a [Contributor
+Code of
+Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html).
+By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests
 
@@ -95,7 +97,7 @@ of European brain imaging cohorts (Lifebrain).
 
 # References (atlas source articles)
 
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-chen">
 
