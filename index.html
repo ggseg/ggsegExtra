@@ -79,7 +79,7 @@
 <div id="atlases" class="section level2">
 <h2 class="hasAnchor">
 <a href="#atlases" class="anchor"></a>Atlases</h2>
-<p>There are currently 12 atlases available in the package:</p>
+<p>There are currently 13 atlases available in the package:</p>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Title</th>
@@ -119,54 +119,61 @@
 </tr>
 <tr class="odd">
 <td align="left"></td>
+<td align="left">hc_pa</td>
+<td align="left">Yes</td>
+<td align="left">No</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
 <td align="left">hoCort</td>
 <td align="left">No</td>
 <td align="left">Yes</td>
 <td align="left">Makris et al. (2006)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"></td>
 <td align="left">icbm</td>
 <td align="left">Yes</td>
 <td align="left">No</td>
 <td align="left">Mori et al. (2005)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"></td>
 <td align="left">jhu</td>
 <td align="left">Yes</td>
 <td align="left">Yes</td>
 <td align="left">Hua et al. (2008)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"></td>
 <td align="left">schaefer17</td>
 <td align="left">Yes</td>
 <td align="left">No</td>
 <td align="left">Schaefer et al. (2017)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"></td>
 <td align="left">schaefer7</td>
 <td align="left">Yes</td>
 <td align="left">No</td>
 <td align="left">Schaefer et al. (2017)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"></td>
 <td align="left">tracula</td>
 <td align="left">Yes</td>
 <td align="left">Yes</td>
 <td align="left">Yendiki et al. (2011)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"></td>
 <td align="left">yeo17</td>
 <td align="left">Yes</td>
 <td align="left">Yes</td>
 <td align="left">Yeo et al. (2011)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"></td>
 <td align="left">yeo7</td>
 <td align="left">Yes</td>
@@ -184,11 +191,15 @@
 <a href="#use" class="anchor"></a>Use</h2>
 <p>You will need to use the <code>ggseg</code> or <code>ggseg3d</code> package to use these atlases, or wrangle them your self.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"LCBC-UiO/ggseg"</span>)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"LCBC-UiO/ggseg3d"</span>)</a></code></pre></div>
-<p>Make sure to always load the ggsegExtra package <em>after</em> the ggseg packages.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggseg)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggseg3d)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggsegExtra)</a></code></pre></div>
+<a class="sourceLine" id="cb1-2" data-line-number="2">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"LCBC-UiO/ggseg3d"</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggseg)</a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggseg3d)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggsegExtra)</a></code></pre></div>
+</div>
+<div id="code-of-conduct" class="section level2">
+<h2 class="hasAnchor">
+<a href="#code-of-conduct" class="anchor"></a>Code of Conduct</h2>
+<p>Please note that the ggsegExtra project is released with a <a href="https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 <div id="report-bugs-or-requests" class="section level3">
 <h3 class="hasAnchor">
 <a href="#report-bugs-or-requests" class="anchor"></a>Report bugs or requests</h3>
@@ -207,7 +218,7 @@
 <div id="references-atlas-source-articles" class="section level1">
 <h1 class="hasAnchor">
 <a href="#references-atlas-source-articles" class="anchor"></a>References (atlas source articles)</h1>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 
 <div id="ref-chen">
 
@@ -324,6 +335,12 @@ Connectivity.” *Journal of Neurophysiology* 106 (3): 1125–65.
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
 <li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+</ul>
+</div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
 <div class="citation">
