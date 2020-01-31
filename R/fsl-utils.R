@@ -2,20 +2,14 @@
 #' Extract colours for FSL atlas
 #'
 #' @param atlas string name of atlas
+#' @param path path to save annotation file
 #'
 #' @return data.frame
 #' @export
-#' @importFrom dplyr tibble mutate filter slice bind_cols
-#' @importFrom freesurfer fs_dir
-#' @importFrom fslr fsldir
-#' @importFrom janitor make_clean_names
-#' @importFrom purrr map_chr
-#' @importFrom readr read_table2 cols
-#' @importFrom xml2 read_xml as_list
 get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
                            path = NULL){
   
-  atlas_xml <- list.files(paste0(fslr:::fsldir(), "/data/atlases/"), 
+  atlas_xml <- list.files(paste0(fsl_dir(), "/data/atlases/"), 
                           paste0(atlas, ".xml"), full.names = TRUE)
   atlas_xml <- xml2::read_xml(atlas_xml)
   
@@ -40,12 +34,12 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
   )
   
   suppressWarnings(
-    FS <- dplyr::mutate_at(FS, vars(R,G,B,A), as.numeric)
+    FS <- dplyr::mutate_at(FS, dplyr::vars(R,G,B,A), as.numeric)
   )
   
-  FS <- dplyr::filter_at(FS, vars(R,G,B,A), not_na)
+  FS <- dplyr::filter_at(FS, dplyr::vars(R,G,B,A), not_na)
   FS <- dplyr::mutate(FS, 
-                      hex = rgb(R, G, B, A, maxColorValue = 255))
+                      hex = grDevices::rgb(R, G, B, A, maxColorValue = 255))
   
   ## choose 48 rows from here for colour
   start <- which.max(grepl("Unknown", FS$label))
@@ -66,3 +60,13 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
 }
 
 not_na <- function(x){!is.na(x)}
+
+fsl_dir <- function (){
+  fsldir = Sys.getenv("FSLDIR")
+  if (fsldir == "") {
+    x = fslr::get.fsl
+    fsldir = getOption("fsl.path")
+  }
+  return(fsldir)
+}
+

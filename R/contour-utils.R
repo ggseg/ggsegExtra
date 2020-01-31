@@ -41,7 +41,8 @@ isolate_colour <- function(file, outdir,
   mask_dir <- paste0(outdir, "mask/")
   if(!dir.exists(alpha_dir)) dir.create(alpha_dir, recursive = TRUE)
   if(!dir.exists(mask_dir)) dir.create(mask_dir, recursive = TRUE)
-
+  if(verbose) cat(paste("Isolating label from", infile, "\n"))
+  
   magick::image_read(file) %>%
     magick::image_convert("png") %>%
     magick::image_morphology("Open", "Disk:2", dilation) %>% 

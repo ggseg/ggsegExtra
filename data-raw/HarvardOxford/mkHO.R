@@ -3,7 +3,7 @@
 infile <- paste0(fslr::fsldir(), "/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-2mm.nii.gz")
 
 # Set output folder for all outputs
-outdir <- "~/Desktop/ho-cort3/"
+outdir <- "~/Desktop/ho-cort1/"
 verbose <- TRUE
 projfrac = 0
 smoothing = 2
@@ -12,6 +12,8 @@ smoothing = 2
 if(!dir.exists(paste0(outdir, "annots/"))) dir.create(paste0(outdir, "annots/"), recursive = TRUE)
 annot_lab <- get_fsl_colour("HarvardOxford-Cortical",
                            paste0(outdir, "annots/annots.ctab"))
+
+# tt <- nifti_2_atlas(infile, outdir, annot_lab, "ho", steps = 5)
 
 atlas_vol2surf(infile, outdir, projfrac, verbose)
 

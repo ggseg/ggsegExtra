@@ -8,6 +8,8 @@ get_fsl_colour(atlas = "HarvardOxford-Cortical", path = NULL)
 }
 \arguments{
 \item{atlas}{string name of atlas}
+
+\item{path}{path to save annotation file}
 }
 \value{
 data.frame

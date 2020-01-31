@@ -63,7 +63,7 @@ atlas_tcl <- function(annot_lab, outdir, verbose){
   }
 }
 
-atlas_isolate <- function(outdir, smoothing = 4, verbose){
+atlas_isolate <- function(outdir, dilation = 2, eroding = 2, smoothing = 4, verbose){
   if(verbose) cat("... isolating labels\n")
   
   pics <- list.files(pattern="^.h_.+\\.tif", 
@@ -72,7 +72,9 @@ atlas_isolate <- function(outdir, smoothing = 4, verbose){
   k <- sapply(pics, 
               isolate_colour, 
               outdir = paste0(outdir, "pics/"), 
-              dilation = 2, eroding = 2, smoothing = 2,
+              dilation = dilation,
+              eroding = eroding, 
+              smoothing = smoothing,
               verbose = verbose)
   invisible(k)
 }
@@ -85,6 +87,7 @@ atlas_raster <- function(outdir){
   lapply(pics, raster::raster)
 }
 
+#' @importFrom dplyr '%>%'
 atlas_raster2sf <- function(rasterobjs){
   if(verbose) cat("... extracting contours\n")
   
@@ -109,15 +112,18 @@ atlas_raster2sf <- function(rasterobjs){
     dplyr::mutate(subid = dplyr::row_number()) %>% 
     dplyr::ungroup()
   
-  atlas_df <- dplyr::bind_cols(dplyr::select(contourobjsDF, -region), atlas_df)
+  atlas_df <- dplyr::bind_cols(dplyr::select(contourobjsDF, -region),
+                               atlas_df)
+  
   ## Now we need to place them into their own panes
   ## Bounding box for all
   bball <- sf::st_bbox(atlas_df)
-  atlas_df <-  dplyr::mutate(atlas_df, geometry=geometry - bball[c("xmin", "ymin")])
+  atlas_df <- dplyr::mutate(atlas_df, 
+                            geometry = geometry - bball[c("xmin", "ymin")])
   
   atlas_df <- adjust_coords(atlas_df)
   
-  plot(atlas_df)
+  graphics::plot(atlas_df)
   
   return(atlas_df)
 }
@@ -125,20 +131,17 @@ atlas_raster2sf <- function(rasterobjs){
 
 adjust_coords <- function(atlas_df){
   atlas_df_list <- list(
-    lh.med = atlas_df %>% 
-      filter(hemi=="lh", side=="med") %>% 
-      mutate(geometry=geometry+c(600,0)),
+    lh.med = move_hemi_side(atlas_df, 1, 
+                            (hemi=="lh" & side=="med")),
     
-    rh.med <- atlas_df %>% 
-      filter(hemi=="rh", side=="med") %>% 
-      mutate(geometry=geometry+c(2*600,0)),
+    rh.med <- move_hemi_side(atlas_df, 2, 
+                             (hemi=="rh" & side=="med")),
     
-    rh.lat <- atlas_df %>% 
-      filter(hemi=="rh", side=="lat") %>% 
-      mutate(geometry=geometry+c(3*600,0)),
+    rh.lat <- move_hemi_side(atlas_df, 3,
+                             (hemi=="rh" & side=="lat")),
     
-    lh.lat <- atlas_df %>% 
-      filter(hemi=="lh", side=="lat")
+    lh.lat <- dplyr::filter(atlas_df,
+                            (hemi=="lh" & side=="lat"))
   )
   
   do.call(rbind, atlas_df_list)
@@ -146,32 +149,38 @@ adjust_coords <- function(atlas_df){
 }
 
 atlas_sf2gg <- function(atlas_df, atlas_name){
-  atlas_df_gg <- atlas_df %>% 
-    dplyr::mutate(
-      id = 1:nrow(.),
-      coords = purrr::map(geometry, ~(sf::st_coordinates(.x)[, c("X", "Y")])),
-      coords = purrr::map(coords, dplyr::as_tibble),
-      coords = purrr::map(coords, ~dplyr::mutate(.x, order=1:nrow(.x)))
-    )
+  
+  atlas_df_gg <- dplyr::mutate(
+    atlas_df, 
+    id = 1:nrow(.),
+    coords = purrr::map(geometry, ~(sf::st_coordinates(.x)[, c("X", "Y")])),
+    coords = purrr::map(coords, dplyr::as_tibble),
+    coords = purrr::map(coords, ~dplyr::mutate(.x, order=1:nrow(.x)))
+  )
+  
   atlas_df_gg$geometry <- NULL
   atlas_df_gg <- tidyr::unnest(atlas_df_gg, cols = c(coords), .drop=TRUE)
   atlas_df_gg <- dplyr::rename(atlas_df_gg, long=X, lat=Y, label=region)
   
-  atlas_df_gg <- atlas_df_gg %>% 
-    mutate(atlas = atlas_name, 
-           label = ifelse(area == "000", NA, label),
-           area = ifelse(area == "000", NA, area),
-           hemi = ifelse(hemi == "rh", "right", "left"),
-           side = ifelse(side == "lat", "lateral", "medial")
-           ) %>% 
-    dplyr::rename(
-      .order = order,
-      .lat = lat,
-      .long = long,
-      .order = order
-    )
+  atlas_df_gg <-  dplyr::mutate(
+    atlas_df_gg, 
+    atlas = atlas_name, 
+    label = ifelse(area == "000", NA, label),
+    area = ifelse(area == "000", NA, area),
+    hemi = ifelse(hemi == "rh", "right", "left"),
+    side = ifelse(side == "lat", "lateral", "medial")
+  )
   
-  atlas_df_gg
+  atlas_df_gg <- dplyr::rename(
+    atlas_df_gg,
+    .id = id,
+    .order = order,
+    .lat = lat,
+    .long = long,
+    .order = order
+  )
+  
+  ggseg::as_ggseg_atlas(atlas_df_gg)
 }
 
 save_atlas <- function(atlas_df_gg, atlas_name, outdir, verbose){
@@ -179,13 +188,35 @@ save_atlas <- function(atlas_df_gg, atlas_name, outdir, verbose){
   save(atlas_df_gg,  file=paste0(outdir, atlas_name, ".rda"))
   
   if(verbose) cat("\n Saving svg")
-  p <- ggseg(atlas=atlas_df_gg,
-             mapping = aes(fill=area),
-             colour="black",
-             show.legend = FALSE)+
+  p <- ggseg::ggseg(atlas=atlas_df_gg,
+                    mapping = ggplot2::aes(fill=area),
+                    colour="black",
+                    show.legend = FALSE)+
     ggplot2::theme_void()
   
   ggplot2::ggsave(plot = p, device = "svg", 
-         width=14, height = 8, units = "in",
-         filename = paste0(outdir, atlas_name, ".svg"))
+                  width=14, height = 8, units = "in",
+                  filename = paste0(outdir, atlas_name, ".svg"))
+  
+  p
+}
+
+
+move_hemi_side <- function(data, n, predicate){
+  tmp <- dplyr::filter(data, {{predicate}}) 
+  tmp <- dplyr::mutate(tmp, 
+                       geometry = geometry + 
+                         c( n * 600, 0))
+  return(tmp)
+}
+
+## quiets concerns of R CMD check
+if(getRversion() >= "2.15.1"){
+  utils::globalVariables(c("verbose","outdir", "geometry",
+                           "side", "hemi","region", "label",
+                           "coords", "X", "Y", "area",
+                           "R","G","B","A",
+                           "long", "lat","infile",
+                           "hex", "projfrac",
+                           "rgb", "."))
 }

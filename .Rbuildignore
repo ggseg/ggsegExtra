@@ -11,5 +11,5 @@
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-img
 ^README\.Rmd$
+^extras$

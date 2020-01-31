@@ -3,21 +3,35 @@ Title: Extra datasets for the ggseg-plotting tool
 Version: 1.5
 Authors@R: c(person("Athanasia Mo", "Mowinckel", email = "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre")),
  person("Didac Vidal", "Pineiro", email = "d.v.pineiro@psykologi.uio.no", role = c("aut")))
-Description: This package mainly contains two plotting functions: `ggseg` and `ggseg3d`, and data.frames or tibbles of different brain atlases for plotting. By far, the largestbit of the package is the data for each of the atlases.
+Description: This package contains datasets to use with the ggseg and ggseg3d packages for plotting brain atlases. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.0.2
 Depends: R (>= 2.10)
 LazyData: true
-Suggests:
+Imports:
+    janitor,
+    dplyr,
+    tidyr,
+    fslr,
+    freesurfer,
+    xml2,
+    purrr,
+    readr,
+    magick,
+    sf,
+    stars,
+    ggplot2,
+    stringr,
+    raster
+Enhances:
     ggseg,
-    ggseg3d,
+    ggseg3d
+Suggests:
     knitr,
     rmarkdown,
     covr,
     testthat,
-    dplyr,
-    tidyr,
     devtools
 VignetteBuilder: knitr
 Remotes: 
