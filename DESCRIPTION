@@ -16,6 +16,18 @@ RoxygenNote: 7.0.2
 Depends: R (>= 2.10)
 LazyData: true
 Imports: 
+    freesurfer,
+    fslr, 
+    janitor,
+    purrr,
+    readr,
+    dplyr,
+    xml2,
+    sf,
+    raster,
+    stars,
+    stringr,
+    magick
 Suggests:
     ggseg,
     ggplot2,
@@ -25,7 +37,6 @@ Suggests:
     covr,
     testthat,
     tidyr,
-    dplyr,
     devtools
 VignetteBuilder: knitr
 Remotes: 

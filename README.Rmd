@@ -71,7 +71,6 @@ The `ggseg` function already allows you to provide it with a data.frame of a cus
 Please see the [wiki](https://github.com/LCBC-UiO/ggseg/wiki/Creating-and-contributing-atlases) for information on adding atlases, or inspect the included datasets for requirements. 
 If anything is unclear in the wiki, give us a shout out in the issues!
 
-
 ## Use
 You will need to use the `ggseg` or `ggseg3d` package to use these atlases, or wrangle them your self.
 
