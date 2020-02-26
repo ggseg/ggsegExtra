@@ -9,7 +9,8 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel",
                     email = "d.v.pineiro@psykologi.uio.no", 
                     role = c("aut"),
                     comment = c(ORCID = "0000-0001-9997-9156")))
-Description: This package mainly contains two plotting functions: `ggseg` and `ggseg3d`, and data.frames or tibbles of different brain atlases for plotting. By far, the largestbit of the package is the data for each of the atlases.
+Description: This is a support package for the ggseg, and ggseg3d packages.
+    It contains extra atlas datasets to plot using functions from those two packages.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.0.2
