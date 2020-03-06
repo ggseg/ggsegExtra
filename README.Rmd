@@ -33,7 +33,6 @@ This package contains extra atlases for the use in the [ggseg]() plotting packag
 There are currently three atlases available in the package:  
 
 ### 2d polygon atlases
-1. `midsagittal` - mid-sagittal slice showing the cerebellum, 3^rd^ and 4^th^ ventricles, corpus callosum etc.  
 2. `glasser` - HCP cortical segmentation (Glasser et al. 2015)  
 3. `jhu`- Hua et al. 2008, JHU white-matter tractography atlas    
 4. `yeo7`- Yeo et al. 7 resting state networks  

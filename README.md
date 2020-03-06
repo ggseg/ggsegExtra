@@ -22,13 +22,10 @@ plotting package in R.
 
 ## Atlases
 
-<<<<<<< HEAD
 There are currently three atlases available in the package:
 
 ### 2d polygon atlases
 
-1.  `midsagittal` - mid-sagittal slice showing the cerebellum,
-    3<sup>rd</sup> and 4<sup>th</sup> ventricles, corpus callosum etc.  
 2.  `glasser` - HCP cortical segmentation (Glasser et al. 2015)  
 3.  `jhu`- Hua et al. 2008, JHU white-matter tractography atlas  
 4.  `yeo7`- Yeo et al. 7 resting state networks  
@@ -47,29 +44,6 @@ There are currently three atlases available in the package:
     tractopraphy  
 8.  `jhu_3d`- Hua et al. 2008, JHU white-matter tractography atlas  
 9.  `icbm_3d`- JHU labels from Mori et al. (2005)
-=======
-There are currently 13 atlases available in the package:
-
-| Title | Dataset    | Mesh | Polygon | citation                |
-| :---- | :--------- | :--- | :------ | :---------------------- |
-|       | chenAr     | No   | Yes     | Chen et al. (2013)      |
-|       | chenTh     | No   | Yes     | Chen et al. (2013)      |
-|       | desterieux | Yes  | No      | Destrieux et al. (2010) |
-|       | glasser    | Yes  | Yes     | Glasser et al. (2016)   |
-|       | hc\_pa     | Yes  | No      |                         |
-|       | hoCort     | No   | Yes     | Makris et al. (2006)    |
-|       | icbm       | Yes  | No      | Mori et al. (2005)      |
-|       | jhu        | Yes  | Yes     | Hua et al. (2008)       |
-|       | schaefer17 | Yes  | No      | Schaefer et al. (2017)  |
-|       | schaefer7  | Yes  | No      | Schaefer et al. (2017)  |
-|       | tracula    | Yes  | Yes     | Yendiki et al. (2011)   |
-|       | yeo17      | Yes  | Yes     | Yeo et al. (2011)       |
-|       | yeo7       | Yes  | Yes     | Yeo et al. (2011)       |
-
-Table of currently available atlases in the ggseg, ggseg3d, and the
-ggsegExtra R-packages. Polygon and mesh refer to 2D and 3D brain atlas
-representations, respectively
->>>>>>> master
 
 We are working on creating a detailed description in the wiki on how to
 create and contribute atlases to the package. The `ggseg` function
@@ -89,18 +63,8 @@ wrangle them your self. You can access it
 [here](https://lcbc-uio.github.io/ggseg/ggseg.html), or via R:
 
 ``` r
-<<<<<<< HEAD
-devtools::install_github("LCBC-UiO/ggseg")
-```
-
-Make sure to always load the ggsegExtra package *after* the ggseg
-package.
-
-``` r
-=======
-remotes::install_github("LCBC-UiO/ggseg")
-remotes::install_github("LCBC-UiO/ggseg3d")
->>>>>>> master
+# remotes::install_github("LCBC-UiO/ggseg")
+# remotes::install_github("LCBC-UiO/ggseg3d")
 library(ggseg)
 library(ggsegExtra)
 ```
@@ -130,98 +94,3 @@ of European brain imaging cohorts (Lifebrain).
 **Grant agreement number:** 732592.
 
 **Call:** Societal challenges: Health, demographic change and well-being
-<<<<<<< HEAD
-=======
-
-# References (atlas source articles)
-
-<div id="refs" class="references hanging-indent">
-
-<div id="ref-chen">
-
-Chen, Chi-Hua, Mark Fiecas, E. D. Gutiérrez, Matthew S. Panizzon, Lisa
-T. Eyler, Eero Vuoksimaa, Wesley K. Thompson, et al. 2013. “Genetic
-Topography of Brain Morphology.” *Proceedings of the National Academy of
-Sciences* 110 (42): 17089–94. <https://doi.org/10.1073/pnas.1308091110>.
-
-</div>
-
-<div id="ref-desterieux">
-
-Destrieux, Christophe, Bruce Fischl, Anders Dale, and Eric Halgren.
-2010. “Automatic Parcellation of Human Cortical Gyri and Sulci Using
-Standard Anatomical Nomenclature.” *NeuroImage* 53 (1): 1–15.
-<https://doi.org/https://doi.org/10.1016/j.neuroimage.2010.06.010>.
-
-</div>
-
-<div id="ref-glasser">
-
-Glasser, Matthew F., Timothy S. Coalson, Emma C. Robinson, Carl D.
-Hacker, John Harwell, Essa Yacoub, Kamil Ugurbil, et al. 2016. “A
-Multi-Modal Parcellation of Human Cerebral Cortex.” *Nature* 536 (July):
-171 EP. <https://doi.org/10.1038/nature18933>.
-
-</div>
-
-<div id="ref-jhu">
-
-Hua, Kegang, Jiangyang Zhang, Setsu Wakana, Hangyi Jiang, Xin Li, Daniel
-S. Reich, Peter A. Calabresi, James J. Pekar, Peter C. M. van Zijl, and
-Susumu Mori. 2008. “Tract Probability Maps in Stereotaxic Spaces:
-Analyses of White Matter Anatomy and Tract-Specific Quantification.”
-*NeuroImage* 39 (1): 336–47.
-<https://doi.org/https://doi.org/10.1016/j.neuroimage.2007.07.053>.
-
-</div>
-
-<div id="ref-ho">
-
-Makris, Nikos, Jill M. Goldstein, David Kennedy, Steven M. Hodge, Verne
-S. Caviness, Stephen V. Faraone, Ming T. Tsuang, and Larry J. Seidman.
-2006. “Decreased Volume of Left and Total Anterior Insular Lobule in
-Schizophrenia.” *Schizophrenia Research* 83 (2): 155–71.
-<https://doi.org/https://doi.org/10.1016/j.schres.2005.11.020>.
-
-</div>
-
-<div id="ref-icbm">
-
-Mori, Susumu, S. Wakana, Peter C M van Zijl, and L. M. Nagae-Poetscher.
-2005. *MRI Atlas of Human White Matter*. Elsevier Science.
-<https://www.elsevier.com/books/mri-atlas-of-human-white-matter/mori/978-0-444-51741-8>.
-
-</div>
-
-<div id="ref-schaefer">
-
-Schaefer, Alexander, Ru Kong, Evan M Gordon, Timothy O Laumann, Xi-Nian
-Zuo, Avram J Holmes, Simon B Eickhoff, and B T Thomas Yeo. 2017.
-“Local-Global Parcellation of the Human Cerebral Cortex from Intrinsic
-Functional Connectivity MRI.” *Cerebral Cortex* 28 (9): 3095–3114.
-<https://doi.org/10.1093/cercor/bhx179>.
-
-</div>
-
-<div id="ref-tracula">
-
-Yendiki, Anastasia, Patricia Panneck, Priti Srinivasan, Allison Stevens,
-Lilla Zöllei, Jean Augustinack, Ruopeng Wang, et al. 2011. “Automated
-Probabilistic Reconstruction of White-Matter Pathways in Health and
-Disease Using an Atlas of the Underlying Anatomy.” *Frontiers in
-Neuroinformatics* 5: 23. <https://doi.org/10.3389/fninf.2011.00023>.
-
-</div>
-
-<div id="ref-yeo2011">
-
-Yeo, Thomas, B. T., Fenna M. Krienen, Jorge Sepulcre, Mert R. Sabuncu,
-Danial Lashkari, Marisa Hollinshead, et al. 2011. “The Organization of
-the Human Cerebral Cortex Estimated by Intrinsic Functional
-Connectivity.” *Journal of Neurophysiology* 106 (3): 1125–65.
-<https://doi.org/10.1152/jn.00338.2011>.
-
-</div>
-
-</div>
->>>>>>> master
