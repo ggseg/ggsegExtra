@@ -9,8 +9,12 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  echo = TRUE
 )
+library(ggseg)
+library(ggseg3d)
+devtools::load_all(".")
 ```
 
 <!-- badges: start -->
@@ -20,13 +24,6 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->
-
-  
-```{r setup, include=FALSE}
-library(ggseg)
-library(ggsegExtra)
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
 
@@ -61,22 +58,20 @@ The `ggseg` function already allows you to provide it with a data.frame of a cus
 Please see the [wiki](https://github.com/LCBC-UiO/ggseg/wiki/Creating-and-contributing-atlases) for information on adding atlases, or inspect the included datasets for requirements. 
 If anything is unclear in the wiki, give us a shout out in the issues!
 
-
 ## Use
 You will need to use the `ggseg` package to use these atlases, or wrangle them your self.
 You can access it [here](https://lcbc-uio.github.io/ggseg/ggseg.html), or via R:
 
 ```{r eval=F}
-devtools::install_github("LCBC-UiO/ggseg")
-```
-
-Make sure to always load the ggsegExtra package _after_ the ggseg package.
-
-```{r eval=F}
+# remotes::install_github("LCBC-UiO/ggseg")
+# remotes::install_github("LCBC-UiO/ggseg3d")
 library(ggseg)
 library(ggsegExtra)
 ```
 
+## Code of Conduct
+
+Please note that the ggsegExtra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests  
 Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting new atlases. 

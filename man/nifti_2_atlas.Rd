@@ -41,3 +41,13 @@ ggseg-atlas
 \description{
 Convert nifti file with labels to atlas
 }
+\details{
+The steps in this function are:
+\itemize{
+ \item{step 1 - }{\code{\link{atlas_vol2surf}} -  converts volume to surface}
+ \item{step 2 - }{\code{\link{atlas_vol2label}} - reads labels from volume}
+ \item{step 3 - }{\code{\link{atlas_lab2ctab}} - creates ctab from labels}
+ \item{step 4 - }{\code{\link{atlas_tcl}} - runs tkSurfer tcl script}
+ \item{step 5 - }{\code{\link{atlas_isolate}} - isolates coloured regions from images}
+}
+}

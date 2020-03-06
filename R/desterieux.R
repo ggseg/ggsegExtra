@@ -2,7 +2,7 @@
 
 #' Desterieux cortical parcellations
 #'
-#' Mesh data for Desterieux cortical parcellations, also known as the
+#' MMesh data for Desterieux cortical parcellations, also known as the
 #' aparc 2009 parcellations of Freesurfer
 #'
 #' @docType data
@@ -10,7 +10,7 @@
 #' @usage data(desterieux_3d)
 #' @family ggseg3d_atlases
 #' @keywords datasets
-#'
+#' 
 #' @references Desterieux, Fischl, Dale,& Halgren (2010) Neuroimage. 53(1): 1–15. doi: 0.1016/j.neuroimage.2010.06.010
 #' (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2937159/}{PubMed})
 #'

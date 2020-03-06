@@ -1,7 +1,5 @@
-suppressMessages(
-  j <- sapply(
-    c("dplyr", "tidyr",
-      "ggseg", "ggseg3d"),
-    library, character.only=TRUE
-  )
-)
+
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
+library(ggseg, quietly = TRUE, warn.conflicts = FALSE)
+library(ggseg3d, quietly = TRUE, warn.conflicts = FALSE)

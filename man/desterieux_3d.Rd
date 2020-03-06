@@ -23,7 +23,7 @@
 data(desterieux_3d)
 }
 \description{
-Mesh data for Desterieux cortical parcellations, also known as the
+MMesh data for Desterieux cortical parcellations, also known as the
 aparc 2009 parcellations of Freesurfer
 }
 \examples{

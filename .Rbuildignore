@@ -5,6 +5,11 @@
 ^README_files$
 ^codecov\.yml$
 ^data-raw$
+<<<<<<< HEAD
+=======
+^extras$
+^src$
+>>>>>>> master
 ^README*
 ^appveyor\.yml$
 ^\.travis\.yml$
@@ -12,4 +17,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
+<<<<<<< HEAD
 ^extras$
+=======
+^_pkgdown\.yml$
+^CODE_OF_CONDUCT\.md$
+>>>>>>> master

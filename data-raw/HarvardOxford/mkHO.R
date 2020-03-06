@@ -7,6 +7,7 @@ outdir <- "~/Desktop/ho-cort1/"
 verbose <- TRUE
 projfrac = 0
 smoothing = 2
+eroding = 
 
 # create colour annotation file
 if(!dir.exists(paste0(outdir, "annots/"))) dir.create(paste0(outdir, "annots/"), recursive = TRUE)
@@ -24,12 +25,10 @@ k <- atlas_vol2label(annot_lab, outdir, verbose)
 atlas_lab2ctab(outdir, verbose)
 
 # convert to gifti
-atlas_labelgii(paste0(outdir, "/labels/"), 
-               paste0(outdir, "/annots/")
-               )
-atlas_labelgii(infile = paste0(freesurfer::fs_subj_dir(),"/fsaverage/surf/lh.inflated"),
-               outfile = paste0(outdir, "/labels/fsaverage_lh.gii"),
-               annot = "~/Desktop/ho-cort3/annots/lh.annot")
+atlas_labelgii(
+  paste0(outdir, "/labels/"), 
+  paste0(outdir, "/annots/")
+)
 
 # mris_convert --annot ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii
 # mris_convert --annot ../label/lh.ho.annot ../surf/lh.inflated ./fsaverage_lh.label.gii
@@ -45,7 +44,7 @@ atlas_labelgii(infile = paste0(freesurfer::fs_subj_dir(),"/fsaverage/surf/lh.inf
 atlas_tcl(annot_lab, outdir, verbose)
 
 # isolate colour ----
-atlas_isolate(outdir, smoothing, verbose)
+atlas_isolate(outdir, smoothing, verbose = verbose)
 
 # raster ----
 rasterobjs <- atlas_raster(outdir)

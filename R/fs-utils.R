@@ -18,7 +18,6 @@ mri_vol2surf <- function(infile , outfile,
 }
 
 mri_vol2label <- function(infile, label_id, hemisphere, outdir, verbose = TRUE){
-  
   hemisphere <- match.arg(hemisphere, c("rh", "lh"))
   
   if(!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)

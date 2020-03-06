@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r "setup", include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -15,14 +15,14 @@ knitr::opts_chunk$set(
 devtools::load_all(".")
 ```
 
-```{r setup, eval = FALSE}
-library(ggsegExtra)
-```
-
 Using the ggseExtra package requires the two main ggseg-packages, containing the functions needed to plot the data. 
 ggsegExtra is purely a repository of data-sets that fit with the functions in those main packages.
 
-```{r}
+```{r, eval=FALSE}
+library(ggsegExtra)
+```
+
+```{r "load-pkgs"}
 library(ggseg)
 library(ggseg3d)
 ```
@@ -31,7 +31,7 @@ library(ggseg3d)
 
 You should be able to easily switch the atlases, after loading ggsegExtra, so rather plot one of the ggsegExtra atlases directly to the function.
 
-```{r}
+```{r "ggseg"}
 ggseg(atlas = yeo7, 
       mapping=aes(fill = area))
 
@@ -44,7 +44,8 @@ Most of the datasets also have corresponding palettes from the papers they were 
 These colour-scales can be applied through the `scale_X_brain` functions.
 
 
-```{r}
+
+```{r "ggseg-scale"}
 ggseg(atlas = yeo7, 
       mapping=aes(fill = area)) +
   scale_fill_brain("yeo7", package="ggsegExtra")
@@ -56,8 +57,41 @@ ggseg(atlas = glasser, show.legend = FALSE,
 
 ## 3d plots with ggseg3d
 
-```{r}
+The same goes for ggseg3d, the new atlases, now available through the ggsegExtra package, can be plotted with the ggseg3d function and its helpers. 
 
+```{r "jhu-noneval", eval=FALSE}
+ggseg3d(atlas = jhu_3d) %>% 
+  add_glassbrain()
+```
+```{r "jhu-orca", include=FALSE}
+# p <- ggseg3d(atlas=jhu_3d) %>% 
+#   add_glassbrain() %>% 
+#   plotly::add_annotations( text="Screen capture",
+#                   legendtitle=TRUE, showarrow=FALSE,
+#                   font = list(color = 'darkgrey',
+#                               family = 'sans serif',
+#                               size = 50)) 
+# plotly::orca(p, "figures/jhu-plot.png")
+```
+```{r "jhu-incl", echo=FALSE}
+knitr::include_graphics("figures/jhu-plot.png")
+```
+
+
+```{r "glasser-noneval", eval=FALSE}
+ggseg3d(atlas = glasser_3d)
+```
+```{r "glasser-orca", include=FALSE}
+# p <- ggseg3d(atlas=glasser_3d) %>% 
+#   plotly::add_annotations( text="Screen capture",
+#                   legendtitle=TRUE, showarrow=FALSE,
+#                   font = list(color = 'darkgrey',
+#                               family = 'sans serif',
+#                               size = 50)) 
+# plotly::orca(p, "figures/glasser-plot.png")
+```
+```{r "glasser-incl", echo=FALSE}
+knitr::include_graphics("figures/glasser-plot.png")
 ```
 
 

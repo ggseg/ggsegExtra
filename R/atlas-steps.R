@@ -18,7 +18,8 @@ atlas_vol2label <- function(annot_lab, outdir, verbose){
   for(hemi in c("rh", "lh")){
     k <- lapply(1:nrow(annot_lab)-1, function(x) 
       mri_vol2label(infile = paste0(outdir, "template_", hemi, ".mgh"), 
-                    x, hemi, 
+                    label_id = x, 
+                    hemisphere = hemi, 
                     outdir = paste0(outdir, "labels"), 
                     verbose = verbose)
     )
@@ -63,7 +64,7 @@ atlas_tcl <- function(annot_lab, outdir, verbose){
   }
 }
 
-atlas_isolate <- function(outdir, dilation = 2, eroding = 2, smoothing = 4, verbose){
+atlas_isolate <- function(outdir, dilation = 2, eroding = 2, smoothing = 4, verbose = TRUE){
   if(verbose) cat("... isolating labels\n")
   
   pics <- list.files(pattern="^.h_.+\\.tif", 
@@ -79,16 +80,18 @@ atlas_isolate <- function(outdir, dilation = 2, eroding = 2, smoothing = 4, verb
   invisible(k)
 }
 
-atlas_raster <- function(outdir){
+atlas_raster <- function(indir, verbose = TRUE){
+  if(verbose) cat("... rasterizing images\n")
+  
   pics <- list.files(pattern="tif", 
-                     path=paste0(outdir, "pics/mask"), 
+                     path=indir, 
                      full.names = TRUE)
   
   lapply(pics, raster::raster)
 }
 
 #' @importFrom dplyr '%>%'
-atlas_raster2sf <- function(rasterobjs){
+atlas_raster2sf <- function(rasterobjs, verbose = TRUE){
   if(verbose) cat("... extracting contours\n")
   
   maks <- raster::cellStats(rasterobjs[[1]], stat = max)
@@ -148,7 +151,8 @@ adjust_coords <- function(atlas_df){
   
 }
 
-atlas_sf2gg <- function(atlas_df, atlas_name){
+atlas_sf2gg <- function(atlas_df, atlas_name, verbose = TRUE){
+  if(verbose) cat("... turning geometry to data.frame\n")
   
   atlas_df_gg <- dplyr::mutate(
     atlas_df, 
@@ -191,7 +195,7 @@ save_atlas <- function(atlas_df_gg, atlas_name, outdir, verbose){
   p <- ggseg::ggseg(atlas=atlas_df_gg,
                     mapping = ggplot2::aes(fill=area),
                     colour="black",
-                    show.legend = FALSE)+
+                    show.legend = FALSE) +
     ggplot2::theme_void()
   
   ggplot2::ggsave(plot = p, device = "svg", 
@@ -217,6 +221,6 @@ if(getRversion() >= "2.15.1"){
                            "coords", "X", "Y", "area",
                            "R","G","B","A",
                            "long", "lat","infile",
-                           "hex", "projfrac",
-                           "rgb", "."))
+                           "projfrac",
+                           ".", "id"))
 }
