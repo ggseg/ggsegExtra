@@ -7,8 +7,8 @@
 #' and anterior segments.
 #'
 #' @docType data
-#' @name hc_pa_3d
-#' @usage data(hc_pa_3d)
+#' @name hcpa_3d
+#' @usage data(hcpa_3d)
 #' @family ggseg_atlases
 #'
 #' @keywords datasets
@@ -28,8 +28,8 @@
 #' }
 #'
 #' @examples
-#' data(hc_pa_3d)
-"hc_pa_3d"
+#' data(hcpa_3d)
+"hcpa_3d"
 
 
 

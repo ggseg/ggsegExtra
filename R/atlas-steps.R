@@ -1,4 +1,12 @@
 
+#' Nifti volume to surface
+#'
+#' @param infile nifti volume
+#' @param outdir output directory
+#' @param projfrac value to mri_vol2surf -projfrac
+#' @param verbose be verbose
+#'
+# #' @export
 atlas_vol2surf <- function(infile, outdir, projfrac = .5, verbose){
   if(verbose) cat("Transforming volume to surface files/n")
   
@@ -12,6 +20,11 @@ atlas_vol2surf <- function(infile, outdir, projfrac = .5, verbose){
   }
 }
 
+#' Volume to label
+#'
+#' @param annot_lab annotation label
+#' @inheritParams atlas_vol2surf 
+# #' @export
 atlas_vol2label <- function(annot_lab, outdir, verbose){
   if(verbose) cat("... extracting labels\n")
   
@@ -27,6 +40,12 @@ atlas_vol2label <- function(annot_lab, outdir, verbose){
   invisible(k)
 }
 
+#' Label to ctab
+#'
+#' @inheritParams atlas_vol2surf 
+#'
+# #' @return
+# #' @export
 atlas_lab2ctab <- function(outdir, verbose){
   if(verbose) cat("... making ctab\n")
   
@@ -41,6 +60,11 @@ atlas_lab2ctab <- function(outdir, verbose){
   }
 }
 
+#' label to gifti
+#'
+#' @inheritParams atlas_vol2surf 
+#' @param annotdir annotation directory
+# #' @export
 atlas_labelgii <- function(outdir, annotdir){
   for(hemi in c("rh", "lh")){
     freesurfer::mris_convert_annot(
@@ -51,6 +75,10 @@ atlas_labelgii <- function(outdir, annotdir){
   }
 }
 
+#' Run tcl script
+#'
+#' @inheritParams atlas_vol2surf 
+#' @param annot_lab annotation label
 atlas_tcl <- function(annot_lab, outdir, verbose){
   if(verbose) cat("... rendering labels\n")
   
@@ -64,6 +92,13 @@ atlas_tcl <- function(annot_lab, outdir, verbose){
   }
 }
 
+
+#' Isolate raster region
+#'
+#' @inheritParams atlas_vol2surf 
+#' @param dilation raster dilation
+#' @param eroding  raster eroding
+#' @param smoothing raster smoothing
 atlas_isolate <- function(outdir, dilation = 2, eroding = 2, smoothing = 4, verbose = TRUE){
   if(verbose) cat("... isolating labels\n")
   
@@ -80,6 +115,10 @@ atlas_isolate <- function(outdir, dilation = 2, eroding = 2, smoothing = 4, verb
   invisible(k)
 }
 
+#' Rasterise images
+#'
+#' @param indir input directory
+#' @inheritParams atlas_vol2surf 
 atlas_raster <- function(indir, verbose = TRUE){
   if(verbose) cat("... rasterizing images\n")
   
@@ -90,6 +129,11 @@ atlas_raster <- function(indir, verbose = TRUE){
   lapply(pics, raster::raster)
 }
 
+#' Raster to sf
+#' 
+#' @param rasterobjs raster objects
+#' @inheritParams atlas_vol2surf 
+#'
 #' @importFrom dplyr '%>%'
 atlas_raster2sf <- function(rasterobjs, verbose = TRUE){
   if(verbose) cat("... extracting contours\n")
@@ -151,6 +195,11 @@ adjust_coords <- function(atlas_df){
   
 }
 
+#' sf to ggplot
+#'
+#' @param atlas_df sf data frame
+#' @param atlas_name name of atlas
+#' @inheritParams atlas_vol2surf 
 atlas_sf2gg <- function(atlas_df, atlas_name, verbose = TRUE){
   if(verbose) cat("... turning geometry to data.frame\n")
   

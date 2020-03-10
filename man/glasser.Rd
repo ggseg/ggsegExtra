@@ -31,7 +31,8 @@ Glasser et al. (2016) Nature, volume 536, pages 171–178
 Other ggseg_atlases: 
 \code{\link{chenAr}},
 \code{\link{chenTh}},
-\code{\link{hc_pa_3d}},
+\code{\link{dkextra}},
+\code{\link{hcpa_3d}},
 \code{\link{hoCort}},
 \code{\link{jhu}},
 \code{\link{tracula}},

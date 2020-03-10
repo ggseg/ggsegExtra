@@ -33,10 +33,10 @@ You should be able to easily switch the atlases, after loading ggsegExtra, so ra
 
 ```{r "ggseg"}
 ggseg(atlas = yeo7, 
-      mapping=aes(fill = area))
+      mapping=aes(fill = region))
 
 ggseg(atlas = glasser, show.legend = FALSE,
-      mapping=aes(fill = area))
+      mapping=aes(fill = region))
 ```
 
 If you want to make sure it looks properly like the atlas you are after, or you want to plot an example of the original plot. 
@@ -47,11 +47,11 @@ These colour-scales can be applied through the `scale_X_brain` functions.
 
 ```{r "ggseg-scale"}
 ggseg(atlas = yeo7, 
-      mapping=aes(fill = area)) +
+      mapping=aes(fill = region)) +
   scale_fill_brain("yeo7", package="ggsegExtra")
 
 ggseg(atlas = glasser, show.legend = FALSE,
-      mapping=aes(fill = area)) +
+      mapping=aes(fill = region)) +
   scale_fill_brain("glasser", package="ggsegExtra")
 ```
 

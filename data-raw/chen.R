@@ -10,7 +10,7 @@ chenTh <- geobrain_Chencth %>%
          side = ifelse(id %in% c(1:17, 2000:2009), "lateral", "medial"),
          aparc = ifelse(grepl("wall", aparc), NA, aparc),
          atlas = "chenTh") %>% 
-  rename(area = aparc,
+  rename(region = aparc,
          cluster = aparc2) %>% 
   select(-group, -meas, -piece) %>% 
   mutate(
@@ -50,6 +50,8 @@ chenTh <- chenTh %>%
 #       labs = list(y = NULL, x = "hemisphere")))
 # }
 chenTh <- as_ggseg_atlas(chenTh)
+
+chenTh <- rename(chenTh, region = area)
 usethis::use_data(chenTh, internal = FALSE, overwrite = TRUE, compress = "xz")
 
 
@@ -64,7 +66,7 @@ chenAr <- geobrain_ChenArea %>%
          side = ifelse(id %in% c(1:20, 2000:2020), "lateral", "medial"),
          aparc = ifelse(grepl("wall", aparc), NA, aparc),
          atlas = "chenAr") %>% 
-  rename(area = aparc,
+  rename(region = aparc,
          cluster = aparc2) %>% 
   select(-group, -meas, -piece, -`as.numeric(id)`) %>% 
   mutate(
@@ -104,6 +106,8 @@ chenAr <- chenAr %>%
 #       labs = list(y = NULL, x = "hemisphere")))
 # }
 chenAr <- as_ggseg_atlas(chenAr)
+
+chenAr <- rename(chenAr, region = area)
 usethis::use_data(chenAr, internal = FALSE, overwrite = TRUE, compress = "xz")
 
 
@@ -119,12 +123,12 @@ separate(filename, into=c(NA, NA, "roi"), sep="[.]") %>%
  select(-cluster) %>% 
   left_join(chenAr %>% unnest(ggseg) %>%
               mutate(annot = as.integer(.cluster)) %>%  
-              select(area, hemi, label, annot) %>% 
+              select(region, hemi, label, annot) %>% 
               distinct()) %>% 
   left_join(as.data.frame(as.list(brain_pals$chenAr)) %>% 
-              gather(area, colour) %>% 
-              mutate(area = gsub("[.]", " ", area),
-                     area = gsub("motor premotor", "motor-premotor", area)))
+              gather(region, colour) %>% 
+              mutate(region = gsub("[.]", " ", region),
+                     region = gsub("motor premotor", "motor-premotor", region)))
 
 
 ff <- tibble(files = list.files(folder, pattern="ply", full.names = F, recursive = T),
@@ -173,12 +177,12 @@ annots = read_csv(paste0(folder, "annot2filename.csv")) %>%
   select(-cluster) %>% 
   left_join(chenTh %>% unnest(ggseg) %>%
               mutate(annot = as.integer(.cluster)) %>%  
-              select(area, hemi, label, annot) %>% 
+              select(region, hemi, label, annot) %>% 
               distinct()) %>% 
   left_join(as.data.frame(as.list(brain_pals$chenTh)) %>% 
-              gather(area, colour) %>% 
-              mutate(area = gsub("[.]", " ", area),
-                     area = gsub("motor premotor ", "motor-premotor-", area)))
+              gather(region, colour) %>% 
+              mutate(region = gsub("[.]", " ", region),
+                     region = gsub("motor premotor ", "motor-premotor-", region)))
 
 
 ff <- tibble(files = list.files(folder, pattern="ply", full.names = F, recursive = T),

@@ -7,8 +7,8 @@ mri_vol2surf <- function(infile , outfile,
                    "mri_vol2surf")
 
   cmd <- paste(fs_cmd,
-                "--mov", infile,
-                "--o", outfile,
+               "--mov", infile,
+               "--o", outfile,
                "--mni152reg",
                "--hemi", hemisphere,
                "--projfrac", projfrac)

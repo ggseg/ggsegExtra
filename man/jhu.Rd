@@ -31,8 +31,9 @@ Hua et al. (2008) NeuroImage, 39(1):336-347
 Other ggseg_atlases: 
 \code{\link{chenAr}},
 \code{\link{chenTh}},
+\code{\link{dkextra}},
 \code{\link{glasser}},
-\code{\link{hc_pa_3d}},
+\code{\link{hcpa_3d}},
 \code{\link{hoCort}},
 \code{\link{tracula}},
 \code{\link{yeo17}},

@@ -30,8 +30,9 @@ Chen et al. (2013) PNAS, 110 (42) 17089-17094;
 \seealso{
 Other ggseg_atlases: 
 \code{\link{chenTh}},
+\code{\link{dkextra}},
 \code{\link{glasser}},
-\code{\link{hc_pa_3d}},
+\code{\link{hcpa_3d}},
 \code{\link{hoCort}},
 \code{\link{jhu}},
 \code{\link{tracula}},
