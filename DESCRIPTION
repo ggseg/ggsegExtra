@@ -42,7 +42,7 @@ Suggests:
     devtools
 VignetteBuilder: knitr
 Remotes: 
-    LCBC-UiO/ggseg
+    LCBC-UiO/ggseg,
     LCBC-UiO/ggseg3d
 URL: https://github.com/LCBC-UiO/ggsegExtra
 BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues
