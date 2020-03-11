@@ -52,8 +52,10 @@ run_smooth_labels <- function(lab_file,
   invisible(k)
 }
 
+
+
 #' HPC workbench command
-#' 
+#'
 #' Some options for optimization of region
 #' extraction for ggseg atlases can be run using the
 #' HPC workbench program. This can be installed on the system
@@ -69,16 +71,16 @@ run_smooth_labels <- function(lab_file,
 #'
 #' @examples
 #' wb_command()
-#' 
+#'
 #' wb_command("some/path/workbench")
 wb_command <- function(wbdir = NULL){
-  
-  
+
+
   PATH <- strsplit(Sys.getenv("PATH"), ":")[[1]]
-  
+
   if(is.null(wbdir)){
     path <- PATH[grepl("workbench", PATH)]
-    
+
     if(length(path) == 0){
       if(grepl("darwin", utils::sessionInfo()$platform)){
         dirs <- list.dirs("/Applications/workbench", recursive = FALSE)
@@ -86,12 +88,12 @@ wb_command <- function(wbdir = NULL){
         PATH <- c(PATH, dirs)
       }
     }
-    
+
   }else{
     PATH <- c(PATH, wbdir)
   }
 
   PATH <- paste0(PATH, collapse = ":")
-  
+
   return(PATH)
 }

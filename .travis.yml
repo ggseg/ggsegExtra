@@ -4,7 +4,10 @@ language: R
 sudo: false
 cache:
   packages: false
-warnings_are_errors: true
+os:
+  - linux
+  - osx
+warnings_are_errors: false
 
 after_success:
   - Rscript -e 'covr::codecov(type = "all")'
