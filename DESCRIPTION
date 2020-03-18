@@ -29,8 +29,7 @@ Imports:
     sf,
     raster,
     stars,
-    stringr,
-    magick
+    stringr
 Suggests:
     ggseg,
     ggplot2,
