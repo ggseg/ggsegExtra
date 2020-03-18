@@ -18,17 +18,12 @@ Depends: R (>= 2.10)
 LazyData: true
 Imports: 
     freesurfer,
-    fslr, 
     janitor,
     purrr,
     readr,
     dplyr,
     tidyr,
-    xml2,
     utils,
-    sf,
-    raster,
-    stars,
     stringr
 Suggests:
     ggseg,
