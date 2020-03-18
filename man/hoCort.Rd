@@ -4,7 +4,8 @@
 \name{hoCort}
 \alias{hoCort}
 \title{Harvard-Oxford Cortical atlas}
-\format{A data.frame with 8203 observations and 10 variables
+\format{
+A data.frame with 8203 observations and 10 variables
 \describe{
   \item{long}{coordinates for the x-axis}
   \item{lat}{coordinates for the y-axis}
@@ -14,7 +15,8 @@
   \item{network}{network number (1:7)}
   \item{label}{unique name to each node}
   \item{atlas}{name of the atlas}
-}}
+}
+}
 \usage{
 data(hoCort)
 }

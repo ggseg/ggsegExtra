@@ -4,7 +4,8 @@
 \name{hcpa_3d}
 \alias{hcpa_3d}
 \title{Freesurfer ASEG with posterior-anterior hippocampus}
-\format{A data.frame with 2702 observations and 9 variables
+\format{
+A data.frame with 2702 observations and 9 variables
 \describe{
   \item{lat}{coordinates for the x-axis}
   \item{long}{coordinates for the y-axis}
@@ -13,7 +14,8 @@
   \item{hemi}{name of the hemisphere (left, right)}
   \item{side}{which side to view (medial, lateral,axial)}
   \item{atlas}{name of the atlas}
-}}
+}
+}
 \usage{
 data(hcpa_3d)
 }

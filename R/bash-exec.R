@@ -67,33 +67,31 @@ run_smooth_labels <- function(lab_file,
 #' @param wbdir optional path to workbench program
 #'
 #' @return PATH
-#' @export
-#'
 #' @examples
 #' wb_command()
 #'
 #' wb_command("some/path/workbench")
-wb_command <- function(wbdir = NULL){
-
-
-  PATH <- strsplit(Sys.getenv("PATH"), ":")[[1]]
-
-  if(is.null(wbdir)){
-    path <- PATH[grepl("workbench", PATH)]
-
-    if(length(path) == 0){
-      if(grepl("darwin", utils::sessionInfo()$platform)){
-        dirs <- list.dirs("/Applications/workbench", recursive = FALSE)
-        dirs <- dirs[grepl("bin", dirs)]
-        PATH <- c(PATH, dirs)
-      }
-    }
-
-  }else{
-    PATH <- c(PATH, wbdir)
-  }
-
-  PATH <- paste0(PATH, collapse = ":")
-
-  return(PATH)
-}
+# wb_command <- function(wbdir = NULL){
+# 
+# 
+#   PATH <- strsplit(Sys.getenv("PATH"), ":")[[1]]
+# 
+#   if(is.null(wbdir)){
+#     path <- PATH[grepl("workbench", PATH)]
+# 
+#     if(length(path) == 0){
+#       if(grepl("darwin", utils::sessionInfo()$platform)){
+#         dirs <- list.dirs("/Applications/workbench", recursive = FALSE)
+#         dirs <- dirs[grepl("bin", dirs)]
+#         PATH <- c(PATH, dirs)
+#       }
+#     }
+# 
+#   }else{
+#     PATH <- c(PATH, wbdir)
+#   }
+# 
+#   PATH <- paste0(PATH, collapse = ":")
+# 
+#   return(PATH)
+# }

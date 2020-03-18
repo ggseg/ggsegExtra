@@ -4,7 +4,8 @@
 \name{schaefer17_3d}
 \alias{schaefer17_3d}
 \title{Local-Global 17 Parcellation of the Human Cerebral Cortex}
-\format{A tibble with 4 observations and a nested data.frame
+\format{
+A tibble with 4 observations and a nested data.frame
 \describe{
   \item{surf}{type of surface (`inflated` or `white`)}
   \item{hemi}{hemisphere (`left`` or `right`)}
@@ -18,7 +19,8 @@
   \item{mesh}{list of meshes in two lists: vb and it}
   \item{area}{name of area in full}
   \item{colour}{HEX colour of region}
-}}
+}
+}
 \usage{
 data(schaefer17_3d)
 }

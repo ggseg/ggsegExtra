@@ -13,7 +13,7 @@ Description: This is a support package for the ggseg, and ggseg3d packages.
     It contains extra atlas datasets to plot using functions from those two packages.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Depends: R (>= 2.10)
 LazyData: true
 Imports: 

@@ -4,7 +4,8 @@
 \name{jhu}
 \alias{jhu}
 \title{JHU parcellation}
-\format{A data.frame with 11341 observations and 11 variables
+\format{
+A data.frame with 11341 observations and 11 variables
 \describe{
   \item{long}{coordinates for the x-axis}
   \item{lat}{coordinates for the y-axis}
@@ -13,7 +14,8 @@
   \item{side}{which side to view (sagittal)}
   \item{label}{label name from Freesurfer}
   \item{atlas}{name of the atlas}
-}}
+}
+}
 \usage{
 jhu
 }

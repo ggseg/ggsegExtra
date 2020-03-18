@@ -4,7 +4,8 @@
 \name{glasser_3d}
 \alias{glasser_3d}
 \title{Parcellation from the Human Connectome Project}
-\format{A data.frame with 2483 observations and 8 variables
+\format{
+A data.frame with 2483 observations and 8 variables
 \describe{
   \item{long}{coordinates for the x-axis}
   \item{lat}{coordinates for the y-axis}
@@ -13,7 +14,8 @@
   \item{side}{which side to view (medial, lateral)}
   \item{label}{label name from Freesurfer}
   \item{atlas}{name of the atlas}
-}}
+}
+}
 \usage{
 glasser_3d
 }

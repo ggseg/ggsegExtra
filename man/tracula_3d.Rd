@@ -4,7 +4,9 @@
 \name{tracula_3d}
 \alias{tracula_3d}
 \title{White matter tract parcellations}
-\format{An object of class \code{ggseg3d_atlas} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1 rows and 4 columns.}
+\format{
+An object of class \code{ggseg3d_atlas} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1 rows and 4 columns.
+}
 \usage{
 tracula_3d
 }

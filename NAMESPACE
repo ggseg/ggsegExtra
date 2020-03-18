@@ -2,5 +2,4 @@
 
 export(get_fsl_colour)
 export(nifti_2_atlas)
-export(wb_command)
 importFrom(dplyr,'%>%')
