@@ -59,8 +59,6 @@ get_fsl_colour <- function(atlas = "HarvardOxford-Cortical",
   atlas_df
 }
 
-not_na <- function(x){!is.na(x)}
-
 fsl_dir <- function (){
   fsldir = Sys.getenv("FSLDIR")
   if (fsldir == "") {
@@ -70,6 +68,7 @@ fsl_dir <- function (){
   return(fsldir)
 }
 
+not_na <- function(x){!is.na(x)}
 
 if(getRversion() >= "2.15.1"){
   utils::globalVariables(c("R","G","B","A",

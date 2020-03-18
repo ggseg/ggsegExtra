@@ -4,7 +4,7 @@
 \name{jhu_3d}
 \alias{jhu_3d}
 \title{Parcellation from JHU}
-\format{An object of class \code{ggseg_atlas} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1 rows and 4 columns.}
+\format{An object of class \code{ggseg3d_atlas} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 1 rows and 4 columns.}
 \usage{
 jhu_3d
 }

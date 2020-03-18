@@ -23,7 +23,9 @@ Imports:
     purrr,
     readr,
     dplyr,
+    tidyr,
     xml2,
+    utils,
     sf,
     raster,
     stars,
@@ -36,8 +38,7 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
-    testthat,
-    tidyr,
+    testthat (>= 2.1.0),
     devtools
 VignetteBuilder: knitr
 Remotes: 

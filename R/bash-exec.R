@@ -11,7 +11,7 @@ run_tcl <- function(region, indir, hemisphere, outdir, verbose = TRUE){
   
   
   tcl_script <- system.file("sh", "snapshot.tcl", package = "ggsegExtra")
-  
+
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "tksurfer")
   
@@ -29,10 +29,11 @@ run_tcl <- function(region, indir, hemisphere, outdir, verbose = TRUE){
   invisible(k)
 }
 
+
 run_smooth_labels <- function(lab_file, 
                               surf_file, 
                               output, 
-                              verbose=TRUE){
+                              verbose = TRUE){
   
   smooth_script <- system.file("sh", "smooth_labels.sh", package = "ggsegExtra")
   
@@ -52,19 +53,47 @@ run_smooth_labels <- function(lab_file,
 }
 
 
-get_wb_command <- function(){
+
+#' HPC workbench command
+#'
+#' Some options for optimization of region
+#' extraction for ggseg atlases can be run using the
+#' HPC workbench program. This can be installed on the system
+#' in various way. Here, the function will either assume
+#' workbench is in standard macOS location, or in the locatino
+#' you provide to the function call. This path will be added
+#' to the environment $PATH. Currently does not work on windows.
+#'
+#' @param wbdir optional path to workbench program
+#'
+#' @return PATH
+#' @export
+#'
+#' @examples
+#' wb_command()
+#'
+#' wb_command("some/path/workbench")
+wb_command <- function(wbdir = NULL){
+
+
   PATH <- strsplit(Sys.getenv("PATH"), ":")[[1]]
-  path <- PATH[grepl("workbench", PATH)]
-  
-  if(length(path) == 0){
-    if(grepl("darwin", sessionInfo()$platform)){
-      dirs <- list.dirs("/Applications/workbench", recursive = FALSE)
-      dirs <- dirs[grepl("bin", dirs)]
-      PATH <- c(PATH, dirs)
+
+  if(is.null(wbdir)){
+    path <- PATH[grepl("workbench", PATH)]
+
+    if(length(path) == 0){
+      if(grepl("darwin", utils::sessionInfo()$platform)){
+        dirs <- list.dirs("/Applications/workbench", recursive = FALSE)
+        dirs <- dirs[grepl("bin", dirs)]
+        PATH <- c(PATH, dirs)
+      }
     }
+
+  }else{
+    PATH <- c(PATH, wbdir)
   }
-  
+
   PATH <- paste0(PATH, collapse = ":")
-  
+
   return(PATH)
 }

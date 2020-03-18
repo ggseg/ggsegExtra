@@ -22,8 +22,6 @@ function Smooth1()
 
 }
 
-
-
 module load gnuparallel/20190122
 
 export -f Smooth1
@@ -35,8 +33,6 @@ wb_command -metric-merge ${TD}/multicol.func.gii ${m}
 
 wb_command -metric-reduce ${TD}/multicol.func.gii MAX ${TD}/smooth.func.gii
 wb_command -label-mask ${LABFILE} ${TD}/smooth.func.gii  ${TD}/smooth.label.gii
-
-
 
 wb_command -label-dilate ${TD}/smooth.label.gii ${SURFFILE} 5  ${TD}/dilate.label.gii
 wb_command -label-erode ${TD}/dilate.label.gii ${SURFFILE} 5 ${RESULT}

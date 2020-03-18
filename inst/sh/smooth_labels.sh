@@ -3,8 +3,7 @@
 export TD=$(mktemp -d)
 trap 'rm -rf $TD; exit 0' 0 1 2 3 14 15
 
-
-export LABFILE=$1
+export LABFILE=${1}
 export SURFFILE=${2}
 export RESULT=${3}
 wb_command -label-export-table ${LABFILE} ${TD}/a
@@ -21,12 +20,11 @@ function Smooth1()
     wb_command -metric-dilate ${METRICNAME} ${SURFFILE} 2  ${METRICNAME}
 
 }
-
-
+export -f Smooth1
 
 module load gnuparallel/20190122
 
-export -f Smooth1
+
 
 cat ${TD}/names | parallel Smooth1 
 
@@ -35,8 +33,6 @@ wb_command -metric-merge ${TD}/multicol.func.gii ${m}
 
 wb_command -metric-reduce ${TD}/multicol.func.gii MAX ${TD}/smooth.func.gii
 wb_command -label-mask ${LABFILE} ${TD}/smooth.func.gii  ${TD}/smooth.label.gii
-
-
 
 wb_command -label-dilate ${TD}/smooth.label.gii ${SURFFILE} 5  ${TD}/dilate.label.gii
 wb_command -label-erode ${TD}/dilate.label.gii ${SURFFILE} 5 ${RESULT}

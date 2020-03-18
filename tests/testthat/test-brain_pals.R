@@ -1,3 +1,4 @@
+
 test_that("check new palettes work", {
   expect_equal(length(brain_pal("yeo7", package = "ggsegExtra")), 7)
   expect_equal(length(brain_pal("yeo17", package = "ggsegExtra")), 17)

@@ -92,8 +92,8 @@ foreach surfix {1} {
     redraw
      
     # Use braces to avoid tcl's utterly brain-dead catenation inadequacies...
-    #set imagepath "${imagedir}/${subject}_${surfname}_${hemi}_${viewname}.tif"
-    set imagepath "${TARGFOLDER}/${subject}_${surfname}_${hemi}_${regname}_${viewname}.tif"
+    #set imagepath "${imagedir}/${hemi}_${viewname}.tif"
+    set imagepath "${TARGFOLDER}/${hemi}_${regname}_${viewname}.tif"
     save_tiff $imagepath
   }
 }
