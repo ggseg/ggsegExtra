@@ -15,11 +15,9 @@ after_success:
 before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
 deploy:
   provider: script
-  script: 
-  - |
-    if [ "$TRAVIS_OS_NAME" == "linux" ]; then 
-      Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))'; 
-    fi
+  script:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY_COM", ""))'; fi
   skip_cleanup: true
+  
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install imagemagick; fi
