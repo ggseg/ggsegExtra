@@ -5,10 +5,20 @@ cache: packages
 os:
   - linux
   - osx
-  
-warnings_are_errors: false
+osx_image: xcode11.3
+
 env:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then R_REMOTES_NO_ERRORS_FROM_WARNINGS="true"; fi
+  global: RGL_USE_NULL=TRUE
+
+after_success:
+  - Rscript -e 'covr::codecov()'
+
+before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
+deploy:
+  provider: script
+  script:
+    - if [ "$TRAVIS_OS_NAME" == "linux"  ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY_COM", ""))' ; fi
+  skip_cleanup: true
 
 addons:
   apt:
@@ -18,16 +28,3 @@ addons:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
-#  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install imagemagick; fi
-
-  
-after_success:
-  - Rscript -e 'covr::codecov()'
-  
-before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
-deploy:
-  provider: script
-  script:
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY_COM", ""))'; fi
-  skip_cleanup: true
-
