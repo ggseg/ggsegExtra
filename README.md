@@ -22,52 +22,36 @@ plotting package in R.
 
 ## Atlases
 
-There are currently three atlases available in the package:
-
-### 2d polygon atlases
-
-2.  `glasser` - HCP cortical segmentation (Glasser et al. 2015)  
-3.  `jhu`- Hua et al. 2008, JHU white-matter tractography atlas  
-4.  `yeo7`- Yeo et al. 7 resting state networks  
-5.  `yeo17`- Yeo et al. 17 resting state networks  
-6.  `tracula` - Yendiki et al. probabilistic white matter tractopraphy
-
-### 3d mesh atlases
-
-1.  `glasser_3d` - HCP cortical segmentation (Glasser et al. 2015)  
-2.  `desterieux_3d` - Desterieux et al. cortical segmentation  
-3.  `yeo7_3d` - Yeo et al. 7 resting state networks  
-4.  `yeo17_3d`- Yeo et al. 17 resting state networks  
-5.  `schaefer7`- Schaefer et al. 7 resting state networks  
-6.  `schaefer17`- Schaefer et al. 17 resting state networks  
-7.  `tracula_3d` - Yendiki et al. probabilistic white matter
-    tractopraphy  
-8.  `jhu_3d`- Hua et al. 2008, JHU white-matter tractography atlas  
-9.  `icbm_3d`- JHU labels from Mori et al. (2005)
-
-We are working on creating a detailed description in the wiki on how to
-create and contribute atlases to the package. The `ggseg` function
-already allows you to provide it with a data.frame of a custom atlas if
-you have it, but it must correspond to certain specifications to work.
-
-Please see the
-[wiki](https://github.com/LCBC-UiO/ggseg/wiki/Creating-and-contributing-atlases)
-for information on adding atlases, or inspect the included datasets for
-requirements. If anything is unclear in the wiki, give us a shout out in
-the issues\!
-
-## Use
-
-You will need to use the `ggseg` package to use these atlases, or
-wrangle them your self. You can access it
-[here](https://lcbc-uio.github.io/ggseg/ggseg.html), or via R:
+There are currently 19 available atlases across 10 packages. The
+packages, their repository name and location can be found with:
 
 ``` r
-# remotes::install_github("LCBC-UiO/ggseg")
-# remotes::install_github("LCBC-UiO/ggseg3d")
-library(ggseg)
 library(ggsegExtra)
+
+# List all verified compatible atlases
+ggseg_atlas_repos()
+#> # A tibble: 10 x 5
+#>    repo                ggseg ggseg3d source comment                             
+#>    <chr>               <lgl> <lgl>   <chr>  <chr>                               
+#>  1 LCBC-UiO/ggsegYeo2… TRUE  TRUE    github both 17 and 7 Network data          
+#>  2 LCBC-UiO/ggsegDest… FALSE TRUE    github the 2009 atlas                      
+#>  3 LCBC-UiO/ggsegChen  FALSE TRUE    github both thickness and area maps        
+#>  4 LCBC-UiO/ggsegScha… FALSE TRUE    github both 17 and 7 networks              
+#>  5 LCBC-UiO/ggsegGlas… TRUE  TRUE    github full atlas                          
+#>  6 LCBC-UiO/ggsegJHU   TRUE  TRUE    github white tract atlas                   
+#>  7 LCBC-UiO/ggsegTrac… TRUE  TRUE    github white tract atlas                   
+#>  8 LCBC-UiO/ggsegICBM  FALSE TRUE    github white tract atlas                   
+#>  9 LCBC-UiO/ggsegHO    TRUE  FALSE   github Harvard-Oxford cortical (FSL)       
+#> 10 LCBC-UiO/ggsegDefa… TRUE  FALSE   github extra 2d view for dk, p/a division …
 ```
+
+We have two tutorials on how to make atlases available in the [package
+documentation page](https://lcbc-uio.github.io/ggsegExtra/). Currently,
+the pipeline for making 3d atlases is complete given Freesufer is
+installed on your system and you have a ready `.annot` file to use for
+the converions. Creating 2d atlases is currently still a work in
+progress, and we are not able to provide a better solution than the one
+described at the moment. We hope to remedy this in the near future.
 
 ## Code of Conduct
 

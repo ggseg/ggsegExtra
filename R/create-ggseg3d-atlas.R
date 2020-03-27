@@ -57,7 +57,8 @@ cortex_2_mesh <- function(subject = "fsaverage5",
   # Read in annotation file, verbose false since annot2dpv() also spits out this information
   ant <- read_annotation(annot_file, verbose = FALSE)
   colortable <- dplyr::mutate(ant$colortable,
-                              hex = rgb(R, G, B, maxColorValue = 255)
+                              hex = grDevices::rgb(R, G, B, 
+                                                   maxColorValue = 255)
   )
   
   # convert annotation to dpv files
@@ -108,7 +109,7 @@ cortex_2_mesh <- function(subject = "fsaverage5",
     surf = surface,
     hemi = hemi, 
     region = colortable$label,
-    colour = rgb(colortable$R, colortable$G, colortable$B, maxColorValue = 255),
+    colour = grDevices::rgb(colortable$R, colortable$G, colortable$B, maxColorValue = 255),
     label = paste(hemisphere, colortable$label, sep="_"),
     roi = sprintf("%04d", 1:nrow(colortable)),
     annot = colortable$label
@@ -358,7 +359,7 @@ subcort_2_3datlas <- function(subject = "fsaverage5",
     surf = "LCBC",
     hemi = "subcort", 
     region = colortable$label,
-    colour = rgb(colortable$R, colortable$G, colortable$B, maxColorValue = 255),
+    colour = grDevices::rgb(colortable$R, colortable$G, colortable$B, maxColorValue = 255),
     label =  colortable$label,
     roi =  sprintf("%04d", labels)
   )
@@ -383,5 +384,6 @@ subcort_2_3datlas <- function(subject = "fsaverage5",
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
   utils::globalVariables(c("atlas", "surf", "data",
-                           "hemi", "ggseg_3d"))
+                           "hemi", "ggseg_3d",
+                           "R", "G", "B", "A"))
 }

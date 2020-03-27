@@ -24,6 +24,7 @@ Imports:
     dplyr,
     tidyr,
     stringr,
+    grDevices,
     xml2,
     utils,
     geomorph,

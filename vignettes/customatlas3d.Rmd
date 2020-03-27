@@ -209,4 +209,4 @@ dt <- cortex_2_3datlas(template = "path/to/myResults.mgz",
 dt <- cortex_2_3datlas(template = "path/to/myResults.mgz", 
                        color_lut = "path/to/myResults_LUT.txt")
 ```
->>>>>>> atlascreate
+
