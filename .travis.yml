@@ -10,6 +10,16 @@ os:
 warnings_are_errors: false
 env:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then R_REMOTES_NO_ERRORS_FROM_WARNINGS="true"; fi
+
+addons:
+  apt:
+    packages:
+      - libgdal-dev
+      - libproj-dev
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
+
   
 after_success:
   - Rscript -e 'covr::codecov()'
@@ -20,6 +30,6 @@ deploy:
   script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY_COM", ""))'; fi
   skip_cleanup: true
-  
+
 #before_install:
 #  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install imagemagick; fi
