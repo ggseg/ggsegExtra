@@ -19,6 +19,7 @@ addons:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
+#  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install imagemagick; fi
 
   
 after_success:
@@ -31,5 +32,3 @@ deploy:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY_COM", ""))'; fi
   skip_cleanup: true
 
-#before_install:
-#  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install imagemagick; fi
