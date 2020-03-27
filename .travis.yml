@@ -10,7 +10,7 @@ os:
 warnings_are_errors: false
 
 after_success:
-  - Rscript -e 'covr::codecov(type = "all")'
+  - Rscript -e 'covr::codecov()'
   
 before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
 deploy:

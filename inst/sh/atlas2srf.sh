@@ -118,6 +118,7 @@ for s in ${SBJLIST} ; do
     ${FREESURFER_HOME}/bin/mris_convert \
            ${SUBJECTS_DIR}/${s}/tmp/${RNDSTR}/aseg_${lab0} \
            ${SUBJECTS_DIR}/${s}/tmp/${RNDSTR}/${y}_${lab0}.asc
+           
     mv ${SUBJECTS_DIR}/${s}/tmp/${RNDSTR}/${y}_${lab0}.asc \
        ${SUBJECTS_DIR}/${s}/ascii/${y}_${lab0}.srf
   done

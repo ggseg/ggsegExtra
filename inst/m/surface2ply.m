@@ -2,7 +2,8 @@
 % using white surface as base
 % subj2ascii <subj_id> needs to be run before the script
 % wrapper based on A. Winkler scripts 
-% correspondence between labelnames and annotnames might need to be switched off depending on inputting files. Should work for any FS annot file
+% correspondence between labelnames and annotnames might need to be switched off depending on inputting files. 
+% Should work for any FS annot file
 
 subj = 'fsaverage5'
 wdir = '/your/folder/'
@@ -26,8 +27,10 @@ for j=1:length(aparc_list)
 
          % convert annotation to dpv files
         annot2dpv([labeldir filesep hemi{h} '.' aparc '.annot'], [indir filesep hemi{h} '.' aparc '.annot.dpv'])
+        
         % split surface based on white labels
         splitsrf([hemi{h} '.' surface '.srf'], [hemi{h} '.' aparc '.annot.dpv'], [hemi{h} '.' surface '_roi'])
+        
         % generate ply maps of the full surface
         dpx2map([hemi{h} '.' aparc '.annot.dpv'], [hemi{h} '.' surface '.srf'], [hemi{h} '.' aparc '.annot'])
 

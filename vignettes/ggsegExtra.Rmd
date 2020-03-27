@@ -10,93 +10,120 @@ vignette: >
 ```{r "setup", include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  fig.width = 10
 )
 devtools::load_all(".")
 ```
 
 Using the ggseExtra package requires the two main ggseg-packages, containing the functions needed to plot the data. 
-ggsegExtra is purely a repository of data-sets that fit with the functions in those main packages.
+ggsegExtra is a meta-repository of data-sets that fit with the functions in those main packages, with functions to help you create your own custom atlases.
 
 ```{r, eval=FALSE}
 library(ggsegExtra)
 ```
 
-```{r "load-pkgs"}
-library(ggseg)
-library(ggseg3d)
+## Installing atlases
+Atlases are stored in their own online repositories.
+The list of repositories is periodically updated based on when we have confirmed a new atlas that works with the packages. 
+These data-sets can be in our own github account (LCBC-UiO), or be hosted by whoever made the atlas. To see all confirmed atlases:
+
+```{r}
+ggseg_atlas_repos()
+
+# Search for repos with pattern
+ggseg_atlas_repos("Yeo")
+
+# Search is case-sensitive
+ggseg_atlas_repos("yeo")
+
+# Search is case-sensitive, but this can be fixed
+ggseg_atlas_repos("yeo", ignore.case = TRUE)
 ```
+
+Installing atlases from the repos, we have conveniene function, wrapping install commands from the [remotes](https://github.com/r-lib/remotes) package.
+
+```{r, message = FALSE}
+yeo_repo <- ggseg_atlas_repos("yeo", ignore.case = TRUE)
+install_ggseg_atlas(repo = yeo_repo$repo, source = yeo_repo$source)
+```
+
+```{r}
+# Load the atlas directly
+ggseg(atlas = ggsegYeo2011::yeo7)
+```
+
 
 ## 2d atlases with ggseg
 
 You should be able to easily switch the atlases, after loading ggsegExtra, so rather plot one of the ggsegExtra atlases directly to the function.
 
 ```{r "ggseg"}
-ggseg(atlas = yeo7, 
-      mapping=aes(fill = region))
+# load on all atlases and palettes from the ggsegYeo2011 library
+library(ggsegYeo2011)
 
-ggseg(atlas = glasser, show.legend = FALSE,
-      mapping=aes(fill = region))
+ggseg(atlas = yeo7)
+ggseg(atlas = yeo17)
 ```
 
 If you want to make sure it looks properly like the atlas you are after, or you want to plot an example of the original plot. 
 Most of the datasets also have corresponding palettes from the papers they were introduced from.
-These colour-scales can be applied through the `scale_X_brain` functions.
-
+These colour-scales can be applied through the `scale_X_brain` functions, and you must also specify which package the palette comes from. 
 
 
 ```{r "ggseg-scale"}
 ggseg(atlas = yeo7, 
       mapping=aes(fill = region)) +
-  scale_fill_brain("yeo7", package="ggsegExtra")
-
-ggseg(atlas = glasser, show.legend = FALSE,
-      mapping=aes(fill = region)) +
-  scale_fill_brain("glasser", package="ggsegExtra")
+  scale_fill_brain("yeo7", package="ggsegYeo2011")
 ```
 
 ## 3d plots with ggseg3d
 
 The same goes for ggseg3d, the new atlases, now available through the ggsegExtra package, can be plotted with the ggseg3d function and its helpers. 
 
-```{r "jhu-noneval", eval=FALSE}
-ggseg3d(atlas = jhu_3d) %>% 
-  add_glassbrain()
+```{r "noneval1", eval=FALSE}
+library(ggseg3d)
+
+ggseg3d(atlas = yeo7_3d) %>% 
+  pan_camera("right lateral")
 ```
-```{r "jhu-orca", include=FALSE}
-# p <- ggseg3d(atlas=jhu_3d) %>% 
-#   add_glassbrain() %>% 
-#   plotly::add_annotations( text="Screen capture",
-#                   legendtitle=TRUE, showarrow=FALSE,
-#                   font = list(color = 'darkgrey',
-#                               family = 'sans serif',
-#                               size = 50)) 
-# plotly::orca(p, "figures/jhu-plot.png")
-```
-```{r "jhu-incl", echo=FALSE}
-knitr::include_graphics("figures/jhu-plot.png")
+
+<!-- ```{r "orca1", include=FALSE} -->
+<!-- library(ggseg3d) -->
+
+<!-- p <- ggseg3d(atlas = yeo7_3d) %>% -->
+<!--   pan_camera("right lateral") %>% -->
+<!--   plotly::add_annotations( text="Screen capture", -->
+<!--                   legendtitle=TRUE, showarrow=FALSE, -->
+<!--                   font = list(color = "#000000b4", -->
+<!--                               family = 'sans serif', -->
+<!--                               size = 50)) -->
+<!-- plotly::orca(p, "man/figures/README-yeo7-3d-plot.png") -->
+<!-- ``` -->
+
+```{r "incl1", echo=FALSE}
+knitr::include_graphics("man/figures/README-yeo7-3d-plot.png")
 ```
 
 
-```{r "glasser-noneval", eval=FALSE}
-ggseg3d(atlas = glasser_3d)
-```
-```{r "glasser-orca", include=FALSE}
-# p <- ggseg3d(atlas=glasser_3d) %>% 
-#   plotly::add_annotations( text="Screen capture",
-#                   legendtitle=TRUE, showarrow=FALSE,
-#                   font = list(color = 'darkgrey',
-#                               family = 'sans serif',
-#                               size = 50)) 
-# plotly::orca(p, "figures/glasser-plot.png")
-```
-```{r "glasser-incl", echo=FALSE}
-knitr::include_graphics("figures/glasser-plot.png")
+```{r "noneval2", eval=FALSE}
+ggseg3d(atlas = yeo17_3d) %>% 
+  pan_camera("right lateral")
 ```
 
+<!-- ```{r "orca2", include=FALSE} -->
+<!-- p <- ggseg3d(atlas = yeo17_3d) %>% -->
+<!--   pan_camera("right lateral") %>% -->
+<!--   plotly::add_annotations( text="Screen capture", -->
+<!--                   legendtitle=TRUE, showarrow=FALSE, -->
+<!--                   font = list(color = "#000000b4", -->
+<!--                               family = 'sans serif', -->
+<!--                               size = 50)) -->
+<!-- plotly::orca(p, "man/figures/README-yeo17-3d-plot.png") -->
+<!-- ``` -->
 
-## Finding all the datasets available in ggsegExtra
-```{r}
-data(package = "ggsegExtra")$results[,"Item"]
+```{r "incl2", echo=FALSE}
+knitr::include_graphics("man/figures/README-yeo17-3d-plot.png")
 ```
 
