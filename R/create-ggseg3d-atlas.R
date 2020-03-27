@@ -225,7 +225,7 @@ subcort_2_mesh <- function(subject = "fsaverage5",
   k <- sapply(dirs, dir.exists)
   j <- sapply(dirs[!k], dir.create, recursive = TRUE, showWarnings = FALSE)
   
-  if(any(!k) & length(j) != 0) 
+  if(any(!k) & length(j) == 0) 
     stop(paste("Unable to create output directories. Check if output directory parent is writeable.\n",
                "outdir is set to:", output_dir), call. = FALSE)
   
