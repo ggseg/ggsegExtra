@@ -18,35 +18,7 @@ knitr::opts_chunk$set(
 
 New ggseg3d-atlases can be obtained by converting surfaces into tridimensional meshes in `.ply` format. 
 The pipeline for creating cortical surfaces and volumetric images into ggseg3d-atlases is slightly different than for ggseg-atlases. 
-<<<<<<< HEAD
-In both cases, one requires to **i)** convert images to surface `.srf` format, **ii)** convert them to tri-dimensional `.ply` meshes (one per each ROI), and **iii)** group the `.ply` files, as well as information on the ROI names, default color, etc., into a ggseg3d-atlas. 
-The conversion is based on the scripts described available in https://github.com/andersonwinkler/areal by Anderson Winkler. 
-You can obtain similar scripts brain2ply. 
-Essentially, the scripts are identical to A. Winkler, with small edits to better adapt to the specific purposes of ggseg3d-atlas creation. 
-All credit goes to Anderson Winkler. 
-See more information on https://brainder.org/research/brain-for-blender/. 
 
-## Prerequisites 
-[FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/), [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/), [Matlab](https://www.mathworks.com/products/matlab.html), [R](https://www.r-project.org/).
-
-One requires adapting the files to FreeSurfer, both for the volumetric and surface pipelines. 
-So FreeSurfer needs to be installed and `$SUBJECTS_DIR` directory set up correctly. 
-Matlab is also necessary for this pipeline (A. Winkler has adapted the scripts to Octave, but we had not tested them). 
-The path for the brain2ply files needs to be set up in Matlab to recognize the scripts. F
-inally one has to have R and the ggseg-family of packages to convert the `.ply` meshes into a ggseg3d-atlas. 
-
-## From a surface image.
-
-### 1)	Run `subjascii `
-This script converts surface files to `.ascii` format. 
-All the annotation (`.annot`) files will be map into the `.ascii`-converted surface files. 
-The script has the following variables: subject, hemisphere and, surface
-We strongly recommend using fsaverage5 (or fsaverage4) as the target subject. The number of vertices is relatively small, and thus, the tri-dimensional atlases will also be of smaller size. This will increase the speed of plotly plotting, which is going to be very handy for interactive visualizations.
-
-#### 2)	Place annotation file in $SubjFS/label/ (bash) 
-You need to place the annotation file with information on your ROIs in your target subject. 
-This can required of the following conversions: 
-=======
 One has to convert the images with information on your labels to a Freesurfer annotation file (cortical) or to a `.mgz` file (subcortical), and then run an R-function calling Freesurfer and FSL to create the ggseg3d-atlas.
 
 The conversion is based on the scripts available in https://github.com/andersonwinkler/areal by Anderson Winkler. 
@@ -69,46 +41,10 @@ Atlases already available in Freesurfer have annotation files, making this step 
 These can be found in the Freesufer subject directory, within a subject in the `label/` folder, look for files ending with `.annot`. 
 For other files (like results from your vertex-vise analyses etc), you will need to convert the ROIs you have to annotation files.
 This may require any of the following conversions: 
->>>>>>> atlascreate
 
 1.	Convert overlay files into annotations. (e.g. overlay results to annotations)  
 2.	Downsample annotation files (e.g.from fsaverage to fsaverage5)  
 3.	Register files across different subject templates (from 164k_FS_LR [HCP] to fsaverage 5). 
-<<<<<<< HEAD
-    - The specific procedure will depend on your original image, but FreeSurfer `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions.  
-
-#### 3)	Run `surface2ply.m` (Matlab)
-This script convert your annotations (`.annot`) into tridimensional (`.ply`) meshes. 
-The output consists on a zip ball that needs to be exported into your R-environment.
-The script has the following variables: 
-input and output folder, subject, hemisphere and, annotation. 
-
-#### 4)	Run XXX (R)
-This script converts `.ply` files into a ggseg3d-atlas (tri-surface mesh).
-
-### From a volume image
-#### 1)	Place volumetric image into the folder $SubjFS/mri/ (bash) 
-The image needs to have the following characteristics: 
-
-1.	Be in MNI305; 2mm FreeSurfer space    
-2.	Consists of integer values, in which each integer reflects a different ROI  
-    - One will have to perform basic transformations (mostly thresholding, binarizing and, registration) with neuroimaging software tools. 
-    - The specific process will depend on the initial information but one should not manage to convert the data using the following functions: `fslmaths` (FSL) and `mri_convert`, `mri_vol2vol`, `mris_calc` (FreeSurfer).     
-3.	Run `atlas2srf.sh` script. (bash)  
-    - This function converts subcortical structures to surfaces in *srf format. 
-    - The function places the output file in $SubjFS/ascii/.
-    - One can introduce the following arguments: `-s subject; -l label_list; -t volumetric_image` .
-    - The function is almost equivalent to the aseg2srf function written by A. Winkler.   
-
-#### 2)	Run `subcort2ply.m` (matlab)
-One can introduce the following parameters: 
-input and output dirs, subject, suffix (e.g. atlas name).  
-The output is a `.zip` ball that consists of `.ply` files; one for each ROI. 
-
-#### 3)	Run XXX (R)
-This script convert `.ply` files into a ggseg3d-atlas (tri-surface mesh).
-
-=======
     - The specific procedure will depend on your original image  
     - FreeSurfer's `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions  
 
