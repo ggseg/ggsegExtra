@@ -1,5 +1,11 @@
 pandoc: 2.3.1
-pkgdown: 1.3.0
+pkgdown: 1.4.1
 pkgdown_sha: ~
-articles: []
+articles:
+  customatlas: customatlas.html
+  customatlas3d: customatlas3d.html
+  ggsegExtra: ggsegExtra.html
+urls:
+  reference: https://lcbc-uio.github.io/ggsegExtra//reference
+  article: https://lcbc-uio.github.io/ggsegExtra//articles
 
