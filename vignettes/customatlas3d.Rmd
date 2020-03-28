@@ -99,8 +99,8 @@ If you are in the process of making an atlas contribution, there are a couple st
 3) contents in the `region` column should be cleaned to have proper names, _not_ the label names. This is to make it nicer when plotting and make the regions more human readable. Please take care in this step. 
 
 
-### From a volume image
-#### 1)	Create volumetric image (bash + Freesurfer / FSL)
+## From a volume image
+### 1)	Create volumetric image (bash + Freesurfer / FSL)
 The image needs to have the following characteristics: 
 
 1)	Be in MNI305; 2mm FreeSurfer space    
@@ -109,7 +109,7 @@ The image needs to have the following characteristics:
     - The specific process will depend on the initial information, but one should manage to convert the data using the following functions: `fslmaths` (FSL) and `mri_convert`, `mri_vol2vol`, `mris_calc` (FreeSurfer). 
     - The resulting template file must be in Freesurfer`.mgz` format.
 
-#### 2)	Run `subcort_2_3datlas()` (R)
+### 2)	Run `subcort_2_3datlas()` (R)
 
 This script converts your template images (`.mgz`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
 Without any arguments, it will create the aseg atlas, based on `mri/aseg.mgz` file in the Freesurfer subjects directory, together with the "ASegStatsLUT.txt" file from the Freesurfer main directory.
