@@ -1,0 +1,5 @@
+destination: docs
+url: https://lcbc-uio.github.io/ggsegCC200/
+template:
+  params:
+    bootswatch: cerulean
