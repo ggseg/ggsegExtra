@@ -73,7 +73,7 @@ make_ggseg_repo <- function(atlas_name,
   cat(crayon::cyan("\tGet package checks to have no errors & no warnings .\n"))
   
   if(git_init){
-  
+    system(paste("cd", directory))
     system("git init; git add .; git commit -m 'setting up'")
     cat(crayon::cyan("\tgit repository initiated.\n"))
     
