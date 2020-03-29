@@ -36,7 +36,7 @@ Finally one has to have R and the ggseg-family of packages to convert the `.ply`
 
 ## From a surface image.
 
-#### 1)	Make annotation file (bash + Freesurfer)
+### 1)	Make annotation file (bash + Freesurfer)
 Atlases already available in Freesurfer have annotation files, making this step unnecessary.
 These can be found in the Freesufer subject directory, within a subject in the `label/` folder, look for files ending with `.annot`. 
 For other files (like results from your vertex-vise analyses etc), you will need to convert the ROIs you have to annotation files.
@@ -48,7 +48,7 @@ This may require any of the following conversions:
     - The specific procedure will depend on your original image  
     - FreeSurfer's `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions  
 
-#### 2)	Run `cortex_2_3datlas()`(R)
+### 2)	Run `cortex_2_3datlas()`(R)
 This script converts your annotations (`.annot`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
 Without any arguments, it will create the aparc (Desikan-Killany atlas), based on annotation files in the Freesurfer subejcts directory.
 
