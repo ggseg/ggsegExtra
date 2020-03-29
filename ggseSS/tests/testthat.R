@@ -4,6 +4,6 @@ library(ggplot2)
 library(ggseg)
 library(ggseg3d)
 
-test_check("ggsegCC200")
+test_check("ggseSS")
 
 # covr::zero_coverage(covr::package_coverage("."))

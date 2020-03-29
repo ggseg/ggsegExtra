@@ -1,16 +1,16 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ggsegCC200
+# ggseSS
 
 <!-- badges: start -->
 
 [![Travis build
-status](https://travis-ci.com/LCBC-UiO/ggsegCC200.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegCC200)
+status](https://travis-ci.com/LCBC-UiO/ggseSS.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggseSS)
 [![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegCC200?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegCC200)
+status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggseSS?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggseSS)
 [![Codecov test
-coverage](https://codecov.io/gh/LCBC-UiO/ggsegCC200/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegCC200?branch=master)
+coverage](https://codecov.io/gh/LCBC-UiO/ggseSS/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggseSS?branch=master)
 <!-- badges: end -->
 
 This package contains dataset for plotting the Tracula white matter
@@ -23,21 +23,21 @@ underlying anatomy*. Front. Neuroinform. 5:23.
 
 ## Installation
 
-You can install the released version of ggsegCC200 from
+You can install the released version of ggseSS from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("LCBC-UiO/ggsegCC200")
+remotes::install_github("LCBC-UiO/ggseSS")
 ```
 
 ``` r
 library(ggseg)
 library(ggseg3d)
-library(ggsegCC200)
+library(ggseSS)
 
-ggseg(atlas = cc200, mapping = aes(fill = region)) +
-  scale_fill_brain("cc200", package = "ggsegCC200") +
+ggseg(atlas = somethins, mapping = aes(fill = region)) +
+  scale_fill_brain("somethins", package = "ggseSS") +
   theme(legend.position = "bottom", 
         legend.text = element_text(size = 9)) +
   guides(fill = guide_legend(ncol = 3))
@@ -46,14 +46,14 @@ ggseg(atlas = cc200, mapping = aes(fill = region)) +
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
 
 ``` r
-ggseg3d(atlas = cc200_3d) %>% 
+ggseg3d(atlas = somethins_3d) %>% 
   add_glassbrain() %>% 
   pan_camera("right lateral")
 ```
 
 <!-- ```{r "orca", include=FALSE} -->
 
-<!-- p <- ggseg3d(atlas = cc200_3d) %>%  -->
+<!-- p <- ggseg3d(atlas = somethins_3d) %>%  -->
 
 <!--   add_glassbrain(hemisphere = "left")%>% -->
 
@@ -75,6 +75,6 @@ ggseg3d(atlas = cc200_3d) %>%
 
 <img src="man/figures/README-3d-plot.png" width="100%" />
 
-Please note that the ‘ggsegCC200’ project is released with a
+Please note that the ‘ggseSS’ project is released with a
 [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to
 this project, you agree to abide by its terms.

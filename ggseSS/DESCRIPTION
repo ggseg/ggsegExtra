@@ -1,4 +1,4 @@
-Package: ggsegCC200
+Package: ggseSS
 Title: Tracula datasets for the ggseg-plotting tool
 Version: 1.0
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
@@ -30,5 +30,5 @@ VignetteBuilder: knitr
 Remotes: 
     LCBC-UiO/ggseg,
     LCBC-UiO/ggseg3d
-URL: https://github.com/LCBC-UiO/ggsegCC200
-BugReports: https://github.com/LCBC-UiO/ggsegCC200/issues
+URL: https://github.com/LCBC-UiO/ggseSS
+BugReports: https://github.com/LCBC-UiO/ggseSS/issues

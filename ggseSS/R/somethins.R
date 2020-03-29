@@ -3,7 +3,7 @@
 #' Automated probabilistic reconstruction of white-matter pathways
 #'
 #' @docType data
-#' @name cc200
+#' @name somethins
 #' @keywords datasets
 #' @family ggseg_atlases
 #' @references Yendiki et al. (2011) Automated probabilistic reconstruction of 
@@ -23,15 +23,15 @@
 #' }
 #'
 #' @examples
-#' data(cc200)
-"cc200"
+#' data(somethins)
+"somethins"
 
 
 ### 3d meshes ----
 #' White matter tract parcellations
 #'
 #' @docType data
-#' @name cc200_3d
+#' @name somethins_3d
 #' @keywords datasets
 #' @family ggseg3d_atlases
 #' @references Yendiki et al. (2011) Automated probabilistic reconstruction of 
@@ -41,5 +41,5 @@
 #'
 #'
 #' @examples
-#' data(cc200_3d)
-"cc200_3d"
+#' data(somethins_3d)
+"somethins_3d"
