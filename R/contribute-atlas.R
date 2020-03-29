@@ -66,21 +66,26 @@ make_ggseg_repo <- function(atlas_name,
   # remove .git to reset git history
   unlink(file.path(directory, ".git"), recursive = TRUE, force = TRUE)
   
+  cat(crayon::cyan("Files created and updated.\n"))
+  cat(crayon::cyan("\tAdd atlas data in", crayon::italic("data/"), "\n"))
+  cat(crayon::cyan("\tAlter atlas description in", crayon::italic("R/"), ".\n"))
+  cat(crayon::cyan("\tAlter atlas description in", crayon::italic("R/"), ".\n"))
+  cat(crayon::cyan("\tGet package checks to have no errors & no warnings .\n"))
   
   if(git_init){
+  
     system("git init; git add .; git commit -m 'setting up'")
+    cat(crayon::cyan("\tgit repository initiated.\n"))
     
     if(!is.null(remote_repo)){
       system(paste("git remote add origin", remote_repo))
       system("git push -u origin master")
+      cat(crayon::cyan("\trepository pushed to", crayon::italic(remote_repo), ".\n"))
+      
     }
   }
   
-  cat("Files created and updated.\n")
-  cat("Add atlas data in data/ .\n")
-  cat("Alter atlas description in R/ .\n")
-  cat("Alter atlas description in R/ .\n")
-  cat("Get package checks to have no errors & no warnings .\n")
+
 }
 
 
