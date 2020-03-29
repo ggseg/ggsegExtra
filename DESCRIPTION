@@ -25,6 +25,7 @@ Imports:
     tidyr,
     stringr,
     grDevices,
+    plotly,
     xml2,
     utils,
     geomorph,

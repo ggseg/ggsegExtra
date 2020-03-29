@@ -10,7 +10,6 @@ vignette: >
 ```{r "setup", include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  fig.path = "man/figures/README-",
   out.width = "100%",
   fig.width = 10
 )
@@ -99,11 +98,11 @@ ggseg3d(atlas = yeo7_3d) %>%
 <!--                   font = list(color = "#000000b4", -->
 <!--                               family = 'sans serif', -->
 <!--                               size = 50)) -->
-<!-- plotly::orca(p, "man/figures/README-yeo7-3d-plot.png") -->
+<!-- plotly::orca(p, "figures/vignette-yeo7-3d-plot.png") -->
 <!-- ``` -->
 
 ```{r "incl1", echo=FALSE}
-knitr::include_graphics("man/figures/README-yeo7-3d-plot.png")
+knitr::include_graphics("figures/vignette-yeo7-3d-plot.png")
 ```
 
 
@@ -120,10 +119,10 @@ ggseg3d(atlas = yeo17_3d) %>%
 <!--                   font = list(color = "#000000b4", -->
 <!--                               family = 'sans serif', -->
 <!--                               size = 50)) -->
-<!-- plotly::orca(p, "man/figures/README-yeo17-3d-plot.png") -->
+<!-- plotly::orca(p, "figures/vignette-yeo17-3d-plot.png") -->
 <!-- ``` -->
 
 ```{r "incl2", echo=FALSE}
-knitr::include_graphics("man/figures/README-yeo17-3d-plot.png")
+knitr::include_graphics("figures/vignette-yeo17-3d-plot.png")
 ```
 
