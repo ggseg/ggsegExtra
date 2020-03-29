@@ -60,7 +60,7 @@ make_ggseg_repo <- function(atlas_name,
   
   
   # remove some extra files
-  dd <- c(file.path(directory, "LICENSE", "LICENSE.md", "R/sysdata.rda"))
+  dd <- c(file.path(directory, c("LICENSE", "LICENSE.md", "R/sysdata.rda")))
   k <- sapply(dd, file.remove)
   
   # remove .git to reset git history
