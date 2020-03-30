@@ -59,7 +59,7 @@ nifti_2_atlas <- function(nifti, outdir, annot_lab, atlas_name,
   }
   
   # raster ----
-  rasterobjs <- atlas_raster(paste0(outdir, "pics/mask"))
+ 
 
   # combine to make df
   atlas_df <- atlas_raster2sf(rasterobjs)

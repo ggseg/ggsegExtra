@@ -227,7 +227,7 @@ subcort_2_mesh <- function(subject = "fsaverage5",
   
   if(any(!k) & length(j) == 0) 
     stop(paste("Unable to create output directories. Check if output directory parent is writeable.\n",
-               "outdir is set to:", output_dir), call. = FALSE)
+               "output_dir is set to:", output_dir), call. = FALSE)
   
   lab_string <- sprintf("%04d", label)
   

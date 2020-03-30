@@ -35,4 +35,6 @@ are found in the 'FreeSurfer Software License Agreement' contained
 in the file 'LICENSE' found in the FreeSurfer distribution, and here:
 https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferSoftwareLicense
 Reporting: freesurfer@nmr.mgh.harvard.edu
+
+ # TODO: replace with freesurfer::read_annotation when its incorporated on CRAN
 }

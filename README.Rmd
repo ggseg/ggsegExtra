@@ -49,7 +49,7 @@ ggseg_atlas_repos()
 ```
 
 
-We have two tutorials on how to make atlases available in the [package documentation page](https://lcbc-uio.github.io/ggsegExtra/). 
+We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://lcbc-uio.github.io/ggsegExtra/). 
 Currently, the pipeline for making 3d atlases is complete given Freesufer is installed on your system and you have a ready `.annot` file to use for the converions.
 Creating 2d atlases is currently still a work in progress, and we are not able to provide a better solution than the one described at the moment. 
 We hope to remedy this in the near future.
@@ -62,13 +62,7 @@ Please note that the ggsegExtra project is released with a [Contributor Code of 
 Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting new atlases. 
 While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
 
-
-
 # Funding
-This tool is partly funded by:  
-
-**EU Horizon 2020 Grant:** Healthy minds 0-100 years: Optimising the use of European brain imaging cohorts (Lifebrain).
-
-**Grant agreement number:** 732592.
-
-**Call:** Societal challenges: Health, demographic change and well-being
+This work is funded by **EU Horizon 2020 Grant** _'Healthy minds 0-100 years: Optimizing the use of European brain imaging cohorts (Lifebrain)'_, with grant agreement `732592`.
+The project has also received funding from the **European Research Council**’s _Starting grant_ (grant agreements `283634`, to Anders Martin Fjell and `313440` to Kristine Beate Walhovd) and _Consolidator Grant_ (grant agreement `771355` to Kristine Beate Walhovd and `725025` to Anders Martin Fjell).
+The project has received funding through multiple grants from the Norwegian Research Council. 

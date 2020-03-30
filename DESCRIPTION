@@ -18,6 +18,9 @@ Depends: R (>= 2.10)
 LazyData: true
 Imports: 
     usethis,
+    raster,
+    magick,
+    withr,
     freesurfer,
     janitor,
     purrr,
@@ -29,6 +32,8 @@ Imports:
     plotly,
     xml2,
     utils,
+    sf,
+    stars,
     geomorph,
     crayon,
 Suggests:

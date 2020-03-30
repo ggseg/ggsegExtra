@@ -14,20 +14,61 @@ comment = "#>"
 )
 ```
 
+## Creating ggseg-atlas from a ggseg3d-atlas
+The best way to create a ggseg-atlas with little manual intervention, is to first make a [ggseg3d-atlas](https://lcbc-uio.github.io/ggsegExtra/articles/customatlas3d.html), and then convert that to ggseg-atlas.
+The entire process can take anything from 10minutes, depending on the number of segmentations in the atlas. 
+More segmentations means longer time. 
+
+Once you have a ggseg3d-atlas, the function `ggseg3d_2_ggseg()` can convert that into polygons ready for ggseg.
+
+### Prerequisites
+- R
+- [Imagemagick](https://imagemagick.org/index.php)
+- [orca](https://github.com/plotly/orca)
+
+```{r, eval = FALSE}
+dt <- ggseg3d_2_ggseg(ggseg3d_atlas = dk_3d,
+                steps = 1:5, 
+                output_dir = tempdir(),
+                cleanup = FALSE,
+                verbose = TRUE)
+```
+
+The function takes few arguments, but does quite a lot in the background. 
+It needs an object that is a ggseg3d-atlas, ad will work with no other input changed.
+We recommen changing the `output_dir` to a folder you can keep track of to see how the intermediate results look like.
+This also makes it possible for you to use the `steps` argument. 
+If early steps have been run succesfully, you can skip them and only run later steps.
+
+Once the data is returned, we recommend doing some data cleaning, particularly of the `region` column.
+This column should ideally have human readable names, short and have space rather than delimiters. 
+This is to enable nicer labelling when plotting.
+Once this is one, make is a ggseg-atlas, and try plotting it with ggseg.
+
+```{r, eval=FALSE}
+dt <- as_ggseg_atlas(dt)
+```
+
+
+
+
+## Skipping ggseg3d-atlas
+
 This pipeline is contributed by [bbuchsbaum](https://github.com/bbuchsbaum).
+It is still quite error prone, but was instrumental to creating the above funtionality.
 
 The Harvard-Oxford atlas is available with FSL. Here is a process for converting the cortical
 parts, via FreeSurfer, to a ggseg format.
 
-## Prerequisites
+### Prerequisites
 
 [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/), [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/), [connectome workbench](https://www.humanconnectome.org/software/connectome-workbench), [parallel](https://www.gnu.org/software/parallel/), [ImageMagick](https://imagemagick.org/index.php), [R](https://www.r-project.org/).
 
-## Converting to FreeSurfer and fixing
+### Converting to FreeSurfer and fixing
 
 1. Take a copy of the fsaverage folder, and set up SUBJECTS_DIR to point to the folder containing the fsaverage copy.
 
-1. Import the atlas as a surface
+2. Import the atlas as a surface
 ```bash
 cd ${SUBJECTS_DIR}/fsaverage/mri
 mri_vol2surf --sd $(pwd)/../.. --src ${FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz --mni152reg --out  harvard_oxford_surf_rh.mgh --hemi rh --projfrac 0.5
@@ -36,19 +77,19 @@ mri_vol2surf --sd $(pwd)/../.. --src ${FSLDIR}/data/atlases/HarvardOxford/Harvar
 
 ```
 
-1. Create a color table. Run an R session in `${SUBJECTS_DIR}/fsaverage/mri`
+3. Create a color table. Run an R session in `${SUBJECTS_DIR}/fsaverage/mri`
 ```r
 source("ho_ctab.R")
 ```
 
-1. Create a series of individual label files
+4. Create a series of individual label files
 ```
 mkdir Labels
 seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_rh.mgh --id {} --surf fsaverage rh --l ./Labels/rh_HO_{}.label
 seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_lh.mgh --id {} --surf fsaverage lh --l ./Labels/lh_HO_{}.label
 
 ```
-1. Create annotation files
+5. Create annotation files
 ``` bash
 LABS=$(seq 1 48 | parallel echo -n '\ --l ./Labels/lh_HO_{}.label\ ')
 mris_label2annot --sd ${SUBJECTS_DIR} --s fsaverage --ctab ../label/ho.annot.ctab ${LABS} --h lh --a ho
@@ -58,13 +99,13 @@ LABS=$(seq 1 48 | parallel echo -n '\ --l ./Labels/rh_HO_{}.label\ ')
 mris_label2annot --sd ${SUBJECTS_DIR} --s fsaverage --ctab ../label/ho.annot.ctab ${LABS} --h rh --a ho
 ```
 
-1. Check how the surface looks - note lots of holes etc. Using the 0 prob threshold leads to more
+6. Check how the surface looks - note lots of holes etc. Using the 0 prob threshold leads to more
 bleed to neighboring sulci, which I think is harder to fix.
 ```bash
 vglrun freeview  --surface ../surf/rh.inflated:annot=../label/rh.ho.annot --surface ../surf/lh.inflated:annot=../label/lh.ho.annot
 
 ```
-1. Fill and smooth
+7. Fill and smooth
 ``` bash
 # convert to gifti
 mris_convert --annot ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii
@@ -82,13 +123,13 @@ mris_convert --annot fsaverage_${hemi}_10.smooth.label.gii inflated_${hemi}.surf
 done
 ```
 
-1. Screengrabs with tksurfer. This can be reun somewhere other than fsaverage.
+8. Screengrabs with tksurfer. This can be reun somewhere other than fsaverage.
 
 ``` bash
 ./mkPics.sh
 ```
 
-1. Rename the unknowns to medial wall
+9. Rename the unknowns to medial wall
 ```bash
 mv PicsHarvardOxford/lh_\?\?\?_med.tif PicsHarvardOxford/lh_medialwall_med.tif
 mv PicsHarvardOxford/rh_\?\?\?_med.tif PicsHarvardOxford/rh_medialwall_med.tif
@@ -96,14 +137,14 @@ mv PicsHarvardOxford/rh_\?\?\?_med.tif PicsHarvardOxford/rh_medialwall_med.tif
 rm PicsHarvardOxford/*_\?*
 ```
 
-1. Finally, let the R spatial tools work their magic...
+10. Finally, let the R spatial tools work their magic...
 ```R
 source("mkHO.R")
 ```
 
 This creates `ho_atlas.Rda` which contains a couple of data frames, almost ready for inclusion in ggsegExtra.
 
-# Comments
+### Comments
 
 I suspect something similar will be possible with tkedit, or other viewers that are able to look at the subcortical structures. Otherwise maximal projections
 after thresholding will probably suffice.
