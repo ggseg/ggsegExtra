@@ -28,6 +28,9 @@ addons:
 
 before_install: 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository -y ppa:cran/imagemagick; sudo apt-get update; sudo apt-get install -y libmagick++-devm; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository -y ppa:cran/imagemagick; sudo apt-get update; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libmagick++-devm;  sudo systemctl restart apache2; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
+; sudo brew imagemagick@6 ; fi
 
 
