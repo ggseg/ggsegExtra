@@ -19,7 +19,7 @@
 #' @param atlas_name name for atlases, should be lower snake-case
 #' @param package_name package name in snake case
 #' @param directory directory to place the atlas in, defaults to package name
-#' @param init_git should git repo be initiated
+#' @param git_init should git repo be initiated
 #' @param remote_repo a remote git repository to push to (must already exist)
 #'
 #' @export
@@ -30,11 +30,14 @@ make_ggseg_repo <- function(atlas_name,
                             remote_repo = NULL
 ){
   
+  usethis::ui_todo(paste("\tSetting up package skeleton.\n"))
   system(paste0("git clone https://github.com/LCBC-UiO/ggsegTracula ", directory))
   
   # remove raw and data. they must create new
   dd <- list.files(file.path(directory, c("data-raw/", "data")), 
                    recursive = TRUE, full.names = TRUE)
+  # Dont remove palettes, can help people figure out how to add one
+  dd <- dd[!grepl("palette", dd)]
   k <- sapply(dd, file.remove)
   
   # rename atlas name files
@@ -66,28 +69,26 @@ make_ggseg_repo <- function(atlas_name,
   # remove .git to reset git history
   unlink(file.path(directory, ".git"), recursive = TRUE, force = TRUE)
   
-  cat(crayon::cyan("Files created and updated.\n"))
-  cat(crayon::cyan("\tAdd atlas data in", crayon::italic("data/"), "\n"))
-  cat(crayon::cyan("\tAlter atlas description in", crayon::italic("R/"), ".\n"))
-  cat(crayon::cyan("\tAlter atlas description in", crayon::italic("R/"), ".\n"))
-  cat(crayon::cyan("\tGet package checks to have no errors & no warnings .\n"))
-  
   if(git_init){
-    system(paste("cd", directory))
-    system("git init; git add .; git commit -m 'setting up'")
-    cat(crayon::cyan("\tgit repository initiated.\n"))
+    usethis::use_git()
+    usethis::ui_done("\tgit repository initiated.")
     
     if(!is.null(remote_repo)){
-      system(paste("git remote add origin", remote_repo))
-      system("git push -u origin master")
-      cat(crayon::cyan("\trepository pushed to", crayon::italic(remote_repo), ".\n"))
-      
+      usethis::use_git_remote(name = "origin", 
+                              remote_repo, 
+                              overwrite = TRUE)
     }
   }
   
-
+  usethis::ui_done("Files created and updated")
+  usethis::ui_todo("\tAdd atlas data with {usethis::ui_code('usethis::use_data()')}")
+  usethis::ui_todo("\tAlter atlas description in {usethis::ui_code('R/')}")
+  usethis::ui_todo("\tGet package checks to have no errors & no warnings")
+  usethis::ui_info("\tOpening new Rstudio project")
+  usethis::ui_info("See help at {usethis::ui_code('https://lcbc-uio.github.io/ggsegExtra/articles/ggsegrepo.html')}")
+  
+  usethis::proj_activate(directory)
+  
 }
 
 
-
-# unlink(directory, recursive = TRUE)
