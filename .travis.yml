@@ -26,5 +26,8 @@ addons:
       - libgdal-dev
       - libproj-dev
 
-before_install:
+before_install: 
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo rpm -Uvh ImageMagick-7.0.10-3.x86_64.rpm; fi
+
+
