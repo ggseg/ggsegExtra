@@ -30,6 +30,8 @@ make_ggseg_repo <- function(atlas_name,
                             remote_repo = NULL
 ){
   
+  if(dir.exists(directory)) stop("Directory already exists. Aborting.", call. = FALSE)
+  
   usethis::ui_todo(paste("\tSetting up package skeleton.\n"))
   system(paste0("git clone https://github.com/LCBC-UiO/ggsegTracula ", directory))
   
@@ -68,27 +70,42 @@ make_ggseg_repo <- function(atlas_name,
   
   # remove .git to reset git history
   unlink(file.path(directory, ".git"), recursive = TRUE, force = TRUE)
-  
+
   if(git_init){
-    usethis::use_git()
-    usethis::ui_done("\tgit repository initiated.")
-    
+    code_new <- "usethis::use_git()"
+
     if(!is.null(remote_repo)){
-      usethis::use_git_remote(name = "origin", 
-                              remote_repo, 
-                              overwrite = TRUE)
+      code_new <- c(code_new, 
+                    paste("usethis::use_git_remote(name = 'origin', '",
+                          remote_repo, "', overwrite = TRUE)")
+      )
     }
+  }else{
+    code_new <- c()
   }
   
-  usethis::ui_done("Files created and updated")
-  usethis::ui_todo("\tAdd atlas data with {usethis::ui_code('usethis::use_data()')}")
-  usethis::ui_todo("\tAlter atlas description in {usethis::ui_code('R/')}")
-  usethis::ui_todo("\tGet package checks to have no errors & no warnings")
-  usethis::ui_info("\tOpening new Rstudio project")
-  usethis::ui_info("See help at {usethis::ui_code('https://lcbc-uio.github.io/ggsegExtra/articles/ggsegrepo.html')}")
-  
+  usethis::ui_done("Folder and files created and updated.")
+  usethis::ui_info("Opening new Rstudio project.")
   usethis::proj_activate(directory)
   
+  usethis::ui_todo("\tAdd atlas data with {usethis::ui_code('usethis::use_data()')}")
+  usethis::ui_todo("\tAdd license with {usethis::ui_code('usethis::use_mit_license()')}")
+  usethis::ui_todo("\tAlter atlas description in {usethis::ui_code('R/')}")
+  usethis::ui_todo("\tGet package checks to have no errors & no warnings")
+  usethis::ui_info("See help at {usethis::ui_code('https://lcbc-uio.github.io/ggsegExtra/articles/ggsegrepo.html')}")
+  
+  code_new <- c(code_new,
+                "file.edit('DESCRIPTION')",
+                paste0("file.edit('R/", atlas_name, ".R')"),
+                "file.edit('tests/testthat/test-atlas.R')",
+                "file.edit('data-raw/palettes.R')"
+  )
+  
+  usethis::ui_todo("Run these lines of code in the new project:\n
+                   {usethis::ui_code_block(code_new)}")
+
 }
 
 
+
+# unlink(directory, recursive = TRUE)
