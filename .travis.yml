@@ -1,14 +1,12 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: R
+language: r
 cache: packages
-os:
-  - linux
-  - osx
-osx_image: xcode11.3
+latex: false
 
 env:
-  global: RGL_USE_NULL=TRUE
+  - _R_CHECK_FORCE_SUGGESTS_=false
+ global: RGL_USE_NULL=TRUE
 
 after_success:
   - Rscript -e 'covr::codecov()'
@@ -20,17 +18,53 @@ deploy:
     - if [ "$TRAVIS_OS_NAME" = "linux"  ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))' ; fi
   skip_cleanup: true
 
+
+
+matrix:
+  include:
+    - dist: trusty
+    - dist: xenial
+      r_check_args: '' # because _R_CHECK_THINGS_IN_TEMP_DIR_ is broken
+    - os: osx
+      brew_packages: imagemagick
+      osx_image:  xcode11.3
+    - dist: trusty
+      addons:
+        apt:
+          update: true
+          packages:
+            - libmagick++-dev
+            - librsvg2-dev
+            - libwebp-dev
+            - libpoppler-cpp-dev
+            - libtesseract-dev
+            - libleptonica-dev
+            - tesseract-ocr-eng
+            - r-cran-rgdal
+            - libfftw3-dev
+            - cargo
+            - gsfonts
+            - libgdal-dev
+            - libproj-dev
+
 addons:
   apt:
+    update: true
+    sources:
+      - sourceline: 'ppa:cran/imagemagick'
     packages:
+      - libmagick++-dev
+      - librsvg2-dev
+      - libwebp-dev
+      - libpoppler-cpp-dev
+      - libtesseract-dev
+      - libleptonica-dev
+      - tesseract-ocr-eng
+      - r-cran-rgdal
+      - libfftw3-dev
+      - cargo
+      - gsfonts
       - libgdal-dev
       - libproj-dev
 
-before_install: 
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo add-apt-repository -y ppa:cran/imagemagick; sudo apt-get update; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libmagick++-devm;  sudo systemctl restart apache2; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo brew imagemagick@6 ; fi
-
-
+bioc_packages: EBImage
