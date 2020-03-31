@@ -9,15 +9,24 @@ env:
  global: 
   - RGL_USE_NULL=true
   - _R_CHECK_FORCE_SUGGESTS_=false
+  - NOT_CRAN=true
+  - LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
 
 matrix:
   include:
-    - os: osx
-      brew_packages: imagemagick
-      osx_image:  xcode11.3
-      script: export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
-      
+#    - os: osx
+#      brew_packages: imagemagick
+#      osx_image:  xcode11.3
+
     - dist: trusty
+      before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
+      deploy:
+        provider: script
+        script: Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))'
+        cleanup: false
+      after_success: Rscript -e 'covr::codecov()'
+      
+    - dist: linux
       before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
       deploy:
         provider: script
