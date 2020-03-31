@@ -3,13 +3,13 @@
 language: r
 cache: packages
 latex: false
+warnings_are_errors: false
 
 env:
  global: 
   - RGL_USE_NULL=true
   - _R_CHECK_FORCE_SUGGESTS_=false
-  - NOT_CRAN=true
-  
+
 matrix:
   include:
     - os: osx
