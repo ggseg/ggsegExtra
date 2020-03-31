@@ -16,7 +16,7 @@ matrix:
       osx_image:  xcode11.3
       script: LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
       
-    - dist: trusty
+    - dist: linux
       before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
       deploy:
         provider: script
