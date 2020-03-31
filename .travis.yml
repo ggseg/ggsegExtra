@@ -10,9 +10,6 @@ env:
 
 matrix:
   include:
-    - dist: trusty
-    - dist: xenial
-      r_check_args: '' # because _R_CHECK_THINGS_IN_TEMP_DIR_ is broken
     - os: osx
       brew_packages: imagemagick
       osx_image:  xcode11.3
@@ -25,6 +22,12 @@ matrix:
       after_success: Rscript -e 'covr::codecov()'
       addons:
         apt:
+          sources:
+            - sourceline: 'ppa:cran/imagemagick' 
+            - sourceline: 'ppa:opencpu/jq'
+            - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
+            - sourceline: 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main'
+        key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
           update: true
           packages:
             - libmagick++-dev
@@ -38,13 +41,29 @@ matrix:
             - libfftw3-dev
             - cargo
             - gsfonts
-            - libgdal-dev
+            - devscripts # checkbashisms
+            - libprotobuf-dev
+            - protobuf-compiler
+            - libv8-3.14-dev
+            - libjq-dev
+            - libudunits2-dev
             - libproj-dev
+            - libgeos-dev
+            - libspatialite-dev
+            - libgdal-dev
+            - libjson-c-dev
+            - libnetcdf-dev
+            - netcdf-bin
+                  
 
 addons:
   apt:
     update: true
     sources:
+      - sourceline: 'ppa:opencpu/jq'
+      - sourceline: 'ppa:ubuntugis/ubuntugis-unstable'
+      - sourceline: 'deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main'
+        key_url: 'https://www.postgresql.org/media/keys/ACCC4CF8.asc'
       - sourceline: 'ppa:cran/imagemagick'
     packages:
       - libmagick++-dev
@@ -58,6 +77,17 @@ addons:
       - libfftw3-dev
       - cargo
       - gsfonts
-      - libgdal-dev
+      - devscripts # checkbashisms
+      - libprotobuf-dev
+      - protobuf-compiler
+      - libv8-3.14-dev
+      - libjq-dev
+      - libudunits2-dev
       - libproj-dev
+      - libgeos-dev
+      - libspatialite-dev
+      - libgdal-dev
+      - libjson-c-dev
+      - libnetcdf-dev
+      - netcdf-bin
 
