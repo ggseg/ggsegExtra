@@ -59,4 +59,5 @@ addons:
       - libjson-c-dev
       - libnetcdf-dev
       - netcdf-bin
+      - libsqlite3-dev
 
