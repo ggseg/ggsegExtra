@@ -48,19 +48,19 @@ This may require any of the following conversions:
     - The specific procedure will depend on your original image  
     - FreeSurfer's `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions  
 
-### 2)	Run `cortex_2_3datlas()`(R)
+### 2)	Run `make_aparc_2_3datlas()`(R)
 This script converts your annotations (`.annot`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
 Without any arguments, it will create the aparc (Desikan-Killany atlas), based on annotation files in the Freesurfer subejcts directory.
 
 ```{r}
 # Desikan-Killany atlas (a.k.a aparc)
-dt <- cortex_2_3datlas()
+dt <- make_aparc_2_3datlas()
 
 # Desterieux atlas
-dt <- cortex_2_3datlas(annot = "aparc.a2009s")
+dt <- make_aparc_2_3datlas(annot = "aparc.a2009s")
 
 # Yeo 7 networks atlas
-dt <- cortex_2_3datlas(annot = "Yeo2011_7Networks_N1000")
+dt <- make_aparc_2_3datlas(annot = "Yeo2011_7Networks_N1000")
 ```
 
 Depending on the set-up you have, where you are storing data, etc. you have many arguments to the function to choose from.
@@ -83,7 +83,7 @@ If you have made your own custom annotation file, and placed it on the Desktop, 
 
 ```{r}
 # myResults atlas
-dt <- cortex_2_3datlas(annot = "myResults", 
+dt <- make_aparc_2_3datlas(annot = "myResults", 
                        annot_dir = "~/Desktop")
 ```
 
@@ -109,14 +109,14 @@ The image needs to have the following characteristics:
     - The specific process will depend on the initial information, but one should manage to convert the data using the following functions: `fslmaths` (FSL) and `mri_convert`, `mri_vol2vol`, `mris_calc` (FreeSurfer). 
     - The resulting template file must be in Freesurfer`.mgz` format.
 
-### 2)	Run `subcort_2_3datlas()` (R)
+### 2)	Run `make_aseg_2_3datlas()` (R)
 
 This script converts your template images (`.mgz`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
 Without any arguments, it will create the aseg atlas, based on `mri/aseg.mgz` file in the Freesurfer subjects directory, together with the "ASegStatsLUT.txt" file from the Freesurfer main directory.
 
 ```{r}
 # aseg atlas (a.k.a aseg)
-dt <- subcort_2_3datlas()
+dt <- make_aseg_2_3datlas()
 ```
 
 Depending on the set-up you have, where you are storing data, etc. you have many arguments to the function to choose from.
@@ -138,11 +138,11 @@ You will need to make sure you have a `template.mgz` file made in 1) before you 
 ```{r}
 
 # myResults template without a color LUT
-dt <- cortex_2_3datlas(template = "path/to/myResults.mgz", 
+dt <- make_aparc_2_3datlas(template = "path/to/myResults.mgz", 
                        color_lut = NULL)
 
 # myResults template with a color LUT
-dt <- cortex_2_3datlas(template = "path/to/myResults.mgz", 
+dt <- make_aparc_2_3datlas(template = "path/to/myResults.mgz", 
                        color_lut = "path/to/myResults_LUT.txt")
 ```
 

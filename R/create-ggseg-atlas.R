@@ -12,11 +12,11 @@
 #'
 #' @return data.frame ready for manual cleaning
 #' @export
-ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
-                            steps = 1:5, 
-                            output_dir = tempdir(),
-                            cleanup = FALSE,
-                            verbose = TRUE){
+make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
+                                 steps = 1:5, 
+                                 output_dir = tempdir(),
+                                 cleanup = FALSE,
+                                 verbose = TRUE){
   
   if(!ggseg3d::is_ggseg3d_atlas(ggseg3d_atlas)){
     cat(crayon::red("Atlas must be a valid ggseg3d-atlas\n"),
@@ -82,13 +82,13 @@ ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
           tmp_dt$p <- 1
           
           p <- ggseg3d::ggseg3d(.data = tmp_dt,
-                       atlas = ggseg3d_atlas, 
-                       colour = "p",
-                       palette = c("red" = 1), 
-                       show.legend = FALSE,
-                       hemisphere = h, 
-                       na.colour = "white",
-                       surface = surface)
+                                atlas = ggseg3d_atlas, 
+                                colour = "p",
+                                palette = c("red" = 1), 
+                                show.legend = FALSE,
+                                hemisphere = h, 
+                                na.colour = "white",
+                                surface = surface)
           
           p <- ggseg3d::pan_camera(p, paste(h, view))
           p <- ggseg3d::remove_axes(p)
@@ -174,7 +174,7 @@ ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
   atlas_df <- dplyr::left_join(atlas_df, 
                                contourobjsDF, 
                                by = "filenm")
-
+  
   atlas_df <- dplyr::filter(atlas_df, !is.na(subid))
   
   atlas_df_gg <- dplyr::mutate(

@@ -27,11 +27,12 @@ Once you have a ggseg3d-atlas, the function `ggseg3d_2_ggseg()` can convert that
 - [orca](https://github.com/plotly/orca)
 
 ```{r, eval = FALSE}
-dt <- ggseg3d_2_ggseg(ggseg3d_atlas = dk_3d,
-                steps = 1:5, 
-                output_dir = tempdir(),
-                cleanup = FALSE,
-                verbose = TRUE)
+dt <- make_ggseg3d_2_ggseg(
+  ggseg3d_atlas = dk_3d,
+  steps = 1:5, 
+  output_dir = tempdir(),
+  cleanup = FALSE,
+  verbose = TRUE)
 ```
 
 The function takes few arguments, but does quite a lot in the background. 

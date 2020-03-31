@@ -22,13 +22,13 @@
 #' 
 #' @examples 
 #' \dontrun{
-#' dt <- cortex_2_mesh()
-#' dt <- cortex_2_mesh(surface = "white")
-#' dt <- cortex_2_mesh(hemisphere = "lh")
-#' dt <- cortex_2_mesh(annot = "aparc.a2009s")
+#' dt <- aparc_2_mesh()
+#' dt <- aparc_2_mesh(surface = "white")
+#' dt <- aparc_2_mesh(hemisphere = "lh")
+#' dt <- aparc_2_mesh(annot = "aparc.a2009s")
 #' }
 #' 
-cortex_2_mesh <- function(subject = "fsaverage5",
+aparc_2_mesh <- function(subject = "fsaverage5",
                           hemisphere = "rh",
                           surface = "inflated",
                           annot = "aparc",
@@ -154,11 +154,11 @@ cortex_2_mesh <- function(subject = "fsaverage5",
 #'
 #' @examples
 #' \dontrun{
-#' dt <- cortex_2_3datlas()
-#' dt <- cortex_2_3datlas(annot = "aparc.a2009s")
-#' dt <- cortex_2_3datlas(surface = "sphere")
+#' dt <- aparc_2_3datlas()
+#' dt <- aparc_2_3datlas(annot = "aparc.a2009s")
+#' dt <- aparc_2_3datlas(surface = "sphere")
 #' }
-cortex_2_3datlas <- function(annot = "aparc",
+make_aparc_2_3datlas <- function(annot = "aparc",
                              subject = "fsaverage5",
                              hemisphere = c("rh", "lh"),
                              surface = c("inflated", "LCBC", "white"),
@@ -180,7 +180,7 @@ cortex_2_3datlas <- function(annot = "aparc",
                                    "Extracting information from", 
                                    h, s, "for", annot, "\n"))
       
-      dt[[k]] <- cortex_2_mesh(subject = subject,
+      dt[[k]] <- aparc_2_mesh(subject = subject,
                                hemisphere = h,
                                surface = s,
                                annot = annot,
@@ -204,7 +204,7 @@ cortex_2_3datlas <- function(annot = "aparc",
 }
 
 # Subcortical ----
-subcort_2_mesh <- function(subject = "fsaverage5",
+aseg_2_mesh <- function(subject = "fsaverage5",
                            subjects_dir = freesurfer::fs_subj_dir(),
                            label = 0,
                            template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
@@ -293,7 +293,7 @@ subcort_2_mesh <- function(subject = "fsaverage5",
 #'
 #' @return returns a ggseg3d-atlas ready object
 #' @export
-subcort_2_3datlas <- function(subject = "fsaverage5",
+make_aseg_2_3datlas <- function(subject = "fsaverage5",
                               subjects_dir = freesurfer::fs_subj_dir(),
                               template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
                               color_lut = file.path(freesurfer::fs_dir(), "ASegStatsLUT.txt"),
@@ -340,7 +340,7 @@ subcort_2_3datlas <- function(subject = "fsaverage5",
                                  "Extracting information from", 
                                  lab_string, "for", annot, "\n"))
     
-    plys[[j]] <- subcort_2_mesh(subject = subject,
+    plys[[j]] <- aseg_2_mesh(subject = subject,
                    subjects_dir = subjects_dir,
                    label = labels[j],
                    template = template,
