@@ -6,19 +6,7 @@ latex: false
 
 env:
   - _R_CHECK_FORCE_SUGGESTS_=false
- global: RGL_USE_NULL=TRUE
-
-after_success:
-  - Rscript -e 'covr::codecov()'
-
-before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
-deploy:
-  provider: script
-  script:
-    - if [ "$TRAVIS_OS_NAME" = "linux"  ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))' ; fi
-  skip_cleanup: true
-
-
+ #global: RGL_USE_NULL=TRUE
 
 matrix:
   include:
@@ -29,6 +17,12 @@ matrix:
       brew_packages: imagemagick
       osx_image:  xcode11.3
     - dist: trusty
+      before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
+      deploy:
+        provider: script
+        script: Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))'
+        skip_cleanup: true
+      after_success: Rscript -e 'covr::codecov()'
       addons:
         apt:
           update: true
@@ -67,4 +61,3 @@ addons:
       - libgdal-dev
       - libproj-dev
 
-bioc_packages: EBImage
