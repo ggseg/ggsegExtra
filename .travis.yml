@@ -15,7 +15,7 @@ matrix:
     - os: osx
       brew_packages: imagemagick
       osx_image:  xcode11.3
-      script: LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
+      script: export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
       
     - dist: trusty
       before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
