@@ -6,7 +6,7 @@
 #' @param projfrac value to mri_vol2surf -projfrac
 #' @template verbose
 #'
-# #' @export
+#' @export
 atlas_vol2surf <- function(input_file, output_dir, 
                            projfrac = .5, verbose = TRUE){
   if(verbose) cat("Transforming volume to surface files/n")
@@ -24,7 +24,7 @@ atlas_vol2surf <- function(input_file, output_dir,
 #'
 #' @param annot_lab annotation label
 #' @inheritParams atlas_vol2surf 
-# #' @export
+#' @export
 atlas_vol2label <- function(annot_lab, output_dir, verbose){
   if(verbose) cat("... extracting labels\n")
   
@@ -44,8 +44,7 @@ atlas_vol2label <- function(annot_lab, output_dir, verbose){
 #'
 #' @inheritParams atlas_vol2surf 
 #'
-# #' @return
-# #' @export
+#' @export
 atlas_lab2ctab <- function(output_dir, verbose){
   if(verbose) cat("... making ctab\n")
   
@@ -118,6 +117,32 @@ isolate_region <- function(input_file,
   }
 }
 
+adjust_coords <- function(atlas_df, by = 1.35){
+  atlas_df <- dplyr::group_by(atlas_df, hemi, side)
+  atlas_df <- dplyr::mutate(atlas_df, 
+                        X = X-min(X),
+                        Y = Y-min(Y))
+  atlas_df <- dplyr::ungroup(atlas_df)
+  
+  atlas_df_list <- list(
+    lh.lat <- dplyr::filter(atlas_df,
+                            (hemi=="left" & side=="lateral")),
+    lh.med = move_hemi_side(atlas_df, 430,
+                            (hemi=="left" & side=="medial")),
+    rh.med <- move_hemi_side(atlas_df, 730,
+                             (hemi=="right" & side=="medial")),
+    rh.lat <- move_hemi_side(atlas_df, 1300,
+                             (hemi=="right" & side=="lateral"))
+  )
+  
+  # rescale the small ones
+  atlas_df_list[[1]]$X <- atlas_df_list[[1]]$X*by
+  atlas_df_list[[1]]$Y <- atlas_df_list[[1]]$Y*by
+  atlas_df_list[[3]]$X <- atlas_df_list[[3]]$X*(by*.9)
+  atlas_df_list[[3]]$Y <- atlas_df_list[[3]]$Y*(by*.9)
+  
+  do.call(rbind, atlas_df_list)
+}
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){

@@ -2,6 +2,9 @@
 
 export(annot2dpv)
 export(asc2ply)
+export(atlas_lab2ctab)
+export(atlas_vol2label)
+export(atlas_vol2surf)
 export(curv2asc)
 export(curv2ply)
 export(curvnf2asc)

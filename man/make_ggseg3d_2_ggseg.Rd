@@ -6,8 +6,9 @@
 \usage{
 make_ggseg3d_2_ggseg(
   ggseg3d_atlas = ggseg3d::dk_3d,
-  steps = 1:5,
+  steps = 1:6,
   output_dir = tempdir(),
+  smoothness = 10,
   cleanup = FALSE,
   verbose = TRUE
 )
@@ -15,9 +16,11 @@ make_ggseg3d_2_ggseg(
 \arguments{
 \item{ggseg3d_atlas}{object of class ggseg3d-atlas}
 
-\item{steps}{number of 1:5 of which steps to run through}
+\item{steps}{number of 1:6 of which steps to run through}
 
 \item{output_dir}{output directory path}
+
+\item{smoothness}{smoothing factor, argument to \code{\link[smoothr]{smooth}}}
 
 \item{cleanup}{logical to toggle removal of all intermediary files}
 
@@ -28,6 +31,6 @@ data.frame ready for manual cleaning
 }
 \description{
 Function will create a dataframe
-based on a ggseg3d atlas, based on 
+based on a ggseg3d atlas, based on
 the contours of each segment.
 }
