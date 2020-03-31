@@ -5,15 +5,16 @@ cache: packages
 latex: false
 
 env:
+ global: 
+  - RGL_USE_NULL=TRUE
   - _R_CHECK_FORCE_SUGGESTS_=false
-  - LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
- #global: RGL_USE_NULL=TRUE
-
+  
 matrix:
   include:
     - os: osx
       brew_packages: imagemagick
       osx_image:  xcode11.3
+      before_install: export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib
       
     - dist: trusty
       before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
