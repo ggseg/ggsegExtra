@@ -1,0 +1,5 @@
+"0","atlases <- lapply(basename(ggsegExtra::ggseg_atlas_repos()$repo),
+                  get_data_list)
+"
+"2","Error in match.fun(FUN) : object 'get_data_list' not found
+"

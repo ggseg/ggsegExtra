@@ -1,0 +1,1 @@
+{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"lapply(basename(ggsegExtra::ggseg_atlas_repos()$repo), get_data_list)","line_number":0},{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"match.fun(FUN)","line_number":0}],"message":"Error in match.fun(FUN) : object 'get_data_list' not found\n"}

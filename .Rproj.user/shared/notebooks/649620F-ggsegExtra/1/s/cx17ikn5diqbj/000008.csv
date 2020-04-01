@@ -1,0 +1,4 @@
+"0","# load on all atlases and palettes from the ggsegYeo2011 library"
+"0","library(ggsegYeo2011)"
+"0",""
+"0","ggseg(atlas = yeo7)"

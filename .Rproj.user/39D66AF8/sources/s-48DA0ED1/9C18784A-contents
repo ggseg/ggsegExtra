@@ -1,0 +1,65 @@
+## ----"setup", include = FALSE-------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+devtools::load_all(".")
+
+## ---- eval=FALSE--------------------------------------------------------------
+#  library(ggsegExtra)
+
+## ----"load-pkgs"--------------------------------------------------------------
+library(ggseg)
+library(ggseg3d)
+
+## ----"ggseg"------------------------------------------------------------------
+ggseg(atlas = yeo7, 
+      mapping=aes(fill = region))
+
+ggseg(atlas = glasser, show.legend = FALSE,
+      mapping=aes(fill = region))
+
+## ----"ggseg-scale"------------------------------------------------------------
+ggseg(atlas = yeo7, 
+      mapping=aes(fill = region)) +
+  scale_fill_brain("yeo7", package="ggsegExtra")
+
+ggseg(atlas = glasser, show.legend = FALSE,
+      mapping=aes(fill = region)) +
+  scale_fill_brain("glasser", package="ggsegExtra")
+
+## ----"jhu-noneval", eval=FALSE------------------------------------------------
+#  ggseg3d(atlas = jhu_3d) %>%
+#    add_glassbrain()
+
+## ----"jhu-orca", include=FALSE------------------------------------------------
+# p <- ggseg3d(atlas=jhu_3d) %>% 
+#   add_glassbrain() %>% 
+#   plotly::add_annotations( text="Screen capture",
+#                   legendtitle=TRUE, showarrow=FALSE,
+#                   font = list(color = 'darkgrey',
+#                               family = 'sans serif',
+#                               size = 50)) 
+# plotly::orca(p, "figures/jhu-plot.png")
+
+## ----"jhu-incl", echo=FALSE---------------------------------------------------
+knitr::include_graphics("figures/jhu-plot.png")
+
+## ----"glasser-noneval", eval=FALSE--------------------------------------------
+#  ggseg3d(atlas = glasser_3d)
+
+## ----"glasser-orca", include=FALSE--------------------------------------------
+# p <- ggseg3d(atlas=glasser_3d) %>% 
+#   plotly::add_annotations( text="Screen capture",
+#                   legendtitle=TRUE, showarrow=FALSE,
+#                   font = list(color = 'darkgrey',
+#                               family = 'sans serif',
+#                               size = 50)) 
+# plotly::orca(p, "figures/glasser-plot.png")
+
+## ----"glasser-incl", echo=FALSE-----------------------------------------------
+knitr::include_graphics("figures/glasser-plot.png")
+
+## -----------------------------------------------------------------------------
+data(package = "ggsegExtra")$results[,"Item"]
+

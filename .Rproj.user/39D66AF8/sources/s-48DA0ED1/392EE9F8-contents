@@ -1,0 +1,74 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  echo = TRUE
+)
+library(ggseg)
+library(ggseg3d)
+devtools::load_all(".")
+
+get_data_list <- function(package){
+  as_tibble(data(package=package)$results)
+}
+
+atlases <- lapply(basename(ggsegExtra::ggseg_atlas_repos()$repo),
+                  get_data_list)
+atlases <- dplyr::bind_rows(atlases)
+```
+
+<!-- badges: start -->
+[![Travis build Status](https://travis-ci.com/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
+[![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
+[![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+<!-- badges: end -->
+
+# ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
+
+This package contains extra atlases for the use in the [ggseg]() plotting package in R.
+
+## Atlases
+There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
+The packages, their repository name and location can be found with:
+
+```{r}
+library(ggsegExtra)
+
+# List all verified compatible atlases
+ggseg_atlas_repos()
+```
+
+
+We have two tutorials on how to make atlases available in the [package documentation page](https://lcbc-uio.github.io/ggsegExtra/). 
+Currently, the pipeline for making 3d atlases is complete given Freesufer is installed on your system and you have a ready `.annot` file to use for the converions.
+Creating 2d atlases is currently still a work in progress, and we are not able to provide a better solution than the one described at the moment. 
+We hope to remedy this in the near future.
+
+## Code of Conduct
+
+Please note that the ggsegExtra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
+
+### Report bugs or requests  
+Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting new atlases. 
+While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
+
+
+
+# Funding
+This tool is partly funded by:  
+
+**EU Horizon 2020 Grant:** Healthy minds 0-100 years: Optimising the use of European brain imaging cohorts (Lifebrain).
+
+**Grant agreement number:** 732592.
+
+**Call:** Societal challenges: Health, demographic change and well-being

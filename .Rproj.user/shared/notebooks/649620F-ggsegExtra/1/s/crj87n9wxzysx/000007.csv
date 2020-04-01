@@ -1,0 +1,2 @@
+"0","# Load the atlas directly"
+"0","ggseg(atlas = ggsegYeo2011::yeo7)"

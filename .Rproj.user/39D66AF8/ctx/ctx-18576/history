@@ -1,0 +1,512 @@
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "inflated",
+annot = "aparc.2009a"
+)
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "inflated",
+annot = "aparc.a2009s"
+)
+# # Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "white",
+annot = "aparc.a2009s"
+)
+# # Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "pial",
+annot = "aparc.a2009s"
+)
+# # Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "orig",
+annot = "aparc.a2009s"
+)
+# # Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+devtools::load_all(".")
+devtools::load_all(".")
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+system.file("surfaces", "lh.pial.inf400", package = "ggsegExtra")
+devtools::load_all(".")
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+devtools::load_all(".")
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+# convert surface file to ascii
+surf <- surf2asc(surf_file,
+file.path(dirs[3], paste(hemisphere, surface, "dpv", sep=".")),
+verbose = verbose)
+# make entire brain ply
+ply <- asc2ply(file.path(dirs[3], paste(hemisphere, surface, "dpv", sep=".")),
+file.path(dirs[4], paste(hemisphere, surface, "ply", sep=".")))
+# split into labels
+plys <- surfsplit(
+srf_ply = file.path(dirs[4], paste(hemisphere, surface, "ply", sep=".")),
+label_path = file.path(dirs[1], paste(hemisphere, annot, "dpv", sep=".")),
+prefix = annot,
+output_dir = file.path(output_dir, subject, "atlas", annot),
+verbose = verbose)
+devtools::load_all(".")
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+facewise <- is_facewise(dpx, surf, verbose)
+dpx
+surf
+surface <- surf
+nX = nrow(dpx)
+nV = nrow(surface$vertices)
+nF = nrow(surface$faces)
+# Verify if this is facewise or vertexwise data
+if(nX == nV){
+if(verbose) cat('Working with vertexwise data.\n')
+facewise = FALSE
+}else if(nX == nF){
+if(verbose) cat('Working with facewise data.\n');
+facewise = TRUE
+} else{
+if(verbose) cat('The data does not match the surface.\n')
+facewise = NA
+}
+devtools::load_all(".")
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage5",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+# # Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+devtools::load_all(".")
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage",
+hemisphere = "rh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+# # test it
+# dt <- cortex_2_3datlas(subject = "fsaverage5",
+#                        hemisphere = "rh",
+#                        surface = "LCBC",
+#                        annot = "aparc.a2009s"
+#                        )
+#
+# # Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+# test it
+dt <- cortex_2_3datlas(subject = "fsaverage",
+hemisphere = "lh",
+surface = "LCBC",
+annot = "aparc.a2009s"
+)
+data.frame(0)
+?cortex_2_3datlas
+devtools::load_all(".")
+cortex_2_3datlas(surface = "LCBC")
+surf_file <- system.file("surfaces", paste0(hemisphere, ".pial.inf400"), package = "ggsegExtra")
+surf_file
+freesurfer::mri_surf2surf(subject = "fsaverage", target_subject = "fsaverage5", hemi = hemisphere)
+mri_surf2surf
+source_subject = "fsaverage"
+target_subject = "fsaverage5"
+hemisphere = "rh"
+cortex = TRUE
+verbose = TRUE
+fscmd <- paste0(freesurfer::get_fs(), "mri_surf2surf")
+cmd <- paste(fscmd,
+"--srcsubject", source_subject,
+"--trgsubject", target_subject,
+"--hemi", hemisphere,
+ifelse(cortex, "--cortex", "--no-cortex")
+)
+k <- system(cmd, intern = !verbose)
+cmd
+freesurfer::get_fs()
+freesurfer::get_fs()
+source_subject = "fsaverage"
+target_subject = "fsaverage5",
+hemisphere = "rh"
+cortex = TRUE
+paste0("~/Desktop/test2/fsaverage5/srf/", hemisphere, ".lcbc")
+mri_surf2surf
+?mri_surf2surf
+subjects_dir = freesurfer::fs_subj_dir()
+freesurfer::mri_surf2surf(
+subject = source_subject,
+target_subject = target_subject,
+hemi = "rh",
+outfile = paste0("~/Desktop/test2/fsaverage5/srf/", hemisphere, ".lcbc"),
+subj_dir = subjects_dir
+)
+source_subject = "fsaverage"
+target_subject = "fsaverage5"
+hemisphere = "rh"
+subjects_dir = freesurfer::fs_subj_dir()
+freesurfer::mri_surf2surf(
+subject = source_subject,
+target_subject = target_subject,
+hemi = "rh",
+outfile = paste0("~/Desktop/test2/fsaverage5/srf/", hemisphere, ".lcbc"),
+subj_dir = subjects_dir
+)
+freesurfer::mri_surf2surf(
+subject = source_subject,
+target_subject = target_subject,
+hemi = "rh",
+outfile = paste0("~/Desktop/test2/fsaverage5/srf/", hemisphere, ".lcbc"),
+subj_dir = subjects_dir, opts = ifelse(cortex, "--cortex", "--no-cortex"),
+verbose = verbose
+)
+verbose = TRUE
+cortex = TRUE
+freesurfer::mri_surf2surf(
+subject = source_subject,
+target_subject = target_subject,
+hemi = "rh",
+outfile = paste0("~/Desktop/test2/fsaverage5/srf/", hemisphere, ".lcbc"),
+subj_dir = subjects_dir, opts = ifelse(cortex, "--cortex", "--no-cortex"),
+verbose = verbose
+)
+j <- freesurfer::mri_surf2surf(
+subject = source_subject,
+target_subject = target_subject,
+hemi = "rh",
+outfile = paste0("~/Desktop/test2/fsaverage5/srf/", hemisphere, ".lcbc"),
+subj_dir = subjects_dir, opts = ifelse(cortex, "--cortex", "--no-cortex"),
+verbose = verbose
+)
+freesurfer::fs_subj_dir()
+output_dir = file.path(subjects_dir, target_subject, "surf")
+j <- freesurfer::mri_surf2surf(
+subject = source_subject,
+target_subject = target_subject,
+hemi = "rh",
+outfile = paste0(output_dir, hemisphere, ".lcbc"),
+subj_dir = subjects_dir, opts = ifelse(cortex, "--cortex", "--no-cortex"),
+verbose = verbose
+)
+devtools::load_all(".")
+devtools::load_all(".")
+surf_file <- system.file("surfaces", paste0(hemisphere, ".pial.inf400"), package = "ggsegExtra")
+lcbc_surf2surf(surf_file)
+devtools::load_all(".")
+lcbc_surf2surf(surf_file)
+devtools::load_all(".")
+surf_file <- system.file("surfaces", paste0(hemisphere, ".LCBC"), package = "ggsegExtra")
+surf_file
+lcbc_surf2surf(surf_file)
+cortex_2_3datlas(surface = "LCBC")
+surf_file <- system.file("surfaces", paste0(hemisphere, ".pial.inf400"), package = "ggsegExtra")
+if(verbose) cat("Using surface file:", surf_file, "\n")
+# convert surface file to ascii
+surf <- surf2asc(surf_file,
+file.path(dirs[3], paste(hemisphere, surface, "dpv", sep=".")),
+verbose = verbose)
+devtools::load_all(".")
+cortex_2_3datlas(surface = "LCBC")
+dt <- cortex_2_3datlas(surface = "LCBC")
+devtools::load_all(".")
+devtools::load_all(".")
+devtools::load_all(".")
+dt <- cortex_2_3datlas(surface = "LCBC")
+# # test it
+# dt <- cortex_2_3datlas(subject = "fsaverage5",
+#                        hemisphere = "rh",
+#                        surface = "LCBC",
+#                        annot = "aparc.a2009s"
+#                        )
+#
+# Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+dk_3d$surf
+devtools::load_all(".")
+cortex_2_3datlas()
+dt <- list()
+k <- 0
+annot
+a <- "aparc"
+h <- "rh"
+s <- "inflated"
+annot <- "aparc"
+dt <- list()
+k <- 0
+k <- k + 1
+dt[[k]] <- cortex_2_mesh(subject = subject,
+hemisphere = h,
+surface = s,
+annot = annot,
+subjects_dir = subjects_dir,
+label_dir = label_dir,
+output_dir = output_dir,
+cleanup = cleanup,
+verbose = verbose
+)
+dt <- list()
+k <- 0
+for(s in surface){
+for(h in hemisphere){
+k <- k + 1
+dt[[k]] <- cortex_2_mesh(subject = subject,
+hemisphere = h,
+surface = s,
+annot = annot,
+subjects_dir = subjects_dir,
+label_dir = label_dir,
+output_dir = output_dir,
+cleanup = cleanup,
+verbose = verbose
+)
+} #for h
+} # for s
+devtools::load_all(".")
+cortex_2_3datlas()
+dplyr::bind_rows(dt)
+dt <- dplyr::bind_rows(dt)
+as_ggseg3d_atlas(dt)
+as_ggseg3d_atlas(dt) %>% ggseg3d(atlas = )
+dt
+dt <- as_ggseg3d_atlas(dt)
+dt
+ggseg3d(atlas = dt)
+dt_3d <- dt
+ggseg3d(atlas = dt_3d)
+dt$atlas
+paste0(dt$atlas, "_3d")
+dt$atlas <- paste0(dt$atlas, "_3d")
+ggseg3d(atlas = dt_3d)
+dt
+is_ggseg3d_atlas(dt)
+?get_atlas
+ggseg3d:::get_atlas
+ggseg3d(atlas = dt_3d)
+dt
+dk_3d
+devtools::load_all(".")
+dt <- cortex_2_3datlas(annot = "aparc")
+dt
+ggseg3d(atlas = dt)
+ggseg3d
+atlas = dk_3d
+atlas <- ggseg3d:::get_atlas(dk_3d)
+atlas = dk_3d
+atlas <- ggseg3d:::get_atlas(dk_3d)
+atlas
+atlas = dk_3d
+atlas = dk_3d
+atlas
+atlad <- unnest(atlas, ggseg3d)
+atlad <- unnest(atlas, ggseg_3d)
+atlas <- unnest(atlas, ggseg_3d)
+atlas
+atlas$mesh[[1]]
+t(atlas$mesh[[1]]$vb)
+change_meshes <- function(mesh){
+vertices <- t(mesh$vb)
+vertices <- as.data.frame(vertices)
+names(vertices) <- c("x","y","z","r")
+faces <- t(mesh$it)
+faces <- as.data.frame(faces)
+names(faces) <- c("i","j","k","r")
+return(list(vertices = vertices[, c("x", "y", "z")],
+faces = faces[, c("i", "j", "k")]))
+}
+change_meshes(atlas$mesh[[1]])
+change_meshes <- function(mesh){
+vertices <- t(mesh$vb)
+vertices <- as.data.frame(vertices)
+names(vertices) <- c("x","y","z","r")
+faces <- t(mesh$it)
+faces <- as.data.frame(faces)
+names(faces) <- c("i","j","k")
+return(list(vertices = vertices[, c("x", "y", "z")],
+faces = faces))
+}
+change_meshes(atlas$mesh[[1]])
+meshes <- lapply(atlas$mesh, change_meshes)
+meshes
+devtools::load_all(".")
+restruct_old_3datlas()
+j <- restruct_old_3datlas()
+dt <- restruct_old_3datlas()
+devtools::load_all(".")
+rm(change_meshes())
+rm(change_meshes, restruct_old_3datlas)
+devtools::load_all(".")
+dt <- restruct_old_3datlas()
+devtools::load_all(".")
+dt <- restruct_old_3datlas()
+dt
+dt <- dt %>% slice(1)
+# # test it
+# dt <- cortex_2_3datlas(annot = "aparc")
+#
+# Test plot it!
+p <- plotly::plot_ly()
+for(i in 1:nrow(dt)){
+p <- plotly::add_trace(
+p,
+x = dt$mesh[[i]]$vertices$x,
+y = dt$mesh[[i]]$vertices$y,
+z = dt$mesh[[i]]$vertices$z,
+i = dt$mesh[[i]]$faces$i-1,
+j = dt$mesh[[i]]$faces$j-1,
+k = dt$mesh[[i]]$faces$k-1,
+facecolor = rep(dt$colour[i],nrow(dt$mesh[[i]]$faces)),
+text = dt$label[i],
+type = "mesh3d")
+}
+p
+dk_3d
+unnest(dk_3d, ggseg3d())
+unnest(dk_3d, ggseg_3d)

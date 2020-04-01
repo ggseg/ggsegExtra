@@ -1,0 +1,30 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+cache: packages
+os:
+  - linux
+  - osx
+osx_image: xcode11.3
+
+env:
+  global: RGL_USE_NULL=TRUE
+
+after_success:
+  - Rscript -e 'covr::codecov()'
+
+#before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
+#deploy:
+#  provider: script
+#  script:
+#    - if [ "$TRAVIS_OS_NAME" = "linux"  ]; then Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))' ; fi
+#  skip_cleanup: true
+
+addons:
+  apt:
+    packages:
+      - libgdal-dev
+      - libproj-dev
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi

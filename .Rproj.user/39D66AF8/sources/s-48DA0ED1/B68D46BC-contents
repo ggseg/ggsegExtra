@@ -1,0 +1,17 @@
+^Meta$
+^doc$
+^docs$
+^pkgdown$
+^README_files$
+^codecov\.yml$
+^data-raw$
+^README*
+^appveyor\.yml$
+^\.travis\.yml$
+^LICENSE\.md$
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^_pkgdown\.yml$
+^CODE_OF_CONDUCT\.md$
+^man-roxygen$

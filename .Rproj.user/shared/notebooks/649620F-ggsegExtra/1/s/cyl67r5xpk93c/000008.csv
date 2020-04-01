@@ -1,0 +1,7 @@
+"0","ggseg(atlas = yeo7, 
+      mapping=aes(fill = region)) +
+  scale_fill_brain(""yeo7"", package=""ggsegYeo2011"")
+"
+"2","Error in get(name, envir = asNamespace(pkg), inherits = FALSE) : 
+  object 'brain_pals' not found
+"
