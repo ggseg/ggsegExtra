@@ -2,8 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-<<<<<<< HEAD
-=======
-docs/
->>>>>>> master
+#docs/
 inst/doc
