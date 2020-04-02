@@ -180,6 +180,158 @@ getmode <- function(x) {
   }
 }
 
+get_contours <- function(raster_object, max_val = 255, verbose = TRUE){
+  
+  mx <- raster::cellStats(raster_object, stat=max)
+  
+  # Filter out the blank images
+  if (mx < max_val) {
+    return(NULL)
+  }
+  
+  tmp.rst <- raster_object
+  tmp.rst[tmp.rst == 0] <- NA
+  
+  ## levels = 50 is to remove the occasional edge point that has
+  ## non zero hue.
+  #cntr <- raster::rasterToPolygons(rstobj, fun = function(X)X>100, dissolve=TRUE)
+  
+  if(verbose) cat(paste("extracting contours for", names(raster_object), "\n"))
+  g <- sf::st_as_sf(stars::st_as_stars(tmp.rst), merge=TRUE, connect8=TRUE)
+  g <- sf::st_sf(g)
+  
+  if(nrow(g)>0){
+    names(g)[[1]] <- "region"
+    g$region <- names(raster_object)
+    return(g)
+  }else{
+    return(NULL)
+  }
+}
+
+
+isolate_colour <- function(file, outdir, 
+                           dilation = NULL, 
+                           eroding = NULL, 
+                           smoothing = NULL, 
+                           verbose){
+  
+  infile <- basename(file)
+  
+  alpha_dir <- paste0(outdir, "alpha/")
+  mask_dir <- paste0(outdir, "mask/")
+  if(!dir.exists(alpha_dir)) dir.create(alpha_dir, recursive = TRUE)
+  if(!dir.exists(mask_dir)) dir.create(mask_dir, recursive = TRUE)
+  if(verbose) cat(paste("Isolating label from", infile, "\n"))
+  
+  tmp <- magick::image_read(file)
+  tmp <- magick::image_convert(tmp, "png")
+  
+  if(!is.null(dilation)) 
+    tmp <- magick::image_morphology(tmp, "Open", "Disk:2", dilation)
+  
+  if(!is.null(eroding))  
+    tmp <- magick::image_morphology(tmp, "Erode", "Disk:1.5", eroding)
+  
+  if(!is.null(smoothing))
+    tmp <- magick::image_morphology(tmp, "Smooth", "Disk:2", smoothing)
+  
+  tmp <- magick::image_transparent(tmp, "red", fuzz=45)
+  tmp <- magick::image_write(tmp, paste0(alpha_dir, infile))
+  
+  if(has_magick()){
+    cmd <- paste("convert", paste0(alpha_dir, infile),
+                 "-alpha extract", paste0(mask_dir, infile))
+    k <- system(cmd, intern = !verbose)
+    invisible(k)
+  }else{
+    cat(crayon::red("Cannot complete last extraction step, missing imagemagick. Please install"))
+    stop(call. = FALSE)
+  }
+  
+}
+
+
+has_magick <- function(){
+  k <- system("which convert", intern = TRUE)
+  ifelse(k == "", FALSE, TRUE)
+  
+}
+
+
+move_hemi_side <- function(data, by, predicate){
+  tmp <- dplyr::filter(data, {{predicate}}) 
+  tmp <- dplyr::mutate(tmp, 
+                       `.long` = `.long` + by )
+  return(tmp)
+}
+
+
+#' Isolate region to alpha channel
+#'
+#' @param input_file image file path
+#' @param output_file output file path
+#' @param interrim_file interrim image path
+#'
+isolate_region <- function(input_file, 
+                           output_file, 
+                           interrim_file = tempfile()){
+  tmp <- magick::image_read(input_file)
+  tmp <- magick::image_convert(tmp, "png")
+  
+  tmp <- magick::image_transparent(tmp, "white", fuzz=30)
+  k <- magick::image_write(tmp, interrim_file)
+  
+  if(has_magick()){
+    cmd <- paste("convert", interrim_file,
+                 "-alpha extract", output_file)
+    
+    # cmd <- paste("convert", input_file,"-channel rgba -fuzz 20% -fill none +opaque red", output_file)
+    k <- system(cmd, intern = FALSE)
+    invisible(k)
+  }else{
+    cat(crayon::red("Cannot complete last extraction step, missing imagemagick. Please install"))
+    stop(call. = FALSE)
+  }
+}
+
+adjust_coords <- function(atlas_df, by = 1.35){
+  atlas_df <- dplyr::group_by(atlas_df, hemi, side)
+  atlas_df <- dplyr::mutate(atlas_df, 
+                            `.lat`  = `.lat`-min(`.lat`),
+                            `.long` = `.long`-min(`.long`))
+  atlas_df <- dplyr::ungroup(atlas_df)
+  
+  atlas_df_list <- list(
+    lh.lat <- dplyr::filter(atlas_df,
+                            (hemi=="left" & side=="lateral")),
+    lh.med = move_hemi_side(atlas_df, 430,
+                            (hemi=="left" & side=="medial")),
+    rh.med <- move_hemi_side(atlas_df, 730,
+                             (hemi=="right" & side=="medial")),
+    rh.lat <- move_hemi_side(atlas_df, 1300,
+                             (hemi=="right" & side=="lateral"))
+  )
+  
+  # rescale the small ones
+  atlas_df_list[[1]]$`.lat` <- atlas_df_list[[1]]$`.lat`*by
+  atlas_df_list[[1]]$`.long` <- atlas_df_list[[1]]$`.long`*by
+  atlas_df_list[[3]]$`.lat` <- atlas_df_list[[3]]$`.lat`*(by*.9)
+  atlas_df_list[[3]]$`.long` <- atlas_df_list[[3]]$`.long`*(by*.9)
+  
+  do.call(rbind, atlas_df_list)
+}
+
+to_coords <- function(x, n){
+  k <- sf::st_coordinates(x)
+  k <- dplyr::as_tibble(k)
+  k <- k[,c(1:3)]
+  names(k) <- c(".long", ".lat",  ".subid")
+  
+  k$`.order` <- 1:nrow(k)
+  k$`.id` <- n
+  k
+}
 # Is this one needed??
 # #' Get annotation files
 # #'

@@ -29,8 +29,11 @@ Once you have a ggseg3d-atlas, the function `ggseg3d_2_ggseg()` can convert that
 ```{r, eval = FALSE}
 dt <- make_ggseg3d_2_ggseg(
   ggseg3d_atlas = dk_3d,
-  steps = 1:5, 
+  steps = 1:7, 
   output_dir = tempdir(),
+  smoothness = 10,
+  keep = 0.05,
+  weighting = 0.7,
   cleanup = FALSE,
   verbose = TRUE)
 ```
@@ -40,17 +43,20 @@ It needs an object that is a ggseg3d-atlas, ad will work with no other input cha
 We recommen changing the `output_dir` to a folder you can keep track of to see how the intermediate results look like.
 This also makes it possible for you to use the `steps` argument. 
 If early steps have been run succesfully, you can skip them and only run later steps.
+Re-running steps 5:7 might be necessary to find a good balance between `smoothness` of the polygons for nicer parcellations, and vertex reductions through `keep` and `weighting`. 
+We recommend trying several combinations untill you have something that looks nice. 
+Vertex reduction is particularly important, as it significantly reduces the atlas data size, thus making it much faster to plot. 
+This is important for incorporating into Shiny apps, or if you have very many facets to plot. 
+We'd generally recommend a 2d-atlas not have much more than 10k vertices.
 
 Once the data is returned, we recommend doing some data cleaning, particularly of the `region` column.
-This column should ideally have human readable names, short and have space rather than delimiters. 
+This column should ideally have human readable names, be short, and have space rather than delimiters. 
 This is to enable nicer labelling when plotting.
-Once this is one, make is a ggseg-atlas, and try plotting it with ggseg.
+Once this is done, try plotting it with ggseg.
 
 ```{r, eval=FALSE}
-dt <- as_ggseg_atlas(dt)
+dt <- ggseg(atlas = dk)
 ```
-
-
 
 
 ## Skipping ggseg3d-atlas

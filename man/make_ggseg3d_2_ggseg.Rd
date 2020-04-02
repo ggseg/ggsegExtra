@@ -9,8 +9,9 @@ make_ggseg3d_2_ggseg(
   steps = 1:6,
   output_dir = tempdir(),
   smoothness = 10,
-  cleanup = FALSE,
-  verbose = TRUE
+  keep = 0.05,
+  weighting = 0.7,
+  cleanup = FALSE
 )
 }
 \arguments{
@@ -22,9 +23,11 @@ make_ggseg3d_2_ggseg(
 
 \item{smoothness}{smoothing factor, argument to \code{\link[smoothr]{smooth}}}
 
-\item{cleanup}{logical to toggle removal of all intermediary files}
+\item{keep}{percent of vertices to keep during vertex reduction \code{\link[rmapshaper]{ms_simplify}}}
 
-\item{verbose}{logical indicating to be verbose or not}
+\item{weighting}{weighting of vertices for vertex reduction \code{\link[rmapshaper]{ms_simplify}}}
+
+\item{cleanup}{logical to toggle removal of all intermediary files}
 }
 \value{
 data.frame ready for manual cleaning

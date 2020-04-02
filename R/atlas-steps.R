@@ -81,76 +81,16 @@ save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose){
 }
 
 
-move_hemi_side <- function(data, by, predicate){
-  tmp <- dplyr::filter(data, {{predicate}}) 
-  tmp <- dplyr::mutate(tmp, 
-                       X = X + by )
-  return(tmp)
-}
+# make ggseg atlas steps
 
 
-#' Isolate region to alpha channel
-#'
-#' @param input_file image file path
-#' @param output_file output file path
-#' @param interrim_file interrim image path
-#'
-isolate_region <- function(input_file, 
-                           output_file, 
-                           interrim_file = tempfile()){
-  tmp <- magick::image_read(input_file)
-  tmp <- magick::image_convert(tmp, "png")
-  
-  tmp <- magick::image_transparent(tmp, "white", fuzz=30)
-  k <- magick::image_write(tmp, interrim_file)
-  
-  if(has_magick()){
-    cmd <- paste("convert", interrim_file,
-                 "-alpha extract", output_file)
-    
-    # cmd <- paste("convert", input_file,"-channel rgba -fuzz 20% -fill none +opaque red", output_file)
-    k <- system(cmd, intern = FALSE)
-    invisible(k)
-  }else{
-    cat(crayon::red("Cannot complete last extraction step, missing imagemagick. Please install"))
-    stop(call. = FALSE)
-  }
-}
-
-adjust_coords <- function(atlas_df, by = 1.35){
-  atlas_df <- dplyr::group_by(atlas_df, hemi, side)
-  atlas_df <- dplyr::mutate(atlas_df, 
-                        X = X-min(X),
-                        Y = Y-min(Y))
-  atlas_df <- dplyr::ungroup(atlas_df)
-  
-  atlas_df_list <- list(
-    lh.lat <- dplyr::filter(atlas_df,
-                            (hemi=="left" & side=="lateral")),
-    lh.med = move_hemi_side(atlas_df, 430,
-                            (hemi=="left" & side=="medial")),
-    rh.med <- move_hemi_side(atlas_df, 730,
-                             (hemi=="right" & side=="medial")),
-    rh.lat <- move_hemi_side(atlas_df, 1300,
-                             (hemi=="right" & side=="lateral"))
-  )
-  
-  # rescale the small ones
-  atlas_df_list[[1]]$X <- atlas_df_list[[1]]$X*by
-  atlas_df_list[[1]]$Y <- atlas_df_list[[1]]$Y*by
-  atlas_df_list[[3]]$X <- atlas_df_list[[3]]$X*(by*.9)
-  atlas_df_list[[3]]$Y <- atlas_df_list[[3]]$Y*(by*.9)
-  
-  do.call(rbind, atlas_df_list)
-}
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
   utils::globalVariables(c("verbose","output_dir", "geometry",
                            "side", "hemi","region", "label",
                            "coords", "X", "Y", "area",
-                           "R","G","B","A",
-                           "long", "lat","input_file",
+                           "R","G","B","A", "input_file",
                            "projfrac",
-                           ".", "id"))
+                           "."))
 }
