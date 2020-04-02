@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Turn ggseg3d-atlas to ggseg — make_ggseg3d_2_ggseg • ggsegExtra</title>
+<title>Create ggseg palette from ggseg3d-atlas — make_palette_ggseg • ggsegExtra</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,13 @@
 
 
 
-<meta property="og:title" content="Turn ggseg3d-atlas to ggseg — make_ggseg3d_2_ggseg" />
-<meta property="og:description" content="Function will create a dataframe
-based on a ggseg3d atlas, based on
-the contours of each segment." />
+<meta property="og:title" content="Create ggseg palette from ggseg3d-atlas — make_palette_ggseg" />
+<meta property="og:description" content="atlases in ggseg have palettes based on
+colours from the paper originally
+introducing the atlas. These
+colours are hard-coded into ggseg3d-atlases.
+This function extracts those and makes a object
+ready for incporporation to a ggseg-atlas repository" />
 
 
 
@@ -131,26 +134,21 @@ the contours of each segment." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Turn ggseg3d-atlas to ggseg</h1>
+    <h1>Create ggseg palette from ggseg3d-atlas</h1>
     <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/create-ggseg-atlas.R'><code>R/create-ggseg-atlas.R</code></a></small>
-    <div class="hidden name"><code>make_ggseg3d_2_ggseg.Rd</code></div>
+    <div class="hidden name"><code>make_palette_ggseg.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function will create a dataframe
-based on a ggseg3d atlas, based on
-the contours of each segment.</p>
+    <p>atlases in ggseg have palettes based on
+colours from the paper originally
+introducing the atlas. These
+colours are hard-coded into ggseg3d-atlases.
+This function extracts those and makes a object
+ready for incporporation to a ggseg-atlas repository</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_ggseg3d_2_ggseg</span>(
-  <span class='kw'>ggseg3d_atlas</span> <span class='kw'>=</span> <span class='kw pkg'>ggseg3d</span><span class='kw ns'>::</span><span class='no'><a href='https://rdrr.io/pkg/ggseg3d/man/dk_3d.html'>dk_3d</a></span>,
-  <span class='kw'>steps</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>6</span>,
-  <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
-  <span class='kw'>smoothness</span> <span class='kw'>=</span> <span class='fl'>10</span>,
-  <span class='kw'>keep</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-  <span class='kw'>weighting</span> <span class='kw'>=</span> <span class='fl'>0.7</span>,
-  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>make_palette_ggseg</span>(<span class='no'>ggseg3d_atlas</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,36 +157,51 @@ the contours of each segment.</p>
       <th>ggseg3d_atlas</th>
       <td><p>object of class ggseg3d-atlas</p></td>
     </tr>
-    <tr>
-      <th>steps</th>
-      <td><p>number of 1:6 of which steps to run through</p></td>
-    </tr>
-    <tr>
-      <th>output_dir</th>
-      <td><p>output directory path</p></td>
-    </tr>
-    <tr>
-      <th>smoothness</th>
-      <td><p>smoothing factor, argument to <code><a href='https://rdrr.io/pkg/smoothr/man/smooth.html'>smooth</a></code></p></td>
-    </tr>
-    <tr>
-      <th>keep</th>
-      <td><p>percent of vertices to keep during vertex reduction <code><a href='https://rdrr.io/pkg/rmapshaper/man/ms_simplify.html'>ms_simplify</a></code></p></td>
-    </tr>
-    <tr>
-      <th>weighting</th>
-      <td><p>weighting of vertices for vertex reduction <code><a href='https://rdrr.io/pkg/rmapshaper/man/ms_simplify.html'>ms_simplify</a></code></p></td>
-    </tr>
-    <tr>
-      <th>cleanup</th>
-      <td><p>logical to toggle removal of all intermediary files</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.frame ready for manual cleaning</p>
+    <p>list</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>make_palette_ggseg</span>(<span class='kw pkg'>ggseg3d</span><span class='kw ns'>::</span><span class='no'><a href='https://rdrr.io/pkg/ggseg3d/man/dk_3d.html'>dk_3d</a></span>)</div><div class='output co'>#&gt; $dk
+#&gt;                   bankssts  caudal anterior cingulate 
+#&gt;                  "#196428"                  "#7D64A0" 
+#&gt;      caudal middle frontal            corpus callosum 
+#&gt;                  "#641900"                  "#784632" 
+#&gt;                     cuneus                 entorhinal 
+#&gt;                  "#DC1464"                  "#DC140A" 
+#&gt;                   fusiform          inferior parietal 
+#&gt;                  "#B4DC8C"                  "#DC3CDC" 
+#&gt;          inferior temporal          isthmus cingulate 
+#&gt;                  "#B42878"                  "#8C148C" 
+#&gt;          lateral occipital      lateral orbitofrontal 
+#&gt;                  "#141E8C"                  "#234B32" 
+#&gt;                    lingual       medial orbitofrontal 
+#&gt;                  "#E18C8C"                  "#C8234B" 
+#&gt;            middle temporal            parahippocampal 
+#&gt;                  "#A06432"                  "#14DC3C" 
+#&gt;                paracentral           pars opercularis 
+#&gt;                  "#3CDC3C"                  "#DCB48C" 
+#&gt;             pars orbitalis          pars triangularis 
+#&gt;                  "#146432"                  "#DC3C14" 
+#&gt;              pericalcarine                postcentral 
+#&gt;                  "#78643C"                  "#DC1414" 
+#&gt;        posterior cingulate                 precentral 
+#&gt;                  "#DCB4DC"                  "#3C14DC" 
+#&gt;                  precuneus rostral anterior cingulate 
+#&gt;                  "#A08CB4"                  "#50148C" 
+#&gt;     rostral middle frontal           superior frontal 
+#&gt;                  "#4B327D"                  "#14DCA0" 
+#&gt;          superior parietal          superior temporal 
+#&gt;                  "#14B48C"                  "#8CDCDC" 
+#&gt;              supramarginal               frontal pole 
+#&gt;                  "#50A014"                  "#640064" 
+#&gt;              temporal pole        transverse temporal 
+#&gt;                  "#464646"                  "#9696C8" 
+#&gt;                     insula 
+#&gt;                  "#FFC020" 
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

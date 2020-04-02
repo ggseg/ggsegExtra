@@ -113,13 +113,16 @@
 </ul>
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg</a></span>(
   <span class="kw">ggseg3d_atlas</span> <span class="kw">=</span> <span class="no">dk_3d</span>,
-  <span class="kw">steps</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">5</span>,
+  <span class="kw">steps</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">7</span>,
   <span class="kw">output_dir</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span>(),
+  <span class="kw">smoothness</span> <span class="kw">=</span> <span class="fl">10</span>,
+  <span class="kw">keep</span> <span class="kw">=</span> <span class="fl">0.05</span>,
+  <span class="kw">weighting</span> <span class="kw">=</span> <span class="fl">0.7</span>,
   <span class="kw">cleanup</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
   <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
-<p>The function takes few arguments, but does quite a lot in the background. It needs an object that is a ggseg3d-atlas, ad will work with no other input changed. We recommen changing the <code>output_dir</code> to a folder you can keep track of to see how the intermediate results look like. This also makes it possible for you to use the <code>steps</code> argument. If early steps have been run succesfully, you can skip them and only run later steps.</p>
-<p>Once the data is returned, we recommend doing some data cleaning, particularly of the <code>region</code> column. This column should ideally have human readable names, short and have space rather than delimiters. This is to enable nicer labelling when plotting. Once this is one, make is a ggseg-atlas, and try plotting it with ggseg.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu">as_ggseg_atlas</span>(<span class="no">dt</span>)</pre></body></html></div>
+<p>The function takes few arguments, but does quite a lot in the background. It needs an object that is a ggseg3d-atlas, ad will work with no other input changed. We recommen changing the <code>output_dir</code> to a folder you can keep track of to see how the intermediate results look like. This also makes it possible for you to use the <code>steps</code> argument. If early steps have been run succesfully, you can skip them and only run later steps. Re-running steps 5:7 might be necessary to find a good balance between <code>smoothness</code> of the polygons for nicer parcellations, and vertex reductions through <code>keep</code> and <code>weighting</code>. We recommend trying several combinations untill you have something that looks nice. Vertex reduction is particularly important, as it significantly reduces the atlas data size, thus making it much faster to plot. This is important for incorporating into Shiny apps, or if you have very many facets to plot. We’d generally recommend a 2d-atlas not have much more than 10k vertices.</p>
+<p>Once the data is returned, we recommend doing some data cleaning, particularly of the <code>region</code> column. This column should ideally have human readable names, be short, and have space rather than delimiters. This is to enable nicer labelling when plotting. Once this is done, try plotting it with ggseg.</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu">ggseg</span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dk</span>)</pre></body></html></div>
 </div>
 </div>
 <div id="skipping-ggseg3d-atlas" class="section level2">
