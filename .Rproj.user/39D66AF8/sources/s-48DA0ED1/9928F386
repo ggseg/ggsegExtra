@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1585811048590.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2083395243",
+    "id" : "9928F386",
+    "lastKnownWriteTime" : 1586187889,
+    "last_content_update" : 1586187889341,
+    "path" : "~/R-stuff/LCBC/ggseg_stuff/ggsegExtra/R/create-ggseg-atlas.R",
+    "project_path" : "R/create-ggseg-atlas.R",
+    "properties" : {
+        "cursorPosition" : "10,81",
+        "docOutlineVisible" : "1",
+        "scrollLine" : "5"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
