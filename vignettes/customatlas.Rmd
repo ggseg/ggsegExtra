@@ -32,8 +32,7 @@ dt <- make_ggseg3d_2_ggseg(
   steps = 1:7, 
   output_dir = tempdir(),
   smoothness = 10,
-  keep = 0.05,
-  weighting = 0.7,
+  tolerance = 0,
   cleanup = FALSE,
   verbose = TRUE)
 ```
@@ -43,7 +42,7 @@ It needs an object that is a ggseg3d-atlas, ad will work with no other input cha
 We recommen changing the `output_dir` to a folder you can keep track of to see how the intermediate results look like.
 This also makes it possible for you to use the `steps` argument. 
 If early steps have been run succesfully, you can skip them and only run later steps.
-Re-running steps 5:7 might be necessary to find a good balance between `smoothness` of the polygons for nicer parcellations, and vertex reductions through `keep` and `weighting`. 
+Re-running steps 5:7 might be necessary to find a good balance between `smoothness` of the polygons for nicer looking parcellations, and vertex reductions through `tolerance` to reduce file size. 
 We recommend trying several combinations untill you have something that looks nice. 
 Vertex reduction is particularly important, as it significantly reduces the atlas data size, thus making it much faster to plot. 
 This is important for incorporating into Shiny apps, or if you have very many facets to plot. 

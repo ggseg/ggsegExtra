@@ -81,9 +81,61 @@ save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose){
 }
 
 
-# make ggseg atlas steps
+# make ggseg atlas steps ----
 
+#' Make snapshots through orca and plotly
+#'
+#' @param ggseg3d_atlas object of class ggseg3d-atlas
+#' @template hemisphere 
+#' @param surface  Freesurfer surface
+#' @param view view
+#' @param pb progressbar
+#' @template output_dir 
 
+snapshot_brain <- function(ggseg3d_atlas, hemisphere, view, surface, 
+                           output_dir, pb = NULL) {
+  if(!is.null(pb)) pb$tick()$print()
+  p <- ggseg3d::ggseg3d(atlas = ggseg3d_atlas, 
+                        hemisphere = hemisphere, 
+                        surface = surface)
+  p <- ggseg3d::pan_camera(p, paste(hemisphere, view))
+  p <- ggseg3d::remove_axes(p)
+  
+  if(surface == "subcort") p <- ggseg3d::add_glassbrain(p)
+  
+  withr::with_dir(output_dir,
+                  plotly::orca(p,
+                               paste0(paste("full", hemisphere, view, sep="_"),
+                                      ".png")))
+}
+
+snapshot_region <- function(.data,  region, ggseg3d_atlas, hemisphere, 
+                            view, surface, output_dir, pb = NULL) {
+  
+  if(!is.null(pb)) pb$tick()$print()
+  
+  .data <- dplyr::filter(.data, roi == region)
+  .data$p <- 1
+  
+  p <- ggseg3d::ggseg3d(.data = tmp_dt,
+                        atlas = ggseg3d_atlas,
+                        colour = "p",
+                        palette = c("red" = 1),
+                        show.legend = FALSE,
+                        hemisphere = hemisphere,
+                        na.colour = "white",
+                        surface = surface)
+  
+  p <- ggseg3d::pan_camera(p, paste(hemisphere, view))
+  p <- ggseg3d::remove_axes(p)
+  
+  if(surface == "subcort") p <- ggseg3d::add_glassbrain(p)
+  
+  withr::with_dir(output_dir,
+                  plotly::orca(p,
+                               paste0(paste(region, hemisphere, view, sep="_"),
+                                      ".png")))
+}
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){

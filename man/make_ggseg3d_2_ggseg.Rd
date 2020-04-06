@@ -8,9 +8,8 @@ make_ggseg3d_2_ggseg(
   ggseg3d_atlas = ggseg3d::dk_3d,
   steps = 1:6,
   output_dir = tempdir(),
+  tolerance = 0,
   smoothness = 10,
-  keep = 0.05,
-  weighting = 0.7,
   cleanup = FALSE
 )
 }
@@ -21,11 +20,9 @@ make_ggseg3d_2_ggseg(
 
 \item{output_dir}{output directory path}
 
+\item{tolerance}{tolerance during vertex reduction \code{\link[sf]{st_simplify}}}
+
 \item{smoothness}{smoothing factor, argument to \code{\link[smoothr]{smooth}}}
-
-\item{keep}{percent of vertices to keep during vertex reduction \code{\link[rmapshaper]{ms_simplify}}}
-
-\item{weighting}{weighting of vertices for vertex reduction \code{\link[rmapshaper]{ms_simplify}}}
 
 \item{cleanup}{logical to toggle removal of all intermediary files}
 }
