@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
-docs/
+#docs/
+inst/doc

@@ -1,6 +1,5 @@
 ---
 output: github_document
-bibliography: inst/README_cit.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -10,8 +9,20 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  echo = TRUE
 )
+library(ggseg)
+library(ggseg3d)
+devtools::load_all(".")
+
+get_data_list <- function(package){
+  as_tibble(data(package=package)$results)
+}
+
+atlases <- lapply(basename(ggsegExtra::ggseg_atlas_repos()$repo),
+                  get_data_list)
+atlases <- dplyr::bind_rows(atlases)
 ```
 
 <!-- badges: start -->
@@ -22,86 +33,36 @@ knitr::opts_chunk$set(
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 <!-- badges: end -->
 
-
-```{r setup, include=FALSE}
-library(ggseg)
-library(ggseg3d)
-devtools::load_all(".")
-knitr::opts_chunk$set(echo = TRUE)
-
-datasets <- as_tibble(data(package='ggsegExtra')$results) %>%
-  filter(!grepl("pal", Item)) %>% 
-  transmute(
-    Title = Title, 
-    Type = ifelse(grepl("3d", Item), "Mesh", "Polygon"),
-    Dataset = gsub("_3d", "", Item),
-    val="Yes") %>% 
-  spread(Type, val, fill = "No")  %>% 
-  mutate(citation = case_when(
-    grepl("yeo", Dataset) ~ "@yeo2011",
-    grepl("desterieux", Dataset) ~ "@desterieux",
-    grepl("^chen", Dataset) ~ "@chen",
-    grepl("glasser", Dataset) ~ "@glasser",
-    grepl("icbm", Dataset) ~ "@icbm",
-    grepl("jhu", Dataset) ~ "@jhu",
-    grepl("schaefer", Dataset) ~ "@schaefer",
-    grepl("tracula", Dataset) ~ "@tracula",
-    grepl("^ho", Dataset) ~ "@ho",
-    TRUE ~ ""
-  ))
-```
-
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
 
-This package contains extra atlases for the use in the [ggseg](https://github.com/LCBC-UiO/ggseg) and [ggseg3d](https://github.com/LCBC-UiO/ggseg3d) plotting packages in R.
+This package contains extra atlases for the use in the [ggseg]() plotting package in R.
 
 ## Atlases
-There are currently `r nrow(datasets)` atlases available in the package:  
+There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
+The packages, their repository name and location can be found with:
 
-```{r, echo=FALSE, warning=FALSE, error=FALSE, message=FALSE}
-datasets %>% 
-  knitr::kable(escape = FALSE, booktabs = TRUE,
-               caption = "Table of currently available atlases in the ggseg, ggseg3d, and the ggsegExtra R-packages. Polygon and mesh refer to 2D and 3D brain atlas representations, respectively")
-```
-
-
-We are working on creating a detailed description in the wiki on how to create and contribute atlases to the package.
-The `ggseg` function already allows you to provide it with a data.frame of a custom atlas if you have it, but it must correspond to certain specifications to work.
-
-Please see the [wiki](https://github.com/LCBC-UiO/ggseg/wiki/Creating-and-contributing-atlases) for information on adding atlases, or inspect the included datasets for requirements. 
-If anything is unclear in the wiki, give us a shout out in the issues!
-
-
-## Use
-You will need to use the `ggseg` or `ggseg3d` package to use these atlases, or wrangle them your self.
-
-```{r eval=F}
-remotes::install_github("LCBC-UiO/ggseg")
-remotes::install_github("LCBC-UiO/ggseg3d")
-```
-
-Make sure to always load the ggsegExtra package _after_ the ggseg packages.
-
-```{r eval=F}
-library(ggseg)
-library(ggseg3d)
+```{r}
 library(ggsegExtra)
+
+# List all verified compatible atlases
+ggseg_atlas_repos()
 ```
 
+
+We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://lcbc-uio.github.io/ggsegExtra/). 
+Currently, the pipeline for making 3d atlases is complete given Freesufer is installed on your system and you have a ready `.annot` file to use for the converions.
+Creating 2d atlases is currently still a work in progress, and we are not able to provide a better solution than the one described at the moment. 
+We hope to remedy this in the near future.
+
+## Code of Conduct
+
+Please note that the ggsegExtra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests  
 Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting new atlases. 
 While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
 
 # Funding
-This tool is partly funded by:  
-
-**EU Horizon 2020 Grant:** Healthy minds 0-100 years: Optimising the use of European brain imaging cohorts (Lifebrain).
-
-**Grant agreement number:** 732592.
-
-**Call:** Societal challenges: Health, demographic change and well-being
-
-
-# References (atlas source articles)
-
+This work is funded by **EU Horizon 2020 Grant** _'Healthy minds 0-100 years: Optimizing the use of European brain imaging cohorts (Lifebrain)'_, with grant agreement `732592`.
+The project has also received funding from the **European Research Council**’s _Starting grant_ (grant agreements `283634`, to Anders Martin Fjell and `313440` to Kristine Beate Walhovd) and _Consolidator Grant_ (grant agreement `771355` to Kristine Beate Walhovd and `725025` to Anders Martin Fjell).
+The project has received funding through multiple grants from the Norwegian Research Council. 

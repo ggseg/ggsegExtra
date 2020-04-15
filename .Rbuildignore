@@ -5,13 +5,13 @@
 ^README_files$
 ^codecov\.yml$
 ^data-raw$
-^extras$
 ^README*
 ^appveyor\.yml$
 ^\.travis\.yml$
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-img
 ^README\.Rmd$
 ^_pkgdown\.yml$
+^CODE_OF_CONDUCT\.md$
+^man-roxygen$
