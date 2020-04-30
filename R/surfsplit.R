@@ -165,7 +165,7 @@ surfsplit <- function(srf_ply,
         
         if(verbose) utils::setTxtProgressBar(pb, f)
       } #for f
-      close(pb)
+      if(verbose) close(pb)
       
       # Having defined new faces and assigned all faces to labels, now
       # select the vertices and redefine faces to use the new vertex indices

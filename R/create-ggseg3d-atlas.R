@@ -17,7 +17,7 @@
 #' @template output_dir
 #' @template cleanup
 #' @template verbose
-#' 
+#' @export
 #' @return data frame with one row per label
 #' 
 #' @examples 
