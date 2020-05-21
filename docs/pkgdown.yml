@@ -1,0 +1,13 @@
+pandoc: 2.9.2
+pkgdown: 1.5.1
+pkgdown_sha: ~
+articles:
+  customatlas: customatlas.html
+  customatlas3d: customatlas3d.html
+  ggsegExtra: ggsegExtra.html
+  ggsegrepo: ggsegrepo.html
+last_built: 2020-05-21T19:04Z
+urls:
+  reference: https://lcbc-uio.github.io/ggsegExtra//reference
+  article: https://lcbc-uio.github.io/ggsegExtra//articles
+
