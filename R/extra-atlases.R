@@ -27,6 +27,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
     "LCBC-UiO/ggsegHO",           TRUE,    FALSE,   "github", "Harvard-Oxford cortical (FSL)",
     "LCBC-UiO/ggsegDefaultExtra", TRUE,    FALSE,   "github", "extra 2d view for dk, p/a division of aseg hippocampus",
   )
+  repos$package = basename(repos$repo)
   
   if(!is.null(pattern)){
     idx <- grep(pattern, repos$repo, ...)

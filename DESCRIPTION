@@ -1,5 +1,5 @@
 Package: ggsegExtra
-Title: Extra datasets for the ggseg-plotting tool
+Title: Extra Datasets for the 'ggseg'-Plotting Tool
 Version: 1.5
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
@@ -9,8 +9,9 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel",
                     email = "d.v.pineiro@psykologi.uio.no", 
                     role = c("aut"),
                     comment = c(ORCID = "0000-0001-9997-9156")))
-Description: This is a support package for the ggseg, and ggseg3d packages.
-    It contains extra atlas datasets to plot using functions from those two packages.
+Description: Supporting atlas datasets for the 'ggseg', and 'ggseg3d' 
+    packages.  The plotting functions from those two packages should be 
+    used on these atlas data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.0
@@ -40,10 +41,19 @@ Imports:
     geomorph,
     crayon
 Suggests:
-    ggseg,
+    ggseg (>= 1.5.4),
     ggplot2,
-    ggseg3d,
+    ggseg3d (>= 1.6.0),
     ggsegYeo2011,
+    ggsegDesterieux,
+    ggsegChen,
+    ggsegSchaefer,
+    ggsegGlasser,
+    ggsegJHU,
+    ggsegTracula,
+    ggsegICBM,
+    ggsegHO,
+    ggsegDefaultExtra,    
     knitr,
     rmarkdown,
     covr,
@@ -53,6 +63,15 @@ VignetteBuilder: knitr
 Remotes: 
     LCBC-UiO/ggseg,
     LCBC-UiO/ggseg3d,
-    LCBC-UiO/ggsegYeo2011
+    LCBC-UiO/ggsegYeo2011,
+    LCBC-UiO/ggsegDesterieux,
+    LCBC-UiO/ggsegChen,
+    LCBC-UiO/ggsegSchaefer,
+    LCBC-UiO/ggsegGlasser,
+    LCBC-UiO/ggsegJHU,
+    LCBC-UiO/ggsegTracula,
+    LCBC-UiO/ggsegICBM,
+    LCBC-UiO/ggsegHO,
+    LCBC-UiO/ggsegDefaultExtra
 URL: https://github.com/LCBC-UiO/ggsegExtra
 BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues
