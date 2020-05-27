@@ -1,5 +1,5 @@
 Package: ggsegExtra
-Title: Extra Datasets for the 'ggseg'-Plotting Tool
+Title: Extra Utilities for the 'ggseg'-Plotting Tool
 Version: 1.5.1
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
@@ -8,8 +8,11 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel",
             person("Didac", "Vidal-Piñeiro", 
                     email = "d.v.pineiro@psykologi.uio.no", 
                     role = c("aut"),
-                    comment = c(ORCID = "0000-0001-9997-9156")))
-Description: Supporting atlas datasets for the 'ggseg', and 'ggseg3d' 
+                    comment = c(ORCID = "0000-0001-9997-9156")),
+            person("John", "Muschelli", 
+            email = "muschellij2@gmail.com", 
+            role = c("ctb")))
+Description: Supporting atlas datasets and functions for the 'ggseg', and 'ggseg3d' 
     packages.  The plotting functions from those two packages should be 
     used on these atlas data.
 License: MIT + file LICENSE
