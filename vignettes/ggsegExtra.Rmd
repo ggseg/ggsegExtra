@@ -45,7 +45,9 @@ Installing atlases from the repos, we have conveniene function, wrapping install
 
 ```{r, message = FALSE}
 yeo_repo <- ggseg_atlas_repos("yeo", ignore.case = TRUE)
-install_ggseg_atlas(repo = yeo_repo$repo, source = yeo_repo$source)
+if (!requireNamespace("ggsegYeo2011", quietly = TRUE)) {
+  install_ggseg_atlas(repo = yeo_repo$repo, source = yeo_repo$source)
+}
 ```
 
 ```{r}

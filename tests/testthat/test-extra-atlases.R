@@ -1,9 +1,9 @@
 test_that("ggseg_atlas_repos works", {
   repos <- ggseg_atlas_repos()
   
-  expect_equal(names(repos),
-               c("repo", "ggseg", "ggseg3d", "source", "comment"))
+  testthat::expect_equal(names(repos),
+               c("repo", "ggseg", "ggseg3d", "source", "comment", "package"))
   
-  expect_equal(nrow(repos), 10)
+  testthat::expect_equal(nrow(repos), 10)
     
 })
