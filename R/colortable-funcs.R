@@ -61,7 +61,11 @@ get_ctab <- function(color_lut){
   if(!is_ctab(colourtable)) cat("color_lut does not have the correct information.\n",
                                 "Check if the colour_lut has the correct information:\n",
                                 "data.frame with names ", 
-                                paste(c("roi", "label", "R", "G", "B", "A"), collapse = ", "))
+                                paste(c("idx", "label", "R", "G", "B", "A"), collapse = ", "))
+  
+  colortable$roi <- sprintf("%04d", colortable$idx)
+  colortable$color <- grDevices::rgb(colortable$R, colortable$G, colortable$B, 
+                                     maxColorValue = 255)
   
   return(colourtable)
 }

@@ -306,7 +306,7 @@ make_aseg_2_3datlas <- function(subject = "fsaverage5",
   # Make basename for atlas
   annot <- gsub("\\.mgz", "", basename(template))
   
-  # Fins unique labels from template
+  # Find unique labels from template
   labels <- unique(c(freesurfer::readmgz(template)))
   
   # Specify dirs
@@ -317,6 +317,9 @@ make_aseg_2_3datlas <- function(subject = "fsaverage5",
   if(!is.null(color_lut)){
     colortable <- get_ctab(color_lut)
     colortable$roi <- sprintf("%04d", colortable$idx)
+    colortable$colour = grDevices::rgb(colortable$R, 
+                                       colortable$G, 
+                                       colortable$B, maxColorValue = 255)
     
     # Because LUTS _may_ contain rois with no vertices
     # Reduce to label overlap within the template file
@@ -359,7 +362,7 @@ make_aseg_2_3datlas <- function(subject = "fsaverage5",
     surf = "LCBC",
     hemi = "subcort", 
     region = colortable$label,
-    colour = grDevices::rgb(colortable$R, colortable$G, colortable$B, maxColorValue = 255),
+    colour = colortable$color,
     label =  colortable$label,
     roi =  sprintf("%04d", labels)
   )

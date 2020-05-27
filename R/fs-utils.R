@@ -46,6 +46,7 @@ mri_vol2surf <- function(input_file ,
 mri_vol2label <- function(input_file, 
                           label_id,
                           hemisphere, 
+                          surface = NULL,
                           subject = "fsaverage5",
                           subjects_dir = freesurfer::fs_subj_dir(),
                           output_dir, 
@@ -58,24 +59,26 @@ mri_vol2label <- function(input_file,
   if(!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
   
   output_file <- paste0(output_dir, "/", hemisphere, "_", 
-                        stringr::str_pad(label_id, 3, side="left", pad="0"), 
+                        stringr::str_pad(label_id, 4, side="left", pad="0"), 
                         ".label")
   
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "mri_vol2label")
-  
+
   cmd <-  paste(fs_cmd,
                 "--c", input_file,
                 "--id", label_id,
-                "--surf", subject, hemisphere,
                 "--sd", subjects_dir, 
                 "--l", output_file)
+  
+  if(!is.null(surface)){
+    cmd <- paste(cmd, "--surf", subject, hemisphere,)
+  }
   
   k <- system(cmd, intern=!verbose)
   
   invisible(k)
 }
-
 
 
 #' Run pre-tesselation on file
@@ -591,6 +594,37 @@ lcbc_surf2surf <- function(
   )
 }
 
+
+mris_annot2label <- function(annot_file, 
+                             subject = "fsaverage5",
+                             hemisphere = "lh", 
+                             output_dir = freesurfer::fs_subj_dir(), 
+                             verbose = TRUE){
+  fs <- check_fs()
+  if(!fs) stop(call. = FALSE)
+  
+  hemisphere <- match.arg(hemisphere, c("rh", "lh"))
+  
+  outdir <- file.path(output_dir, subject, "label", 
+                      gsub("rh\\.|lh\\.|annot|\\.", "", basename(annot_file)))
+  if(!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
+  out_file <- file.path(outdir, hemisphere)
+  
+  fs_cmd <- paste0(freesurfer::get_fs(),
+                   "freeview")
+  
+  cmd <- paste(
+    fs_cmd,
+    "--subject", subject,
+    "--hemi", hemisphere,
+    "--labelbase", file.path(outdir, hemisphere),
+    "--annotation", annot_file
+  )
+  
+  k <- system(cmd, intern=!verbose)
+  
+}
+
 #' Check if FS can be run
 #' @param msg message to print on error
 #' @return logical
@@ -604,6 +638,26 @@ check_fs <- function(msg = NULL){
   }
   
   freesurfer::have_fs()
+}
+
+fs_ss_slice <- function(lab, x, y, z, view, subjects_dir, subject, output_dir) {
+  coords <- sprintf(c(x, y, z), fmt = "%03d")
+  vv <- paste0(strsplit(view, "")[[1]][1:5], collapse="")
+  
+  filenm <- paste0(paste(c(coords, vv), collapse="_"), "_", basename(lab), ".png")
+  
+  fs_cmd <- paste0(freesurfer::get_fs(), "freeview")
+  
+  cmd <- paste(fs_cmd,
+               "--volume", paste0(file.path(subjects_dir, subject, "mri/T1.mgz"), ":opacity=0"),
+               "--slice", paste0(c(x, y, z), collapse=' '),
+               "--viewport", view,
+               paste0("--label ", lab, ":color=red"),
+               "-ss", file.path(output_dir, filenm),
+               "") 
+  
+  jj <- system(cmd, intern = TRUE)
+  invisible(jj)
 }
 
 ## quiets concerns of R CMD check

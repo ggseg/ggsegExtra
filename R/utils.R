@@ -267,11 +267,12 @@ move_hemi_side <- function(data, by, predicate){
 }
 
 correct_coords_sf <- function(data, by){
-  bbx <- sf::st_bbox(data)
+
+  ymin <- min(sf::st_coordinates(data)[,"Y"])
   
   tmp <- dplyr::mutate(data, 
                        geometry = geometry + c(by, 0),
-                       geometry = geometry - c(0, bbx["ymin"]))
+                       geometry = geometry - c(0, ymin))
   return(tmp)
 }
 
@@ -355,10 +356,24 @@ adjust_coords_sf <- function(atlas_df){
   
   # rescale the small ones
   atlas <- purrr::map2(atlas, c(.98, .74, .94, .78), 
-              ~ resize_coords_sf(.x, .y))
-
+                       ~ resize_coords_sf(.x, .y))
+  
   # correct coordinates so they ar ealigned and moved next to eachoter
   atlas <- purrr::map2(atlas, c(0, 350, 750, 1100), 
+                       ~ correct_coords_sf(.x, .y))
+  
+  atlas_df_r <- do.call(rbind, atlas)
+  
+  return(dplyr::ungroup(atlas_df_r))
+}
+
+adjust_coords_sf2 <- function(atlas_df){
+  atlas <- dplyr::group_by(atlas_df, view)
+  atlas <- dplyr::group_split(atlas)
+
+  # correct coordinates so they are aligned and moved next to eachoter
+  atlas <- purrr::map2(atlas, 
+                       seq(from = 0, by = 200, length.out = length(atlas)), 
                        ~ correct_coords_sf(.x, .y))
   
   atlas_df_r <- do.call(rbind, atlas)
