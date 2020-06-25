@@ -29,14 +29,14 @@
 #' }
 #' 
 aparc_2_mesh <- function(subject = "fsaverage5",
-                          hemisphere = "rh",
-                          surface = "inflated",
-                          annot = "aparc",
-                          subjects_dir = freesurfer::fs_subj_dir(),
-                          annot_dir = file.path(subjects_dir, subject, "label"),
-                          output_dir = tempdir(),
-                          cleanup = TRUE,
-                          verbose = TRUE
+                         hemisphere = "rh",
+                         surface = "inflated",
+                         annot = "aparc",
+                         subjects_dir = freesurfer::fs_subj_dir(),
+                         annot_dir = file.path(subjects_dir, subject, "label"),
+                         output_dir = tempdir(),
+                         cleanup = TRUE,
+                         verbose = TRUE
 ){
   
   fs <- check_fs()
@@ -146,6 +146,7 @@ aparc_2_mesh <- function(subject = "fsaverage5",
 #' @template subjects_dir 
 #' @template annot_dir 
 #' @template output_dir 
+#' @template ncores
 #' @template cleanup 
 #' @template verbose 
 #'
@@ -159,41 +160,39 @@ aparc_2_mesh <- function(subject = "fsaverage5",
 #' dt <- aparc_2_3datlas(surface = "sphere")
 #' }
 make_aparc_2_3datlas <- function(annot = "aparc",
-                             subject = "fsaverage5",
-                             hemisphere = c("rh", "lh"),
-                             surface = c("inflated", "LCBC", "white"),
-                             subjects_dir = freesurfer::fs_subj_dir(),
-                             annot_dir = file.path(subjects_dir, subject, "label"),
-                             output_dir = tempdir(),
-                             cleanup = TRUE,
-                             verbose = TRUE
+                                 subject = "fsaverage5",
+                                 hemisphere = c("rh", "lh"),
+                                 surface = c("inflated", "LCBC", "white"),
+                                 subjects_dir = freesurfer::fs_subj_dir(),
+                                 annot_dir = file.path(subjects_dir, subject, "label"),
+                                 output_dir = tempdir(),
+                                 ncores = parallel::detectCores()-2,
+                                 cleanup = TRUE,
+                                 verbose = TRUE
 ){
+
+  dt2 <- expand.grid(list(subject = subject, hemi = hemisphere, surf = surface),
+                     stringsAsFactors = FALSE)
+
+  dt <- parallel::mcmapply(aparc_2_mesh,
+                          subject = dt2$subject,
+                          hemisphere = dt2$hemi,
+                          surface = dt2$surf,
+                          
+                          MoreArgs = list(
+                            annot = annot,
+                            subjects_dir = subjects_dir,
+                            annot_dir = annot_dir,
+                            output_dir = output_dir,
+                            cleanup = FALSE,
+                            verbose = FALSE 
+                          ),
+                          
+                          mc.cores = ncores, 
+                          mc.preschedule = TRUE, 
+                          SIMPLIFY = TRUE)
   
-  dt <- list()
-  k <- 0
-  j <- length(surface) * length(hemisphere)
-  for(s in surface){
-    for(h in hemisphere){
-      k <- k + 1
-      
-      if(verbose) cat(crayon::cyan("\n\n", paste0(k, "/", j), 
-                                   "Extracting information from", 
-                                   h, s, "for", annot, "\n"))
-      
-      dt[[k]] <- aparc_2_mesh(subject = subject,
-                               hemisphere = h,
-                               surface = s,
-                               annot = annot,
-                               subjects_dir = subjects_dir,
-                               annot_dir = annot_dir,
-                               output_dir = output_dir,
-                               cleanup = cleanup,
-                               verbose = verbose
-      )
-      
-    } #for h
-  } # for s
-  
+  dt <- apply(dt, 2, function(x) x)
   dt <- dplyr::bind_rows(dt)
   dt <- dplyr::group_by(dt, atlas, surf, hemi)
   dt <- tidyr::nest(dt)
@@ -205,12 +204,12 @@ make_aparc_2_3datlas <- function(annot = "aparc",
 
 # Subcortical ----
 aseg_2_mesh <- function(subject = "fsaverage5",
-                           subjects_dir = freesurfer::fs_subj_dir(),
-                           label = 0,
-                           template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
-                           steps = 1:5,
-                           output_dir = tempdir(),
-                           verbose = TRUE
+                        subjects_dir = freesurfer::fs_subj_dir(),
+                        label = 0,
+                        template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
+                        steps = 1:5,
+                        output_dir = tempdir(),
+                        verbose = TRUE
 ){
   
   fs <- check_fs()
@@ -294,13 +293,13 @@ aseg_2_mesh <- function(subject = "fsaverage5",
 #' @return returns a ggseg3d-atlas ready object
 #' @export
 make_aseg_2_3datlas <- function(subject = "fsaverage5",
-                              subjects_dir = freesurfer::fs_subj_dir(),
-                              template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
-                              color_lut = file.path(freesurfer::fs_dir(), "ASegStatsLUT.txt"),
-                              steps = 1:5,
-                              output_dir = tempdir(),
-                              verbose = TRUE,
-                              cleanup = TRUE)
+                                subjects_dir = freesurfer::fs_subj_dir(),
+                                template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
+                                color_lut = file.path(freesurfer::fs_dir(), "ASegStatsLUT.txt"),
+                                steps = 1:5,
+                                output_dir = tempdir(),
+                                verbose = TRUE,
+                                cleanup = TRUE)
 {
   
   # Make basename for atlas
@@ -344,12 +343,12 @@ make_aseg_2_3datlas <- function(subject = "fsaverage5",
                                  lab_string, "for", annot, "\n"))
     
     plys[[j]] <- aseg_2_mesh(subject = subject,
-                   subjects_dir = subjects_dir,
-                   label = labels[j],
-                   template = template,
-                   steps = steps,
-                   output_dir = output_dir,
-                   verbose = verbose
+                             subjects_dir = subjects_dir,
+                             label = labels[j],
+                             template = template,
+                             steps = steps,
+                             output_dir = output_dir,
+                             verbose = verbose
     )
     
   } # end j

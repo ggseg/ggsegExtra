@@ -19,8 +19,8 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                                  output_dir = tempdir(),
                                  tolerance = 0,
                                  smoothness = 10,
-                                 cleanup = FALSE #,
-                                 #ncores = 1,
+                                 cleanup = FALSE ,
+                                 ncores = parallel::detectCores()-2#,
                                  #verbose = TRUE
 ){
   
@@ -52,9 +52,6 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     stop(call. = FALSE)
   }
   
-  # prep paralell processing
-  # cl <- parallel::makeCluster(ncores)
-  # doParallel::registerDoParallel(cl)
   # brain snapshot ----
   if(1 %in% steps){
     usethis::ui_todo("1/7 Snapshotting views of entire atlas to {dirs[1]}")
@@ -69,8 +66,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     
     usethis::ui_done("Snapshots complete")
   }
-  # doParallel::stopImplicitCluster()
-  
+
   # region snapshots ----
   if(2 %in% steps){
     usethis::ui_todo("2/7 Snapshotting individual regions to {dirs[2]}")
@@ -83,38 +79,27 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     pb <- utils::txtProgressBar(min = 1,
                                 max = length(hemi)*2*length(tmp_atlas$roi),
                                 style = 3)
-    j <- 0
-    for(r in tmp_atlas$roi){
-      for(h in hemi){
-        for(view in c("lateral", "medial")){
-          j <- j+1
-          utils::setTxtProgressBar(pb, j)
-          
-          tmp_dt <- dplyr::filter(tmp_atlas, roi == r)
-          tmp_dt$p <- 1
-          
-          p <- ggseg3d::ggseg3d(.data = tmp_dt,
-                                atlas = ggseg3d_atlas,
-                                colour = "p",
-                                palette = c("red" = 1),
-                                show.legend = FALSE,
-                                hemisphere = h,
-                                na.colour = "white",
-                                surface = surface)
-          
-          p <- ggseg3d::pan_camera(p, paste(h, view))
-          p <- ggseg3d::remove_axes(p)
-          
-          if(surface == "subcort") p <- ggseg3d::add_glassbrain(p)
-          
-          withr::with_dir(dirs[2],
-                          plotly::orca(p,
-                                       paste0(paste(r, h, view, sep="_"),
-                                              ".png")))
-          
-        } # for view
-      } # for h
-    } # for r
+    
+    full_list <- expand.grid(roi = tmp_atlas$roi, 
+                             hemi = hemi, 
+                             view = c("lateral", "medial"))
+
+    j <- parallel::mcmapply(snapshot_region,
+           region = full_list$roi,
+           hemisphere = full_list$hemi,
+           view = full_list$view,
+           MoreArgs = list(
+             surface = surface, 
+             ggseg3d_atlas = ggseg3d_atlas,
+             .data = tmp_atlas,
+             output_dir = dirs[2]
+           ),
+           
+           mc.cores = ncores, 
+           mc.preschedule = TRUE, 
+           SIMPLIFY = TRUE
+    )
+
     usethis::ui_done("Region snapshots complete")
   }
   
@@ -135,7 +120,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
   
   # contour extraction ----
   if(4 %in% steps){
-    conts <- extract_contours(dirs[4], dirs[1], step = "4/7", verbose)
+    conts <- extract_contours(dirs[4], dirs[1], step = "4/7")
   }
   
   # smoothing ----

@@ -138,12 +138,10 @@ snapshot_region <- function(.data,  region, ggseg3d_atlas, hemisphere,
 }
 
 extract_contours <- function(input_dir, output_dir, step, 
-                             verbose, ncores = parallel::detectCores()-2 ) {
+                             verbose = TRUE, 
+                             ncores = parallel::detectCores()-2 ) {
   regions <- list.files(input_dir, full.names = TRUE)
-  rasterobjs <- parallel::mclapply(regions, 
-                                   raster::raster, 
-                                   mc.cores = ncores, 
-                                   mc.preschedule = FALSE)
+  rasterobjs <- lapply(regions, raster::raster)
   
   
   usethis::ui_todo("{step} Extracting contours from regions")
@@ -152,11 +150,10 @@ extract_contours <- function(input_dir, output_dir, step,
   if(verbose) pb <- utils::txtProgressBar(min = 1,
                                           max = length(rasterobjs),
                                           style = 3)
-  
+
   contourobjs <- parallel::mclapply(rasterobjs, 
                                     get_contours,
-                                    max_val = maks,
-                                    verbose = FALSE, 
+                                    max_val = maks, 
                                     mc.cores = ncores, 
                                     mc.preschedule = FALSE)
   
