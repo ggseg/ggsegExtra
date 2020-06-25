@@ -208,7 +208,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     
     # for now, remove geometry
     # add it when you have sf functionality improved
-    #atlas_df$geometry <- NULL
+    atlas_df$geometry <- NULL
     #atlas_df <- as_tibble(atlas_df)
     
     ggseg::as_ggseg_atlas(atlas_df)
