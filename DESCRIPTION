@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg'-Plotting Tool
-Version: 1.5.1
+Version: 1.5.2
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
                     role = c("aut", "cre"),
