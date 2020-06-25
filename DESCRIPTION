@@ -10,8 +10,9 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel",
                     role = c("aut"),
                     comment = c(ORCID = "0000-0001-9997-9156")),
             person("John", "Muschelli", 
-            email = "muschellij2@gmail.com", 
-            role = c("ctb")))
+                    email = "muschellij2@gmail.com", 
+                    role = c("ctb"),
+                    comment = c(ORCID = "0000-0001-6469-1750")))
 Description: Supporting atlas datasets and functions for the 'ggseg', and 'ggseg3d' 
     packages.  The plotting functions from those two packages should be 
     used on these atlas data.
@@ -42,7 +43,8 @@ Imports:
     rmapshaper,
     stars,
     geomorph,
-    crayon
+    crayon,
+    rgdal
 Suggests:
     ggseg (>= 1.5.4),
     ggplot2,

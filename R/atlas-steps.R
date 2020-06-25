@@ -117,7 +117,7 @@ snapshot_region <- function(.data,  region, ggseg3d_atlas, hemisphere,
   .data <- dplyr::filter(.data, roi == region)
   .data$p <- 1
   
-  p <- ggseg3d::ggseg3d(.data = tmp_dt,
+  p <- ggseg3d::ggseg3d(.data = .data,
                         atlas = ggseg3d_atlas,
                         colour = "p",
                         palette = c("red" = 1),
