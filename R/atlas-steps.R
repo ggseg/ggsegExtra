@@ -23,6 +23,7 @@ atlas_vol2surf <- function(input_file, output_dir,
 #' Volume to label
 #'
 #' @param annot_lab annotation label
+#' @template ncores
 #' @inheritParams atlas_vol2surf 
 #' @export
 atlas_vol2label <- function(annot_lab, output_dir, verbose, ncores = parallel::detectCores()-2){
@@ -219,10 +220,10 @@ make_multipolygon <- function(contourfile) {
                      xmin = NA, ymin = NA, xmax = NA, ymax = NA)
   
   for(i in 1:nrow(contourobjsDF)){
-    j <- as_tibble(sf::st_coordinates(contourobjsDF[i, ])) 
-    j <- gather(j, key, val, X, Y) 
-    j <- group_by(j, key)
-    j <- summarise_at(j, vars(val), list(Min = min, Max = max))
+    j <- dplyr::as_tibble(sf::st_coordinates(contourobjsDF[i, ])) 
+    j <- tidyr::gather(j, key, val, X, Y) 
+    j <- dplyr::group_by(j, key)
+    j <- dplyr::summarise_at(j, vars(val), list(Min = min, Max = max))
     
     bbx1[i, 2:5] <-c(j$Min[1], j$Min[2], j$Max[1], j$Max[2])
   }
@@ -295,7 +296,7 @@ prep_labels <- function(label_file, color_lut, subject, subjects_dir,
   colortable <- colortable[colortable$roi %in% sprintf("%04d", ll), ]
 
   writeLines(labs, file.path(output_dir, "labels_list.txt"))
-  write.table(colortable,  file.path(output_dir, "colortable.tsv"), 
+  utils::write.table(colortable,  file.path(output_dir, "colortable.tsv"), 
               sep="\t", row.names = FALSE)
   
   usethis::ui_done("labels ready")

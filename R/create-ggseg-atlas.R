@@ -7,6 +7,7 @@
 #' @param ggseg3d_atlas object of class ggseg3d-atlas
 #' @param steps number of 1:6 of which steps to run through
 #' @template output_dir
+#' @template ncores
 #' @param smoothness smoothing factor, argument to \code{\link[smoothr]{smooth}}
 #' @param tolerance tolerance during vertex reduction \code{\link[sf]{st_simplify}}
 #' @template cleanup
@@ -386,7 +387,7 @@ make_subcort_ggseg <- function(subject = "fsaverage5",
   if(8 %in% steps){
     usethis::ui_todo("8/8 Cleaning up data")
     
-    lut <- read.table(file.path(dirs$labs, "colortable.tsv"), sep="\t", 
+    lut <- utils::read.table(file.path(dirs$labs, "colortable.tsv"), sep="\t", 
                       header = TRUE, colClasses = "character")
     lut <- lut[c("roi", "label", "color")]
 

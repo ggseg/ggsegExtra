@@ -38,12 +38,12 @@ aparc_2_mesh <- function(subject = "fsaverage5",
                          cleanup = TRUE,
                          verbose = TRUE
 ){
-  
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
   # Setup some directories for output data  
-  dirs <- sapply(c(paste("atlas", annot, c("ascii", "ply"), sep="/"), "srf/ascii", "srf/ply"), 
+  dirs <- sapply(c(paste("atlas", annot, c("ascii", "ply"), sep="/"), 
+                   "srf/ascii", "srf/ply"), 
                  function(x) file.path(output_dir, subject, x))
   j <- lapply(dirs[!sapply(dirs, dir.exists)], dir.create, recursive = TRUE)
   
@@ -52,9 +52,12 @@ aparc_2_mesh <- function(subject = "fsaverage5",
   hemi <- switch(hemisphere, "rh" = "right", "lh" = "left")
   
   # find path to annotation file
-  annot_file <- list.files(annot_dir, paste(hemisphere, annot, "annot", sep="."), full.names = T)
-  
-  # Read in annotation file, verbose false since annot2dpv() also spits out this information
+  annot_file <- list.files(annot_dir, 
+                           paste(hemisphere, annot, "annot", sep="."), 
+                           full.names = T)
+
+  # Read in annotation file, verbose false since annot2dpv() 
+  # also spits out this information
   ant <- read_annotation(annot_file, verbose = FALSE)
   colortable <- dplyr::mutate(ant$colortable,
                               hex = grDevices::rgb(R, G, B, 
@@ -171,27 +174,38 @@ make_aparc_2_3datlas <- function(annot = "aparc",
                                  verbose = TRUE
 ){
 
-  dt2 <- expand.grid(list(subject = subject, hemi = hemisphere, surf = surface),
+  dt2 <- expand.grid(list(subject = subject, 
+                          hemi = hemisphere, 
+                          surf = surface),
                      stringsAsFactors = FALSE)
 
-  dt <- parallel::mcmapply(aparc_2_mesh,
-                          subject = dt2$subject,
-                          hemisphere = dt2$hemi,
-                          surface = dt2$surf,
-                          
-                          MoreArgs = list(
-                            annot = annot,
-                            subjects_dir = subjects_dir,
-                            annot_dir = annot_dir,
-                            output_dir = output_dir,
-                            cleanup = FALSE,
-                            verbose = FALSE 
-                          ),
-                          
-                          mc.cores = ncores, 
-                          mc.preschedule = TRUE, 
-                          SIMPLIFY = TRUE)
+  dt <- parallel::mcmapply(
+    aparc_2_mesh,
+    subject = dt2$subject,
+    hemisphere = dt2$hemi,
+    surface = dt2$surf,
+    
+    MoreArgs = list(
+      annot = annot,
+      subjects_dir = subjects_dir,
+      annot_dir = annot_dir,
+      output_dir = output_dir,
+      cleanup = FALSE,
+      verbose = FALSE 
+    ),
+    
+    mc.cores = ncores, 
+    mc.preschedule = TRUE, 
+    SIMPLIFY = TRUE
+  )
   
+  idx <- unlist(lapply(dt, grepl, pattern = "Error"))
+  if(any(idx)){
+    cat("An error occured when creating atlas.")
+    cat(dt[[idx]])
+    stop(call. = FALSE)
+  }
+
   dt <- apply(dt, 2, function(x) x)
   dt <- dplyr::bind_rows(dt)
   dt <- dplyr::group_by(dt, atlas, surf, hemi)

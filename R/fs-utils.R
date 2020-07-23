@@ -34,10 +34,21 @@ mri_vol2surf <- function(input_file ,
 
 #' Convert volume to label
 #'
+#' Converts values in a volume or surface overlay to a label. The program
+#' searches the input for values equal to labelid. The xyz values for
+#' each point are then computed based on the tkregister voxel-to-RAS
+#' matrix (volume) or from the xyz of the specified surface.  The xyz
+#' values are then stored in labelfile in the label file format. The
+#' statistic value is set to 0.  While this program can be used with any
+#' mri volume, it was designed to convert parcellation volumes, which
+#' happen to be stored in mri format. 
+#' 
+#' 
 #' @param input_file input volume
 #' @param label_id label to run
 #' @template hemisphere
 #' @template subject
+#' @param surface ouput surface
 #' @template subjects_dir
 #' @template output_dir
 #' @template verbose
@@ -214,7 +225,7 @@ mris_annot2label <- function(annot_file,
   out_file <- file.path(outdir, hemisphere)
   
   fs_cmd <- paste0(freesurfer::get_fs(),
-                   "mri_annotation2label")
+                   "freeview")
   
   cmd <- paste(
     fs_cmd,
@@ -225,6 +236,64 @@ mris_annot2label <- function(annot_file,
   )
   
   k <- system(cmd, intern=!verbose)
+  
+}
+
+
+#' MRI ca label
+#' 
+#' For a single subject, produces an annotation file, in which each 
+#' cortical surface vertex is assigned a neuroanatomical label.
+#' This automatic procedure employs data from a previously-prepared 
+#' atlas file. An atlas file is created from a training set, capturing 
+#' region data manually drawn by neuroanatomists combined with 
+#' statistics on variability correlated to geometric information 
+#' derived from the cortical model (sulcus and curvature). Besides the 
+#' atlases provided with FreeSurfer, new ones can be prepared using 
+#' mris_ca_train).
+#'
+#' @template  subject 
+#' @template hemisphere 
+#' @param canonsurf canonical surface file. Ie: the name of the 
+#' spherical surface file which describes the registration of a 
+#' subject's vertices to the reference "average" surface. Example: sphere.reg
+#' @param classifier specify classifier array input file (atlas file)
+#' @template output_file 
+#' @param opts other options to freesurfer function mris_ca_label
+#' @template subjects_dir
+#'
+#' @export
+#'
+#' @examples
+#' if(freesurfer::have_fs()){
+#' # for freesurfer help see:
+#' freesurfer::fs_help("mris_ca_label")
+#' }
+mris_ca_label <- function(subject = "fsaverage5",
+                         hemisphere = "lh", 
+                         canonsurf  ="sphere.reg",
+                         classifier = file.path(freesurfer::fs_dir(), "average/lh.DKTatlas40.gcs"),
+                         output_file, 
+                         subjects_dir = freesurfer::fs_subj_dir(),
+                         opts = NULL){
+  
+  fs <- check_fs()
+  if(!fs) stop(call. = FALSE)
+  
+  if(!is.null(opts)){
+    opts <- paste("-sdir", subjects_dir, opts)
+  }else{
+    opts <- paste("-sdir", subjects_dir)
+  }
+  
+  fs_cmd <- paste0(freesurfer::get_fs(), "mris_ca_label")
+  
+  necs <- paste(subject, hemisphere, canonsurf, classifier, output_file)
+  
+  cmd <- paste(fs_cmd, opts, necs)
+  
+  jj <- system(cmd, intern = TRUE)
+  invisible(jj)
   
 }
 
@@ -595,36 +664,6 @@ lcbc_surf2surf <- function(
 }
 
 
-mris_annot2label <- function(annot_file, 
-                             subject = "fsaverage5",
-                             hemisphere = "lh", 
-                             output_dir = freesurfer::fs_subj_dir(), 
-                             verbose = TRUE){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
-  
-  hemisphere <- match.arg(hemisphere, c("rh", "lh"))
-  
-  outdir <- file.path(output_dir, subject, "label", 
-                      gsub("rh\\.|lh\\.|annot|\\.", "", basename(annot_file)))
-  if(!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-  out_file <- file.path(outdir, hemisphere)
-  
-  fs_cmd <- paste0(freesurfer::get_fs(),
-                   "freeview")
-  
-  cmd <- paste(
-    fs_cmd,
-    "--subject", subject,
-    "--hemi", hemisphere,
-    "--labelbase", file.path(outdir, hemisphere),
-    "--annotation", annot_file
-  )
-  
-  k <- system(cmd, intern=!verbose)
-  
-}
-
 #' Check if FS can be run
 #' @param msg message to print on error
 #' @return logical
@@ -660,9 +699,12 @@ fs_ss_slice <- function(lab, x, y, z, view, subjects_dir, subject, output_dir) {
   invisible(jj)
 }
 
+
+
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
   utils::globalVariables(c("idx", 
+                           "key", "view", "val", "vars",
                            paste0("V", 1:3)))
 }
 

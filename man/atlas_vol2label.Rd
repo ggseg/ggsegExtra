@@ -4,7 +4,12 @@
 \alias{atlas_vol2label}
 \title{Volume to label}
 \usage{
-atlas_vol2label(annot_lab, output_dir, verbose)
+atlas_vol2label(
+  annot_lab,
+  output_dir,
+  verbose,
+  ncores = parallel::detectCores() - 2
+)
 }
 \arguments{
 \item{annot_lab}{annotation label}
@@ -12,6 +17,8 @@ atlas_vol2label(annot_lab, output_dir, verbose)
 \item{output_dir}{output directory path}
 
 \item{verbose}{logical indicating to be verbose or not}
+
+\item{ncores}{number of cores for parallel processing (default numcores-2)}
 }
 \description{
 Volume to label

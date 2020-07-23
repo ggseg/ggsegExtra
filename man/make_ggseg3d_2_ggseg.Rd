@@ -10,7 +10,8 @@ make_ggseg3d_2_ggseg(
   output_dir = tempdir(),
   tolerance = 0,
   smoothness = 10,
-  cleanup = FALSE
+  cleanup = FALSE,
+  ncores = parallel::detectCores() - 2
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ make_ggseg3d_2_ggseg(
 \item{smoothness}{smoothing factor, argument to \code{\link[smoothr]{smooth}}}
 
 \item{cleanup}{logical to toggle removal of all intermediary files}
+
+\item{ncores}{number of cores for parallel processing (default numcores-2)}
 }
 \value{
 data.frame ready for manual cleaning

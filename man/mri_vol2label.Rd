@@ -8,6 +8,7 @@ mri_vol2label(
   input_file,
   label_id,
   hemisphere,
+  surface = NULL,
   subject = "fsaverage5",
   subjects_dir = freesurfer::fs_subj_dir(),
   output_dir,
@@ -21,6 +22,8 @@ mri_vol2label(
 
 \item{hemisphere}{hemisphere, either "rh" or "lh"}
 
+\item{surface}{ouput surface}
+
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
 
@@ -31,5 +34,12 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{verbose}{logical indicating to be verbose or not}
 }
 \description{
-Convert volume to label
+Converts values in a volume or surface overlay to a label. The program
+searches the input for values equal to labelid. The xyz values for
+each point are then computed based on the tkregister voxel-to-RAS
+matrix (volume) or from the xyz of the specified surface.  The xyz
+values are then stored in labelfile in the label file format. The
+statistic value is set to 0.  While this program can be used with any
+mri volume, it was designed to convert parcellation volumes, which
+happen to be stored in mri format.
 }

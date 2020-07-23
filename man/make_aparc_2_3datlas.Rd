@@ -12,6 +12,7 @@ make_aparc_2_3datlas(
   subjects_dir = freesurfer::fs_subj_dir(),
   annot_dir = file.path(subjects_dir, subject, "label"),
   output_dir = tempdir(),
+  ncores = parallel::detectCores() - 2,
   cleanup = TRUE,
   verbose = TRUE
 )
@@ -31,6 +32,8 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{annot_dir}{path to directory with annot-files}
 
 \item{output_dir}{output directory path}
+
+\item{ncores}{number of cores for parallel processing (default numcores-2)}
 
 \item{cleanup}{logical to toggle removal of all intermediary files}
 

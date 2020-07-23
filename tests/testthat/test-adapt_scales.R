@@ -21,11 +21,7 @@ testthat::test_that("Check that ggseg:::adapt_scales is working", {
   
   atlases = list(
     "ggsegYeo2011" = "yeo7", 
-    "ggsegYeo2011" = "yeo17", 
-    "ggsegGlasser" = "glasser", 
-    "ggsegTracula" = "tracula", 
-    "ggsegJHU" = "jhu", 
-    "ggsegHO" = "hoCort")
+    "ggsegYeo2011" = "yeo17")
   for (iatlas in seq_along(atlases)) {
     atlas = atlases[[iatlas]]
     atlas_package = names(atlases)[[iatlas]]
