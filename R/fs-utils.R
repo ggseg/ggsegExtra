@@ -268,6 +268,9 @@ mris_annot2label <- function(annot_file,
 #' if(freesurfer::have_fs()){
 #' # for freesurfer help see:
 #' freesurfer::fs_help("mris_ca_label")
+#' mris_ca_label(output_file = "test.lh.annot")
+#' 
+#' mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
 #' }
 mris_ca_label <- function(subject = "fsaverage5",
                          hemisphere = "lh", 
@@ -280,17 +283,17 @@ mris_ca_label <- function(subject = "fsaverage5",
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
+  options <- paste("-sdir", subjects_dir)
+  
   if(!is.null(opts)){
-    opts <- paste("-sdir", subjects_dir, opts)
-  }else{
-    opts <- paste("-sdir", subjects_dir)
+    options <- paste("-sdir", subjects_dir, opts)
   }
   
   fs_cmd <- paste0(freesurfer::get_fs(), "mris_ca_label")
   
   necs <- paste(subject, hemisphere, canonsurf, classifier, output_file)
   
-  cmd <- paste(fs_cmd, opts, necs)
+  cmd <- paste(fs_cmd, options, necs)
   
   jj <- system(cmd, intern = TRUE)
   invisible(jj)

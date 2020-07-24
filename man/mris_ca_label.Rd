@@ -47,5 +47,8 @@ mris_ca_train).
 if(freesurfer::have_fs()){
 # for freesurfer help see:
 freesurfer::fs_help("mris_ca_label")
+mris_ca_label(output_file = "test.lh.annot")
+
+mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
 }
 }
