@@ -4,7 +4,7 @@
 \alias{mri_pretess}
 \title{Run pre-tesselation on file}
 \usage{
-mri_pretess(template, label, output_file, verbose = TRUE)
+mri_pretess(template, label, output_file, verbose = TRUE, opts = NULL)
 }
 \arguments{
 \item{template}{template mgz}
@@ -14,6 +14,8 @@ mri_pretess(template, label, output_file, verbose = TRUE)
 \item{output_file}{path to output file}
 
 \item{verbose}{logical indicating to be verbose or not}
+
+\item{opts}{other arguments to freesurfer command}
 }
 \description{
 Run pre-tesselation on file

@@ -9,7 +9,8 @@ mris_annot2label(
   subject = "fsaverage5",
   hemisphere = "lh",
   output_dir = freesurfer::fs_subj_dir(),
-  verbose = TRUE
+  verbose = TRUE,
+  opts = NULL
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{output_dir}{output directory path}
 
 \item{verbose}{logical indicating to be verbose or not}
+
+\item{opts}{other arguments to freesurfer command}
 }
 \description{
 Convert annotation to label

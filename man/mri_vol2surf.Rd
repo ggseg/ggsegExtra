@@ -9,6 +9,7 @@ mri_vol2surf(
   output_file,
   hemisphere,
   projfrac = 0.5,
+  opts = NULL,
   verbose = TRUE
 )
 }
@@ -20,6 +21,8 @@ mri_vol2surf(
 \item{hemisphere}{hemisphere, either "rh" or "lh"}
 
 \item{projfrac}{argument to projfrac}
+
+\item{opts}{other arguments to freesurfer command}
 
 \item{verbose}{logical indicating to be verbose or not}
 }

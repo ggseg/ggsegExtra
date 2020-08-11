@@ -7,12 +7,14 @@
 #' @template hemisphere
 #' @param projfrac argument to projfrac
 #' @template verbose
+#' @template opts
 #'
 #' @export
 mri_vol2surf <- function(input_file , 
                          output_file,
                          hemisphere,
                          projfrac = .5,
+                         opts = NULL,
                          verbose = TRUE){
   
   fs <- check_fs()
@@ -20,6 +22,8 @@ mri_vol2surf <- function(input_file ,
   
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "mri_vol2surf")
+  
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
   
   cmd <- paste(fs_cmd,
                "--mov", input_file,
@@ -52,6 +56,7 @@ mri_vol2surf <- function(input_file ,
 #' @template subjects_dir
 #' @template output_dir
 #' @template verbose
+#' @template opts
 #'
 #' @export
 mri_vol2label <- function(input_file, 
@@ -61,6 +66,7 @@ mri_vol2label <- function(input_file,
                           subject = "fsaverage5",
                           subjects_dir = freesurfer::fs_subj_dir(),
                           output_dir, 
+                          opts = NULL,
                           verbose = TRUE){
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
@@ -75,7 +81,9 @@ mri_vol2label <- function(input_file,
   
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "mri_vol2label")
-
+  
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
+  
   cmd <-  paste(fs_cmd,
                 "--c", input_file,
                 "--id", label_id,
@@ -98,11 +106,14 @@ mri_vol2label <- function(input_file,
 #' @param label label to run
 #' @template output_file
 #' @template verbose
-mri_pretess <- function(template, label, output_file, verbose = TRUE){
+#' @template opts
+mri_pretess <- function(template, label, output_file, verbose = TRUE, opts = NULL){
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
   fscmd <- paste0(freesurfer::get_fs(), "mri_pretess")
+  
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
   
   cmd <- paste(fscmd,
                template, label,
@@ -118,11 +129,13 @@ mri_pretess <- function(template, label, output_file, verbose = TRUE){
 #' @template verbose
 #' @template output_file
 #' @param input_file input file
-mri_tessellate <- function(input_file, label, output_file, verbose){
+#' @template opts
+mri_tessellate <- function(input_file, label, output_file, verbose, opts = NULL){
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
   fscmd <- paste0(freesurfer::get_fs(), "mri_tessellate")
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
   
   cmd <- paste(fscmd,
                input_file, 
@@ -139,11 +152,13 @@ mri_tessellate <- function(input_file, label, output_file, verbose){
 #' @param label label to run
 #' @template output_file
 #' @template verbose
-mri_smooth <- function(input_file, label, output_file, verbose){
+#' @template opts
+mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
   fscmd <- paste0(freesurfer::get_fs(), "mris_smooth")
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
   
   cmd <- paste(fscmd, "-nw",
                input_file, 
@@ -165,6 +180,7 @@ mri_smooth <- function(input_file, label, output_file, verbose){
 #' @template annot_dir
 #' @template output_dir
 #' @template verbose
+#' @template opts
 #'
 #' @export
 mris_label2annot <- function(labels, 
@@ -174,6 +190,7 @@ mris_label2annot <- function(labels,
                              subjects_dir = freesurfer::fs_subj_dir(),
                              annot_dir = file.path(subjects_dir, subject, "label"),
                              output_dir = subjects_dir,
+                             opts = NULL,
                              verbose = TRUE){
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
@@ -186,6 +203,7 @@ mris_label2annot <- function(labels,
   labs <- paste("--l", labels, collapse=" ")
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "mris_label2annot")
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
   
   cmd <-  paste(fs_cmd,
                 "--sd" , subjects_dir,
@@ -209,11 +227,13 @@ mris_label2annot <- function(labels,
 #' @template hemisphere
 #' @template output_dir
 #' @template verbose
+#' @template opts
 mris_annot2label <- function(annot_file, 
                              subject = "fsaverage5",
                              hemisphere = "lh", 
                              output_dir = freesurfer::fs_subj_dir(), 
-                             verbose = TRUE){
+                             verbose = TRUE,
+                             opts = NULL){
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
@@ -226,6 +246,8 @@ mris_annot2label <- function(annot_file,
   
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "freeview")
+  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
+  
   
   cmd <- paste(
     fs_cmd,
@@ -259,7 +281,7 @@ mris_annot2label <- function(annot_file,
 #' subject's vertices to the reference "average" surface. Example: sphere.reg
 #' @param classifier specify classifier array input file (atlas file)
 #' @template output_file 
-#' @param opts other options to freesurfer function mris_ca_label
+#' @template opts
 #' @template subjects_dir
 #'
 #' @export

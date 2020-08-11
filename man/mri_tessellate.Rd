@@ -4,7 +4,7 @@
 \alias{mri_tessellate}
 \title{Tesselate data}
 \usage{
-mri_tessellate(input_file, label, output_file, verbose)
+mri_tessellate(input_file, label, output_file, verbose, opts = NULL)
 }
 \arguments{
 \item{input_file}{input file}
@@ -14,6 +14,8 @@ mri_tessellate(input_file, label, output_file, verbose)
 \item{output_file}{path to output file}
 
 \item{verbose}{logical indicating to be verbose or not}
+
+\item{opts}{other arguments to freesurfer command}
 }
 \description{
 Tesselate data

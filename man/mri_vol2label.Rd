@@ -12,6 +12,7 @@ mri_vol2label(
   subject = "fsaverage5",
   subjects_dir = freesurfer::fs_subj_dir(),
   output_dir,
+  opts = NULL,
   verbose = TRUE
 )
 }
@@ -30,6 +31,8 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{subjects_dir}{Freesurfer subject directory}
 
 \item{output_dir}{output directory path}
+
+\item{opts}{other arguments to freesurfer command}
 
 \item{verbose}{logical indicating to be verbose or not}
 }

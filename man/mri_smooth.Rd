@@ -4,7 +4,7 @@
 \alias{mri_smooth}
 \title{Smooth data}
 \usage{
-mri_smooth(input_file, label, output_file, verbose)
+mri_smooth(input_file, label, output_file, verbose, opts = NULL)
 }
 \arguments{
 \item{input_file}{input file to smooth}
@@ -14,6 +14,8 @@ mri_smooth(input_file, label, output_file, verbose)
 \item{output_file}{path to output file}
 
 \item{verbose}{logical indicating to be verbose or not}
+
+\item{opts}{other arguments to freesurfer command}
 }
 \description{
 Smooth data

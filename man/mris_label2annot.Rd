@@ -12,6 +12,7 @@ mris_label2annot(
   subjects_dir = freesurfer::fs_subj_dir(),
   annot_dir = file.path(subjects_dir, subject, "label"),
   output_dir = subjects_dir,
+  opts = NULL,
   verbose = TRUE
 )
 }
@@ -30,6 +31,8 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{annot_dir}{path to directory with annot-files}
 
 \item{output_dir}{output directory path}
+
+\item{opts}{other arguments to freesurfer command}
 
 \item{verbose}{logical indicating to be verbose or not}
 }

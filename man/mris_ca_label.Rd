@@ -30,7 +30,7 @@ subject's vertices to the reference "average" surface. Example: sphere.reg}
 
 \item{subjects_dir}{Freesurfer subject directory}
 
-\item{opts}{other options to freesurfer function mris_ca_label}
+\item{opts}{other arguments to freesurfer command}
 }
 \description{
 For a single subject, produces an annotation file, in which each 
