@@ -26,6 +26,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
     "LCBC-UiO/ggsegICBM",         FALSE,   TRUE,    "github", "white tract atlas",
     "LCBC-UiO/ggsegHO",           TRUE,    FALSE,   "github", "Harvard-Oxford cortical (FSL)",
     "LCBC-UiO/ggsegDefaultExtra", TRUE,    FALSE,   "github", "extra 2d view for dk, p/a division of aseg hippocampus",
+    "LCBC-UiO/ggsegDKT",          TRUE,    TRUE,    "github", "Desikan-Killiany-Tourville cortical atlas"
   )
   repos$package = basename(repos$repo)
   
