@@ -4,6 +4,6 @@ test_that("ggseg_atlas_repos works", {
   testthat::expect_equal(names(repos),
                c("repo", "ggseg", "ggseg3d", "source", "comment", "package"))
   
-  testthat::expect_equal(nrow(repos), 10)
+  testthat::expect_equal(nrow(repos), 11)
     
 })
