@@ -21,7 +21,12 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
 
       - uses: r-lib/actions/setup-pandoc@v1
-
+    
+      - name: Install X11 dependencies on MacOS
+        if: runner.os == 'macOS'
+        run: |
+          brew cask install xquartz
+          
       - name: Query dependencies
         run: |
           install.packages('remotes')
