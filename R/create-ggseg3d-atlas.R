@@ -346,7 +346,7 @@ aseg_2_mesh <- function(subject = "fsaverage5",
 #'
 #' @template subject 
 #' @template subjects_dir 
-#' @param template tempalte volume.mgz file path
+#' @param template template \code{volume.mgz} file path
 #' @param color_lut Freesurfer colour look-up-table. Either
 #' as a path or a data.frame that \code{\link{is_ctab}}
 #' @param steps if cleanup is disabled, all files are

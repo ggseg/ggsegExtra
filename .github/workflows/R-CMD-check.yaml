@@ -39,6 +39,17 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
+      - name: Install XQuartz
+        if: runner.os == 'macOS'
+        env:
+          XQUARTZ_VERSION: 2.7.11
+        run: |
+           curl -fLo /tmp/XQuartz.dmg "https://dl.bintray.com/xquartz/downloads/XQuartz-${XQUARTZ_VERSION}.dmg"
+           sudo hdiutil attach -noverify /tmp/XQuartz.dmg
+           sudo installer -pkg "/Volumes/XQuartz-${XQUARTZ_VERSION}/XQuartz.pkg" -target /
+           sudo hdiutil detach /Volumes/XQuartz-${XQUARTZ_VERSION}
+           rm /tmp/XQuartz.dmg
+           
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Query dependencies
@@ -56,11 +67,6 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install X11 dependencies on MacOS
-        if: runner.os == 'macOS'
-        run: |
-          brew cask install xquartz
-          
       - name: Install system dependencies
         if: runner.os == 'Linux'
         run: |
