@@ -100,7 +100,7 @@ the contours of each segment." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -151,15 +151,15 @@ based on a ggseg3d atlas, based on
 the contours of each segment.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_ggseg3d_2_ggseg</span>(
-  <span class='kw'>ggseg3d_atlas</span> <span class='kw'>=</span> <span class='kw pkg'>ggseg3d</span><span class='kw ns'>::</span><span class='no'><a href='https://rdrr.io/pkg/ggseg3d/man/dk_3d.html'>dk_3d</a></span>,
-  <span class='kw'>steps</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>7</span>,
-  <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
-  <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>smoothness</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>ncores</span> <span class='kw'>=</span> <span class='kw pkg'>parallel</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() - <span class='fl'>2</span>
-)</pre>
+    <pre class="usage"><span class='fu'>make_ggseg3d_2_ggseg</span><span class='op'>(</span>
+  ggseg3d_atlas <span class='op'>=</span> <span class='fu'>ggseg3d</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/ggseg3d/man/dk_3d.html'>dk_3d</a></span>,
+  steps <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>7</span>,
+  output_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  tolerance <span class='op'>=</span> <span class='fl'>0</span>,
+  smoothness <span class='op'>=</span> <span class='fl'>5</span>,
+  cleanup <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  ncores <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>2</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -178,11 +178,11 @@ the contours of each segment.</p>
     </tr>
     <tr>
       <th>tolerance</th>
-      <td><p>tolerance during vertex reduction <code><a href='https://rdrr.io/pkg/sf/man/geos_unary.html'>st_simplify</a></code></p></td>
+      <td><p>tolerance during vertex reduction <code><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_simplify</a></code></p></td>
     </tr>
     <tr>
       <th>smoothness</th>
-      <td><p>smoothing factor, argument to <code><a href='https://rdrr.io/pkg/smoothr/man/smooth.html'>smooth</a></code></p></td>
+      <td><p>smoothing factor, argument to <code><a href='http://strimas.com/smoothr/reference/smooth.html'>smooth</a></code></p></td>
     </tr>
     <tr>
       <th>cleanup</th>
@@ -213,7 +213,7 @@ the contours of each segment.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

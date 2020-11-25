@@ -101,7 +101,7 @@ and turns them into ascii files." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -153,16 +153,16 @@ curvature and no fix curvature specified
 and turns them into ascii files.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>subject_2_ascii</span>(
-  <span class='kw'>subject</span> <span class='kw'>=</span> <span class='st'>"fsaverage5"</span>,
-  <span class='kw'>hemisphere</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rh"</span>, <span class='st'>"lh"</span>),
-  <span class='kw'>surfaces</span> <span class='kw'>=</span> <span class='fu'><a href='fs_surfaces.html'>fs_surfaces</a></span>(),
-  <span class='kw'>curvatures</span> <span class='kw'>=</span> <span class='fu'><a href='fs_curvatures.html'>fs_curvatures</a></span>(),
-  <span class='kw'>nofix_curv</span> <span class='kw'>=</span> <span class='fu'><a href='fs_nofixcurv.html'>fs_nofixcurv</a></span>(),
-  <span class='kw'>subjects_dir</span> <span class='kw'>=</span> <span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span>(),
-  <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='no'>subjects_dir</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>subject_2_ascii</span><span class='op'>(</span>
+  subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
+  hemisphere <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"rh"</span>, <span class='st'>"lh"</span><span class='op'>)</span>,
+  surfaces <span class='op'>=</span> <span class='fu'><a href='fs_surfaces.html'>fs_surfaces</a></span><span class='op'>(</span><span class='op'>)</span>,
+  curvatures <span class='op'>=</span> <span class='fu'><a href='fs_curvatures.html'>fs_curvatures</a></span><span class='op'>(</span><span class='op'>)</span>,
+  nofix_curv <span class='op'>=</span> <span class='fu'><a href='fs_nofixcurv.html'>fs_nofixcurv</a></span><span class='op'>(</span><span class='op'>)</span>,
+  subjects_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  output_dir <span class='op'>=</span> <span class='va'>subjects_dir</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -218,7 +218,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

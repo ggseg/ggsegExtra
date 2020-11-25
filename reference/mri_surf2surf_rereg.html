@@ -103,7 +103,7 @@ rendering and speed." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -157,14 +157,14 @@ balance in number of vertices for detailed
 rendering and speed.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mri_surf2surf_rereg</span>(
-  <span class='no'>subject</span>,
-  <span class='no'>annot</span>,
-  <span class='kw'>hemi</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"lh"</span>, <span class='st'>"rh"</span>),
-  <span class='kw'>target_subject</span> <span class='kw'>=</span> <span class='st'>"fsaverage5"</span>,
-  <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span>(), <span class='no'>subject</span>, <span class='st'>"label"</span>),
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>mri_surf2surf_rereg</span><span class='op'>(</span>
+  <span class='va'>subject</span>,
+  <span class='va'>annot</span>,
+  hemi <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"lh"</span>, <span class='st'>"rh"</span><span class='op'>)</span>,
+  target_subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
+  output_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>subject</span>, <span class='st'>"label"</span><span class='op'>)</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -200,10 +200,12 @@ rendering and speed.</p>
     <p>nothing</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span>(<span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span>()){
+    <pre class="examples"><div class='input'><span class='kw'>if</span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span>
 
-<span class='fu'>mri_surf2surf_rereg</span>(<span class='kw'>subject</span> <span class='kw'>=</span> <span class='st'>"bert"</span>, <span class='kw'>annot</span> <span class='kw'>=</span> <span class='st'>"aparc.DKTatlas"</span>)
-}</div></pre>
+<span class='fu'>mri_surf2surf_rereg</span><span class='op'>(</span>subject <span class='op'>=</span> <span class='st'>"bert"</span>, annot <span class='op'>=</span> <span class='st'>"aparc.DKTatlas"</span><span class='op'>)</span>
+<span class='op'>}</span>
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -219,7 +221,7 @@ rendering and speed.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

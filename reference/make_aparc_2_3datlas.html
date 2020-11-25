@@ -100,7 +100,7 @@ ggseg3d." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -151,18 +151,18 @@ to create a data frame that is ready to use with
 ggseg3d.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_aparc_2_3datlas</span>(
-  <span class='kw'>annot</span> <span class='kw'>=</span> <span class='st'>"aparc"</span>,
-  <span class='kw'>subject</span> <span class='kw'>=</span> <span class='st'>"fsaverage5"</span>,
-  <span class='kw'>hemisphere</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"rh"</span>, <span class='st'>"lh"</span>),
-  <span class='kw'>surface</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"inflated"</span>, <span class='st'>"LCBC"</span>, <span class='st'>"white"</span>),
-  <span class='kw'>subjects_dir</span> <span class='kw'>=</span> <span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span>(),
-  <span class='kw'>annot_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='no'>subjects_dir</span>, <span class='no'>subject</span>, <span class='st'>"label"</span>),
-  <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
-  <span class='kw'>ncores</span> <span class='kw'>=</span> <span class='kw pkg'>parallel</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() - <span class='fl'>2</span>,
-  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>make_aparc_2_3datlas</span><span class='op'>(</span>
+  annot <span class='op'>=</span> <span class='st'>"aparc"</span>,
+  subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
+  hemisphere <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"rh"</span>, <span class='st'>"lh"</span><span class='op'>)</span>,
+  surface <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"inflated"</span>, <span class='st'>"LCBC"</span>, <span class='st'>"white"</span><span class='op'>)</span>,
+  subjects_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  annot_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subjects_dir</span>, <span class='va'>subject</span>, <span class='st'>"label"</span><span class='op'>)</span>,
+  output_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  ncores <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>2</span>,
+  cleanup <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -220,11 +220,12 @@ for the atlas, and the atlas name to something shorter.
 See the dk_3d atlas for examples.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>dt</span> <span class='kw'>&lt;-</span> <span class='fu'>aparc_2_3datlas</span>()
-<span class='no'>dt</span> <span class='kw'>&lt;-</span> <span class='fu'>aparc_2_3datlas</span>(<span class='kw'>annot</span> <span class='kw'>=</span> <span class='st'>"aparc.a2009s"</span>)
-<span class='no'>dt</span> <span class='kw'>&lt;-</span> <span class='fu'>aparc_2_3datlas</span>(<span class='kw'>surface</span> <span class='kw'>=</span> <span class='st'>"sphere"</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='va'>dt</span> <span class='op'>&lt;-</span> <span class='fu'>aparc_2_3datlas</span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>dt</span> <span class='op'>&lt;-</span> <span class='fu'>aparc_2_3datlas</span><span class='op'>(</span>annot <span class='op'>=</span> <span class='st'>"aparc.a2009s"</span><span class='op'>)</span>
+<span class='va'>dt</span> <span class='op'>&lt;-</span> <span class='fu'>aparc_2_3datlas</span><span class='op'>(</span>surface <span class='op'>=</span> <span class='st'>"sphere"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -240,7 +241,7 @@ See the dk_3d atlas for examples.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

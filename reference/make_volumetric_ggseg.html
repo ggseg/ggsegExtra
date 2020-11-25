@@ -98,7 +98,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -147,24 +147,24 @@
     <p>Make ggseg atlas from volumetric template</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_volumetric_ggseg</span>(
-  <span class='no'>label_file</span>,
-  <span class='kw'>subject</span> <span class='kw'>=</span> <span class='st'>"fsaverage5"</span>,
-  <span class='kw'>subjects_dir</span> <span class='kw'>=</span> <span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span>(),
-  <span class='kw'>output_dir</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span>(),
-  <span class='kw'>color_lut</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>steps</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>8</span>,
-  <span class='kw'>skip_existing</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>slices</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>130</span>, <span class='fl'>122</span>, <span class='fl'>122</span>), <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>130</span>, <span class='fl'>235</span>, <span class='fl'>112</span>), <span class='kw'>z</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>130</span>, <span class='fl'>100</span>, <span class='fl'>106</span>),
-    <span class='kw'>view</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"axial"</span>, <span class='st'>"sagittal"</span>, <span class='st'>"coronal"</span>), <span class='kw'>stringsAsFactors</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>),
-  <span class='kw'>vertex_size_limits</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>dilate</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>tolerance</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>ncores</span> <span class='kw'>=</span> <span class='kw pkg'>parallel</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span>() - <span class='fl'>2</span>,
-  <span class='kw'>smoothness</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>cleanup</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>make_volumetric_ggseg</span><span class='op'>(</span>
+  <span class='va'>label_file</span>,
+  subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
+  subjects_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  output_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  color_lut <span class='op'>=</span> <span class='cn'>NULL</span>,
+  steps <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>8</span>,
+  skip_existing <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  slices <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>130</span>, <span class='fl'>122</span>, <span class='fl'>122</span><span class='op'>)</span>, y <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>130</span>, <span class='fl'>235</span>, <span class='fl'>112</span><span class='op'>)</span>, z <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>130</span>, <span class='fl'>100</span>, <span class='fl'>106</span><span class='op'>)</span>,
+    view <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"axial"</span>, <span class='st'>"sagittal"</span>, <span class='st'>"coronal"</span><span class='op'>)</span>, stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>,
+  vertex_size_limits <span class='op'>=</span> <span class='cn'>NULL</span>,
+  dilate <span class='op'>=</span> <span class='cn'>NULL</span>,
+  tolerance <span class='op'>=</span> <span class='fl'>0</span>,
+  ncores <span class='op'>=</span> <span class='fu'>parallel</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/parallel/detectCores.html'>detectCores</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>-</span> <span class='fl'>2</span>,
+  smoothness <span class='op'>=</span> <span class='fl'>5</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  cleanup <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -212,7 +212,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     </tr>
     <tr>
       <th>tolerance</th>
-      <td><p>tolerance during vertex reduction <code><a href='https://rdrr.io/pkg/sf/man/geos_unary.html'>st_simplify</a></code></p></td>
+      <td><p>tolerance during vertex reduction <code><a href='https://r-spatial.github.io/sf/reference/geos_unary.html'>st_simplify</a></code></p></td>
     </tr>
     <tr>
       <th>ncores</th>
@@ -220,7 +220,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     </tr>
     <tr>
       <th>smoothness</th>
-      <td><p>smoothing factor, argument to <code><a href='https://rdrr.io/pkg/smoothr/man/smooth.html'>smooth</a></code></p></td>
+      <td><p>smoothing factor, argument to <code><a href='http://strimas.com/smoothr/reference/smooth.html'>smooth</a></code></p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -237,14 +237,15 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     <p>brain-atlas class</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span>(!<span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span>()){
+    <pre class="examples"><div class='input'><span class='kw'>if</span><span class='op'>(</span><span class='op'>!</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span>
 
-<span class='no'>aseg2</span> <span class='kw'>&lt;-</span> <span class='fu'>make_volumetric_ggseg</span>(<span class='kw'>label_file</span> <span class='kw'>=</span>  <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span>(<span class='no'>subjects_dir</span>, <span class='no'>subject</span>, <span class='st'>"mri/aseg.mgz"</span>))
+<span class='va'>aseg2</span> <span class='op'>&lt;-</span> <span class='fu'>make_volumetric_ggseg</span><span class='op'>(</span>label_file <span class='op'>=</span>  <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subjects_dir</span>, <span class='va'>subject</span>, <span class='st'>"mri/aseg.mgz"</span><span class='op'>)</span><span class='op'>)</span>
 
 <span class='co'># Have a look at the atlas</span>
-<span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>aseg2</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>aseg2</span><span class='op'>)</span>
 
-}</div></pre>
+<span class='op'>}</span>
+</div><div class='output co'>#&gt; <span class='error'>Error: FreeSurfer not installed. Cannot run pipeline</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -260,7 +261,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -105,7 +105,7 @@ happen to be stored in mri format." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -161,17 +161,17 @@ mri volume, it was designed to convert parcellation volumes, which
 happen to be stored in mri format.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mri_vol2label</span>(
-  <span class='no'>input_file</span>,
-  <span class='no'>label_id</span>,
-  <span class='no'>hemisphere</span>,
-  <span class='kw'>surface</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>subject</span> <span class='kw'>=</span> <span class='st'>"fsaverage5"</span>,
-  <span class='kw'>subjects_dir</span> <span class='kw'>=</span> <span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span>(),
-  <span class='no'>output_dir</span>,
-  <span class='kw'>opts</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>mri_vol2label</span><span class='op'>(</span>
+  <span class='va'>input_file</span>,
+  <span class='va'>label_id</span>,
+  <span class='va'>hemisphere</span>,
+  surface <span class='op'>=</span> <span class='cn'>NULL</span>,
+  subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
+  subjects_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  <span class='va'>output_dir</span>,
+  opts <span class='op'>=</span> <span class='cn'>NULL</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -231,7 +231,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

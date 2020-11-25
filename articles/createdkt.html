@@ -57,7 +57,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -94,7 +94,7 @@
 
       
 
-      </header><script src="createdkt_files/header-attrs-2.5/header-attrs.js"></script><script src="createdkt_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="createdkt_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+      </header><script src="createdkt_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="createdkt_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
 <script src="createdkt_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -119,10 +119,11 @@
 - <a href="https://imagemagick.org/index.php">Imagemagick</a><br>
 - <a href="https://github.com/plotly/orca">orca</a></p>
 <p>Initiate your R script with the following library calls:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggsegExtra</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggseg</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggseg3d</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyverse</span>) <span class="co"># for cleaning the atlas data efficiently</span></pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggseg">ggseg</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggseg3d">ggseg3d</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span> <span class="co"># for cleaning the atlas data efficiently</span></code></pre></div>
 </div>
 <div id="creating-a-3d-atlas" class="section level2">
 <h2 class="hasAnchor">
@@ -131,304 +132,317 @@
 <h3 class="hasAnchor">
 <a href="#the-annotation-file" class="anchor"></a>The annotation file</h3>
 <p>The first step is to create a FreeSurfer annotation file for the “fsaverage5” subject. This subject is ideal as it has fewer vertices than fsaverage6 or fsaverage (and thereby plots faster), but still contains enough detail to produce a good representation of the cortical surface. Freesurfer comes with a DKT cortical annotation file, but only for the “bert” example subject. Since “bert” is not an average brain composite, it is not well suited for our purposes. We will first need to convert the annotation file for “bert” into an annotation file for “fsaverage5”. In Freesurfer this is done with the <code>mri_surf2surf</code> command, with very specific arguments. We have in <em>ggsegExtra</em> created a specialized function specifically for this type of transformation, calling FreeSurfer’s <code>mri_surf2surf</code> with the <code><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg()</a></code> function.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># convert DKT to fsaverage5</span>
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-                    <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                    <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"lh"</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># convert DKT to fsaverage5</span>
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+                    annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                    hemi <span class="op">=</span> <span class="st">"lh"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-                    <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                    <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"rh"</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb3"><html><body><pre class="r">Setting mapmethod to nnf
-
-$Id: mri_surf2surf.c,v 1.103 2015/11/05 22:07:33 greve Exp $
-
-setenv SUBJECTS_DIR /Applications/freesurfer/subjects
-cd /Users/athanasm/R-stuff/LCBC/ggseg_stuff/atlases/ggsegDKT
-/Applications/freesurfer/bin/mri_surf2surf --srcsubject bert --sval-annot aparc.DKTatlas --trgsubject fsaverage5 --tval data-raw//lh.aparc.DKTatlas --hemi lh 
-
-sysname  Darwin
-hostname Athanasias-MacBook-Pro.home
-machine  x86_64
-user     athanasm
-srcsubject = bert
-srcval     = (null)
-srctype    = 
-trgsubject = fsaverage5
-trgval     = data-raw//lh.aparc.DKTatlas
-trgtype    = 
-srcsurfreg = sphere.reg
-trgsurfreg = sphere.reg
-srchemi    = lh
-trghemi    = lh
-frame      = 0
-fwhm-in    = 0
-fwhm-out   = 0
-label-src  = (null)
-label-trg  = (null)
-OKToRevFaceOrder  = 1
-UseDualHemi = 0
-Reading source surface reg /Applications/freesurfer/subjects/bert/surf/lh.sphere.reg
-Loading source data
-Reading surface file /Applications/freesurfer/subjects/bert/surf/lh.orig
-reading colortable from annotation file...
-colortable with 36 entries read (originally /autofs/space/tanha_002/users/greve/fsdev.build/average/colortable_desikan_killiany.txt)
-Reading target surface reg /Applications/freesurfer/subjects/fsaverage5/surf/lh.sphere.reg
-Done
-Using surf2surf_nnfr()
-Mapping Source Volume onto Source Subject Surface
-surf2surf_nnfr: building source hash (res=16).
-Surf2Surf: Forward Loop (10242)
-
-Surf2Surf: Dividing by number of hits (10242)
-INFO: nSrcLost = 122841
-nTrg121 = 10242, nTrgMulti =     0, MnTrgMultiHits = 0
-nSrc121 = 10242, nSrcLost = 122841, nSrcMulti = 122841, MnSrcMultiHits = 0
-Saving target data
-Converting to target annot
-Saving to target annot data-raw//lh.aparc.DKTatlas</pre></body></html></div>
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+                    annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                    hemi <span class="op">=</span> <span class="st">"rh"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>Setting mapmethod to nnf</span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="op">$</span>Id<span class="op">:</span><span class="st"> </span>mri_surf2surf.c,v <span class="fl">1.103</span> <span class="dv">2015</span><span class="op">/</span><span class="dv">11</span><span class="op">/</span><span class="dv">05</span> <span class="dv">22</span><span class="op">:</span><span class="dv">07</span><span class="op">:</span><span class="dv">33</span> greve Exp <span class="op">$</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>setenv SUBJECTS_DIR <span class="op">/</span>Applications<span class="op">/</span>freesurfer<span class="op">/</span>subjects</span>
+<span id="cb3-6"><a href="#cb3-6"></a>cd <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>R<span class="op">-</span>stuff<span class="op">/</span>LCBC<span class="op">/</span>ggseg_stuff<span class="op">/</span>atlases<span class="op">/</span>ggsegDKT</span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="op">/</span>Applications<span class="op">/</span>freesurfer<span class="op">/</span>bin<span class="op">/</span>mri_surf2surf <span class="op">--</span>srcsubject bert <span class="op">--</span>sval<span class="op">-</span>annot aparc.DKTatlas <span class="op">--</span>trgsubject fsaverage5 <span class="op">--</span>tval data<span class="op">-</span>raw<span class="op">/</span><span class="er">/</span>lh.aparc.DKTatlas <span class="op">--</span>hemi lh </span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a>sysname  Darwin</span>
+<span id="cb3-10"><a href="#cb3-10"></a>hostname Athanasias<span class="op">-</span>MacBook<span class="op">-</span>Pro.home</span>
+<span id="cb3-11"><a href="#cb3-11"></a>machine  x86_<span class="dv">64</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>user     athanasm</span>
+<span id="cb3-13"><a href="#cb3-13"></a>srcsubject =<span class="st"> </span>bert</span>
+<span id="cb3-14"><a href="#cb3-14"></a>srcval     =<span class="st"> </span>(null)</span>
+<span id="cb3-15"><a href="#cb3-15"></a>srctype    =<span class="st"> </span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>trgsubject =<span class="st"> </span>fsaverage5</span>
+<span id="cb3-17"><a href="#cb3-17"></a>trgval     =<span class="st"> </span>data<span class="op">-</span>raw<span class="op">/</span><span class="er">/</span>lh.aparc.DKTatlas</span>
+<span id="cb3-18"><a href="#cb3-18"></a>trgtype    =<span class="st"> </span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>srcsurfreg =<span class="st"> </span>sphere.reg</span>
+<span id="cb3-20"><a href="#cb3-20"></a>trgsurfreg =<span class="st"> </span>sphere.reg</span>
+<span id="cb3-21"><a href="#cb3-21"></a>srchemi    =<span class="st"> </span>lh</span>
+<span id="cb3-22"><a href="#cb3-22"></a>trghemi    =<span class="st"> </span>lh</span>
+<span id="cb3-23"><a href="#cb3-23"></a>frame      =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-24"><a href="#cb3-24"></a>fwhm<span class="op">-</span><span class="cf">in</span>    =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-25"><a href="#cb3-25"></a>fwhm<span class="op">-</span>out   =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>label<span class="op">-</span>src  =<span class="st"> </span>(null)</span>
+<span id="cb3-27"><a href="#cb3-27"></a>label<span class="op">-</span>trg  =<span class="st"> </span>(null)</span>
+<span id="cb3-28"><a href="#cb3-28"></a>OKToRevFaceOrder  =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb3-29"><a href="#cb3-29"></a>UseDualHemi =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-30"><a href="#cb3-30"></a>Reading source surface reg <span class="op">/</span>Applications<span class="op">/</span>freesurfer<span class="op">/</span>subjects<span class="op">/</span>bert<span class="op">/</span>surf<span class="op">/</span>lh.sphere.reg</span>
+<span id="cb3-31"><a href="#cb3-31"></a>Loading source data</span>
+<span id="cb3-32"><a href="#cb3-32"></a>Reading surface file <span class="op">/</span>Applications<span class="op">/</span>freesurfer<span class="op">/</span>subjects<span class="op">/</span>bert<span class="op">/</span>surf<span class="op">/</span>lh.orig</span>
+<span id="cb3-33"><a href="#cb3-33"></a>reading colortable from annotation file...</span>
+<span id="cb3-34"><a href="#cb3-34"></a>colortable with <span class="dv">36</span> entries <span class="kw">read</span> (originally <span class="op">/</span>autofs<span class="op">/</span>space<span class="op">/</span>tanha_<span class="dv">002</span><span class="op">/</span>users<span class="op">/</span>greve<span class="op">/</span>fsdev.build<span class="op">/</span>average<span class="op">/</span>colortable_desikan_killiany.txt)</span>
+<span id="cb3-35"><a href="#cb3-35"></a>Reading target surface reg <span class="op">/</span>Applications<span class="op">/</span>freesurfer<span class="op">/</span>subjects<span class="op">/</span>fsaverage5<span class="op">/</span>surf<span class="op">/</span>lh.sphere.reg</span>
+<span id="cb3-36"><a href="#cb3-36"></a>Done</span>
+<span id="cb3-37"><a href="#cb3-37"></a>Using <span class="kw">surf2surf_nnfr</span>()</span>
+<span id="cb3-38"><a href="#cb3-38"></a>Mapping Source Volume onto Source Subject Surface</span>
+<span id="cb3-39"><a href="#cb3-39"></a>surf2surf_nnfr<span class="op">:</span><span class="st"> </span>building source <span class="kw">hash</span> (<span class="dt">res=</span><span class="dv">16</span>).</span>
+<span id="cb3-40"><a href="#cb3-40"></a>Surf2Surf<span class="op">:</span><span class="st"> </span>Forward <span class="kw">Loop</span> (<span class="dv">10242</span>)</span>
+<span id="cb3-41"><a href="#cb3-41"></a></span>
+<span id="cb3-42"><a href="#cb3-42"></a>Surf2Surf<span class="op">:</span><span class="st"> </span>Dividing by number of <span class="kw">hits</span> (<span class="dv">10242</span>)</span>
+<span id="cb3-43"><a href="#cb3-43"></a>INFO<span class="op">:</span><span class="st"> </span>nSrcLost =<span class="st"> </span><span class="dv">122841</span></span>
+<span id="cb3-44"><a href="#cb3-44"></a>nTrg121 =<span class="st"> </span><span class="dv">10242</span>, nTrgMulti =<span class="st">     </span><span class="dv">0</span>, MnTrgMultiHits =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-45"><a href="#cb3-45"></a>nSrc121 =<span class="st"> </span><span class="dv">10242</span>, nSrcLost =<span class="st"> </span><span class="dv">122841</span>, nSrcMulti =<span class="st"> </span><span class="dv">122841</span>, MnSrcMultiHits =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb3-46"><a href="#cb3-46"></a>Saving target data</span>
+<span id="cb3-47"><a href="#cb3-47"></a>Converting to target annot</span>
+<span id="cb3-48"><a href="#cb3-48"></a>Saving to target annot data<span class="op">-</span>raw<span class="op">/</span><span class="er">/</span>lh.aparc.DKTatlas</span></code></pre></div>
 <p>The function defaults to converting the annotation file of a given subject to “fsaverage5”, but this can be altered adding the <code>target_subject</code> argument. The string given to the <code>annot</code> argument must match an annotation file name in the subject’s <code>label/</code> folder as specified in <code>$FREESURFER_SUBJ_DIR</code> or specified location though the <code>subjects_dir</code> argument to the function. Further, by default the converted annotation file will be stored in the target subject’s <code>label/</code> folder. If you for some reason do not have write access to this folder, this can be overridden through the <code>output_dir</code> argument.</p>
 </div>
 <div id="the-3d-atlas" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-3d-atlas" class="anchor"></a>The 3d atlas</h3>
 <p>Once an annotation file is made, you can proceed to creating the 3d-mesg atlas. The function <code><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas()</a></code> runs a series of text-conversions to create the atlas, ending with several ascii-files and surface files with the extension <code>.ply</code>.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Make  3d ----</span>
-<span class="no">dkt_3d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                               <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb5"><html><body><pre class="r">Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/rh.LCBC.asc as a surface
-Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.inflated.asc as a surface
-Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.white.asc as a surface
-Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/rh.inflated.asc as a surface
-Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/rh.white.asc as a surface
-Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.LCBC.asc as a surface</pre></body></html></div>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">dkt_3d</span></pre></body></html></div>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"># A tibble: 6 x 4
-  atlas             surf     hemi            ggseg_3d
-  &lt;chr&gt;             &lt;chr&gt;    &lt;chr&gt; &lt;list&lt;tbl_df[,6]&gt;&gt;
-1 aparc.DKTatlas_3d inflated left            [32 × 6]
-2 aparc.DKTatlas_3d inflated right           [32 × 6]
-3 aparc.DKTatlas_3d LCBC     left            [32 × 6]
-4 aparc.DKTatlas_3d LCBC     right           [32 × 6]
-5 aparc.DKTatlas_3d white    left            [32 × 6]
-6 aparc.DKTatlas_3d white    right           [32 × 6]</pre></body></html></div>
-<div class="sourceCode" id="cb8"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>)</pre></body></html></div>
-<p><img src="figures/dkt3d.png" width="207"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Make  3d ----</span>
+<span class="va">dkt_3d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                               output_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>Saving <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>Desktop<span class="op">/</span>fsaverage5<span class="op">/</span>srf<span class="op">/</span>ascii<span class="op">/</span>rh.LCBC.asc as a surface</span>
+<span id="cb5-2"><a href="#cb5-2"></a>Saving <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>Desktop<span class="op">/</span>fsaverage5<span class="op">/</span>srf<span class="op">/</span>ascii<span class="op">/</span>lh.inflated.asc as a surface</span>
+<span id="cb5-3"><a href="#cb5-3"></a>Saving <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>Desktop<span class="op">/</span>fsaverage5<span class="op">/</span>srf<span class="op">/</span>ascii<span class="op">/</span>lh.white.asc as a surface</span>
+<span id="cb5-4"><a href="#cb5-4"></a>Saving <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>Desktop<span class="op">/</span>fsaverage5<span class="op">/</span>srf<span class="op">/</span>ascii<span class="op">/</span>rh.inflated.asc as a surface</span>
+<span id="cb5-5"><a href="#cb5-5"></a>Saving <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>Desktop<span class="op">/</span>fsaverage5<span class="op">/</span>srf<span class="op">/</span>ascii<span class="op">/</span>rh.white.asc as a surface</span>
+<span id="cb5-6"><a href="#cb5-6"></a>Saving <span class="op">/</span>Users<span class="op">/</span>athanasm<span class="op">/</span>Desktop<span class="op">/</span>fsaverage5<span class="op">/</span>srf<span class="op">/</span>ascii<span class="op">/</span>lh.LCBC.asc as a surface</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dkt_3d</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># A tibble: 6 x 4</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>  atlas             surf     hemi            ggseg_3d</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">             </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">    </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&lt;</span>tbl_df[,<span class="dv">6</span>]<span class="op">&gt;</span><span class="er">&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="dv">1</span> aparc.DKTatlas_3d inflated left            [<span class="dv">32</span> × <span class="dv">6</span>]</span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="dv">2</span> aparc.DKTatlas_3d inflated right           [<span class="dv">32</span> × <span class="dv">6</span>]</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="dv">3</span> aparc.DKTatlas_3d LCBC     left            [<span class="dv">32</span> × <span class="dv">6</span>]</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="dv">4</span> aparc.DKTatlas_3d LCBC     right           [<span class="dv">32</span> × <span class="dv">6</span>]</span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="dv">5</span> aparc.DKTatlas_3d white    left            [<span class="dv">32</span> × <span class="dv">6</span>]</span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="dv">6</span> aparc.DKTatlas_3d white    right           [<span class="dv">32</span> × <span class="dv">6</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/dkt3d.png"><!-- --></p>
 </div>
 <div id="cleaning-the-atlas-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#cleaning-the-atlas-data" class="anchor"></a>Cleaning the atlas data</h3>
 <p>The atlas data usually needs some manual editing to get it into a nice shape for other users, and for nice plotting. We are avid <a href="https://www.tidyverse.org/">tidyverse</a> users, and as such the procedures we use here to clean the data use tidyverse functions.</p>
 <p>First, we will unnest the <code>ggseg_3d</code> column, so we can see what the atlas data contains.</p>
-<div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu">unnest</span>(<span class="no">dkt_3d</span>, <span class="no">ggseg_3d</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb10"><html><body><pre class="r"># A tibble: 192 x 9
-   atlas      surf    hemi  region        colour  label         roi   annot        mesh     
-   &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;         &lt;chr&gt;   &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;        &lt;list&gt;   
- 1 aparc.DKT… inflat… left  caudalanteri… #7D64A0 lh_caudalant… 0001  caudalanter… &lt;named l…
- 2 aparc.DKT… inflat… left  caudalmiddle… #641900 lh_caudalmid… 0002  caudalmiddl… &lt;named l…
- 3 aparc.DKT… inflat… left  cuneus        #DC1464 lh_cuneus     0003  cuneus       &lt;named l…
- 4 aparc.DKT… inflat… left  entorhinal    #DC140A lh_entorhinal 0004  entorhinal   &lt;named l…
- 5 aparc.DKT… inflat… left  fusiform      #B4DC8C lh_fusiform   0005  fusiform     &lt;named l…
- 6 aparc.DKT… inflat… left  inferiorpari… #DC3CDC lh_inferiorp… 0006  inferiorpar… &lt;named l…
- 7 aparc.DKT… inflat… left  inferiortemp… #B42878 lh_inferiort… 0007  inferiortem… &lt;named l…
- 8 aparc.DKT… inflat… left  isthmuscingu… #8C148C lh_isthmusci… 0008  isthmuscing… &lt;named l…
- 9 aparc.DKT… inflat… left  lateraloccip… #141E8C lh_lateraloc… 0009  lateralocci… &lt;named l…
-10 aparc.DKT… inflat… left  lateralorbit… #234B32 lh_lateralor… 0010  lateralorbi… &lt;named l…
-# … with 182 more rows</pre></body></html></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">unnest</span><span class="op">(</span><span class="va">dkt_3d</span>, <span class="va">ggseg_3d</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># A tibble: 192 x 9</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>   atlas      surf    hemi  region        colour  label         roi   annot        mesh     </span>
+<span id="cb10-3"><a href="#cb10-3"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">      </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">         </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">         </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">        </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st">   </span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="st"> </span><span class="dv">1</span> aparc.DKT… inflat… left  caudalanteri… <span class="co">#7D64A0 lh_caudalant… 0001  caudalanter… &lt;named l…</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a> <span class="dv">2</span> aparc.DKT… inflat… left  caudalmiddle… <span class="co">#641900 lh_caudalmid… 0002  caudalmiddl… &lt;named l…</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a> <span class="dv">3</span> aparc.DKT… inflat… left  cuneus        <span class="co">#DC1464 lh_cuneus     0003  cuneus       &lt;named l…</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a> <span class="dv">4</span> aparc.DKT… inflat… left  entorhinal    <span class="co">#DC140A lh_entorhinal 0004  entorhinal   &lt;named l…</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a> <span class="dv">5</span> aparc.DKT… inflat… left  fusiform      <span class="co">#B4DC8C lh_fusiform   0005  fusiform     &lt;named l…</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a> <span class="dv">6</span> aparc.DKT… inflat… left  inferiorpari… <span class="co">#DC3CDC lh_inferiorp… 0006  inferiorpar… &lt;named l…</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a> <span class="dv">7</span> aparc.DKT… inflat… left  inferiortemp… <span class="co">#B42878 lh_inferiort… 0007  inferiortem… &lt;named l…</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a> <span class="dv">8</span> aparc.DKT… inflat… left  isthmuscingu… <span class="co">#8C148C lh_isthmusci… 0008  isthmuscing… &lt;named l…</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a> <span class="dv">9</span> aparc.DKT… inflat… left  lateraloccip… <span class="co">#141E8C lh_lateraloc… 0009  lateralocci… &lt;named l…</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="dv">10</span> aparc.DKT… inflat… left  lateralorbit… <span class="co">#234B32 lh_lateralor… 0010  lateralorbi… &lt;named l…</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="co"># … with 182 more rows</span></span></code></pre></div>
 <p>Usually, it is the <code>region</code> column we want to do some cleaning of, to make the names of the regions more human readable. This column is populated by the names to each region as specified in the <code>annotation</code> file.</p>
 <p>We can inspect all the unique values in this column, so we can start setting up some logic for renaming the regions.</p>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu">unnest</span>(<span class="no">dkt_3d</span>, <span class="no">ggseg_3d</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">select</span>(<span class="no">region</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>() <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>()</pre></body></html></div>
-<div class="sourceCode" id="cb12"><html><body><pre class="r">                   region1                    region2                    region3 
- "caudalanteriorcingulate"      "caudalmiddlefrontal"                   "cuneus" 
-                   region4                    region5                    region6 
-              "entorhinal"                 "fusiform"         "inferiorparietal" 
-                   region7                    region8                    region9 
-        "inferiortemporal"         "isthmuscingulate"         "lateraloccipital" 
-                  region10                   region11                   region12 
-    "lateralorbitofrontal"                  "lingual"      "medialorbitofrontal" 
-                  region13                   region14                   region15 
-          "middletemporal"          "parahippocampal"              "paracentral" 
-                  region16                   region17                   region18 
-         "parsopercularis"            "parsorbitalis"         "parstriangularis" 
-                  region19                   region20                   region21 
-           "pericalcarine"              "postcentral"       "posteriorcingulate" 
-                  region22                   region23                   region24 
-              "precentral"                "precuneus" "rostralanteriorcingulate" 
-                  region25                   region26                   region27 
-    "rostralmiddlefrontal"          "superiorfrontal"         "superiorparietal" 
-                  region28                   region29                   region30 
-        "superiortemporal"            "supramarginal"       "transversetemporal" 
-                  region31                   region32 
-                  "insula"                         NA </pre></body></html></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">unnest</span><span class="op">(</span><span class="va">dkt_3d</span>, <span class="va">ggseg_3d</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">select</span><span class="op">(</span><span class="va">region</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>                   region1                    region2                    region3 </span>
+<span id="cb12-2"><a href="#cb12-2"></a> <span class="st">"caudalanteriorcingulate"</span>      <span class="st">"caudalmiddlefrontal"</span>                   <span class="st">"cuneus"</span> </span>
+<span id="cb12-3"><a href="#cb12-3"></a>                   region4                    region5                    region6 </span>
+<span id="cb12-4"><a href="#cb12-4"></a>              <span class="st">"entorhinal"</span>                 <span class="st">"fusiform"</span>         <span class="st">"inferiorparietal"</span> </span>
+<span id="cb12-5"><a href="#cb12-5"></a>                   region7                    region8                    region9 </span>
+<span id="cb12-6"><a href="#cb12-6"></a>        <span class="st">"inferiortemporal"</span>         <span class="st">"isthmuscingulate"</span>         <span class="st">"lateraloccipital"</span> </span>
+<span id="cb12-7"><a href="#cb12-7"></a>                  region10                   region11                   region12 </span>
+<span id="cb12-8"><a href="#cb12-8"></a>    <span class="st">"lateralorbitofrontal"</span>                  <span class="st">"lingual"</span>      <span class="st">"medialorbitofrontal"</span> </span>
+<span id="cb12-9"><a href="#cb12-9"></a>                  region13                   region14                   region15 </span>
+<span id="cb12-10"><a href="#cb12-10"></a>          <span class="st">"middletemporal"</span>          <span class="st">"parahippocampal"</span>              <span class="st">"paracentral"</span> </span>
+<span id="cb12-11"><a href="#cb12-11"></a>                  region16                   region17                   region18 </span>
+<span id="cb12-12"><a href="#cb12-12"></a>         <span class="st">"parsopercularis"</span>            <span class="st">"parsorbitalis"</span>         <span class="st">"parstriangularis"</span> </span>
+<span id="cb12-13"><a href="#cb12-13"></a>                  region19                   region20                   region21 </span>
+<span id="cb12-14"><a href="#cb12-14"></a>           <span class="st">"pericalcarine"</span>              <span class="st">"postcentral"</span>       <span class="st">"posteriorcingulate"</span> </span>
+<span id="cb12-15"><a href="#cb12-15"></a>                  region22                   region23                   region24 </span>
+<span id="cb12-16"><a href="#cb12-16"></a>              <span class="st">"precentral"</span>                <span class="st">"precuneus"</span> <span class="st">"rostralanteriorcingulate"</span> </span>
+<span id="cb12-17"><a href="#cb12-17"></a>                  region25                   region26                   region27 </span>
+<span id="cb12-18"><a href="#cb12-18"></a>    <span class="st">"rostralmiddlefrontal"</span>          <span class="st">"superiorfrontal"</span>         <span class="st">"superiorparietal"</span> </span>
+<span id="cb12-19"><a href="#cb12-19"></a>                  region28                   region29                   region30 </span>
+<span id="cb12-20"><a href="#cb12-20"></a>        <span class="st">"superiortemporal"</span>            <span class="st">"supramarginal"</span>       <span class="st">"transversetemporal"</span> </span>
+<span id="cb12-21"><a href="#cb12-21"></a>                  region31                   region32 </span>
+<span id="cb12-22"><a href="#cb12-22"></a>                  <span class="st">"insula"</span>                         <span class="ot">NA</span> </span></code></pre></div>
 <p>The region names for this atlas mainly need some white space in-between certain words to make the names readable. For instance, all regions with <code>temporal</code> could benefit from a white-space before that word. We’ll try to see other such patterns and how we can easily alter names so they look nicer.</p>
-<div class="sourceCode" id="cb13"><html><body><pre class="r"><span class="fu">unnest</span>(<span class="no">dkt_3d</span>, <span class="no">ggseg_3d</span>) <span class="kw">%&gt;%</span>
-    <span class="fu">mutate</span>(<span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="no">region</span>),
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">unnest</span><span class="op">(</span><span class="va">dkt_3d</span>, <span class="va">ggseg_3d</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="va">region</span><span class="op">)</span>,
            <span class="co"># we've introduced some double whitespace, we dont want that</span>
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"  "</span>, <span class="st">" "</span>, <span class="no">region</span>)
-           ) <span class="kw">%&gt;%</span>
-    <span class="fu">select</span>(<span class="no">region</span>) <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span>() <span class="kw">%&gt;%</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>()</pre></body></html></div>
-<div class="sourceCode" id="cb14"><html><body><pre class="r">                     region1                      region2                      region3 
- "caudal anterior cingulate"      "caudal middle frontal"                     "cuneus" 
-                     region4                      region5                      region6 
-                "entorhinal"                   "fusiform"          "inferior parietal" 
-                     region7                      region8                      region9 
-         "inferior temporal"          "isthmus cingulate"          "lateral occipital" 
-                    region10                     region11                     region12 
-     "lateral orbitofrontal"                    "lingual"       "medial orbitofrontal" 
-                    region13                     region14                     region15 
-           "middle temporal"            "parahippocampal"                "paracentral" 
-                    region16                     region17                     region18 
-           "parsopercularis"              "parsorbitalis"           "parstriangularis" 
-                    region19                     region20                     region21 
-             "pericalcarine"                "postcentral"        "posterior cingulate" 
-                    region22                     region23                     region24 
-                "precentral"                  "precuneus" "rostral anterior cingulate" 
-                    region25                     region26                     region27 
-    "rostral middle frontal"           "superior frontal"          "superior parietal" 
-                    region28                     region29                     region30 
-         "superior temporal"              "supramarginal"        "transverse temporal" 
-                    region31                     region32 
-                    "insula"                           NA </pre></body></html></div>
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="st">" "</span>, <span class="va">region</span><span class="op">)</span> 
+           <span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu">select</span><span class="op">(</span><span class="va">region</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>                     region1                      region2                      region3 </span>
+<span id="cb14-2"><a href="#cb14-2"></a> <span class="st">"caudal anterior cingulate"</span>      <span class="st">"caudal middle frontal"</span>                     <span class="st">"cuneus"</span> </span>
+<span id="cb14-3"><a href="#cb14-3"></a>                     region4                      region5                      region6 </span>
+<span id="cb14-4"><a href="#cb14-4"></a>                <span class="st">"entorhinal"</span>                   <span class="st">"fusiform"</span>          <span class="st">"inferior parietal"</span> </span>
+<span id="cb14-5"><a href="#cb14-5"></a>                     region7                      region8                      region9 </span>
+<span id="cb14-6"><a href="#cb14-6"></a>         <span class="st">"inferior temporal"</span>          <span class="st">"isthmus cingulate"</span>          <span class="st">"lateral occipital"</span> </span>
+<span id="cb14-7"><a href="#cb14-7"></a>                    region10                     region11                     region12 </span>
+<span id="cb14-8"><a href="#cb14-8"></a>     <span class="st">"lateral orbitofrontal"</span>                    <span class="st">"lingual"</span>       <span class="st">"medial orbitofrontal"</span> </span>
+<span id="cb14-9"><a href="#cb14-9"></a>                    region13                     region14                     region15 </span>
+<span id="cb14-10"><a href="#cb14-10"></a>           <span class="st">"middle temporal"</span>            <span class="st">"parahippocampal"</span>                <span class="st">"paracentral"</span> </span>
+<span id="cb14-11"><a href="#cb14-11"></a>                    region16                     region17                     region18 </span>
+<span id="cb14-12"><a href="#cb14-12"></a>           <span class="st">"parsopercularis"</span>              <span class="st">"parsorbitalis"</span>           <span class="st">"parstriangularis"</span> </span>
+<span id="cb14-13"><a href="#cb14-13"></a>                    region19                     region20                     region21 </span>
+<span id="cb14-14"><a href="#cb14-14"></a>             <span class="st">"pericalcarine"</span>                <span class="st">"postcentral"</span>        <span class="st">"posterior cingulate"</span> </span>
+<span id="cb14-15"><a href="#cb14-15"></a>                    region22                     region23                     region24 </span>
+<span id="cb14-16"><a href="#cb14-16"></a>                <span class="st">"precentral"</span>                  <span class="st">"precuneus"</span> <span class="st">"rostral anterior cingulate"</span> </span>
+<span id="cb14-17"><a href="#cb14-17"></a>                    region25                     region26                     region27 </span>
+<span id="cb14-18"><a href="#cb14-18"></a>    <span class="st">"rostral middle frontal"</span>           <span class="st">"superior frontal"</span>          <span class="st">"superior parietal"</span> </span>
+<span id="cb14-19"><a href="#cb14-19"></a>                    region28                     region29                     region30 </span>
+<span id="cb14-20"><a href="#cb14-20"></a>         <span class="st">"superior temporal"</span>              <span class="st">"supramarginal"</span>        <span class="st">"transverse temporal"</span> </span>
+<span id="cb14-21"><a href="#cb14-21"></a>                    region31                     region32 </span>
+<span id="cb14-22"><a href="#cb14-22"></a>                    <span class="st">"insula"</span>                           <span class="ot">NA</span> </span></code></pre></div>
 <p>Onve we are satisfied with the region names, we should also alter the atlas name in the data, to something a little more pleasing.</p>
-<div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="fu">unnest</span>(<span class="no">dkt_3d</span>, <span class="no">ggseg_3d</span>) <span class="kw">%&gt;%</span>
-    <span class="fu">mutate</span>(<span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="no">region</span>),
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">unnest</span><span class="op">(</span><span class="va">dkt_3d</span>, <span class="va">ggseg_3d</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="va">region</span><span class="op">)</span>,
            <span class="co"># we've introduced some double whitespace, we dont want that</span>
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"  "</span>, <span class="st">" "</span>, <span class="no">region</span>),
-
-           <span class="kw">atlas</span> <span class="kw">=</span> <span class="st">"dkt_3d"</span>
-           )</pre></body></html></div>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"># A tibble: 192 x 9
-   atlas  surf    hemi  region          colour label          roi   annot         mesh      
-   &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;  &lt;chr&gt;          &lt;chr&gt; &lt;chr&gt;         &lt;list&gt;    
- 1 dkt_3d inflat… left  caudal anterio… #7D64… lh_caudalante… 0001  caudalanteri… &lt;named li…
- 2 dkt_3d inflat… left  caudal middle … #6419… lh_caudalmidd… 0002  caudalmiddle… &lt;named li…
- 3 dkt_3d inflat… left  cuneus          #DC14… lh_cuneus      0003  cuneus        &lt;named li…
- 4 dkt_3d inflat… left  entorhinal      #DC14… lh_entorhinal  0004  entorhinal    &lt;named li…
- 5 dkt_3d inflat… left  fusiform        #B4DC… lh_fusiform    0005  fusiform      &lt;named li…
- 6 dkt_3d inflat… left  inferior parie… #DC3C… lh_inferiorpa… 0006  inferiorpari… &lt;named li…
- 7 dkt_3d inflat… left  inferior tempo… #B428… lh_inferiorte… 0007  inferiortemp… &lt;named li…
- 8 dkt_3d inflat… left  isthmus cingul… #8C14… lh_isthmuscin… 0008  isthmuscingu… &lt;named li…
- 9 dkt_3d inflat… left  lateral occipi… #141E… lh_lateralocc… 0009  lateraloccip… &lt;named li…
-10 dkt_3d inflat… left  lateral orbito… #234B… lh_lateralorb… 0010  lateralorbit… &lt;named li…
-# … with 182 more rows</pre></body></html></div>
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="st">" "</span>, <span class="va">region</span><span class="op">)</span>,
+           
+           atlas <span class="op">=</span> <span class="st">"dkt_3d"</span>
+           <span class="op">)</span> </code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co"># A tibble: 192 x 9</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a>   atlas  surf    hemi  region          colour label          roi   annot         mesh      </span>
+<span id="cb16-3"><a href="#cb16-3"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">  </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">           </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">  </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">          </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">         </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st">    </span></span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="st"> </span><span class="dv">1</span> dkt_3d inflat… left  caudal anterio… <span class="co">#7D64… lh_caudalante… 0001  caudalanteri… &lt;named li…</span></span>
+<span id="cb16-5"><a href="#cb16-5"></a> <span class="dv">2</span> dkt_3d inflat… left  caudal middle … <span class="co">#6419… lh_caudalmidd… 0002  caudalmiddle… &lt;named li…</span></span>
+<span id="cb16-6"><a href="#cb16-6"></a> <span class="dv">3</span> dkt_3d inflat… left  cuneus          <span class="co">#DC14… lh_cuneus      0003  cuneus        &lt;named li…</span></span>
+<span id="cb16-7"><a href="#cb16-7"></a> <span class="dv">4</span> dkt_3d inflat… left  entorhinal      <span class="co">#DC14… lh_entorhinal  0004  entorhinal    &lt;named li…</span></span>
+<span id="cb16-8"><a href="#cb16-8"></a> <span class="dv">5</span> dkt_3d inflat… left  fusiform        <span class="co">#B4DC… lh_fusiform    0005  fusiform      &lt;named li…</span></span>
+<span id="cb16-9"><a href="#cb16-9"></a> <span class="dv">6</span> dkt_3d inflat… left  inferior parie… <span class="co">#DC3C… lh_inferiorpa… 0006  inferiorpari… &lt;named li…</span></span>
+<span id="cb16-10"><a href="#cb16-10"></a> <span class="dv">7</span> dkt_3d inflat… left  inferior tempo… <span class="co">#B428… lh_inferiorte… 0007  inferiortemp… &lt;named li…</span></span>
+<span id="cb16-11"><a href="#cb16-11"></a> <span class="dv">8</span> dkt_3d inflat… left  isthmus cingul… <span class="co">#8C14… lh_isthmuscin… 0008  isthmuscingu… &lt;named li…</span></span>
+<span id="cb16-12"><a href="#cb16-12"></a> <span class="dv">9</span> dkt_3d inflat… left  lateral occipi… <span class="co">#141E… lh_lateralocc… 0009  lateraloccip… &lt;named li…</span></span>
+<span id="cb16-13"><a href="#cb16-13"></a><span class="dv">10</span> dkt_3d inflat… left  lateral orbito… <span class="co">#234B… lh_lateralorb… 0010  lateralorbit… &lt;named li…</span></span>
+<span id="cb16-14"><a href="#cb16-14"></a><span class="co"># … with 182 more rows</span></span></code></pre></div>
 <p>Of note, at this stage, you can also add <em>other columns</em> of importance to the atlas. As long as these to not conflict in terms of names with the default atlas columns, you can add as many extra columns as you wish. For instance, if this is an atlas based on connectivity, there might be a nested structure to the regions, such that certain regions together form a specific network. Adding a <code>network</code> column specifying which regions belong to which network is then appropriate.</p>
 </div>
 <div id="finalizing-the-atlas" class="section level3">
 <h3 class="hasAnchor">
 <a href="#finalizing-the-atlas" class="anchor"></a>Finalizing the atlas</h3>
 <p>We are now happy with the atlas data we’ve cleaned, so we can go ahead and make it into a ggseg3d-atlas class again by nesting the atlas data by surface and hemisphere</p>
-<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">dkt_3d</span> <span class="kw">&lt;-</span> <span class="fu">unnest</span>(<span class="no">dkt_3d</span>, <span class="no">ggseg_3d</span>) <span class="kw">%&gt;%</span>
-    <span class="fu">mutate</span>(<span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="no">region</span>),
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dkt_3d</span> <span class="op">&lt;-</span> <span class="fu">unnest</span><span class="op">(</span><span class="va">dkt_3d</span>, <span class="va">ggseg_3d</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="va">region</span><span class="op">)</span>,
            <span class="co"># we've introduced some double whitespace, we dont want that</span>
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"  "</span>, <span class="st">" "</span>, <span class="no">region</span>),
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="st">" "</span>, <span class="va">region</span><span class="op">)</span>,
+           
+           atlas <span class="op">=</span> <span class="st">"dkt_3d"</span>
+           <span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">nest_by</span><span class="op">(</span><span class="va">atlas</span>, <span class="va">surf</span>, <span class="va">hemi</span>, .key <span class="op">=</span> <span class="st">"ggseg_3d"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d_atlas-class.html">as_ggseg3d_atlas</a></span><span class="op">(</span><span class="op">)</span>
 
-           <span class="kw">atlas</span> <span class="kw">=</span> <span class="st">"dkt_3d"</span>
-           ) <span class="kw">%&gt;%</span>
-  <span class="fu">nest_by</span>(<span class="no">atlas</span>, <span class="no">surf</span>, <span class="no">hemi</span>, <span class="kw">.key</span> <span class="kw">=</span> <span class="st">"ggseg_3d"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d_atlas-class.html">as_ggseg3d_atlas</a></span>()
-
-<span class="no">dkt_3d</span></pre></body></html></div>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"># A tibble: 6 x 4
-  atlas  surf     hemi  ggseg_3d         
-  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; &lt;list&gt;           
-1 dkt_3d inflated left  &lt;tibble [32 × 6]&gt;
-2 dkt_3d inflated right &lt;tibble [32 × 6]&gt;
-3 dkt_3d LCBC     left  &lt;tibble [32 × 6]&gt;
-4 dkt_3d LCBC     right &lt;tibble [32 × 6]&gt;
-5 dkt_3d white    left  &lt;tibble [32 × 6]&gt;
-6 dkt_3d white    right &lt;tibble [32 × 6]&gt;</pre></body></html></div>
+<span class="va">dkt_3d</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="co"># A tibble: 6 x 4</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>  atlas  surf     hemi  ggseg_3d         </span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">  </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">    </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>list<span class="op">&gt;</span><span class="st">           </span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="dv">1</span> dkt_3d inflated left  <span class="op">&lt;</span>tibble [<span class="dv">32</span> × <span class="dv">6</span>]<span class="op">&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="dv">2</span> dkt_3d inflated right <span class="op">&lt;</span>tibble [<span class="dv">32</span> × <span class="dv">6</span>]<span class="op">&gt;</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="dv">3</span> dkt_3d LCBC     left  <span class="op">&lt;</span>tibble [<span class="dv">32</span> × <span class="dv">6</span>]<span class="op">&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="dv">4</span> dkt_3d LCBC     right <span class="op">&lt;</span>tibble [<span class="dv">32</span> × <span class="dv">6</span>]<span class="op">&gt;</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="dv">5</span> dkt_3d white    left  <span class="op">&lt;</span>tibble [<span class="dv">32</span> × <span class="dv">6</span>]<span class="op">&gt;</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="dv">6</span> dkt_3d white    right <span class="op">&lt;</span>tibble [<span class="dv">32</span> × <span class="dv">6</span>]<span class="op">&gt;</span></span></code></pre></div>
 <p>When this is done, we recommend plotting all variations and make sure that the expected result is returned.</p>
-<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>, <span class="kw">hemisphere</span> <span class="kw">=</span> <span class="st">"left"</span>, <span class="kw">surface</span> <span class="kw">=</span> <span class="st">"inflated"</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>, <span class="kw">hemisphere</span> <span class="kw">=</span> <span class="st">"right"</span>, <span class="kw">surface</span> <span class="kw">=</span> <span class="st">"inflated"</span>)
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span>, hemisphere <span class="op">=</span> <span class="st">"left"</span>, surface <span class="op">=</span> <span class="st">"inflated"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span>, hemisphere <span class="op">=</span> <span class="st">"right"</span>, surface <span class="op">=</span> <span class="st">"inflated"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>, <span class="kw">hemisphere</span> <span class="kw">=</span> <span class="st">"left"</span>, <span class="kw">surface</span> <span class="kw">=</span> <span class="st">"LCBC"</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>, <span class="kw">hemisphere</span> <span class="kw">=</span> <span class="st">"right"</span>, <span class="kw">surface</span> <span class="kw">=</span> <span class="st">"LCBC"</span>)
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span>, hemisphere <span class="op">=</span> <span class="st">"left"</span>, surface <span class="op">=</span> <span class="st">"LCBC"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span>, hemisphere <span class="op">=</span> <span class="st">"right"</span>, surface <span class="op">=</span> <span class="st">"LCBC"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>, <span class="kw">hemisphere</span> <span class="kw">=</span> <span class="st">"left"</span>, <span class="kw">surface</span> <span class="kw">=</span> <span class="st">"white"</span>)
-<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dkt_3d</span>, <span class="kw">hemisphere</span> <span class="kw">=</span> <span class="st">"right"</span>, <span class="kw">surface</span> <span class="kw">=</span> <span class="st">"white"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span>, hemisphere <span class="op">=</span> <span class="st">"left"</span>, surface <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d.html">ggseg3d</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dkt_3d</span>, hemisphere <span class="op">=</span> <span class="st">"right"</span>, surface <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="creating-the-2d-atlas" class="section level2">
 <h2 class="hasAnchor">
 <a href="#creating-the-2d-atlas" class="anchor"></a>Creating the 2d atlas</h2>
 <p>Once a 3d atlas is made, creating a 2d atlas is <em>fairly</em> straight forward. Using ImageMagick, the <code><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg()</a></code> function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooth’es them, reduces the vertices and organizes the data into a brain-atlas class object. The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. While the function at default stores these files in a temporary folder, we highly recommend setting the <code>output_dir</code> option, so that you do not need to rerun all steps when testing another configuration of settings. For instance, the step taking the longest time and most processing time is snapshotting the regions and extracting the contours. But these two steps only need to be run once, as long as the ggseg3d-atlas has not changed somehow.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co"># make atlas ----</span>
-<span class="no">dkt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg</a></span>(<span class="no">dkt_3d</span>,
-                            <span class="kw">steps</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">7</span>,
-                            <span class="kw">smoothness</span> <span class="kw">=</span> <span class="fl">2</span>,
-                            <span class="kw">tolerance</span> <span class="kw">=</span> <span class="fl">.5</span>,
-                            <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb21"><html><body><pre class="r">● 1/7 Snapshotting views of entire atlas to ~/Desktop//dkt
-✓ Snapshots complete
-● 2/7 Snapshotting individual regions to ~/Desktop//dkt/img
-✓ Region snapshots complete
-● 3/7 Isolating regions to ~/Desktop//dkt/masks
-● &amp; writing masks to ~/Desktop//dkt/regions
-✓ isolation complete
-● 4/7 Extracting contours from regions
-  |===================================================================| 100%, Elapsed 00:25
-✓ contours complete
-● 5/7 Smoothing contours
-✓ Smoothing complete
-● 6/7 Reducing vertexes
-✓ Vertexes reduced
-● 7/7 Making data frame
-✓ Atlas complete with 3694 vertices</pre></body></html></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># make atlas ----</span>
+<span class="va">dkt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg</a></span><span class="op">(</span><span class="va">dkt_3d</span>,
+                            steps <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">7</span>,
+                            smoothness <span class="op">=</span> <span class="fl">2</span>,
+                            tolerance <span class="op">=</span> <span class="fl">.5</span>,
+                            output_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>● <span class="dv">1</span><span class="op">/</span><span class="dv">7</span> Snapshotting views of entire atlas to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt</span>
+<span id="cb21-2"><a href="#cb21-2"></a>✓ Snapshots complete</span>
+<span id="cb21-3"><a href="#cb21-3"></a>● <span class="dv">2</span><span class="op">/</span><span class="dv">7</span> Snapshotting individual regions to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt<span class="op">/</span>img</span>
+<span id="cb21-4"><a href="#cb21-4"></a>✓ Region snapshots complete</span>
+<span id="cb21-5"><a href="#cb21-5"></a>● <span class="dv">3</span><span class="op">/</span><span class="dv">7</span> Isolating regions to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt<span class="op">/</span>masks</span>
+<span id="cb21-6"><a href="#cb21-6"></a>● <span class="op">&amp;</span><span class="st"> </span>writing masks to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt<span class="op">/</span>regions</span>
+<span id="cb21-7"><a href="#cb21-7"></a>✓ isolation complete</span>
+<span id="cb21-8"><a href="#cb21-8"></a>● <span class="dv">4</span><span class="op">/</span><span class="dv">7</span> Extracting contours from regions</span>
+<span id="cb21-9"><a href="#cb21-9"></a>  <span class="op">|</span><span class="er">===================================================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">00</span><span class="op">:</span><span class="dv">25</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>✓ contours complete</span>
+<span id="cb21-11"><a href="#cb21-11"></a>● <span class="dv">5</span><span class="op">/</span><span class="dv">7</span> Smoothing contours</span>
+<span id="cb21-12"><a href="#cb21-12"></a>✓ Smoothing complete</span>
+<span id="cb21-13"><a href="#cb21-13"></a>● <span class="dv">6</span><span class="op">/</span><span class="dv">7</span> Reducing vertexes</span>
+<span id="cb21-14"><a href="#cb21-14"></a>✓ Vertexes reduced</span>
+<span id="cb21-15"><a href="#cb21-15"></a>● <span class="dv">7</span><span class="op">/</span><span class="dv">7</span> Making data frame</span>
+<span id="cb21-16"><a href="#cb21-16"></a>✓ Atlas complete with <span class="dv">3694</span> vertices</span></code></pre></div>
 <p>The most likely steps to redo are steps 5-7, tweaking the <code>smoothness</code> and <code>tolerance</code> arguments to improve how the polygons look and how many vertices there are. The fewer vertices, the faster the plot renders, but too few and the polygons will look poor.</p>
 <div id="inspecting-the-atlas-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inspecting-the-atlas-object" class="anchor"></a>Inspecting the atlas object</h3>
 <p>First step is to have a look at the actual object. If the brain-atlas is correctly set up, the output should look like the below.</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">dkt</span></pre></body></html></div>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"># dkt cortical brain atlas
-  regions: 31 
-  hemispheres: left, right 
-  side views: lateral, medial 
-  palette: yes 
-  use: ggplot() + geom_brain() 
-----
-   hemi  side    region                label                   roi  
-   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;                 &lt;chr&gt;                   &lt;chr&gt;
- 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002 
- 2 left  lateral fusiform              lh_fusiform             0005 
- 3 left  lateral inferior parietal     lh_inferiorparietal     0006 
- 4 left  lateral inferior temporal     lh_inferiortemporal     0007 
- 5 left  lateral lateral occipital     lh_lateraloccipital     0009 
- 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010 
- 7 left  lateral middle temporal       lh_middletemporal       0013 
- 8 left  lateral pars opercularis      lh_parsopercularis      0016 
- 9 left  lateral pars orbitalis        lh_parsorbitalis        0017 
-10 left  lateral pars triangularis     lh_parstriangularis     0018 
-# … with 71 more rows</pre></body></html></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dkt</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># dkt cortical brain atlas</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">31</span> </span>
+<span id="cb23-3"><a href="#cb23-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span>left, right </span>
+<span id="cb23-4"><a href="#cb23-4"></a>  side views<span class="op">:</span><span class="st"> </span>lateral, medial </span>
+<span id="cb23-5"><a href="#cb23-5"></a>  palette<span class="op">:</span><span class="st"> </span>yes </span>
+<span id="cb23-6"><a href="#cb23-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="op">----</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="st">   </span>hemi  side    region                label                   roi  </span>
+<span id="cb23-9"><a href="#cb23-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                 </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="st"> </span><span class="dv">1</span> left  lateral caudal middle frontal lh_caudalmiddlefrontal  <span class="dv">0002</span> </span>
+<span id="cb23-11"><a href="#cb23-11"></a> <span class="dv">2</span> left  lateral fusiform              lh_fusiform             <span class="dv">0005</span> </span>
+<span id="cb23-12"><a href="#cb23-12"></a> <span class="dv">3</span> left  lateral inferior parietal     lh_inferiorparietal     <span class="dv">0006</span> </span>
+<span id="cb23-13"><a href="#cb23-13"></a> <span class="dv">4</span> left  lateral inferior temporal     lh_inferiortemporal     <span class="dv">0007</span> </span>
+<span id="cb23-14"><a href="#cb23-14"></a> <span class="dv">5</span> left  lateral lateral occipital     lh_lateraloccipital     <span class="dv">0009</span> </span>
+<span id="cb23-15"><a href="#cb23-15"></a> <span class="dv">6</span> left  lateral lateral orbitofrontal lh_lateralorbitofrontal <span class="dv">0010</span> </span>
+<span id="cb23-16"><a href="#cb23-16"></a> <span class="dv">7</span> left  lateral middle temporal       lh_middletemporal       <span class="dv">0013</span> </span>
+<span id="cb23-17"><a href="#cb23-17"></a> <span class="dv">8</span> left  lateral pars opercularis      lh_parsopercularis      <span class="dv">0016</span> </span>
+<span id="cb23-18"><a href="#cb23-18"></a> <span class="dv">9</span> left  lateral pars orbitalis        lh_parsorbitalis        <span class="dv">0017</span> </span>
+<span id="cb23-19"><a href="#cb23-19"></a><span class="dv">10</span> left  lateral pars triangularis     lh_parstriangularis     <span class="dv">0018</span> </span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="co"># … with 71 more rows</span></span></code></pre></div>
 <p>Second step is to make sure the data is being plotted correctly.</p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">dkt</span>)</pre></body></html></div>
-<p><img src="figures/dkt.png" width="269"></p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dkt</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/dkt.png"><!-- --></p>
 <p>In most cases, given the values in the 3d-atlas’ <code>colour</code> column is correctly applied, but problems may arise given how annotation files are set up.</p>
 </div>
 <div id="fixing-the-palette" class="section level3">
@@ -436,30 +450,32 @@ Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.LCBC.asc as a surface</pr
 <a href="#fixing-the-palette" class="anchor"></a>Fixing the palette</h3>
 <p>Many annotation files have a unique colour for the same regions but in different hemispheres. This can often mess up the palette for the 2d-atlas, which needs the regions in the different hemispheres to have the same palette colour.</p>
 <p>If you are working with an atlas that does not have a colour-scheme dispatched with the atlas, the palette should be set to <code>NULL</code>.</p>
-<div class="sourceCode" id="cb25"><html><body><pre class="r"><span class="no">dkt</span>$<span class="no">palette</span> <span class="kw">&lt;-</span> <span class="kw">NULL</span>
-<span class="no">dkt</span></pre></body></html></div>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"># dkt cortical brain atlas
-  regions: 31 
-  hemispheres: left, right 
-  side views: lateral, medial 
-  palette: no 
-  use: ggplot() + geom_brain() 
-----
-   hemi  side    region                label                   roi  
-   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;                 &lt;chr&gt;                   &lt;chr&gt;
- 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002 
- 2 left  lateral fusiform              lh_fusiform             0005 
- 3 left  lateral inferior parietal     lh_inferiorparietal     0006 
- 4 left  lateral inferior temporal     lh_inferiortemporal     0007 
- 5 left  lateral lateral occipital     lh_lateraloccipital     0009 
- 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010 
- 7 left  lateral middle temporal       lh_middletemporal       0013 
- 8 left  lateral pars opercularis      lh_parsopercularis      0016 
- 9 left  lateral pars orbitalis        lh_parsorbitalis        0017 
-10 left  lateral pars triangularis     lh_parstriangularis     0018 
-# … with 71 more rows</pre></body></html></div>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dkt</span><span class="op">$</span><span class="va">palette</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+<span class="va">dkt</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co"># dkt cortical brain atlas</span></span>
+<span id="cb26-2"><a href="#cb26-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">31</span> </span>
+<span id="cb26-3"><a href="#cb26-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span>left, right </span>
+<span id="cb26-4"><a href="#cb26-4"></a>  side views<span class="op">:</span><span class="st"> </span>lateral, medial </span>
+<span id="cb26-5"><a href="#cb26-5"></a>  palette<span class="op">:</span><span class="st"> </span>no </span>
+<span id="cb26-6"><a href="#cb26-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
+<span id="cb26-7"><a href="#cb26-7"></a><span class="op">----</span></span>
+<span id="cb26-8"><a href="#cb26-8"></a><span class="st">   </span>hemi  side    region                label                   roi  </span>
+<span id="cb26-9"><a href="#cb26-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                 </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span></span>
+<span id="cb26-10"><a href="#cb26-10"></a><span class="st"> </span><span class="dv">1</span> left  lateral caudal middle frontal lh_caudalmiddlefrontal  <span class="dv">0002</span> </span>
+<span id="cb26-11"><a href="#cb26-11"></a> <span class="dv">2</span> left  lateral fusiform              lh_fusiform             <span class="dv">0005</span> </span>
+<span id="cb26-12"><a href="#cb26-12"></a> <span class="dv">3</span> left  lateral inferior parietal     lh_inferiorparietal     <span class="dv">0006</span> </span>
+<span id="cb26-13"><a href="#cb26-13"></a> <span class="dv">4</span> left  lateral inferior temporal     lh_inferiortemporal     <span class="dv">0007</span> </span>
+<span id="cb26-14"><a href="#cb26-14"></a> <span class="dv">5</span> left  lateral lateral occipital     lh_lateraloccipital     <span class="dv">0009</span> </span>
+<span id="cb26-15"><a href="#cb26-15"></a> <span class="dv">6</span> left  lateral lateral orbitofrontal lh_lateralorbitofrontal <span class="dv">0010</span> </span>
+<span id="cb26-16"><a href="#cb26-16"></a> <span class="dv">7</span> left  lateral middle temporal       lh_middletemporal       <span class="dv">0013</span> </span>
+<span id="cb26-17"><a href="#cb26-17"></a> <span class="dv">8</span> left  lateral pars opercularis      lh_parsopercularis      <span class="dv">0016</span> </span>
+<span id="cb26-18"><a href="#cb26-18"></a> <span class="dv">9</span> left  lateral pars orbitalis        lh_parsorbitalis        <span class="dv">0017</span> </span>
+<span id="cb26-19"><a href="#cb26-19"></a><span class="dv">10</span> left  lateral pars triangularis     lh_parstriangularis     <span class="dv">0018</span> </span>
+<span id="cb26-20"><a href="#cb26-20"></a><span class="co"># … with 71 more rows</span></span></code></pre></div>
 <p>When there is no palette, the default atlas plot will return with default ggplot2 colours. This is absolutely a valid option. The palette is an optional part of the atlas.</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">dkt</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dkt</span><span class="op">)</span></code></pre></div>
 <p><img src="figures/dkt_nocol.png" width="90%"></p>
 <p>If you want to correctly apply a palette, the <code>dkt$palette</code> part of the atlas is a named character vector, where the value of the vector is the hex-colour code, and the names of the elements are the region names as seen in the <code>region</code> column of the atlas data.</p>
 </div>
@@ -468,49 +484,50 @@ Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.LCBC.asc as a surface</pr
 <h2 class="hasAnchor">
 <a href="#summary" class="anchor"></a>Summary</h2>
 <p>All together, the script to create both 3d and 2d atlases of the DKT parcellation looks like this:</p>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggsegExtra</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggseg</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyverse</span>)
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggseg">ggseg</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span>
 
 <span class="co"># convert DKT to fsaverage5</span>
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-              <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-              <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"lh"</span>,
-              <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"data-raw/"</span>)
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+              annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+              hemi <span class="op">=</span> <span class="st">"lh"</span>,
+              output_dir <span class="op">=</span> <span class="st">"data-raw/"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-              <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-              <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"rh"</span>,
-              <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"data-raw/"</span>)
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+              annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+              hemi <span class="op">=</span> <span class="st">"rh"</span>,
+              output_dir <span class="op">=</span> <span class="st">"data-raw/"</span><span class="op">)</span>
 
 
 <span class="co"># Make  3d ----</span>
-<span class="no">dkt_3d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                               <span class="kw">annot_dir</span> <span class="kw">=</span> <span class="st">"data-raw/"</span>,
-                               <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop"</span>) <span class="kw">%&gt;%</span>
-    <span class="fu">mutate</span>(<span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="no">region</span>),
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="no">region</span>),
+<span class="va">dkt_3d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                               annot_dir <span class="op">=</span> <span class="st">"data-raw/"</span>,
+                               output_dir <span class="op">=</span> <span class="st">"~/Desktop"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"temporal"</span>, <span class="st">" temporal"</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"caudal"</span>, <span class="st">"caudal "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rostral"</span>, <span class="st">"rostral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"middle"</span>, <span class="st">"middle "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"lateral"</span>, <span class="st">"lateral "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"medial"</span>, <span class="st">"medial "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"rior"</span>, <span class="st">"rior "</span>, <span class="va">region</span><span class="op">)</span>,
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"cingulate"</span>, <span class="st">" cingulate"</span>, <span class="va">region</span><span class="op">)</span>,
            <span class="co"># we've introduced some double whitespace, we dont want that</span>
-           <span class="kw">region</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span>(<span class="st">"  "</span>, <span class="st">" "</span>, <span class="no">region</span>),
-
-           <span class="kw">atlas</span> <span class="kw">=</span> <span class="st">"dkt_3d"</span>
-           ) <span class="kw">%&gt;%</span>
-  <span class="fu">nest_by</span>(<span class="no">atlas</span>, <span class="no">surf</span>, <span class="no">hemi</span>, <span class="kw">.key</span> <span class="kw">=</span> <span class="st">"ggseg_3d"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d_atlas-class.html">as_ggseg3d_atlas</a></span>()
+           region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"  "</span>, <span class="st">" "</span>, <span class="va">region</span><span class="op">)</span>,
+           
+           atlas <span class="op">=</span> <span class="st">"dkt_3d"</span>
+           <span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">nest_by</span><span class="op">(</span><span class="va">atlas</span>, <span class="va">surf</span>, <span class="va">hemi</span>, .key <span class="op">=</span> <span class="st">"ggseg_3d"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d_atlas-class.html">as_ggseg3d_atlas</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># make 2d ----</span>
-<span class="no">dkt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg</a></span>(<span class="no">dkt_3d</span>,
-                            <span class="kw">steps</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">7</span>,
-                            <span class="kw">smoothness</span> <span class="kw">=</span> <span class="fl">2</span>,
-                            <span class="kw">tolerance</span> <span class="kw">=</span> <span class="fl">.5</span>,
-                            <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">dkt</span>)</pre></body></html></div>
+<span class="va">dkt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg</a></span><span class="op">(</span><span class="va">dkt_3d</span>,
+                            steps <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">7</span>,
+                            smoothness <span class="op">=</span> <span class="fl">2</span>,
+                            tolerance <span class="op">=</span> <span class="fl">.5</span>,
+                            output_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dkt</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 
@@ -529,7 +546,7 @@ Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.LCBC.asc as a surface</pr
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

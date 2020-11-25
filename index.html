@@ -59,7 +59,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -109,10 +109,11 @@
 <h2 class="hasAnchor">
 <a href="#atlases" class="anchor"></a>Atlases</h2>
 <p>There are currently 28 available atlases across 11 packages. The packages, their repository name and location can be found with:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggsegExtra</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
 
 <span class="co"># List all verified compatible atlases</span>
-<span class="fu"><a href="reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span>()
+<span class="fu"><a href="reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 11 x 6</span>
 <span class="co">#&gt;    repo            ggseg ggseg3d source comment                      package    </span>
 <span class="co">#&gt;    &lt;chr&gt;           &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                        &lt;chr&gt;      </span>
@@ -126,7 +127,7 @@
 <span class="co">#&gt;  8 LCBC-UiO/ggseg… FALSE TRUE    github white tract atlas            ggsegICBM  </span>
 <span class="co">#&gt;  9 LCBC-UiO/ggseg… TRUE  FALSE   github Harvard-Oxford cortical (FS… ggsegHO    </span>
 <span class="co">#&gt; 10 LCBC-UiO/ggseg… TRUE  FALSE   github extra 2d view for dk, p/a d… ggsegDefau…</span>
-<span class="co">#&gt; 11 LCBC-UiO/ggseg… TRUE  TRUE    github Desikan-Killiany-Tourville … ggsegDKT</span></pre></div>
+<span class="co">#&gt; 11 LCBC-UiO/ggseg… TRUE  TRUE    github Desikan-Killiany-Tourville … ggsegDKT</span></code></pre></div>
 <p>We have tutorials on how to make atlases available in the <code>Articles</code> of the <a href="https://lcbc-uio.github.io/ggsegExtra/">package documentation page</a>. Currently, the pipeline for making 3d atlases needs Freesufer to be installed on your system and a ready <code>.annot</code> file to use for the converions. Improvements to the pipeline in creating cortical atlases both for ggseg and ggseg3d is still being developed. Pipelines for creating subcortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. Suggestions for improvement are welcome through GH issues or direct Pull requests.</p>
 </div>
 <div id="code-of-conduct" class="section level2">
@@ -206,7 +207,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

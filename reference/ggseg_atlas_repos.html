@@ -99,7 +99,7 @@ contain ggseg atlases" />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -149,7 +149,7 @@ contain ggseg atlases" />
 contain ggseg atlases</p>
     </div>
 
-    <pre class="usage"><span class='fu'>ggseg_atlas_repos</span>(<span class='kw'>pattern</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>ggseg_atlas_repos</span><span class='op'>(</span>pattern <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -169,23 +169,25 @@ contain ggseg atlases</p>
     <p>data frame of online repositories with ggseg-atlases</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>ggseg_atlas_repos</span>()</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 11 x 6</span><span>
+    <pre class="examples"><div class='input'><span class='fu'>ggseg_atlas_repos</span><span class='op'>(</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 11 x 6</span><span>
 #&gt;    repo            ggseg ggseg3d source comment                      package    
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>           </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span>   </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>                        </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>      
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github both 17 and 7 Network data   ggsegYeo20…
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> LCBC-UiO/ggseg… FALSE TRUE    github the 2009 atlas               ggsegDeste…
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> LCBC-UiO/ggseg… FALSE TRUE    github both thickness and area maps ggsegChen  
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> LCBC-UiO/ggseg… FALSE TRUE    github both 17 and 7 networks       ggsegSchae…
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github full atlas                   ggsegGlass…
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegJHU   
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegTracu…
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> LCBC-UiO/ggseg… FALSE TRUE    github white tract atlas            ggsegICBM  
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> LCBC-UiO/ggseg… TRUE  FALSE   github Harvard-Oxford cortical (FS… ggsegHO    
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> LCBC-UiO/ggseg… TRUE  FALSE   github extra 2d view for dk, p/a d… ggsegDefau…
-#&gt; </span><span style='color: #BCBCBC;'>11</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github Desikan-Killiany-Tourville … ggsegDKT   </div><div class='input'>
-<span class='fu'>ggseg_atlas_repos</span>(<span class='st'>"yeo"</span>)</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 0 x 6</span><span>
-#&gt; </span><span style='color: #949494;'># … with 6 variables: repo </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span style='color: #949494;'>, ggseg </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span style='color: #949494;'>, ggseg3d </span><span style='color: #949494;font-style: italic;'>&lt;lgl&gt;</span><span style='color: #949494;'>, source </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span style='color: #949494;'>,</span><span>
-#&gt; </span><span style='color: #949494;'>#   comment </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span style='color: #949494;'>, package </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span></div></span></pre>
+#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>           </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span>   </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>  </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                        </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>      
+#&gt; </span><span style='color: #555555;'> 1</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github both 17 and 7 Network data   ggsegYeo20…
+#&gt; </span><span style='color: #555555;'> 2</span><span> LCBC-UiO/ggseg… FALSE TRUE    github the 2009 atlas               ggsegDeste…
+#&gt; </span><span style='color: #555555;'> 3</span><span> LCBC-UiO/ggseg… FALSE TRUE    github both thickness and area maps ggsegChen  
+#&gt; </span><span style='color: #555555;'> 4</span><span> LCBC-UiO/ggseg… FALSE TRUE    github both 17 and 7 networks       ggsegSchae…
+#&gt; </span><span style='color: #555555;'> 5</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github full atlas                   ggsegGlass…
+#&gt; </span><span style='color: #555555;'> 6</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegJHU   
+#&gt; </span><span style='color: #555555;'> 7</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegTracu…
+#&gt; </span><span style='color: #555555;'> 8</span><span> LCBC-UiO/ggseg… FALSE TRUE    github white tract atlas            ggsegICBM  
+#&gt; </span><span style='color: #555555;'> 9</span><span> LCBC-UiO/ggseg… TRUE  FALSE   github Harvard-Oxford cortical (FS… ggsegHO    
+#&gt; </span><span style='color: #555555;'>10</span><span> LCBC-UiO/ggseg… TRUE  FALSE   github extra 2d view for dk, p/a d… ggsegDefau…
+#&gt; </span><span style='color: #555555;'>11</span><span> LCBC-UiO/ggseg… TRUE  TRUE    github Desikan-Killiany-Tourville … ggsegDKT   </div><div class='input'>
+<span class='fu'>ggseg_atlas_repos</span><span class='op'>(</span><span class='st'>"yeo"</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; </span><span style='color: #555555;'># A tibble: 0 x 6</span><span>
+#&gt; </span><span style='color: #555555;'># … with 6 variables: repo </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span style='color: #555555;'>, ggseg </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span style='color: #555555;'>, ggseg3d </span><span style='color: #555555;font-style: italic;'>&lt;lgl&gt;</span><span style='color: #555555;'>, source </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span style='color: #555555;'>,</span><span>
+#&gt; </span><span style='color: #555555;'>#   comment </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span style='color: #555555;'>, package </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span></div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -201,7 +203,7 @@ contain ggseg atlases</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

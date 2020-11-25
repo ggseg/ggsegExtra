@@ -57,7 +57,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/createaseg.html">Example creation: the aseg subcortical atlas</a>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
     </li>
     <li>
       <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
@@ -94,7 +94,7 @@
 
       
 
-      </header><script src="customatlas3d_files/header-attrs-2.5/header-attrs.js"></script><script src="customatlas3d_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="customatlas3d_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+      </header><script src="customatlas3d_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="customatlas3d_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
 <script src="customatlas3d_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -144,30 +144,32 @@
 </li>
 </ol>
 <p>If altering a freesurfer <code>.annot</code> file between subjects (like from “bert” to “fsaverage5”), you can use an R convenience function we have made:</p>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co"># convert bert's DKT to fsaverage5</span>
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-              <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-              <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"lh"</span>,
-              <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"/path/to/where/you/want/it"</span>)
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># convert bert's DKT to fsaverage5</span>
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+              annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+              hemi <span class="op">=</span> <span class="st">"lh"</span>,
+              output_dir <span class="op">=</span> <span class="st">"/path/to/where/you/want/it"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-              <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-              <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"rh"</span>,
-              <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"/path/to/where/you/want/it"</span>)</pre></body></html></div>
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+              annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+              hemi <span class="op">=</span> <span class="st">"rh"</span>,
+              output_dir <span class="op">=</span> <span class="st">"/path/to/where/you/want/it"</span><span class="op">)</span></code></pre></div>
 <p>For this to work function to work, the <code>annot</code> file <em>must</em> be in <code>$FREESURFER_HOME/subjects/bert/label</code>.</p>
 </div>
 <div id="run-make_aparc_2_3datlasr" class="section level3">
 <h3 class="hasAnchor">
 <a href="#run-make_aparc_2_3datlasr" class="anchor"></a>2) Run <code>make_aparc_2_3datlas()</code>(R)</h3>
 <p>This script converts your annotations (<code>.annot</code>) into tridimensional (<code>.ply</code>) meshes, and then to a ggseg3d-atlas. Without any arguments, it will create the aparc (Desikan-Killany atlas), based on annotation files in the Freesurfer subejcts directory.</p>
-<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co"># Desikan-Killany atlas (a.k.a aparc)</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>()
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Desikan-Killany atlas (a.k.a aparc)</span>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># Desterieux atlas</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.a2009s"</span>)
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"aparc.a2009s"</span><span class="op">)</span>
 
 <span class="co"># Yeo 7 networks atlas</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">annot</span> <span class="kw">=</span> <span class="st">"Yeo2011_7Networks_N1000"</span>)</pre></body></html></div>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"Yeo2011_7Networks_N1000"</span><span class="op">)</span></code></pre></div>
 <p>Depending on the set-up you have, where you are storing data, etc. you have many arguments to the function to choose from. The arguments for the function are:</p>
 <ul>
 <li>
@@ -198,9 +200,10 @@
 <code>verbose</code> : logical to be verbose or not, TRUE (default)</li>
 </ul>
 <p>Depending on what you need to do, and which folders you may have write-access for on your system, any of these might need changing. You can use any surface already existing in the subjects surf folder. If you have made your own custom annotation file, and placed it on the Desktop, with the names “lh.myResults.annot” and “rh.myResults.annot”, you can use this file doing:</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># myResults atlas</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">annot</span> <span class="kw">=</span> <span class="st">"myResults"</span>,
-                       <span class="kw">annot_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># myResults atlas</span>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"myResults"</span>, 
+                       annot_dir <span class="op">=</span> <span class="st">"~/Desktop"</span><span class="op">)</span></code></pre></div>
 <p><strong>Note</strong> that the “LCBC” surface only works for subject “fsaverage5”, if you want any other subject, you will need to convert it with <code>freesurfer::mri_surf2srf()</code>. If you want to make your own specialized surface, you can, but you should look into Freesurfer documentation to do that.</p>
 <p>You will notice that the <code>atlas</code> column takes directly the name of the <code>annot</code> file, and that the <code>region</code> and <code>label</code> columns are the same. If you are in the process of making an atlas contribution, there are a couple steps necessary for the atlas to be included.</p>
 <ol style="list-style-type: decimal">
@@ -215,32 +218,34 @@
 <h3 class="hasAnchor">
 <a href="#dkt-example" class="anchor"></a>DKT example</h3>
 <p>The DKT atlas for ggseg was made 100% using the functions in this package. The DKT atlas has an annot file installed with FreeSurfer for the example “bert” subject. We first need to transform the <code>annot</code> file for bert, into a file for <code>fsaverage5</code>, which is the recommended surface for the mesh plots. We will use the <code>mri_surf2surf_rereg</code> function from this package, which calls FreeSurfers <code>mri_surf2surf</code> with specific calls to make the transformation. This is done for both hemispheres, and the resulting annotations are here saved on the Desktop.</p>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># convert DKT to fsaverage5</span>
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-                    <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                    <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"lh"</span>,
-                    <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>)
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># convert DKT to fsaverage5</span>
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+                    annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                    hemi <span class="op">=</span> <span class="st">"lh"</span>,
+                    output_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span>(<span class="kw">subject</span> <span class="kw">=</span> <span class="st">"bert"</span>,
-                    <span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                    <span class="kw">hemi</span> <span class="kw">=</span> <span class="st">"rh"</span>,
-                    <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>)</pre></body></html></div>
+<span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,
+                    annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                    hemi <span class="op">=</span> <span class="st">"rh"</span>,
+                    output_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span><span class="op">)</span></code></pre></div>
 <p>We can then run the <code>make_aparc_2_3datlas</code> to create the mesh-plot for this annotation. The function will create many files for the mesh to be correctly made. Once the function has created an atlas object for us, we here do a little extra data cleaning. Firstly, we alter the <code>atlas</code> column from the value “aparc.DKTatlas” to “dkt_3d”. Then we <code>unnest</code> the data, exposing all the underlying atlas information, and remove the <code>region</code> column. We do this because the default names for “region” are taken directly from the annotation file, which in this case are not very pretty. Because the DKT atlas is the same as the DK atlas, minus a couple of regions, we here joing in the label and region column from the <code><a href="https://rdrr.io/pkg/ggseg/man/dk.html">ggseg::dk</a></code> data, to re-populate the <code>region</code> column with nicer names. In most cases, you will need to do some string manipulations to tidy up the region names. Then we re-nest the data, and make it into a ggseg3d-atlas.</p>
 <p>Once this atlas is complete and looks to your satisfaction, you can proceed to <a href="customatlas.html">making the atlas into a 2d polygon atlas</a></p>
-<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">dplyr</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidyr</span>)
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
 
 <span class="co"># Make  3d ----</span>
-<span class="no">dkt_3d</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">annot</span> <span class="kw">=</span> <span class="st">"aparc.DKTatlas"</span>,
-                               <span class="kw">annot_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>,
-                               <span class="kw">subjects_dir</span> <span class="kw">=</span> <span class="kw pkg">freesurfer</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html">fs_subj_dir</a></span>(),
-                               <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop/"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="st">"dkt_3d"</span>)<span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span>(<span class="no">ggseg_3d</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(-<span class="no">region</span>) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span>(<span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="kw pkg">ggseg</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/ggseg/man/dk.html">dk</a></span>$<span class="no">data</span>, <span class="no">hemi</span>, <span class="no">region</span>, <span class="no">label</span>)) <span class="kw">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nest_by.html">nest_by</a></span>(<span class="no">atlas</span>, <span class="no">surf</span>, <span class="no">hemi</span>, <span class="kw">.key</span> <span class="kw">=</span> <span class="st">"ggseg_3d"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">as_ggseg3d_atlas</span>()</pre></body></html></div>
+<span class="va">dkt_3d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"aparc.DKTatlas"</span>,
+                               annot_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span>,
+                               subjects_dir <span class="op">=</span> <span class="fu">freesurfer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html">fs_subj_dir</a></span><span class="op">(</span><span class="op">)</span>,
+                               output_dir <span class="op">=</span> <span class="st">"~/Desktop/"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="st">"dkt_3d"</span><span class="op">)</span><span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="va">ggseg_3d</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">region</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">ggseg</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/ggseg/man/dk.html">dk</a></span><span class="op">$</span><span class="va">data</span>, <span class="va">hemi</span>, <span class="va">region</span>, <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nest_by.html">nest_by</a></span><span class="op">(</span><span class="va">atlas</span>, <span class="va">surf</span>, <span class="va">hemi</span>, .key <span class="op">=</span> <span class="st">"ggseg_3d"</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/pkg/ggseg3d/man/ggseg3d_atlas-class.html">as_ggseg3d_atlas</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="from-a-volume-image" class="section level2">
@@ -267,8 +272,9 @@
 <h3 class="hasAnchor">
 <a href="#run-make_aseg_2_3datlas-r" class="anchor"></a>2) Run <code>make_aseg_2_3datlas()</code> (R)</h3>
 <p>This script converts your template images (<code>.mgz</code>) into tridimensional (<code>.ply</code>) meshes, and then to a ggseg3d-atlas. Without any arguments, it will create the aseg atlas, based on <code>mri/aseg.mgz</code> file in the Freesurfer subjects directory, together with the “ASegStatsLUT.txt” file from the Freesurfer main directory.</p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># aseg atlas (a.k.a aseg)</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu">make_aseg_2_3datlas</span>()</pre></body></html></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># aseg atlas (a.k.a aseg)</span>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu">make_aseg_2_3datlas</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Depending on the set-up you have, where you are storing data, etc. you have many arguments to the function to choose from. The arguments for the function are:</p>
 <ul>
 <li>
@@ -293,14 +299,15 @@
 <code>verbose</code> : logical to be verbose or not, TRUE (default)</li>
 </ul>
 <p>Depending on what you need to do, and which folders you may have write-access for on your system, any of these might need changing. You will need to make sure you have a <code>template.mgz</code> file made in 1) before you can run this.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
 <span class="co"># myResults template without a color LUT</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">template</span> <span class="kw">=</span> <span class="st">"path/to/myResults.mgz"</span>,
-                       <span class="kw">color_lut</span> <span class="kw">=</span> <span class="kw">NULL</span>)
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>template <span class="op">=</span> <span class="st">"path/to/myResults.mgz"</span>, 
+                       color_lut <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>
 
 <span class="co"># myResults template with a color LUT</span>
-<span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span>(<span class="kw">template</span> <span class="kw">=</span> <span class="st">"path/to/myResults.mgz"</span>,
-                       <span class="kw">color_lut</span> <span class="kw">=</span> <span class="st">"path/to/myResults_LUT.txt"</span>)</pre></body></html></div>
+<span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>template <span class="op">=</span> <span class="st">"path/to/myResults.mgz"</span>, 
+                       color_lut <span class="op">=</span> <span class="st">"path/to/myResults_LUT.txt"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
   </div>
@@ -320,7 +327,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
