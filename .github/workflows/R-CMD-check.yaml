@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest, r: 'release'}
+          # - {os: windows-latest, r: 'release'}
           - {os: macOS-latest, r: 'release'}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
@@ -39,7 +39,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
 
-      - name: Install XQuartz
+      - name: setup mac
         if: runner.os == 'macOS'
         env:
           XQUARTZ_VERSION: 2.7.11
@@ -49,13 +49,9 @@ jobs:
            sudo installer -pkg "/Volumes/XQuartz-${XQUARTZ_VERSION}/XQuartz.pkg" -target /
            sudo hdiutil detach /Volumes/XQuartz-${XQUARTZ_VERSION}
            rm /tmp/XQuartz.dmg
-           
-      - name: "Install spatial libraries"
-        if: runner.os == 'macOS'
-        run: |
-          # conflicts with gfortran from r-lib/actions when linking gcc
-          rm '/usr/local/bin/gfortran'
-          brew install pkg-config gdal proj geos
+           # conflicts with gfortran from r-lib/actions when linking gcc
+           rm '/usr/local/bin/gfortran'
+           brew install pkg-config gdal proj geos 
            
       - uses: r-lib/actions/setup-pandoc@v1
 
