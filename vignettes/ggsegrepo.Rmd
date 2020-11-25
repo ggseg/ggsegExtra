@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   eval = FALSE
 )
-devtools::load_all(".")
+library(ggsegExtra)
 ```
 
 ggsegExtra does not contain any atlases it self, but rather retains a record of all confirmed extra atlases compatible with ggseg or ggseg3d.
@@ -64,7 +64,7 @@ The atlas data-objects must have the same name as the file.
 In this case `cc200.rda` should load the object `cc200` into an R-environment using `load("data/cc200.rda")`, and contain a ggseg-atlas (use `is_ggseg_atlas()` and `as_ggseg_atlas` to check).
 Likewise, `cc200_3d.rda`should load the object `cc200_3d` into an R-environment using `load("data/cc200_3d.rda")`, adn should contains a ggseg3d-atlas (use `is_ggseg3d_atlas()` and `as_ggseg3d_atlas` to check).
 And then adapt the atlas information in the `R/cc200.R` to match the atlas you are adding.
-Take particular care with the reference to the atlas wih the original paper first introducing the parcellation. 
+Take particular care with the reference to the atlas with the original paper first introducing the parcellation. 
 
 
 ### Getting tests to pass
@@ -79,7 +79,7 @@ There will likely be some failures, try to resolve them by looking at the error 
 **Common things to check:** 
 
 - if you only have 3d or a 2d (ggplot) atlas, comment out sections in the tests that refer to the atlas type you are _not_ including.   
-- if you have a ggseg-atlas, the tests automaticallu check for a palette matching the `atlas$region` column.  
+- if you have a ggseg-atlas, the tests automatically check for a palette matching the `atlas$region` column.  
     - if you have not made such a palette, please do so, look into `data-raw/palettes.R` for setting it up.   
     - palettes are stores as a list in the `brain_pal` object, where each list contains a named string vector, the names should match `atlas$region` and the strings should be hexidecimal colour codes.  
     
@@ -101,7 +101,7 @@ Look at the error messages and try to resolve them by reading the carefully.
 **Common things to check:** 
 
 - if you have only included a single atlas of either ggseg or ggseg3d:  
-    - remove the uneeded atlas in the `data/atlas.rda` file, it contains information
+    - remove the unneeded atlas in the `data/atlas.rda` file, it contains information
     to both atlases and will fail if only one of them are present in `data/`.  
 - you have not added a licence: try using `usethis::use_mit_license("Your Name Here")`  
 

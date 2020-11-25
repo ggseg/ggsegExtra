@@ -13,13 +13,12 @@ knitr::opts_chunk$set(
   out.width = "100%",
   fig.width = 10
 )
-devtools::load_all(".")
 ```
 
 Using the ggseExtra package requires the two main ggseg-packages, containing the functions needed to plot the data. 
 ggsegExtra is a meta-repository of data-sets that fit with the functions in those main packages, with functions to help you create your own custom atlases.
 
-```{r, eval=FALSE}
+```{r}
 library(ggsegExtra)
 ```
 
@@ -51,7 +50,7 @@ if (!requireNamespace("ggsegYeo2011", quietly = TRUE)) {
 ```
 
 ```{r}
-# Load the atlas directly
+library(ggseg)
 ggseg(atlas = ggsegYeo2011::yeo7)
 ```
 

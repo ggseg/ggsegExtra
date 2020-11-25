@@ -11,7 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   eval = FALSE,
-  comment = "#>"
+  comment = "#>",
+  fig.retina = 3
 )
 ```
 
@@ -43,10 +44,26 @@ For other files (like results from your vertex-vise analyses etc), you will need
 This may require any of the following conversions: 
 
 1.	Convert overlay files into annotations. (e.g. overlay results to annotations)  
-2.	Downsample annotation files (e.g.from fsaverage to fsaverage5)  
-3.	Register files across different subject templates (from 164k_FS_LR [HCP] to fsaverage 5). 
+2.	Register files across different subject templates (from 164k_FS_LR [HCP] to fsaverage 5). 
     - The specific procedure will depend on your original image  
     - FreeSurfer's `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions  
+
+If altering a freesurfer `.annot` file between subjects (like from "bert" to "fsaverage5"), you can use an R convenience function we have made:
+
+```{r}
+# convert bert's DKT to fsaverage5
+mri_surf2surf_rereg(subject = "bert",
+              annot = "aparc.DKTatlas",
+              hemi = "lh",
+              output_dir = "/path/to/where/you/want/it")
+
+mri_surf2surf_rereg(subject = "bert",
+              annot = "aparc.DKTatlas",
+              hemi = "rh",
+              output_dir = "/path/to/where/you/want/it")
+```
+
+For this to work function to work, the `annot` file _must_ be in `$FREESURFER_HOME/subjects/bert/label`. 
 
 ### 2)	Run `make_aparc_2_3datlas()`(R)
 This script converts your annotations (`.annot`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
@@ -91,15 +108,68 @@ dt <- make_aparc_2_3datlas(annot = "myResults",
 **Note** that the "LCBC" surface only works for subject "fsaverage5", if you want any other subject, you will need to convert it with `freesurfer::mri_surf2srf()`. 
 If you want to make your own specialized surface, you can, but you should look into Freesurfer documentation to do that.
 
-You will notice that the `atlas` column taked directly the name of the annot file, and that the `region` and `label` columns are the same.
+You will notice that the `atlas` column takes directly the name of the `annot` file, and that the `region` and `label` columns are the same.
 If you are in the process of making an atlas contribution, there are a couple steps necessary for the atlas to be included.
 
 1) atlas-name should be short and easily recognisable  
 2) the `atlas` column should have the same name as the atlas object it self  
 3) contents in the `region` column should be cleaned to have proper names, _not_ the label names. This is to make it nicer when plotting and make the regions more human readable. Please take care in this step. 
 
+### DKT example
+
+The DKT atlas for ggseg was made 100% using the functions in this package. 
+The DKT atlas has an annot file installed with FreeSurfer for the example "bert" subject.
+We first need to transform the `annot` file for bert, into a file for `fsaverage5`, which is the
+recommended surface for the mesh plots. 
+We will use the `mri_surf2surf_rereg` function from this package, which calls FreeSurfers `mri_surf2surf` with specific calls to make the transformation. 
+This is done for both hemispheres, and the resulting annotations are here saved on the Desktop.
+
+```{r}
+# convert DKT to fsaverage5
+mri_surf2surf_rereg(subject = "bert",
+                    annot = "aparc.DKTatlas",
+                    hemi = "lh",
+                    output_dir = "~/Desktop/")
+
+mri_surf2surf_rereg(subject = "bert",
+                    annot = "aparc.DKTatlas",
+                    hemi = "rh",
+                    output_dir = "~/Desktop/")
+```
+
+We can then run the `make_aparc_2_3datlas` to create the mesh-plot for this annotation.
+The function will create many files for the mesh to be correctly made.
+Once the function has created an atlas object for us, we here do a little extra data cleaning. 
+Firstly, we alter the `atlas` column from the value "aparc.DKTatlas"  to "dkt_3d".
+Then we `unnest` the data, exposing all the underlying atlas information, and remove the `region` column.
+We do this because the default names for "region"  are taken directly from the annotation file, which in this case are not very pretty.
+Because the DKT atlas is the same as the DK atlas, minus a couple of regions, we here joing in the label and region column from the `ggseg::dk` data, to re-populate the `region` column with nicer names.
+In most cases, you will need to do some string manipulations to tidy up the region names.
+Then we re-nest the data, and make it into a ggseg3d-atlas.
+
+Once this atlas is complete and looks to your satisfaction, you can proceed to [making the atlas into a 2d polygon atlas](customatlas.html)
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+# Make  3d ----
+dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
+                               annot_dir = "~/Desktop/",
+                               subjects_dir = freesurfer::fs_subj_dir(),
+                               output_dir = "~/Desktop/") %>%
+  mutate(atlas = "dkt_3d")%>%
+  unnest(ggseg_3d) %>%
+  select(-region) %>%
+  left_join(select(ggseg::dk$data, hemi, region, label)) %>%
+  nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
+  as_ggseg3d_atlas()
+```
+
 
 ## From a volume image
+**This still has quite some kinks in it!** 
+
 ### 1)	Create volumetric image (bash + Freesurfer / FSL)
 The image needs to have the following characteristics: 
 
