@@ -6,10 +6,10 @@
 \usage{
 make_ggseg3d_2_ggseg(
   ggseg3d_atlas = ggseg3d::dk_3d,
-  steps = 1:6,
+  steps = 1:7,
   output_dir = tempdir(),
   tolerance = 0,
-  smoothness = 10,
+  smoothness = 5,
   cleanup = FALSE,
   ncores = parallel::detectCores() - 2
 )
@@ -17,7 +17,7 @@ make_ggseg3d_2_ggseg(
 \arguments{
 \item{ggseg3d_atlas}{object of class ggseg3d-atlas}
 
-\item{steps}{number of 1:6 of which steps to run through}
+\item{steps}{numeric vector of steps to run}
 
 \item{output_dir}{output directory path}
 

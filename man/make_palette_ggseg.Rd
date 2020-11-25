@@ -7,7 +7,7 @@
 make_palette_ggseg(ggseg3d_atlas)
 }
 \arguments{
-\item{ggseg3d_atlas}{object of class ggseg3d-atlas}
+\item{ggseg3d_atlas}{ggseg3d-atlas}
 }
 \value{
 list
@@ -18,7 +18,7 @@ colours from the paper originally
 introducing the atlas. These
 colours are hard-coded into ggseg3d-atlases.
 This function extracts those and makes a object
-ready for incporporation to a ggseg-atlas repository
+ready for incorporation to a ggseg-atlas repository
 }
 \examples{
 make_palette_ggseg(ggseg3d::dk_3d)
