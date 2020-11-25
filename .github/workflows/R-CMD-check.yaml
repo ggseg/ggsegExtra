@@ -50,6 +50,13 @@ jobs:
            sudo hdiutil detach /Volumes/XQuartz-${XQUARTZ_VERSION}
            rm /tmp/XQuartz.dmg
            
+      - name: "Install spatial libraries"
+        if: runner.os == 'macOS'
+        run: |
+          # conflicts with gfortran from r-lib/actions when linking gcc
+          rm '/usr/local/bin/gfortran'
+          brew install pkg-config gdal proj geos
+           
       - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Query dependencies
