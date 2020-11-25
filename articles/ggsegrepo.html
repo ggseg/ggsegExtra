@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -57,6 +57,12 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
+      <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
       <a href="../articles/customatlas.html">Contributing: creating new polygon ggseg-atlases</a>
     </li>
     <li>
@@ -66,6 +72,9 @@
       <a href="../articles/ggsegrepo.html">Contribute: prepare a repository for the atlas</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -85,7 +94,8 @@
 
       
 
-      </header><div class="row">
+      </header><script src="ggsegrepo_files/header-attrs-2.5/header-attrs.js"></script><script src="ggsegrepo_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="ggsegrepo_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="ggsegrepo_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Contribute: prepare a repository for the atlas</h1>
@@ -151,7 +161,7 @@
 <div id="add-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#add-data" class="anchor"></a>Add data</h3>
-<p>You will need to place your atlas files, as <code>.rda</code> files in the <code>data/</code> folder. The atlas data-objects must have the same name as the file. In this case <code>cc200.rda</code> should load the object <code>cc200</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200.rda")</a></code>, and contain a ggseg-atlas (use <code>is_ggseg_atlas()</code> and <code>as_ggseg_atlas</code> to check). Likewise, <code>cc200_3d.rda</code>should load the object <code>cc200_3d</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200_3d.rda")</a></code>, adn should contains a ggseg3d-atlas (use <code>is_ggseg3d_atlas()</code> and <code>as_ggseg3d_atlas</code> to check). And then adapt the atlas information in the <code>R/cc200.R</code> to match the atlas you are adding. Take particular care with the reference to the atlas wih the original paper first introducing the parcellation.</p>
+<p>You will need to place your atlas files, as <code>.rda</code> files in the <code>data/</code> folder. The atlas data-objects must have the same name as the file. In this case <code>cc200.rda</code> should load the object <code>cc200</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200.rda")</a></code>, and contain a ggseg-atlas (use <code>is_ggseg_atlas()</code> and <code>as_ggseg_atlas</code> to check). Likewise, <code>cc200_3d.rda</code>should load the object <code>cc200_3d</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200_3d.rda")</a></code>, adn should contains a ggseg3d-atlas (use <code>is_ggseg3d_atlas()</code> and <code>as_ggseg3d_atlas</code> to check). And then adapt the atlas information in the <code>R/cc200.R</code> to match the atlas you are adding. Take particular care with the reference to the atlas with the original paper first introducing the parcellation.</p>
 </div>
 <div id="getting-tests-to-pass" class="section level3">
 <h3 class="hasAnchor">
@@ -163,7 +173,7 @@
 <ul>
 <li>if you only have 3d or a 2d (ggplot) atlas, comment out sections in the tests that refer to the atlas type you are <em>not</em> including.<br>
 </li>
-<li>if you have a ggseg-atlas, the tests automaticallu check for a palette matching the <code>atlas$region</code> column.
+<li>if you have a ggseg-atlas, the tests automatically check for a palette matching the <code>atlas$region</code> column.
 <ul>
 <li>if you have not made such a palette, please do so, look into <code>data-raw/palettes.R</code> for setting it up.<br>
 </li>
@@ -184,7 +194,7 @@
 <ul>
 <li>if you have only included a single atlas of either ggseg or ggseg3d:
 <ul>
-<li>remove the uneeded atlas in the <code>data/atlas.rda</code> file, it contains information to both atlases and will fail if only one of them are present in <code>data/</code>.<br>
+<li>remove the unneeded atlas in the <code>data/atlas.rda</code> file, it contains information to both atlases and will fail if only one of them are present in <code>data/</code>.<br>
 </li>
 </ul>
 </li>
@@ -212,7 +222,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

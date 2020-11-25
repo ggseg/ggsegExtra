@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -97,6 +97,12 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
+      <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
       <a href="../articles/customatlas.html">Contributing: creating new polygon ggseg-atlases</a>
     </li>
     <li>
@@ -106,6 +112,9 @@
       <a href="../articles/ggsegrepo.html">Contribute: prepare a repository for the atlas</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -160,9 +169,21 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="annotation.html">annotation()</a></code> </p>
+        </td>
+        <td><p>Contructor for freesurfer_annotation-class</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="aparc_2_mesh.html">aparc_2_mesh()</a></code> </p>
         </td>
         <td><p>Converts annotations fo atlas</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="as_annotation.html">as_annotation()</a></code> </p>
+        </td>
+        <td><p>Make object into class freesurfer_annotation</p></td>
       </tr><tr>
         
         <td>
@@ -310,12 +331,6 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="make_aseg_2_3datlas.html">make_aseg_2_3datlas()</a></code> </p>
-        </td>
-        <td><p>Subcortical segmentation to atlas</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg()</a></code> </p>
         </td>
         <td><p>Turn ggseg3d-atlas to ggseg</p></td>
@@ -334,6 +349,18 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="make_volumetric_2_3datlas.html">make_volumetric_2_3datlas()</a></code> </p>
+        </td>
+        <td><p>Volumetric segmentation to 3d-atlas</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="make_volumetric_ggseg.html">make_volumetric_ggseg()</a></code> </p>
+        </td>
+        <td><p>Make ggseg atlas from volumetric template</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="mri_pretess.html">mri_pretess()</a></code> </p>
         </td>
         <td><p>Run pre-tesselation on file</p></td>
@@ -343,6 +370,12 @@
           <p><code><a href="mri_smooth.html">mri_smooth()</a></code> </p>
         </td>
         <td><p>Smooth data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mri_surf2surf_rereg.html">mri_surf2surf_rereg()</a></code> </p>
+        </td>
+        <td><p>Re-register an annotation file</p></td>
       </tr><tr>
         
         <td>
@@ -367,6 +400,12 @@
           <p><code><a href="mris_annot2label.html">mris_annot2label()</a></code> </p>
         </td>
         <td><p>Convert annotation to label</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="mris_ca_label.html">mris_ca_label()</a></code> </p>
+        </td>
+        <td><p>MRI ca label</p></td>
       </tr><tr>
         
         <td>
@@ -470,7 +509,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

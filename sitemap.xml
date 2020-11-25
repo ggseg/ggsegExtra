@@ -7,7 +7,13 @@
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/annot2dpv.html</loc>
   </url>
   <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/annotation.html</loc>
+  </url>
+  <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/aparc_2_mesh.html</loc>
+  </url>
+  <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/as_annotation.html</loc>
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/asc2ply.html</loc>
@@ -82,9 +88,6 @@
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/make_aparc_2_3datlas.html</loc>
   </url>
   <url>
-    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/make_aseg_2_3datlas.html</loc>
-  </url>
-  <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/make_ggseg3d_2_ggseg.html</loc>
   </url>
   <url>
@@ -94,10 +97,19 @@
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/make_palette_ggseg.html</loc>
   </url>
   <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/make_volumetric_2_3datlas.html</loc>
+  </url>
+  <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/make_volumetric_ggseg.html</loc>
+  </url>
+  <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mri_pretess.html</loc>
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mri_smooth.html</loc>
+  </url>
+  <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mri_surf2surf_rereg.html</loc>
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mri_tessellate.html</loc>
@@ -110,6 +122,9 @@
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mris_annot2label.html</loc>
+  </url>
+  <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mris_ca_label.html</loc>
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/mris_label2annot.html</loc>
@@ -152,6 +167,12 @@
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//reference/write_dpv.html</loc>
+  </url>
+  <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//articles/createaseg.html</loc>
+  </url>
+  <url>
+    <loc>https://lcbc-uio.github.io/ggsegExtra//articles/createdkt.html</loc>
   </url>
   <url>
     <loc>https://lcbc-uio.github.io/ggsegExtra//articles/customatlas.html</loc>

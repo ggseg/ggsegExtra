@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -57,6 +57,12 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
+      <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
       <a href="../articles/customatlas.html">Contributing: creating new polygon ggseg-atlases</a>
     </li>
     <li>
@@ -66,6 +72,9 @@
       <a href="../articles/ggsegrepo.html">Contribute: prepare a repository for the atlas</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -85,7 +94,8 @@
 
       
 
-      </header><div class="row">
+      </header><script src="ggsegExtra_files/header-attrs-2.5/header-attrs.js"></script><script src="ggsegExtra_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="ggsegExtra_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="ggsegExtra_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using ggsegExtra atlases</h1>
@@ -105,44 +115,48 @@
 <a href="#installing-atlases" class="anchor"></a>Installing atlases</h2>
 <p>Atlases are stored in their own online repositories. The list of repositories is periodically updated based on when we have confirmed a new atlas that works with the packages. These data-sets can be in our own github account (LCBC-UiO), or be hosted by whoever made the atlas. To see all confirmed atlases:</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="fu"><a href="../reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span>()
-<span class="co">## # A tibble: 10 x 5</span>
-<span class="co">##    repo                ggseg ggseg3d source comment                             </span>
-<span class="co">##    &lt;chr&gt;               &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                               </span>
-<span class="co">##  1 LCBC-UiO/ggsegYeo2… TRUE  TRUE    github both 17 and 7 Network data          </span>
-<span class="co">##  2 LCBC-UiO/ggsegDest… FALSE TRUE    github the 2009 atlas                      </span>
-<span class="co">##  3 LCBC-UiO/ggsegChen  FALSE TRUE    github both thickness and area maps        </span>
-<span class="co">##  4 LCBC-UiO/ggsegScha… FALSE TRUE    github both 17 and 7 networks              </span>
-<span class="co">##  5 LCBC-UiO/ggsegGlas… TRUE  TRUE    github full atlas                          </span>
-<span class="co">##  6 LCBC-UiO/ggsegJHU   TRUE  TRUE    github white tract atlas                   </span>
-<span class="co">##  7 LCBC-UiO/ggsegTrac… TRUE  TRUE    github white tract atlas                   </span>
-<span class="co">##  8 LCBC-UiO/ggsegICBM  FALSE TRUE    github white tract atlas                   </span>
-<span class="co">##  9 LCBC-UiO/ggsegHO    TRUE  FALSE   github Harvard-Oxford cortical (FSL)       </span>
-<span class="co">## 10 LCBC-UiO/ggsegDefa… TRUE  FALSE   github extra 2d view for dk, p/a division …</span>
+<span class="co">## # A tibble: 11 x 6</span>
+<span class="co">##    repo            ggseg ggseg3d source comment                      package    </span>
+<span class="co">##    &lt;chr&gt;           &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                        &lt;chr&gt;      </span>
+<span class="co">##  1 LCBC-UiO/ggseg… TRUE  TRUE    github both 17 and 7 Network data   ggsegYeo20…</span>
+<span class="co">##  2 LCBC-UiO/ggseg… FALSE TRUE    github the 2009 atlas               ggsegDeste…</span>
+<span class="co">##  3 LCBC-UiO/ggseg… FALSE TRUE    github both thickness and area maps ggsegChen  </span>
+<span class="co">##  4 LCBC-UiO/ggseg… FALSE TRUE    github both 17 and 7 networks       ggsegSchae…</span>
+<span class="co">##  5 LCBC-UiO/ggseg… TRUE  TRUE    github full atlas                   ggsegGlass…</span>
+<span class="co">##  6 LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegJHU   </span>
+<span class="co">##  7 LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegTracu…</span>
+<span class="co">##  8 LCBC-UiO/ggseg… FALSE TRUE    github white tract atlas            ggsegICBM  </span>
+<span class="co">##  9 LCBC-UiO/ggseg… TRUE  FALSE   github Harvard-Oxford cortical (FS… ggsegHO    </span>
+<span class="co">## 10 LCBC-UiO/ggseg… TRUE  FALSE   github extra 2d view for dk, p/a d… ggsegDefau…</span>
+<span class="co">## 11 LCBC-UiO/ggseg… TRUE  TRUE    github Desikan-Killiany-Tourville … ggsegDKT</span>
 
 <span class="co"># Search for repos with pattern</span>
 <span class="fu"><a href="../reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span>(<span class="st">"Yeo"</span>)
-<span class="co">## # A tibble: 1 x 5</span>
-<span class="co">##   repo                  ggseg ggseg3d source comment                   </span>
-<span class="co">##   &lt;chr&gt;                 &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                     </span>
-<span class="co">## 1 LCBC-UiO/ggsegYeo2011 TRUE  TRUE    github both 17 and 7 Network data</span>
+<span class="co">## # A tibble: 1 x 6</span>
+<span class="co">##   repo                 ggseg ggseg3d source comment                  package    </span>
+<span class="co">##   &lt;chr&gt;                &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                    &lt;chr&gt;      </span>
+<span class="co">## 1 LCBC-UiO/ggsegYeo20… TRUE  TRUE    github both 17 and 7 Network d… ggsegYeo20…</span>
 
 <span class="co"># Search is case-sensitive</span>
 <span class="fu"><a href="../reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span>(<span class="st">"yeo"</span>)
-<span class="co">## # A tibble: 0 x 5</span>
-<span class="co">## # … with 5 variables: repo &lt;chr&gt;, ggseg &lt;lgl&gt;, ggseg3d &lt;lgl&gt;, source &lt;chr&gt;,</span>
-<span class="co">## #   comment &lt;chr&gt;</span>
+<span class="co">## # A tibble: 0 x 6</span>
+<span class="co">## # … with 6 variables: repo &lt;chr&gt;, ggseg &lt;lgl&gt;, ggseg3d &lt;lgl&gt;, source &lt;chr&gt;,</span>
+<span class="co">## #   comment &lt;chr&gt;, package &lt;chr&gt;</span>
 
 <span class="co"># Search is case-sensitive, but this can be fixed</span>
 <span class="fu"><a href="../reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span>(<span class="st">"yeo"</span>, <span class="kw">ignore.case</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-<span class="co">## # A tibble: 1 x 5</span>
-<span class="co">##   repo                  ggseg ggseg3d source comment                   </span>
-<span class="co">##   &lt;chr&gt;                 &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                     </span>
-<span class="co">## 1 LCBC-UiO/ggsegYeo2011 TRUE  TRUE    github both 17 and 7 Network data</span></pre></body></html></div>
+<span class="co">## # A tibble: 1 x 6</span>
+<span class="co">##   repo                 ggseg ggseg3d source comment                  package    </span>
+<span class="co">##   &lt;chr&gt;                &lt;lgl&gt; &lt;lgl&gt;   &lt;chr&gt;  &lt;chr&gt;                    &lt;chr&gt;      </span>
+<span class="co">## 1 LCBC-UiO/ggsegYeo20… TRUE  TRUE    github both 17 and 7 Network d… ggsegYeo20…</span></pre></body></html></div>
 <p>Installing atlases from the repos, we have conveniene function, wrapping install commands from the <a href="https://github.com/r-lib/remotes">remotes</a> package.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">yeo_repo</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/ggseg_atlas_repos.html">ggseg_atlas_repos</a></span>(<span class="st">"yeo"</span>, <span class="kw">ignore.case</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
-<span class="fu"><a href="../reference/install_ggseg_atlas.html">install_ggseg_atlas</a></span>(<span class="kw">repo</span> <span class="kw">=</span> <span class="no">yeo_repo</span>$<span class="no">repo</span>, <span class="kw">source</span> <span class="kw">=</span> <span class="no">yeo_repo</span>$<span class="no">source</span>)</pre></body></html></div>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># Load the atlas directly</span>
-<span class="fu">ggseg</span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="kw pkg">ggsegYeo2011</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/ggsegYeo2011/man/yeo7.html">yeo7</a></span>)</pre></body></html></div>
+<span class="kw">if</span> (!<span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span>(<span class="st">"ggsegYeo2011"</span>, <span class="kw">quietly</span> <span class="kw">=</span> <span class="fl">TRUE</span>)) {
+  <span class="fu"><a href="../reference/install_ggseg_atlas.html">install_ggseg_atlas</a></span>(<span class="kw">repo</span> <span class="kw">=</span> <span class="no">yeo_repo</span>$<span class="no">repo</span>, <span class="kw">source</span> <span class="kw">=</span> <span class="no">yeo_repo</span>$<span class="no">source</span>)
+}</pre></body></html></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggseg</span>)
+<span class="co">## Loading required package: ggplot2</span>
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg/man/ggseg.html">ggseg</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="kw pkg">ggsegYeo2011</span><span class="kw ns">::</span><span class="no"><a href="https://rdrr.io/pkg/ggsegYeo2011/man/yeo7.html">yeo7</a></span>)</pre></body></html></div>
 <p><img src="ggsegExtra_files/figure-html/unnamed-chunk-4-1.png" width="100%"></p>
 </div>
 <div id="d-atlases-with-ggseg" class="section level2">
@@ -152,14 +166,14 @@
 <div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="co"># load on all atlases and palettes from the ggsegYeo2011 library</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggsegYeo2011</span>)
 
-<span class="fu">ggseg</span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">yeo7</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/pkg/ggseg/man/ggseg.html">ggseg</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">yeo7</span>)</pre></body></html></div>
 <p><img src="ggsegExtra_files/figure-html/ggseg-1.png" width="100%"></p>
-<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu">ggseg</span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">yeo17</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/ggseg/man/ggseg.html">ggseg</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">yeo17</span>)</pre></body></html></div>
 <p><img src="ggsegExtra_files/figure-html/ggseg-2.png" width="100%"></p>
 <p>If you want to make sure it looks properly like the atlas you are after, or you want to plot an example of the original plot. Most of the datasets also have corresponding palettes from the papers they were introduced from. These colour-scales can be applied through the <code>scale_X_brain</code> functions, and you must also specify which package the palette comes from.</p>
-<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu">ggseg</span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">yeo7</span>,
+<div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/pkg/ggseg/man/ggseg.html">ggseg</a></span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">yeo7</span>,
       <span class="kw">mapping</span><span class="kw">=</span><span class="fu">aes</span>(<span class="kw">fill</span> <span class="kw">=</span> <span class="no">region</span>)) +
-  <span class="fu">scale_fill_brain</span>(<span class="st">"yeo7"</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"ggsegYeo2011"</span>)</pre></body></html></div>
+  <span class="fu"><a href="https://rdrr.io/pkg/ggseg/man/scale_brain.html">scale_fill_brain</a></span>(<span class="st">"yeo7"</span>, <span class="kw">package</span><span class="kw">=</span><span class="st">"ggsegYeo2011"</span>)</pre></body></html></div>
 <p><img src="ggsegExtra_files/figure-html/ggseg-scale-1.png" width="100%"></p>
 </div>
 <div id="d-plots-with-ggseg3d" class="section level2">
@@ -213,7 +227,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

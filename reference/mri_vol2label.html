@@ -40,7 +40,14 @@
 
 
 <meta property="og:title" content="Convert volume to label — mri_vol2label" />
-<meta property="og:description" content="Convert volume to label" />
+<meta property="og:description" content="Converts values in a volume or surface overlay to a label. The program
+searches the input for values equal to labelid. The xyz values for
+each point are then computed based on the tkregister voxel-to-RAS
+matrix (volume) or from the xyz of the specified surface.  The xyz
+values are then stored in labelfile in the label file format. The
+statistic value is set to 0.  While this program can be used with any
+mri volume, it was designed to convert parcellation volumes, which
+happen to be stored in mri format." />
 
 
 
@@ -72,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -98,6 +105,12 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
+      <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
       <a href="../articles/customatlas.html">Contributing: creating new polygon ggseg-atlases</a>
     </li>
     <li>
@@ -107,6 +120,9 @@
       <a href="../articles/ggsegrepo.html">Contribute: prepare a repository for the atlas</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -135,16 +151,25 @@
     </div>
 
     <div class="ref-description">
-    <p>Convert volume to label</p>
+    <p>Converts values in a volume or surface overlay to a label. The program
+searches the input for values equal to labelid. The xyz values for
+each point are then computed based on the tkregister voxel-to-RAS
+matrix (volume) or from the xyz of the specified surface.  The xyz
+values are then stored in labelfile in the label file format. The
+statistic value is set to 0.  While this program can be used with any
+mri volume, it was designed to convert parcellation volumes, which
+happen to be stored in mri format.</p>
     </div>
 
     <pre class="usage"><span class='fu'>mri_vol2label</span>(
   <span class='no'>input_file</span>,
   <span class='no'>label_id</span>,
   <span class='no'>hemisphere</span>,
+  <span class='kw'>surface</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>subject</span> <span class='kw'>=</span> <span class='st'>"fsaverage5"</span>,
   <span class='kw'>subjects_dir</span> <span class='kw'>=</span> <span class='kw pkg'>freesurfer</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span>(),
   <span class='no'>output_dir</span>,
+  <span class='kw'>opts</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
 )</pre>
 
@@ -164,6 +189,10 @@
       <td><p>hemisphere, either "rh" or "lh"</p></td>
     </tr>
     <tr>
+      <th>surface</th>
+      <td><p>ouput surface</p></td>
+    </tr>
+    <tr>
       <th>subject</th>
       <td><p>Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR</p></td>
@@ -175,6 +204,10 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     <tr>
       <th>output_dir</th>
       <td><p>output directory path</p></td>
+    </tr>
+    <tr>
+      <th>opts</th>
+      <td><p>other arguments to freesurfer command</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -198,7 +231,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>

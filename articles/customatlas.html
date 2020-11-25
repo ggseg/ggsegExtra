@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.3</span>
       </span>
     </div>
 
@@ -57,6 +57,12 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/createaseg.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
+      <a href="../articles/createdkt.html">Example creation: the DKT cortical atlas</a>
+    </li>
+    <li>
       <a href="../articles/customatlas.html">Contributing: creating new polygon ggseg-atlases</a>
     </li>
     <li>
@@ -66,6 +72,9 @@
       <a href="../articles/ggsegrepo.html">Contribute: prepare a repository for the atlas</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -85,7 +94,8 @@
 
       
 
-      </header><div class="row">
+      </header><script src="customatlas_files/header-attrs-2.5/header-attrs.js"></script><script src="customatlas_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="customatlas_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="customatlas_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Contributing: creating new polygon ggseg-atlases</h1>
@@ -101,7 +111,7 @@
 <div id="creating-ggseg-atlas-from-a-ggseg3d-atlas" class="section level2">
 <h2 class="hasAnchor">
 <a href="#creating-ggseg-atlas-from-a-ggseg3d-atlas" class="anchor"></a>Creating ggseg-atlas from a ggseg3d-atlas</h2>
-<p>The best way to create a ggseg-atlas with little manual intervention, is to first make a <a href="https://lcbc-uio.github.io/ggsegExtra/articles/customatlas3d.html">ggseg3d-atlas</a>, and then convert that to ggseg-atlas. The entire process can take anything from 10minutes, depending on the number of segmentations in the atlas. More segmentations means longer time.</p>
+<p>The best way to create a ggseg-atlas with little manual intervention, is to first make a <a href="customatlas3d.html">ggseg3d-atlas</a>, and then convert that to ggseg-atlas. The entire process can take anything from 10minutes, depending on the number of segmentations in the atlas. More segmentations means longer time.</p>
 <p>Once you have a ggseg3d-atlas, the function <code>ggseg3d_2_ggseg()</code> can convert that into polygons ready for ggseg.</p>
 <div id="prerequisites" class="section level3">
 <h3 class="hasAnchor">
@@ -115,20 +125,34 @@
   <span class="kw">ggseg3d_atlas</span> <span class="kw">=</span> <span class="no">dk_3d</span>,
   <span class="kw">steps</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">7</span>,
   <span class="kw">output_dir</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span>(),
-  <span class="kw">smoothness</span> <span class="kw">=</span> <span class="fl">10</span>,
-  <span class="kw">keep</span> <span class="kw">=</span> <span class="fl">0.05</span>,
-  <span class="kw">weighting</span> <span class="kw">=</span> <span class="fl">0.7</span>,
+  <span class="kw">smoothness</span> <span class="kw">=</span> <span class="fl">5</span>,
+  <span class="kw">tolerance</span> <span class="kw">=</span> <span class="fl">0</span>,
   <span class="kw">cleanup</span> <span class="kw">=</span> <span class="fl">FALSE</span>,
   <span class="kw">verbose</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></body></html></div>
-<p>The function takes few arguments, but does quite a lot in the background. It needs an object that is a ggseg3d-atlas, ad will work with no other input changed. We recommen changing the <code>output_dir</code> to a folder you can keep track of to see how the intermediate results look like. This also makes it possible for you to use the <code>steps</code> argument. If early steps have been run succesfully, you can skip them and only run later steps. Re-running steps 5:7 might be necessary to find a good balance between <code>smoothness</code> of the polygons for nicer parcellations, and vertex reductions through <code>keep</code> and <code>weighting</code>. We recommend trying several combinations untill you have something that looks nice. Vertex reduction is particularly important, as it significantly reduces the atlas data size, thus making it much faster to plot. This is important for incorporating into Shiny apps, or if you have very many facets to plot. We’d generally recommend a 2d-atlas not have much more than 10k vertices.</p>
+<p>The function takes few arguments, but does quite a lot in the background. It needs an object that is a ggseg3d-atlas, ad will work with no other input changed. We recommend changing the <code>output_dir</code> to a folder you can keep track of to see how the intermediate results look like. This also makes it possible for you to use the <code>steps</code> argument. If early steps have been run successfully, you can skip them and only run later steps. Re-running steps 5:7 might be necessary to find a good balance between <code>smoothness</code> of the polygons for nicer looking parcellations, and vertex reductions through <code>tolerance</code> to reduce file size. We recommend trying several combinations until you have something that looks nice. Vertex reduction is particularly important, as it significantly reduces the atlas data size, thus making it much faster to plot. This is important for incorporating into Shiny apps, or if you have very many facets to plot. We’d generally recommend a 2d-atlas not have much more than 10k vertices.</p>
 <p>Once the data is returned, we recommend doing some data cleaning, particularly of the <code>region</code> column. This column should ideally have human readable names, be short, and have space rather than delimiters. This is to enable nicer labelling when plotting. Once this is done, try plotting it with ggseg.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">dt</span> <span class="kw">&lt;-</span> <span class="fu">ggseg</span>(<span class="kw">atlas</span> <span class="kw">=</span> <span class="no">dk</span>)</pre></body></html></div>
+</div>
+<div id="dkt-example" class="section level3">
+<h3 class="hasAnchor">
+<a href="#dkt-example" class="anchor"></a>DKT example</h3>
+<p>If you have successfully created a 3d atlas <a href="customatlas3d.html">following these steps</a>, you can proceed using the 3d-atlas to make the 2d-atlas. As long as the 3d atlas is correctly made, you should have little difficulty making a 2d version. This pipeline also makes alot of intermediary files, so be aware of that.</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># make atlas ----</span>
+<span class="no">dkt</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg</a></span>(<span class="no">dkt_3d</span>,
+                            <span class="kw">steps</span> <span class="kw">=</span> <span class="fl">1</span>:<span class="fl">7</span>,
+                            <span class="kw">smoothness</span> <span class="kw">=</span> <span class="fl">2</span>,
+                            <span class="kw">tolerance</span> <span class="kw">=</span> <span class="fl">.5</span>,
+                            <span class="kw">output_dir</span> <span class="kw">=</span> <span class="st">"~/Desktop"</span>)
+
+<span class="co"># check that it looks ok.</span>
+<span class="fu"><a href="https://rdrr.io/r/base/plot.html">plot</a></span>(<span class="no">dkt</span>)</pre></body></html></div>
+<p>Some times, annot-files have a unique colour per hemisphere*region combination. This is does not work well with ggseg. If you fint that the parcellations themselves look fine, but that the colours are off, the atlas palette is surely wrong. You will here need to do some manual editing of the named character vector in the atlas to fix it.</p>
 </div>
 </div>
 <div id="skipping-ggseg3d-atlas" class="section level2">
 <h2 class="hasAnchor">
 <a href="#skipping-ggseg3d-atlas" class="anchor"></a>Skipping ggseg3d-atlas</h2>
-<p>This pipeline is contributed by <a href="https://github.com/bbuchsbaum">bbuchsbaum</a>. It is still quite error prone, but was instrumental to creating the above funtionality.</p>
+<p>This pipeline is contributed by <a href="https://github.com/bbuchsbaum">bbuchsbaum</a>. It is still quite error prone, but was instrumental to creating the above functionality.</p>
 <p>The Harvard-Oxford atlas is available with FSL. Here is a process for converting the cortical parts, via FreeSurfer, to a ggseg format.</p>
 <div id="prerequisites-1" class="section level3">
 <h3 class="hasAnchor">
@@ -140,17 +164,17 @@
 <a href="#converting-to-freesurfer-and-fixing" class="anchor"></a>Converting to FreeSurfer and fixing</h3>
 <ol style="list-style-type: decimal">
 <li><p>Take a copy of the fsaverage folder, and set up SUBJECTS_DIR to point to the folder containing the fsaverage copy.</p></li>
-<li>Import the atlas as a surface</li>
+<li><p>Import the atlas as a surface</p></li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="bu">cd</span> <span class="va">${SUBJECTS_DIR}</span>/fsaverage/mri</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="ex">mri_vol2surf</span> --sd <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/../.. --src <span class="va">${FSLDIR}</span>/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz --mni152reg --out  harvard_oxford_surf_rh.mgh --hemi rh --projfrac 0.5</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="ex">mri_vol2surf</span> --sd <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/../.. --src <span class="va">${FSLDIR}</span>/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz --mni152reg --out harvard_oxford_surf_lh.mgh --hemi lh --projfrac 0.5</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="bu">cd</span> <span class="va">${SUBJECTS_DIR}</span>/fsaverage/mri</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ex">mri_vol2surf</span> --sd <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/../.. --src <span class="va">${FSLDIR}</span>/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz --mni152reg --out  harvard_oxford_surf_rh.mgh --hemi rh --projfrac 0.5</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="ex">mri_vol2surf</span> --sd <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/../.. --src <span class="va">${FSLDIR}</span>/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz --mni152reg --out harvard_oxford_surf_lh.mgh --hemi lh --projfrac 0.5</span></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Create a color table. Run an R session in <code>${SUBJECTS_DIR}/fsaverage/mri</code>
 </li>
 </ol>
-<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/source.html">source</a></span>(<span class="st">"ho_ctab.R"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/source.html">source</a></span>(<span class="st">"ho_ctab.R"</span>)</pre></body></html></div>
 <ol start="4" style="list-style-type: decimal">
 <li>Create a series of individual label files</li>
 </ol>
@@ -161,48 +185,48 @@ seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_lh.mgh --id {} --surf 
 <ol start="5" style="list-style-type: decimal">
 <li>Create annotation files</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="va">LABS=$(</span><span class="fu">seq</span> 1 48 <span class="kw">|</span> <span class="ex">parallel</span> echo -n <span class="st">'\ --l ./Labels/lh_HO_{}.label\ '</span><span class="va">)</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="ex">mris_label2annot</span> --sd <span class="va">${SUBJECTS_DIR}</span> --s fsaverage --ctab ../label/ho.annot.ctab <span class="va">${LABS}</span> --h lh --a ho</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="va">LABS=$(</span><span class="fu">seq</span> 1 48 <span class="kw">|</span> <span class="ex">parallel</span> echo -n <span class="st">'\ --l ./Labels/rh_HO_{}.label\ '</span><span class="va">)</span></a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="ex">mris_label2annot</span> --sd <span class="va">${SUBJECTS_DIR}</span> --s fsaverage --ctab ../label/ho.annot.ctab <span class="va">${LABS}</span> --h rh --a ho</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="va">LABS=$(</span><span class="fu">seq</span> 1 48 <span class="kw">|</span> <span class="ex">parallel</span> echo -n <span class="st">'\ --l ./Labels/lh_HO_{}.label\ '</span><span class="va">)</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="ex">mris_label2annot</span> --sd <span class="va">${SUBJECTS_DIR}</span> --s fsaverage --ctab ../label/ho.annot.ctab <span class="va">${LABS}</span> --h lh --a ho</span>
+<span id="cb7-3"><a href="#cb7-3"></a></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="va">LABS=$(</span><span class="fu">seq</span> 1 48 <span class="kw">|</span> <span class="ex">parallel</span> echo -n <span class="st">'\ --l ./Labels/rh_HO_{}.label\ '</span><span class="va">)</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="ex">mris_label2annot</span> --sd <span class="va">${SUBJECTS_DIR}</span> --s fsaverage --ctab ../label/ho.annot.ctab <span class="va">${LABS}</span> --h rh --a ho</span></code></pre></div>
 <ol start="6" style="list-style-type: decimal">
 <li>Check how the surface looks - note lots of holes etc. Using the 0 prob threshold leads to more bleed to neighboring sulci, which I think is harder to fix.</li>
 </ol>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ex">vglrun</span> freeview  --surface ../surf/rh.inflated:annot=../label/rh.ho.annot --surface ../surf/lh.inflated:annot=../label/lh.ho.annot</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="ex">vglrun</span> freeview  --surface ../surf/rh.inflated:annot=../label/rh.ho.annot --surface ../surf/lh.inflated:annot=../label/lh.ho.annot</span></code></pre></div>
 <ol start="7" style="list-style-type: decimal">
 <li>Fill and smooth</li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># convert to gifti</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="ex">mris_convert</span> --annot ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="ex">mris_convert</span> --annot ../label/lh.ho.annot ../surf/lh.inflated ./fsaverage_lh.label.gii</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="ex">mris_convert</span> --annot ../label/rh.aparc.annot ../surf/rh.inflated ./fsaverage_aparc_rh.label.gii</a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="ex">mris_convert</span> --annot ../label/lh.aparc.annot ../surf/lh.inflated ./fsaverage_aparc_lh.label.gii</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="ex">./smooth_labels.sh</span> fsaverage_lh_10.label.gii inflated_lh.surf.gii fsaverage_lh_10.smooth.label.gii</a>
-<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="ex">./smooth_labels.sh</span> fsaverage_rh_10.label.gii inflated_rh.surf.gii fsaverage_rh_10.smooth.label.gii</a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="co">## Back to viewing with freesurfer</span></a>
-<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="kw">for</span> <span class="ex">hemi</span> in lh rh <span class="kw">;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="ex">mris_convert</span> --annot fsaverage_<span class="va">${hemi}</span>_10.smooth.label.gii inflated_<span class="va">${hemi}</span>.surf.gii ./<span class="va">${hemi}</span>.ho.smooth.annot</a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="kw">done</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># convert to gifti</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="ex">mris_convert</span> --annot ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="ex">mris_convert</span> --annot ../label/lh.ho.annot ../surf/lh.inflated ./fsaverage_lh.label.gii</span>
+<span id="cb9-4"><a href="#cb9-4"></a></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="ex">mris_convert</span> --annot ../label/rh.aparc.annot ../surf/rh.inflated ./fsaverage_aparc_rh.label.gii</span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="ex">mris_convert</span> --annot ../label/lh.aparc.annot ../surf/lh.inflated ./fsaverage_aparc_lh.label.gii</span>
+<span id="cb9-7"><a href="#cb9-7"></a></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="ex">./smooth_labels.sh</span> fsaverage_lh_10.label.gii inflated_lh.surf.gii fsaverage_lh_10.smooth.label.gii</span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="ex">./smooth_labels.sh</span> fsaverage_rh_10.label.gii inflated_rh.surf.gii fsaverage_rh_10.smooth.label.gii</span>
+<span id="cb9-10"><a href="#cb9-10"></a></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">## Back to viewing with freesurfer</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="kw">for</span> <span class="ex">hemi</span> in lh rh <span class="kw">;</span> <span class="kw">do</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="ex">mris_convert</span> --annot fsaverage_<span class="va">${hemi}</span>_10.smooth.label.gii inflated_<span class="va">${hemi}</span>.surf.gii ./<span class="va">${hemi}</span>.ho.smooth.annot</span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="kw">done</span></span></code></pre></div>
 <ol start="8" style="list-style-type: decimal">
 <li>Screengrabs with tksurfer. This can be reun somewhere other than fsaverage.</li>
 </ol>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="ex">./mkPics.sh</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1"></a><span class="ex">./mkPics.sh</span></span></code></pre></div>
 <ol start="9" style="list-style-type: decimal">
 <li>Rename the unknowns to medial wall</li>
 </ol>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="fu">mv</span> PicsHarvardOxford/lh_\?\?\?_med.tif PicsHarvardOxford/lh_medialwall_med.tif</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="fu">mv</span> PicsHarvardOxford/rh_\?\?\?_med.tif PicsHarvardOxford/rh_medialwall_med.tif</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="fu">rm</span> PicsHarvardOxford/*_\?*</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">mv</span> PicsHarvardOxford/lh_\?\?\?_med.tif PicsHarvardOxford/lh_medialwall_med.tif</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="fu">mv</span> PicsHarvardOxford/rh_\?\?\?_med.tif PicsHarvardOxford/rh_medialwall_med.tif</span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="fu">rm</span> PicsHarvardOxford/*_\?*</span></code></pre></div>
 <ol start="10" style="list-style-type: decimal">
 <li>Finally, let the R spatial tools work their magic…</li>
 </ol>
-<div class="sourceCode" id="cb11"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/source.html">source</a></span>(<span class="st">"mkHO.R"</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/source.html">source</a></span>(<span class="st">"mkHO.R"</span>)</pre></body></html></div>
 <p>This creates <code>ho_atlas.Rda</code> which contains a couple of data frames, almost ready for inclusion in ggsegExtra.</p>
 </div>
 <div id="comments" class="section level3">
@@ -228,7 +252,7 @@ seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_lh.mgh --id {} --surf 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
