@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg'-Plotting Tool
-Version: 1.5.2
+Version: 1.5.3
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
                     role = c("aut", "cre"),
@@ -14,11 +14,11 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel",
                     role = c("ctb"),
                     comment = c(ORCID = "0000-0001-6469-1750")))
 Description: Supporting atlas datasets and functions for the 'ggseg', and 'ggseg3d' 
-    packages.  The plotting functions from those two packages should be 
+    packages. The plotting functions from those two packages should be 
     used on these atlas data.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Depends: R (>= 2.10)
 LazyData: true
 Imports: 
@@ -44,9 +44,10 @@ Imports:
     stars,
     geomorph,
     crayon,
-    rgdal
+    rgdal,
+    pbmcapply
 Suggests:
-    ggseg (>= 1.5.4),
+    ggseg (>= 1.6.0),
     ggplot2,
     ggseg3d (>= 1.6.0),
     ggsegYeo2011,
@@ -58,12 +59,12 @@ Suggests:
     ggsegTracula,
     ggsegICBM,
     ggsegHO,
-    ggsegDefaultExtra,    
+    ggsegDefaultExtra, 
+    ggsegDKT, 
     knitr,
     rmarkdown,
     covr,
-    testthat (>= 2.1.0),
-    devtools
+    testthat (>= 2.1.0)
 VignetteBuilder: knitr
 Remotes: 
     LCBC-UiO/ggseg,
@@ -77,6 +78,7 @@ Remotes:
     LCBC-UiO/ggsegTracula,
     LCBC-UiO/ggsegICBM,
     LCBC-UiO/ggsegHO,
-    LCBC-UiO/ggsegDefaultExtra
+    LCBC-UiO/ggsegDefaultExtra,
+    LCBC-UiO/ggsegDKT
 URL: https://github.com/LCBC-UiO/ggsegExtra
 BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues
