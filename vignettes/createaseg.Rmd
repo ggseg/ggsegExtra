@@ -266,8 +266,9 @@ knitr::include_graphics("figures/aseg_glass.png")
 
 
 ## Creating the 2d atlas
-Once a 3d atlas is made, creating a 2d atlas is _fairly_ straight forward.
-Using ImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooth'es them, reduces the vertices and organizes the data into a brain-atlas class object.
+
+Unlike the pipeline for cortical atlases which uses the newly made ggseg3d-atlas to create polygon data, the volumetric pipeline uses the volumetric-image just as for creating the ggseg3d-atlas above.
+Using a combination of FreeSurfer's Freeview snapshotting andImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooth'es them, reduces the vertices and organizes the data into a brain-atlas class object.
 The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. 
 While the function at default stores these files in a temporary folder, we highly recommend setting the `output_dir` option, so that you do not need to rerun all steps when testing another configuration of settings. 
 For instance, the step taking the longest time and most processing time is  snapshotting the regions and extracting the contours.
@@ -275,11 +276,10 @@ But these two steps only need to be run once, as long as the ggseg3d-atlas has n
 
 ```{r}
 # make atlas ----
-dkt <- make_ggseg3d_2_ggseg(dkt_3d,
-                            steps = 1:7,
-                            smoothness = 2,
-                            tolerance = .5,
-                            output_dir = "~/Desktop/")
+aseg2 <- make_volumetric_ggseg(
+  label_file = file.path(freesurfer::fs_subj_dir(), "fsaverage5", "mri/aseg.mgz"),
+  vertex_size_limits = c(10, NA),
+)
 ```
 ```r
 ● 1/7 Snapshotting views of entire atlas to ~/Desktop//dkt
