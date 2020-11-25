@@ -52,10 +52,10 @@ is_ctab <- function(colourtable){
 #' @return colour table
 get_ctab <- function(color_lut){
   
-  if(is.character(color_lut)){
-    colourtable <- read_ctab(color_lut)
+  colourtable <- if(is.character(color_lut)){
+     read_ctab(color_lut)
   }else{
-    colourtable <- color_lut  
+    color_lut  
   }
   
   if(!is_ctab(colourtable)) cat("color_lut does not have the correct information.\n",
@@ -63,8 +63,8 @@ get_ctab <- function(color_lut){
                                 "data.frame with names ", 
                                 paste(c("idx", "label", "R", "G", "B", "A"), collapse = ", "))
   
-  colortable$roi <- sprintf("%04d", colortable$idx)
-  colortable$color <- grDevices::rgb(colortable$R, colortable$G, colortable$B, 
+  colourtable$roi <- sprintf("%04d", colourtable$idx)
+  colourtable$color <- grDevices::rgb(colourtable$R, colourtable$G, colourtable$B, 
                                      maxColorValue = 255)
   
   return(colourtable)

@@ -82,33 +82,41 @@ surfsplit <- function(srf_ply,
     #   end
     
   }else{
-    
+
     facewise <- is_facewise(dpx, surf, verbose)
     
     # Make sure data contains only integers (labels)
     if(!is.integer(dpx$V1)){
-      cat('The DPV or DPF file must contain only integers\nAborting.\n')
-      stop(call. = FALSE)
+      stop('The DPV or DPF file must contain only integers\n',
+           call. = FALSE)
     }
     
     # Make a short list of labels, with no repetitions, and index using
     # integers only, monotonically growing and with no intervals
     udpx <- unique(dpx$V5)   # Unique labels
     udpx <- udpx[order(udpx)]
+    
+    # If there are any vertices without label
+    # add them here to be their own mesh
+    if(any(is.na(udpx))){
+      udpx[is.na(udpx)] <- max(udpx, na.rm = TRUE)+1
+      dpx$V5[is.na(dpx$V5)] <- max(udpx)
+    }
+    
     uidx <- 1:length(udpx)          # Unique corresponding indices
     
     if(verbose) cat('The number of unique labels is',length(udpx), '\n')
     
-    dpxidx = rep(0, nrow(dpx))
+    dpxidx = rep(max(udpx), nrow(dpx))
     
     for(lab in uidx){
       dpxidx[dpx$V5 == udpx[lab]] <- lab # Replace labels by indices
     }
-    
+
     # Vars to store vtx and fac for each label
     vtxL <- lapply(uidx, prep_n_data, type = "vertex")
     facL <- lapply(uidx, prep_n_data, type = "face")
-    
+
     if(facewise){
       # If facewise data, simply take the faces and assign
       # them to the corresponding labels
@@ -128,12 +136,13 @@ surfsplit <- function(srf_ply,
         
         # Current face & labels
         Cfac <- surf$faces[f,]
-        Cidx = dpxidx[unlist(Cfac)]
+        Cidx <- dpxidx[unlist(Cfac)]
         
+        # if(f == 45) browser()
+
         # Depending on how many vertices of the current face
         # are in different labels, behave differently
         if(length(unique(Cidx)) == 1){ # If all vertices share same label
-          
           # Add the current face to the list of faces of the
           # respective label, and don't create new faces
           facL[[unique(Cidx)]] <- rbind(facL[[unique(Cidx)]], Cfac)

@@ -125,3 +125,51 @@ read_annotation <- function(path, verbose = TRUE){
          colortable = colortable)
   )
 }
+
+#' Make object into class freesurfer_annotation
+#' 
+#' @param x list of three: vertices, labels and colortable
+#'
+#' @export
+as_annotation <- function(x){
+  stopifnot(class(x) == "list")
+  stopifnot(all(names(x) %in% c("vertices", "labels", "colortable")))
+  structure(
+    x,
+  class = "freesurfer_annotation"
+  )
+}
+
+#' Contructor for freesurfer_annotation-class
+#' 
+#' freesurfer_annotation is a special object
+#' containing the three components of a 
+#' FreeSurfer annotation file: vertices, labels
+#' and the colortable
+#'  
+#' @param vertices vector of vertices
+#' @param labels vector of labels
+#' @param colortable color table
+#'
+#' @export
+annotation <- function(vertices, labels, colortable = NULL){
+  x <- list(vertices = vertices,
+            labels = labels,
+            colortable = colortable)
+  as_annotation(x)
+}
+
+is.annotation <- function(x) inherits(x, "freesurfer_annotation")
+is_annotation <- is.annotation
+  
+#' @export
+format.freesurfer_annotation <- function(x, ...){
+  c(sprintf("# Freesurfer annotation"),
+    utils::capture.output(utils::str(x))[c(-1, -5)])
+}
+
+#' @export
+print.freesurfer_annotation <- function(x, ...){
+  cat(format(x), sep="\n")
+  invisible(x)
+}

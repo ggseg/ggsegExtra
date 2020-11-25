@@ -38,6 +38,7 @@ aparc_2_mesh <- function(subject = "fsaverage5",
                          cleanup = TRUE,
                          verbose = TRUE
 ){
+
   fs <- check_fs()
   if(!fs) stop(call. = FALSE)
   
@@ -55,7 +56,7 @@ aparc_2_mesh <- function(subject = "fsaverage5",
   annot_file <- list.files(annot_dir, 
                            paste(hemisphere, annot, "annot", sep="."), 
                            full.names = T)
-
+  
   # Read in annotation file, verbose false since annot2dpv() 
   # also spits out this information
   ant <- read_annotation(annot_file, verbose = FALSE)
@@ -68,7 +69,7 @@ aparc_2_mesh <- function(subject = "fsaverage5",
   dpx <- annot2dpv(annot_file,
                    file.path(dirs[1], paste(hemisphere, annot, "dpv", sep=".")),
                    verbose = verbose)
-  
+
   # Locate surface file
   if(surface == "LCBC" &  subject == "fsaverage5"){
     surf_file <- system.file("surfaces", paste0(hemisphere, ".LCBC"), package = "ggsegExtra")
@@ -78,35 +79,35 @@ aparc_2_mesh <- function(subject = "fsaverage5",
   }
   
   if(!file.exists(surf_file)){
-    cat("cannot find specified surface file for this subject.\n",
-        "Please check file path for surface:\n",
-        surf_file, "\n")
-    stop(call. = FALSE)
+    stop("cannot find specified surface file for this subject.\n",
+         "Please check file path for surface:\n",
+         surf_file, "\n", call. = FALSE)
   }
-  
+
   # convert surface file to ascii
-  surf <- surf2asc(surf_file,
+    surf <- surf2asc(surf_file,
                    file.path(dirs[3], paste(hemisphere, surface, "dpv", sep=".")), 
                    verbose = verbose)
-  
+ 
   # make entire brain ply
   ply <- asc2ply(file.path(dirs[3], paste(hemisphere, surface, "dpv", sep=".")),
                  file.path(dirs[4], paste(hemisphere, surface, "ply", sep=".")))
-  
+
   # split into labels
   plys <- surfsplit(
     srf_ply = file.path(dirs[4], paste(hemisphere, surface, "ply", sep=".")), 
     label_path = file.path(dirs[1], paste(hemisphere, annot, "dpv", sep=".")), 
-    prefix = annot, 
-    output_dir = file.path(output_dir, subject, "atlas", annot), 
-    verbose = verbose)
+    prefix = paste(annot, hemisphere, sep="."), 
+    output_dir = file.path(output_dir, subject, "atlas", annot, surface), 
+    verbose = verbose
+  )
   
   if(length(plys) != nrow(colortable)){
     # Find any color label _not_ in label vector
     lab_not_present <- sapply(colortable$code, function(x) any(x %in% ant$label))
     colortable <- colortable[lab_not_present,]
   }
-  
+
   dt <- dplyr::tibble(
     atlas = annot,
     surf = surface,
@@ -117,6 +118,22 @@ aparc_2_mesh <- function(subject = "fsaverage5",
     roi = sprintf("%04d", 1:nrow(colortable)),
     annot = colortable$label
   )
+  
+  # If there are vertices not in the annot, 
+  # add them to the data here
+  idx <- !names(plys) %in% dt$roi
+  if(any(idx)){
+    # add a row
+    dt <- dplyr::bind_rows(
+      dt, 
+      dplyr::tibble(
+        atlas = annot,
+        surf = surface,
+        hemi = hemi,
+        roi = names(plys)[idx]
+      )
+    )
+  }
   
   dt$mesh <- lapply(dt$roi, function(x) plys[[which(names(plys) == x)]])
   
@@ -152,6 +169,7 @@ aparc_2_mesh <- function(subject = "fsaverage5",
 #' @template ncores
 #' @template cleanup 
 #' @template verbose 
+#' @template ncores
 #'
 #' @return nested data frame as ggseg3d-atlas
 #' @export
@@ -174,19 +192,42 @@ make_aparc_2_3datlas <- function(annot = "aparc",
                                  verbose = TRUE
 ){
 
-  dt2 <- expand.grid(list(subject = subject, 
-                          hemi = hemisphere, 
+  dt2 <- expand.grid(list(hemi = hemisphere, 
                           surf = surface),
                      stringsAsFactors = FALSE)
+  
+  # find path to annotation file
+  annot_file <- list.files(annot_dir, 
+                           paste(hemisphere, annot, "annot", sep="."), 
+                           full.names = T)
+  
+  if(length(annot_file) == 0){
+    stop("Cannot find '", annot, "' in '", annot_dir, "'", 
+         call. = FALSE)
+  }
 
+  # TODO: add  check if annot and surf match here. Fail in paralell 
+  # process is meaningless when debugging
+#   dt <- aparc_2_mesh(
+#     hemisphere = dt2$hemi[1],
+#     surface = dt2$surf[1],
+#     annot = annot,
+#     subject = subject,
+#     subjects_dir = subjects_dir,
+#     annot_dir = annot_dir,
+#     output_dir = output_dir,
+#     cleanup = FALSE,
+#     verbose = FALSE
+#   )
+# browser()
   dt <- parallel::mcmapply(
     aparc_2_mesh,
-    subject = dt2$subject,
     hemisphere = dt2$hemi,
     surface = dt2$surf,
     
     MoreArgs = list(
       annot = annot,
+      subject = subject,
       subjects_dir = subjects_dir,
       annot_dir = annot_dir,
       output_dir = output_dir,
@@ -198,7 +239,7 @@ make_aparc_2_3datlas <- function(annot = "aparc",
     mc.preschedule = TRUE, 
     SIMPLIFY = TRUE
   )
-  
+
   idx <- unlist(lapply(dt, grepl, pattern = "Error"))
   if(any(idx)){
     cat("An error occured when creating atlas.")
@@ -208,9 +249,7 @@ make_aparc_2_3datlas <- function(annot = "aparc",
 
   dt <- apply(dt, 2, function(x) x)
   dt <- dplyr::bind_rows(dt)
-  dt <- dplyr::group_by(dt, atlas, surf, hemi)
-  dt <- tidyr::nest(dt)
-  dt <- dplyr::rename(dt, ggseg_3d = data)
+  dt <- dplyr::nest_by(dt, atlas, surf, hemi, .key = "ggseg_3d")
   dt <- dplyr::ungroup(dt)
   dt$atlas <- paste0(dt$atlas, "_3d")
   return(dt)
@@ -291,7 +330,19 @@ aseg_2_mesh <- function(subject = "fsaverage5",
   return(ply)
 }
 
-#' Subcortical segmentation to atlas
+#' Volumetric segmentation to 3d-atlas
+#' 
+#' Function to create a ggseg3d-atlas
+#' from a volumetric parcellation.
+#' Currently only tested using \code{.mgz}
+#' extension images. Will call command-line
+#' tools to complete the process. 
+#' 
+#' @details 
+#' the function is aggressive in the number
+#' of cores used to minimize time taken to
+#' create the atlas. Set the  \code{ncores}
+#' argument for less aggressive approach.
 #'
 #' @template subject 
 #' @template subjects_dir 
@@ -303,18 +354,22 @@ aseg_2_mesh <- function(subject = "fsaverage5",
 #' @template output_dir 
 #' @template verbose 
 #' @template cleanup 
+#' @template ncores
 #'
 #' @return returns a ggseg3d-atlas ready object
 #' @export
-make_aseg_2_3datlas <- function(subject = "fsaverage5",
+make_volumetric_2_3datlas <- function(subject = "fsaverage5",
                                 subjects_dir = freesurfer::fs_subj_dir(),
                                 template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
                                 color_lut = file.path(freesurfer::fs_dir(), "ASegStatsLUT.txt"),
                                 steps = 1:5,
                                 output_dir = tempdir(),
                                 verbose = TRUE,
+                                ncores = parallel::detectCores()-2,
                                 cleanup = TRUE)
 {
+  if(!freesurfer::have_fs())
+    stop("FreeSurfer not installed. Cannot run pipeline", call. = FALSE)
   
   # Make basename for atlas
   annot <- gsub("\\.mgz", "", basename(template))
@@ -345,29 +400,25 @@ make_aseg_2_3datlas <- function(subject = "fsaverage5",
     colortable <- colortable[1:length(labels), ]
     colortable$label <- labels
   }
+
+  plys <- pbmcapply::pbmcmapply(
+    aseg_2_mesh,
+    label = labels,
+    
+    MoreArgs = list(
+      subject = subject,
+      subjects_dir = subjects_dir,
+      template = template,
+      steps = steps,
+      output_dir = output_dir,
+      verbose = FALSE
+    ),
+    
+    mc.cores = ncores, 
+    mc.preschedule = FALSE
+  )
   
-  n <- length(labels)
-  plys <- list()
-  for(j in 1:n){
-    
-    lab_string <- sprintf("%04d", labels[j])
-    
-    if(verbose) cat(crayon::cyan("\n\n", paste0(j, "/", n), 
-                                 "Extracting information from", 
-                                 lab_string, "for", annot, "\n"))
-    
-    plys[[j]] <- aseg_2_mesh(subject = subject,
-                             subjects_dir = subjects_dir,
-                             label = labels[j],
-                             template = template,
-                             steps = steps,
-                             output_dir = output_dir,
-                             verbose = verbose
-    )
-    
-  } # end j
-  
-  
+  plys <- lapply(1:dim(plys)[2], function(x) plys[,x])
   names(plys) <-  sprintf("%04d", labels)
   
   dt <- dplyr::tibble(
@@ -388,11 +439,15 @@ make_aseg_2_3datlas <- function(subject = "fsaverage5",
   }
   
   dt <- dplyr::bind_rows(dt)
-  dt <- dplyr::group_by(dt, atlas, surf, hemi)
-  dt <- tidyr::nest(dt)
-  dt <- dplyr::rename(dt, ggseg_3d = data)
+  
+  # Remove parts that are not sub-cortical, like CSF and cortex
+  dt <- dplyr::filter(dt, !grepl("Unknown", region))
+  
+  dt <- dplyr::nest_by(dt, atlas, surf, hemi, .key = "ggseg_3d")
   dt <- dplyr::ungroup(dt)
   dt$atlas <- paste0(dt$atlas, "_3d")
+
+  
   return(dt)
 }
 

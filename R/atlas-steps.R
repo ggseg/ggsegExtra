@@ -140,69 +140,77 @@ snapshot_region <- function(.data,  region, ggseg3d_atlas, hemisphere,
 
 extract_contours <- function(input_dir, output_dir, step, 
                              verbose = TRUE, 
-                             ncores = parallel::detectCores()-2 ) {
-  regions <- list.files(input_dir, full.names = TRUE)
-  rasterobjs <- lapply(regions, raster::raster)
-  
+                             ncores = parallel::detectCores()-2,
+                             skip_existing = TRUE,
+                             vertex_size_limits = NULL) {
   
   usethis::ui_todo("{step} Extracting contours from regions")
+  
+  regions <- list.files(input_dir, full.names = TRUE)
+  rasterobjs <- lapply(regions, raster::raster)
+
   maks <- raster::cellStats(rasterobjs[[1]], stat = max)
-  mins <- raster::cellStats(rasterobjs[[1]], stat = min)
-  if(verbose) pb <- utils::txtProgressBar(min = 1,
-                                          max = length(rasterobjs),
-                                          style = 3)
+  get_contours(rasterobjs[[1]], 
+               max_val = maks,
+               vertex_size_limits = vertex_size_limits, verbose = FALSE)
+  
+  contourobjs <- pbmcapply::pbmclapply(rasterobjs, 
+                        get_contours,
+                        max_val = maks,
+                        mc.cores = ncores,
+                        vertex_size_limits = vertex_size_limits,
+                        verbose = FALSE,
+                        mc.preschedule = FALSE)
 
-  contourobjs <- parallel::mclapply(rasterobjs, 
-                                    get_contours,
-                                    max_val = maks, 
-                                    mc.cores = ncores, 
-                                    mc.preschedule = FALSE)
+  kp <- !sapply(contourobjs, is.null)
+  contourobjs2 <- contourobjs[kp]
   
-  kp <- !purrr::map_lgl(contourobjs, is.null)
+  kp <- !sapply(contourobjs2, sf::st_is_empty)
+  contourobjs2 <- contourobjs2[kp]
   
-  contourobjsDF <- do.call(rbind, contourobjs[kp])
+  contours <- do.call(dplyr::bind_rows, 
+                           contourobjs2)
+  contours <- dplyr::group_by(contours, filenm)
+  contours <- dplyr::summarise(contours, 
+                               geometry = sf::st_combine(geometry))
+  contours <- sf::st_as_sf(contours)
+  sf::st_crs(contours) <- NA
 
-  # remove very small polygons
-  contourobjsDF <- contourobjsDF[sapply(contourobjsDF$geometry, 
-                                        function(x) nrow(sf::st_coordinates(x)) > 10),]
-  
-  save(contourobjsDF,
+  save(contours,
        file = file.path(output_dir, "contours.rda"))
   usethis::ui_done("contours complete")
   
-  invisible(contourobjsDF)
+  invisible(contours)
 }
 
 smooth_contours <- function(dir, smoothness, step, ncores = parallel::detectCores()-2) {
   usethis::ui_todo("{step} Smoothing contours")
   load(file.path(dir, "contours.rda"))
 
-  for(i in 1:nrow(contourobjsDF)){
-    contourobjsDF$geometry[[i]] <- smoothr::smooth(contourobjsDF$geometry[[i]],
-                                                   method = "ksmooth",
-                                                   smoothness = smoothness)
-  }
-  
-  save(contourobjsDF,
+  contours <- smoothr::smooth(contours, 
+                              method = "ksmooth", 
+                              smoothness = smoothness)
+
+  save(contours,
        file = file.path(dir, "contours_smoothed.rda"))
   usethis::ui_done("Smoothing complete")
   
-  invisible(contourobjsDF)
+  invisible(contours)
 }
 
 
 reduce_vertex <- function(dir, tolerance, step) {
   usethis::ui_todo("{step} Reducing vertexes")
   load(file.path(dir, "contours_smoothed.rda"))
-  
-  contourobjsDF <- sf::st_simplify(contourobjsDF,
+
+  contours <- sf::st_simplify(contours,
                                    preserveTopology = TRUE,
                                    dTolerance = tolerance)
-  save(contourobjsDF,
+  save(contours,
        file = file.path(dir, "contours_reduced.rda"))
   usethis::ui_done("Vertexes reduced")
   
-  invisible(contourobjsDF)
+  invisible(contours)
 }
 
 
@@ -210,22 +218,22 @@ make_multipolygon <- function(contourfile) {
   # make contour polygons to multipolygons
   load(contourfile)
 
-  contourobjsDF <- dplyr::group_by(contourobjsDF, filenm)
-  contourobjsDF <- dplyr::summarise(contourobjsDF,
+  contours <- dplyr::group_by(contours, filenm)
+  contours <- dplyr::summarise(contours,
                                     geometry = sf::st_combine(geometry))
-  contourobjsDF <- dplyr::ungroup(contourobjsDF)
+  contours <- dplyr::ungroup(contours)
   
   # recalc bbox
-  bbx1 <- data.frame(filenm = contourobjsDF$filenm,
+  bbx1 <- data.frame(filenm = contours$filenm,
                      xmin = NA, ymin = NA, xmax = NA, ymax = NA)
   
-  for(i in 1:nrow(contourobjsDF)){
-    j <- dplyr::as_tibble(sf::st_coordinates(contourobjsDF[i, ])) 
+  for(i in 1:nrow(contours)){
+    j <- dplyr::as_tibble(sf::st_coordinates(contours[i, ])) 
     j <- tidyr::gather(j, key, val, X, Y) 
     j <- dplyr::group_by(j, key)
     j <- dplyr::summarise_at(j, vars(val), list(Min = min, Max = max))
     
-    bbx1[i, 2:5] <-c(j$Min[1], j$Min[2], j$Max[1], j$Max[2])
+    bbx1[i, 2:5] <- c(j$Min[1], j$Min[2], j$Max[1], j$Max[2])
   }
   
   new_bb <- c(min(bbx1$xmin), min(bbx1$ymin),
@@ -233,15 +241,16 @@ make_multipolygon <- function(contourfile) {
   names(new_bb) = c("xmin", "ymin", "xmax", "ymax")
   attr(new_bb, "class") = "bbox"
   
-  attr(sf::st_geometry(contourobjsDF), "bbox") = new_bb
+  attr(sf::st_geometry(contours), "bbox") = new_bb
   
-  return(contourobjsDF)
+  return(contours)
 }
 
 prep_labels <- function(label_file, color_lut, subject, subjects_dir, 
-                        output_dir, step="", verbose, ncores = parallel::detectCores()-2 ) {
+                        output_dir, step="", verbose, ncores = parallel::detectCores()-2,
+                        skip_existing = TRUE) {
   usethis::ui_todo("Preparing labels")
-  
+
   # If there is a LUT supplied,
   # get it, reduce labels to only those in the LUT
   if(!is.null(color_lut)){
@@ -254,11 +263,12 @@ prep_labels <- function(label_file, color_lut, subject, subjects_dir,
     colortable$label <- "undefined region"
   }
 
-
-  if(dir.exists(label_file)){
-    tmp <- list.files(label_file, pattern="label$", full.names = TRUE)
-    labs <- tmp[]
-    
+  # if(dir.exists(label_file)){
+  if(file.exists(file.path(output_dir, "labels_list.txt")) & skip_existing ){
+    labs <- readLines(file.path(output_dir, "labels_list.txt"))    
+    # tmp <- list.files(label_file, pattern="label$", full.names = TRUE)
+    # labs <- tmp[]
+    # 
   }else if(grepl("\\.mgz$", label_file)){
     usethis::ui_todo("Splitting atlas file into labels")
     
@@ -271,7 +281,7 @@ prep_labels <- function(label_file, color_lut, subject, subjects_dir,
       stringsAsFactors = FALSE
     )
     
-    k <- parallel::mcmapply(mri_vol2label,
+    k <- pbmcapply::pbmcmapply(mri_vol2label,
                             label_id = all_combs$label,
                             hemisphere = all_combs$hemi, 
                             MoreArgs = list(input_file = label_file,

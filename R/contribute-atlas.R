@@ -89,7 +89,7 @@ make_ggseg_repo <- function(atlas_name,
   usethis::proj_activate(directory)
   
   usethis::ui_todo("\tAdd atlas data with {usethis::ui_code('usethis::use_data()')}")
-  usethis::ui_todo("\tAdd license with {usethis::ui_code('usethis::use_mit_license()')}")
+  usethis::ui_todo("\tAdd license with {usethis::ui_code('usethis::use_ccby_license()')}")
   usethis::ui_todo("\tAlter atlas description in {usethis::ui_code('R/')}")
   usethis::ui_todo("\tGet package checks to have no errors & no warnings")
   usethis::ui_info("See help at {usethis::ui_code('https://lcbc-uio.github.io/ggsegExtra/articles/ggsegrepo.html')}")

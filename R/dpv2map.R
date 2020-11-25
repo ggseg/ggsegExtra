@@ -21,14 +21,14 @@
 #' #' @param surface Surface file, in ASCII format
 #' #' @param range Range to plot
 #' #' @param mapsize Maximum number of colours in the colourmap. 
-#' #' @param dual 
+#' #' @param dual logical.
 #' #' @param coption logical. The behavior varies if 'dual' is true or not. See details.
 #' #' @template verbose 
 #' #'
-#' #' @return
-#' #' @export
-#' #'
-#' #' @examples
+# #' @return
+# #' @export
+# #'
+# #' @examples
 #' dpv2map <- function(dpv = "~/Desktop/test2/fsaverage5/atlas/aparc.a2009s/ascii/rh.aparc.a2009s.dpv", 
 #'                     surface = "~/Desktop/test2/fsaverage5/srf/ascii/rh.inflated.dpv", 
 #'                     range = NULL, 

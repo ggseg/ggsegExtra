@@ -17,8 +17,7 @@ mri_vol2surf <- function(input_file ,
                          opts = NULL,
                          verbose = TRUE){
   
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   fs_cmd <- paste0(freesurfer::get_fs(),
                    "mri_vol2surf")
@@ -68,8 +67,7 @@ mri_vol2label <- function(input_file,
                           output_dir, 
                           opts = NULL,
                           verbose = TRUE){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   hemisphere <- match.arg(hemisphere, c("rh", "lh"))
   
@@ -108,8 +106,7 @@ mri_vol2label <- function(input_file,
 #' @template verbose
 #' @template opts
 mri_pretess <- function(template, label, output_file, verbose = TRUE, opts = NULL){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   fscmd <- paste0(freesurfer::get_fs(), "mri_pretess")
   
@@ -131,8 +128,7 @@ mri_pretess <- function(template, label, output_file, verbose = TRUE, opts = NUL
 #' @param input_file input file
 #' @template opts
 mri_tessellate <- function(input_file, label, output_file, verbose, opts = NULL){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   fscmd <- paste0(freesurfer::get_fs(), "mri_tessellate")
   if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
@@ -154,8 +150,7 @@ mri_tessellate <- function(input_file, label, output_file, verbose, opts = NULL)
 #' @template verbose
 #' @template opts
 mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   fscmd <- paste0(freesurfer::get_fs(), "mris_smooth")
   if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
@@ -192,8 +187,7 @@ mris_label2annot <- function(labels,
                              output_dir = subjects_dir,
                              opts = NULL,
                              verbose = TRUE){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   hemisphere <- match.arg(hemisphere, c("rh", "lh"))
   
@@ -234,8 +228,7 @@ mris_annot2label <- function(annot_file,
                              output_dir = freesurfer::fs_subj_dir(), 
                              verbose = TRUE,
                              opts = NULL){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   hemisphere <- match.arg(hemisphere, c("rh", "lh"))
   
@@ -295,15 +288,13 @@ mris_annot2label <- function(annot_file,
 #' mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
 #' }
 mris_ca_label <- function(subject = "fsaverage5",
-                         hemisphere = "lh", 
-                         canonsurf  ="sphere.reg",
-                         classifier = file.path(freesurfer::fs_dir(), "average/lh.DKTatlas40.gcs"),
-                         output_file, 
-                         subjects_dir = freesurfer::fs_subj_dir(),
-                         opts = NULL){
-  
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+                          hemisphere = "lh", 
+                          canonsurf  ="sphere.reg",
+                          classifier = file.path(freesurfer::fs_dir(), "average/lh.DKTatlas40.gcs"),
+                          output_file, 
+                          subjects_dir = freesurfer::fs_subj_dir(),
+                          opts = NULL){
+  if(!check_fs()) stop(call. = FALSE)
   
   options <- paste("-sdir", subjects_dir)
   
@@ -322,6 +313,56 @@ mris_ca_label <- function(subject = "fsaverage5",
   
 }
 
+#' Re-register an annotation file
+#' 
+#' Annotation files are subject specific.
+#' Most are registered for fsaverage, but
+#' we recommend using fsaverage5 for the mesh
+#' plots in ggseg3d, as these contain a decent
+#' balance in number of vertices for detailed
+#' rendering and speed.
+#'
+#' @param subject subject the original annotation file is registered to
+#' @param annot annotation file name (as found in subjects_dir)
+#' @param hemi hemisphere (one of "lh" or "rh")
+#' @param target_subject subject to re-register the annotation (default fsaverage5)
+#' @template output_dir 
+#' @template verbose 
+#'
+#' @return nothing
+#' @export
+#' @examples
+#' if(freesurfer::have_fs()){
+#' 
+#' mri_surf2surf_rereg(subject = "bert", annot = "aparc.DKTatlas")
+#' }
+#' 
+mri_surf2surf_rereg <- function(subject,
+                                annot,
+                                hemi = c("lh", "rh"),
+                                target_subject = "fsaverage5",
+                                output_dir = file.path(freesurfer::fs_subj_dir(),subject, "label"),
+                                verbose = TRUE
+){
+  if(!check_fs()) stop(call. = FALSE)
+  
+  hemi <- match.arg(hemi, c("lh", "rh"))
+  
+  if(!dir.exists(output_dir)) dir.create(output_dir, recursive = TRUE)
+  
+  fscmd <- paste0(freesurfer::get_fs(), "mri_surf2surf")
+  
+  cmd <- paste(fscmd, 
+               "--srcsubject", subject,
+               "--sval-annot",  annot,
+               "--trgsubject fsaverage5",
+               "--tval", file.path(output_dir, paste(hemi, annot, sep=".")),
+               "--hemi", hemi
+  )
+  
+  k <- system(cmd, intern = !verbose)
+}
+
 # 2 asc ----
 
 #' Convert Freesurfer surface file to ascii
@@ -338,8 +379,7 @@ mris_ca_label <- function(subject = "fsaverage5",
 #' @return ascii data
 #' @export
 surf2asc <- function(input_file, output_file, verbose = TRUE){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   k <- strsplit(output_file, "\\.")[[1]]
   if(k[length(k)] != "dpv"){
@@ -384,8 +424,7 @@ surf2asc <- function(input_file, output_file, verbose = TRUE){
 #' @return ascii data
 #' @export
 curv2asc <- function(input_file, white, output_file, verbose = TRUE){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   k <- strsplit(output_file, "\\.")[[1]]
   if(k[length(k)] != "dpv"){
@@ -429,8 +468,7 @@ curv2asc <- function(input_file, white, output_file, verbose = TRUE){
 #' @return ascii data
 #' @export
 curvnf2asc <- function(input_file, nofix, output_file, verbose = TRUE){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   k <- strsplit(output_file, "\\.")[[1]]
   if(k[length(k)] != "dpv"){
@@ -624,6 +662,9 @@ curv2ply <- function(input_file,
 }
 
 # other ----
+
+
+
 #' Turn smooth file to ascii
 #'
 #' @param input_file input file path
@@ -631,8 +672,7 @@ curv2ply <- function(input_file,
 #' @template verbose
 smooth2srf <- function(input_file, output_file, verbose){
   
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   k <- strsplit(output_file, "\\.")[[1]]
   if(k[length(k)] != "srf"){
@@ -673,8 +713,7 @@ lcbc_surf2surf <- function(
   cortex = TRUE,
   verbose = TRUE
 ){
-  fs <- check_fs()
-  if(!fs) stop(call. = FALSE)
+  if(!check_fs()) stop(call. = FALSE)
   
   j <- freesurfer::mri_surf2surf(
     sval = input_volume,
@@ -704,24 +743,29 @@ check_fs <- function(msg = NULL){
   freesurfer::have_fs()
 }
 
-fs_ss_slice <- function(lab, x, y, z, view, subjects_dir, subject, output_dir) {
+fs_ss_slice <- function(lab, x, y, z, view, subjects_dir, subject, output_dir,
+                        skip_existing = TRUE) {
   coords <- sprintf(c(x, y, z), fmt = "%03d")
   vv <- paste0(strsplit(view, "")[[1]][1:5], collapse="")
   
   filenm <- paste0(paste(c(coords, vv), collapse="_"), "_", basename(lab), ".png")
   
-  fs_cmd <- paste0(freesurfer::get_fs(), "freeview")
-  
-  cmd <- paste(fs_cmd,
-               "--volume", paste0(file.path(subjects_dir, subject, "mri/T1.mgz"), ":opacity=0"),
-               "--slice", paste0(c(x, y, z), collapse=' '),
-               "--viewport", view,
-               paste0("--label ", lab, ":color=red"),
-               "-ss", file.path(output_dir, filenm),
-               "") 
-  
-  jj <- system(cmd, intern = TRUE)
-  invisible(jj)
+  if(file.exists(file.path(output_dir, filenm)) & skip_existing){
+    
+  }else{
+    fs_cmd <- paste0(freesurfer::get_fs(), "freeview")
+    
+    cmd <- paste(fs_cmd,
+                 "--volume", paste0(file.path(subjects_dir, subject, "mri/T1.mgz"), ":opacity=0"),
+                 "--slice", paste0(c(x, y, z), collapse=' '),
+                 "--viewport", view,
+                 paste0("--label ", lab, ":color=red"),
+                 "-ss", file.path(output_dir, filenm),
+                 "") 
+    
+    jj <- system(cmd, intern = TRUE)
+    invisible(jj)
+  }
 }
 
 

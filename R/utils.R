@@ -1,173 +1,3 @@
-# dpv-functions ----
-
-#' Write DPV file
-#' 
-#' write a data-per-vertex file,
-#' and ascii-format text-file
-#' based on vertices and faces.
-#'
-#' @param path path to file
-#' @param vertices object with vertices
-#' @param faces object with faces
-#'
-#' @export
-write_dpv <- function(path, vertices, faces){
-  # face index start at 0
-  if(min(faces) == 1) faces <- faces - 1
-  
-  # Add 0-col to both
-  vertices <- cbind(vertices, r = rep(0, nrow(vertices)))
-  faces <- cbind(faces, r = rep(0, nrow(faces)))
-  
-  # Make every row a single string
-  vertices <- within(vertices,  l <- sprintf(paste('%f %f %f %g'), x, y, z, r))
-  faces <- within(faces,  l <- sprintf(paste('%g %g %g %g'), i, j, k, r))
-  
-  # Write to the disk
-  file_content <- c(
-    "#!ascii",
-    sprintf('%g %g', nrow(vertices), nrow(faces)),
-    vertices$l,
-    faces$l
-  )
-  
-  con <- file(path)
-  on.exit(close(con))
-  writeLines(file_content, con)
-}
-
-#' Read dpv file
-#' 
-#' Read in data-per-vertex file, which is
-#' usually a file made by for instance \code{\link{surf2asc}},
-#' \code{\link{curv2asc}}, \code{\link{curvnf2asc}}
-#'
-#' @param path path to dpv file
-#'
-#' @return list of vertices and faces
-#' @export
-read_dpv <- function(path){
-  
-  k <- readLines(path)
-  
-  ns <- strsplit(k[2], " ")[[1]]
-  names(ns) <- c("nvertices", "nfaces")  
-  
-  k <- utils::read.table(path, skip = 2)
-  
-  vertices <- k[1:ns["nvertices"],]
-  row.names(vertices) = NULL
-  
-  faces <- k[ns["nvertices"]:length(k),]
-  row.names(faces) = NULL
-  
-  return(list(vertices = vertices,
-              faces = faces))
-}
-
-#' Check if dpv is facewise
-#'
-#' @param dpx vertex or face data
-#' @param surface surface vertex and face list
-#' @template verbose 
-is_facewise <- function(dpx, surface, verbose = TRUE){
-  nX = nrow(dpx)
-  nV = nrow(surface$vertices)
-  nF = nrow(surface$faces)
-  
-  # Verify if this is facewise or vertexwise data
-  if(nX == nV){
-    if(verbose) cat('Working with vertexwise data.\n')
-    facewise = FALSE
-  }else if(nX == nF){
-    if(verbose) cat('Working with facewise data.\n');
-    facewise = TRUE
-  } else{
-    if(verbose) cat('The data does not match the surface.\n')
-    facewise = NA
-  }
-  
-  facewise
-}
-
-# ply/mesh functions ----
-
-#' Extract mesh data from ply
-#'
-#' .ply files contain a lot of information.
-#' for ggseg3d, we only need information
-#' on the vertices and faces of the mesh.
-#' Thes function opens a ply file, and
-#' organises the meshes and faces into 
-#' a single list.
-#'
-#' @param ply path to ply-file
-#' @param ... arguments to \code{\link[geomorph]{read.ply}} 
-#'
-#' @return list of meshes and faces
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' get_mesh("path/to/surface.ply")
-#' 
-#' # Turn off showing the ply when reading
-#' get_mesh("path/to/surface.ply", ShowSpecimen = FALSE)
-#' }
-get_mesh <- function(ply, ...){
-  
-  if(is.character(ply)) 
-    ply <- geomorph::read.ply(ply, ...)
-  
-  vertices <- data.frame(
-    x = ply$vb[1,],
-    y = ply$vb[2,],
-    z = ply$vb[3,]
-  )
-  
-  faces <- data.frame(
-    i = ply$it[1,],
-    j = ply$it[2,],
-    k = ply$it[3,]
-  )
-  
-  return(list(vertices = vertices, 
-              faces = faces))
-}
-
-#' Change old atlas setup to new
-#'
-#' @param atlas_data ggseg3d-atlas object
-restruct_old_3datlas <- function(atlas_data){
-  x <- tidyr::unnest(atlas_data, ggseg_3d)
-  x$mesh <- lapply(x$mesh, change_meshes)
-  
-  #as_ggseg3d_atlas(atlas)
-  x <- dplyr::group_by(x, atlas, surf, hemi)
-  x <- tidyr::nest(x)
-  x <- dplyr::rename(x, ggseg_3d = data)
-  dplyr::ungroup(x)
-}
-
-
-#' Change meshes to new system
-#'
-#' @param mesh mesh object
-change_meshes <- function(mesh){
-  vertices <- t(mesh$vb)
-  vertices <- as.data.frame(vertices)
-  names(vertices) <- c("x","y","z","r")
-  
-  faces <- t(mesh$it)
-  faces <- as.data.frame(faces)
-  names(faces) <- c("i","j","k")
-  
-  return(list(vertices = vertices[, c("x", "y", "z")],
-              faces = faces))
-}
-
-
-# Other ----
 #' Find the mode of a vector
 #'
 #' @param x vector
@@ -180,8 +10,9 @@ getmode <- function(x) {
   }
 }
 
-get_contours <- function(raster_object, max_val = 255, verbose = TRUE){
-  
+get_contours <- function(raster_object, max_val = 255, 
+                         vertex_size_limits = c(3*10^6,3*10^7),
+                         verbose = TRUE){
   mx <- raster::cellStats(raster_object, stat=max)
   
   # Filter out the blank images
@@ -192,18 +23,24 @@ get_contours <- function(raster_object, max_val = 255, verbose = TRUE){
   tmp.rst <- raster_object
   tmp.rst[tmp.rst == 0] <- NA
   
-  ## levels = 50 is to remove the occasional edge point that has
-  ## non zero hue.
-  #cntr <- raster::rasterToPolygons(rstobj, fun = function(X)X>100, dissolve=TRUE)
-  
   if(verbose) cat(paste("extracting contours for", names(raster_object), "\n"))
-  g <- sf::st_as_sf(stars::st_as_stars(tmp.rst), merge=TRUE, connect8=TRUE)
-  g <- sf::st_sf(g)
+
+  g <- stars::st_as_stars(tmp.rst)
+  sf::st_crs(g) <- 4326 
+  g <- sf::st_as_sf(g, connect8=TRUE, 
+                    as_points = FALSE, 
+                    merge = TRUE)
   
-  if(nrow(g)>0){
-    names(g)[[1]] <- "region"
-    g$filenm <- gsub("^X", "", names(raster_object))
-    return(g)
+  coords <- to_coords(g, 1)
+
+  coords <- coords2sf(coords, vertex_size_limits)
+  
+  if(all(nrow(coords)>0 & !sf::st_is_empty(coords))){
+    names(coords)[1] <- "geometry"
+    sf::st_geometry(coords) <- "geometry"
+    coords$filenm <- gsub("^X", "", names(raster_object))
+    
+    return(coords)
   }else{
     return(NULL)
   }
@@ -259,181 +96,62 @@ has_magick <- function(){
 }
 
 
-move_hemi_side <- function(data, by, predicate){
-  tmp <- dplyr::filter(data, {{predicate}}) 
-  tmp <- dplyr::mutate(tmp, 
-                       `.long` = `.long` + by )
-  return(tmp)
-}
-
-correct_coords_sf <- function(data, by){
-
-  ymin <- min(sf::st_coordinates(data)[,"Y"])
+check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
   
-  tmp <- dplyr::mutate(data, 
-                       geometry = geometry + c(by, 0),
-                       geometry = geometry - c(0, ymin))
-  return(tmp)
-}
-
-resize_coords_sf <- function(data, by){
-  # resize
-  tmp <- dplyr::mutate(data, 
-                       geometry = geometry*by)
-
-  # get back to middle  
-  bbx <- sf::st_bbox(tmp)
-  tmp <- dplyr::mutate(tmp, 
-                       geometry = geometry - bbx[c("xmin", "ymin")])
-  return(tmp)
-}
-
-#' Isolate region to alpha channel
-#'
-#' @param input_file image file path
-#' @param output_file output file path
-#' @param interrim_file interrim image path
-#'
-isolate_region <- function(input_file, 
-                           output_file, 
-                           interrim_file = tempfile()){
-  tmp <- magick::image_read(input_file)
-  tmp <- magick::image_convert(tmp, "png")
+  jj <- sum(count_vertices(atlas_df_sf))
   
-  tmp <- magick::image_transparent(tmp, "white", fuzz=30)
-  k <- magick::image_write(tmp, interrim_file)
-  
-  if(has_magick()){
-    cmd <- paste("convert", interrim_file,
-                 "-alpha extract", output_file)
-    
-    # cmd <- paste("convert", input_file,"-channel rgba -fuzz 20% -fill none +opaque red", output_file)
-    k <- system(cmd, intern = FALSE)
-    invisible(k)
+  if(jj > max){
+    usethis::ui_todo(paste("Atlas is complete with", jj,
+                           "vertices, try re-running steps 6:7 with a higher 'tolerance' number."))
   }else{
-    cat(crayon::red("Cannot complete last extraction step, missing imagemagick. Please install"))
-    stop(call. = FALSE)
+    usethis::ui_done(paste("Atlas complete with", jj, "vertices"))
   }
+  
 }
 
-adjust_coords <- function(atlas_df, by = 1.35){
+gdal_min <- function() "2.4.0"
+
+has_gdal <- function(min_version = gdal_min(), verbose = TRUE){
+  x <- rgdal::getGDALVersionInfo()
   
-  atlas_df <- dplyr::group_by(atlas_df, hemi, side)
-  atlas_df <- dplyr::mutate(atlas_df, 
-                            `.lat`  = `.lat`-min(`.lat`),
-                            `.long` = `.long`-min(`.long`))
-  atlas_df <- dplyr::ungroup(atlas_df)
+  if(x == ""){
+    if(verbose)
+      cat("Cannot find gdal installed.\n See install instructions at: https://github.com/domlysz/BlenderGIS/wiki/How-to-install-GDAL")
+    return(FALSE)
+  }
   
-  atlas_df_list <- list(
-    lh.lat <- dplyr::filter(atlas_df,
-                            (hemi=="left" & side=="lateral")),
-    lh.med = move_hemi_side(atlas_df, 430,
-                            (hemi=="left" & side=="medial")),
-    rh.med <- move_hemi_side(atlas_df, 730,
-                             (hemi=="right" & side=="medial")),
-    rh.lat <- move_hemi_side(atlas_df, 1300,
-                             (hemi=="right" & side=="lateral"))
-  )
+  .ver2num <- function(x){
+    x <- strsplit(x, "\\.")[[1]]
+    x <- paste0(x, collapse="")
+    as.numeric(x)
+  }
   
-  # rescale the small ones
-  atlas_df_list[[1]]$`.lat` <- atlas_df_list[[1]]$`.lat`*by
-  atlas_df_list[[1]]$`.long` <- atlas_df_list[[1]]$`.long`*by
-  atlas_df_list[[3]]$`.lat` <- atlas_df_list[[3]]$`.lat`*(by*.9)
-  atlas_df_list[[3]]$`.long` <- atlas_df_list[[3]]$`.long`*(by*.9)
+  min_ver <- .ver2num(min_version)
+  version <- .ver2num(gsub(",", "", strsplit(x, " ")[[1]][2]))
   
-  do.call(rbind, atlas_df_list)
+  if(version >= min_ver){
+    return(TRUE)
+  }else{
+    return(FALSE)
+  }
+  
 }
 
-adjust_coords_sf <- function(atlas_df){
+
+has_orca <- function(verbose = TRUE){
   
-  atlas <- dplyr::group_by(atlas_df, hemi, side)
-  atlas <- dplyr::group_split(atlas)
+  x <- system2("orca", "--version", stdout = TRUE, stderr = TRUE)
   
-  atlas <- list(atlas[[1]], # left lat
-                atlas[[2]], # left med
-                atlas[[4]], # right med
-                atlas[[3]]) # right lat
+  if(length(x) == 0|| x == ""){
+    if(verbose)
+      cat("Cannot find orca installed.\n See install instructions at: https://github.com/plotly/orca")
+    return(FALSE)
+  }
+
+ return(TRUE)
   
-  # rescale the small ones
-  atlas <- purrr::map2(atlas, c(.98, .74, .94, .78), 
-                       ~ resize_coords_sf(.x, .y))
-  
-  # correct coordinates so they ar ealigned and moved next to eachoter
-  atlas <- purrr::map2(atlas, c(0, 350, 750, 1100), 
-                       ~ correct_coords_sf(.x, .y))
-  
-  atlas_df_r <- do.call(rbind, atlas)
-  
-  return(dplyr::ungroup(atlas_df_r))
 }
 
-adjust_coords_sf2 <- function(atlas_df){
-  atlas <- dplyr::group_by(atlas_df, view)
-  atlas <- dplyr::group_split(atlas)
-
-  # correct coordinates so they are aligned and moved next to eachoter
-  atlas <- purrr::map2(atlas, 
-                       seq(from = 0, by = 200, length.out = length(atlas)), 
-                       ~ correct_coords_sf(.x, .y))
-  
-  atlas_df_r <- do.call(rbind, atlas)
-  
-  return(dplyr::ungroup(atlas_df_r))
-}
-
-to_coords <- function(x, n){
-
-  k <- sf::st_coordinates(x)
-  k <- dplyr::as_tibble(k)
-  names(k) <- c(".long", ".lat",  ".subid", ".id")
-  
-  k$`.order` <- 1:nrow(k)
-  k$`.id` <- n
-  k
-}
-# Is this one needed??
-# #' Get annotation files
-# #'
-# #' @template subject 
-# #' @param label annotation file
-# #' @tempalte hemisphere 
-# #' @tempalte subjects_dir 
-# #' @tempalte output_dir 
-# #' @tempalte verbose 
-# get_annots <- function(subject = "fsaverage5",
-#                        label = "aparc.annot$",
-#                        hemisphere = c("rh", "lh"),
-#                        subjects_dir = freesurfer::fs_subj_dir(),
-#                        output_dir = subjects_dir,
-#                        verbose = TRUE){
-#   
-#   for(sub in subject){
-#     
-#     # Simplify a bit with a shorter variable
-#     dir <- file.path(output_dir, sub)
-#     sdir <- file.path(subjects_dir, sub)
-#     
-#     if(!dir.exists(file.path(dir, "label")))
-#       dir.create(file.path(dir, "label"),
-#                  recursive = TRUE)
-#     
-#     labs <- list.files(file.path(sdir, "label"),
-#                        pattern = label)
-#     labs <- labs[grepl(paste0("^", hemisphere, collapse="|"), labs)]
-#     
-#     # If subject dir and output dir are not the same
-#     # copy over files
-#     if(sdir != dir){
-#       for(l in labs){
-#         j <- file.copy(file.path(sdir, "label", l),
-#                        file.path(dir, "label", l))
-#       }
-#       
-#     }
-#   }
-#   
-# }
-# 
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
