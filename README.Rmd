@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
 )
 library(ggseg)
 library(ggseg3d)
-devtools::load_all(".")
+library(ggsegExtra)
+library(dplyr)
 
 get_data_list <- function(package){
   as_tibble(data(package=package)$results)
@@ -31,11 +32,13 @@ atlases <- dplyr::bind_rows(atlases)
 [![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![R build status](https://github.com/LCBC-UiO/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegExtra/actions)
 <!-- badges: end -->
 
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
 
-This package contains extra atlases for the use in the [ggseg]() plotting package in R.
+This package contains information on verified atlases compatible for use in [ggseg](https://lcbc-uio.github.io/ggseg) and [ggseg3d](https://lcbc-uio.github.io/ggseg3d) plotting packages in R.
+It also contains functions and pipelines to create custom atlases.
 
 ## Atlases
 There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
@@ -48,11 +51,11 @@ library(ggsegExtra)
 ggseg_atlas_repos()
 ```
 
-
 We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://lcbc-uio.github.io/ggsegExtra/). 
-Currently, the pipeline for making 3d atlases is complete given Freesufer is installed on your system and you have a ready `.annot` file to use for the converions.
-Creating 2d atlases is currently still a work in progress, and we are not able to provide a better solution than the one described at the moment. 
-We hope to remedy this in the near future.
+Currently, the pipeline for making 3d atlases needs Freesufer to be installed on your system and a ready `.annot` file to use for the converions.
+Improvements to the pipeline in creating cortical atlases both for ggseg and ggseg3d is still being developed.
+Pipelines for creating subcortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
+Suggestions for improvement are welcome through GH issues or direct Pull requests.
 
 ## Code of Conduct
 

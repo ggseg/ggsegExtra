@@ -13,16 +13,20 @@ Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)
 status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegExtra/actions)
 <!-- badges: end -->
 
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />
 
-This package contains extra atlases for the use in the [ggseg]()
-plotting package in R.
+This package contains information on verified atlases compatible for use
+in [ggseg](https://lcbc-uio.github.io/ggseg) and
+[ggseg3d](https://lcbc-uio.github.io/ggseg3d) plotting packages in R. It
+also contains functions and pipelines to create custom atlases.
 
 ## Atlases
 
-There are currently 19 available atlases across 10 packages. The
+There are currently 28 available atlases across 11 packages. The
 packages, their repository name and location can be found with:
 
 ``` r
@@ -30,28 +34,32 @@ library(ggsegExtra)
 
 # List all verified compatible atlases
 ggseg_atlas_repos()
-#> # A tibble: 10 x 5
-#>    repo                ggseg ggseg3d source comment                             
-#>    <chr>               <lgl> <lgl>   <chr>  <chr>                               
-#>  1 LCBC-UiO/ggsegYeo2… TRUE  TRUE    github both 17 and 7 Network data          
-#>  2 LCBC-UiO/ggsegDest… FALSE TRUE    github the 2009 atlas                      
-#>  3 LCBC-UiO/ggsegChen  FALSE TRUE    github both thickness and area maps        
-#>  4 LCBC-UiO/ggsegScha… FALSE TRUE    github both 17 and 7 networks              
-#>  5 LCBC-UiO/ggsegGlas… TRUE  TRUE    github full atlas                          
-#>  6 LCBC-UiO/ggsegJHU   TRUE  TRUE    github white tract atlas                   
-#>  7 LCBC-UiO/ggsegTrac… TRUE  TRUE    github white tract atlas                   
-#>  8 LCBC-UiO/ggsegICBM  FALSE TRUE    github white tract atlas                   
-#>  9 LCBC-UiO/ggsegHO    TRUE  FALSE   github Harvard-Oxford cortical (FSL)       
-#> 10 LCBC-UiO/ggsegDefa… TRUE  FALSE   github extra 2d view for dk, p/a division …
+#> # A tibble: 11 x 6
+#>    repo            ggseg ggseg3d source comment                      package    
+#>    <chr>           <lgl> <lgl>   <chr>  <chr>                        <chr>      
+#>  1 LCBC-UiO/ggseg… TRUE  TRUE    github both 17 and 7 Network data   ggsegYeo20…
+#>  2 LCBC-UiO/ggseg… FALSE TRUE    github the 2009 atlas               ggsegDeste…
+#>  3 LCBC-UiO/ggseg… FALSE TRUE    github both thickness and area maps ggsegChen  
+#>  4 LCBC-UiO/ggseg… FALSE TRUE    github both 17 and 7 networks       ggsegSchae…
+#>  5 LCBC-UiO/ggseg… TRUE  TRUE    github full atlas                   ggsegGlass…
+#>  6 LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegJHU   
+#>  7 LCBC-UiO/ggseg… TRUE  TRUE    github white tract atlas            ggsegTracu…
+#>  8 LCBC-UiO/ggseg… FALSE TRUE    github white tract atlas            ggsegICBM  
+#>  9 LCBC-UiO/ggseg… TRUE  FALSE   github Harvard-Oxford cortical (FS… ggsegHO    
+#> 10 LCBC-UiO/ggseg… TRUE  FALSE   github extra 2d view for dk, p/a d… ggsegDefau…
+#> 11 LCBC-UiO/ggseg… TRUE  TRUE    github Desikan-Killiany-Tourville … ggsegDKT
 ```
 
-We have two tutorials on how to make atlases available in the [package
-documentation page](https://lcbc-uio.github.io/ggsegExtra/). Currently,
-the pipeline for making 3d atlases is complete given Freesufer is
-installed on your system and you have a ready `.annot` file to use for
-the converions. Creating 2d atlases is currently still a work in
-progress, and we are not able to provide a better solution than the one
-described at the moment. We hope to remedy this in the near future.
+We have tutorials on how to make atlases available in the `Articles` of
+the [package documentation
+page](https://lcbc-uio.github.io/ggsegExtra/). Currently, the pipeline
+for making 3d atlases needs Freesufer to be installed on your system and
+a ready `.annot` file to use for the converions. Improvements to the
+pipeline in creating cortical atlases both for ggseg and ggseg3d is
+still being developed. Pipelines for creating subcortical atlases of any
+kind are still in their infancy, and we do not yet have good solutions
+for their creation. Suggestions for improvement are welcome through GH
+issues or direct Pull requests.
 
 ## Code of Conduct
 
@@ -70,11 +78,12 @@ to it.
 
 # Funding
 
-This tool is partly funded by:
-
-**EU Horizon 2020 Grant:** Healthy minds 0-100 years: Optimising the use
-of European brain imaging cohorts (Lifebrain).
-
-**Grant agreement number:** 732592.
-
-**Call:** Societal challenges: Health, demographic change and well-being
+This work is funded by **EU Horizon 2020 Grant** *‘Healthy minds 0-100
+years: Optimizing the use of European brain imaging cohorts
+(Lifebrain)’*, with grant agreement `732592`. The project has also
+received funding from the **European Research Council**’s *Starting
+grant* (grant agreements `283634`, to Anders Martin Fjell and `313440`
+to Kristine Beate Walhovd) and *Consolidator Grant* (grant agreement
+`771355` to Kristine Beate Walhovd and `725025` to Anders Martin Fjell).
+The project has received funding through multiple grants from the
+Norwegian Research Council.
