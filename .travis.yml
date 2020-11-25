@@ -18,21 +18,8 @@ matrix:
 #      brew_packages: imagemagick
 #      osx_image:  xcode11.3
 
-    - dist: trusty
-      before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
-      deploy:
-        provider: script
-        script: Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))'
-        cleanup: false
-      after_success: Rscript -e 'covr::codecov()'
-      
     - dist: linux
-      before_cache: Rscript -e 'remotes::install_github("r-lib/pkgdown")'
-      deploy:
-        provider: script
-        script: Rscript -e 'pkgdown::deploy_site_github(ssh_id = Sys.getenv("TRAVIS_DEPLOY_KEY", ""))'
-        cleanup: false
-      after_success: Rscript -e 'covr::codecov()'
+      # after_success: Rscript -e 'covr::codecov()'
 
 
 apt:
