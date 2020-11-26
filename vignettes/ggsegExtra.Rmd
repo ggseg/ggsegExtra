@@ -2,7 +2,7 @@
 title: "Using ggsegExtra atlases"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ggsegExtra}
+  %\VignetteIndexEntry{Using ggsegExtra atlases}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

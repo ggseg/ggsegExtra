@@ -34,12 +34,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - uses: r-lib/actions/setup-r@v1
+      
+      - uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.config.r }}
 
-      - name: setup mac
+      - uses: r-lib/actions/setup-pandoc@master
+      
+      - name: Install macOS dependencies
         if: runner.os == 'macOS'
         env:
           XQUARTZ_VERSION: 2.7.11
@@ -49,12 +51,23 @@ jobs:
            sudo installer -pkg "/Volumes/XQuartz-${XQUARTZ_VERSION}/XQuartz.pkg" -target /
            sudo hdiutil detach /Volumes/XQuartz-${XQUARTZ_VERSION}
            rm /tmp/XQuartz.dmg
-           # conflicts with gfortran from r-lib/actions when linking gcc
-           rm '/usr/local/bin/gfortran'
-           brew install pkg-config gdal proj geos 
-           
-      - uses: r-lib/actions/setup-pandoc@v1
+          # conflicts with gfortran from r-lib/actions when linking gcc
+          rm '/usr/local/bin/gfortran'
+          brew install pkg-config gdal proj geos
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
+      - name: Install linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          while read -r cmd
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+          # sudo apt install php php-common gcc
+          sudo apt install imagemagick
+          # sudo apt install php-imagick
+          # sudo systemctl restart apache2
+          
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -68,19 +81,7 @@ jobs:
         with:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-          # sudo apt install php php-common gcc
-          sudo apt install imagemagick
-          # sudo apt install php-imagick
-          # sudo systemctl restart apache2
 
       - name: Install dependencies
         run: |

@@ -2,7 +2,7 @@
 title: "Example creation: the DKT cortical atlas"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example creation: the DKT atlas}
+  %\VignetteIndexEntry{Example creation: the DKT cortical atlas}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

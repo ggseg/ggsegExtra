@@ -1,8 +1,8 @@
 ---
-title: "Example creation: the DKT cortical atlas"
+title: "Example creation: the aseg subcortical atlas"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example creation: the DKT atlas}
+  %\VignetteIndexEntry{Example creation: the aseg subcortical atlas}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

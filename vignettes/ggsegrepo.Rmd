@@ -1,8 +1,8 @@
 ---
-title: "Contribute: prepare a repository for the atlas"
+title: "Contributing: prepare a repository for the atlas"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Contribute: prepare a repository for the atlas}
+  %\VignetteIndexEntry{Contributing: prepare a repository for the atlas}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
