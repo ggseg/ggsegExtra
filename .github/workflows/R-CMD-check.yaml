@@ -54,7 +54,6 @@ jobs:
            # conflicts with gfortran from r-lib/actions when linking gcc
            rm '/usr/local/bin/gfortran'
            brew install pkg-config gdal proj geos
-           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install linux dependencies
         if: runner.os == 'Linux'
@@ -67,6 +66,8 @@ jobs:
           sudo apt install imagemagick
           # sudo apt install php-imagick
           # sudo systemctl restart apache2
+          sudo apt-get install libudunits2-dev
+          sudo apt-get install libgdal-dev
           
       - name: Query dependencies
         run: |
@@ -91,9 +92,14 @@ jobs:
 
       - name: Check
         env:
-          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+          _R_CHECK_CRAN_INCOMING_: false
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
+
+      - name: Show testthat output
+        if: always()
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
 
       - name: Upload check results
         if: failure()
