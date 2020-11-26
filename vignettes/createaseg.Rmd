@@ -268,39 +268,58 @@ knitr::include_graphics("figures/aseg_glass.png")
 ## Creating the 2d atlas
 
 Unlike the pipeline for cortical atlases which uses the newly made ggseg3d-atlas to create polygon data, the volumetric pipeline uses the volumetric-image just as for creating the ggseg3d-atlas above.
-Using a combination of FreeSurfer's Freeview snapshotting andImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooth'es them, reduces the vertices and organizes the data into a brain-atlas class object.
+Using a combination of FreeSurfer's Freeview snapshotting and ImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region and slice combination, extracts the contours of these regions, smooth'es them, reduces the vertices and organizes the data into a brain-atlas class object.
 The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. 
 While the function at default stores these files in a temporary folder, we highly recommend setting the `output_dir` option, so that you do not need to rerun all steps when testing another configuration of settings. 
-For instance, the step taking the longest time and most processing time is  snapshotting the regions and extracting the contours.
+For instance, the step taking the longest time and most processing time is snapshotting the regions and extracting the contours.
 But these two steps only need to be run once, as long as the ggseg3d-atlas has not changed somehow. 
+
+The creation function need a data.frame with information on which slices to snapshot using Freeview.
+```{r}
+slices <- data.frame(x = c(130, 122, 122), 
+           y = c(130, 235, 112), 
+           z = c(130, 100, 106),
+           view = c("axial", "sagittal", "coronal"),
+           stringsAsFactors = FALSE)
+slices
+```
+
+This data.frame is provided to the `slices` arguments, and will ultimately become the slices in your plot. 
 
 ```{r}
 # make atlas ----
 aseg2 <- make_volumetric_ggseg(
   label_file = file.path(freesurfer::fs_subj_dir(), "fsaverage5", "mri/aseg.mgz"),
-  vertex_size_limits = c(10, NA),
+  slices = slices,
+  vertex_size_limits = c(10, NA)
 )
 ```
 ```r
-● 1/7 Snapshotting views of entire atlas to ~/Desktop//dkt
-✓ Snapshots complete
-● 2/7 Snapshotting individual regions to ~/Desktop//dkt/img
-✓ Region snapshots complete
-● 3/7 Isolating regions to ~/Desktop//dkt/masks
-● & writing masks to ~/Desktop//dkt/regions
+● 1/8 Preparing labels
+  |==============================================| 100%, Elapsed 00:24
+✓ labels ready
+● 2/8 Snapshotting views of regions to ~/Desktop/aseg/snapshots, 
+  |======================================================| 100%, Elapsed 03:20
+✓ snapshots complete
+● 3/8 isolating regions to ~/Desktop/aseg/interrim
+  |======================================================| 100%, Elapsed 00:01
 ✓ isolation complete
-● 4/7 Extracting contours from regions
-  |===================================================================| 100%, Elapsed 00:25
+● 4/8 Writing masks to ~/Desktop/aseg/masks
+  |======================================================| 100%, Elapsed 00:02
+✓ masks complete
+● 5/8 Extracting contours from regions
+  |======================================================| 100%, Elapsed 00:31
 ✓ contours complete
-● 5/7 Smoothing contours
+● 6/8 Smoothing contours
 ✓ Smoothing complete
-● 6/7 Reducing vertexes
+● 7/8 Reducing vertexes
 ✓ Vertexes reduced
-● 7/7 Making data frame
-✓ Atlas complete with 3694 vertices
+● 8/8 Cleaning up data
+● Atlas is complete with 244718 vertices, try re-running steps 7:8 with a higher 'tolerance' number.
+✓ cleanup complete
 ```
 
-The most likely steps to redo are steps 5-7, tweaking the `smoothness` and `tolerance` arguments to improve how the polygons look and how many vertices there are.
+The most likely steps to redo are steps 6-8, tweaking the `smoothness` and `tolerance` arguments to improve how the polygons look and how many vertices there are.
 The fewer vertices, the faster the plot renders, but too few and the polygons will look poor.
 
 ### Inspecting the atlas object
@@ -308,86 +327,167 @@ The fewer vertices, the faster the plot renders, but too few and the polygons wi
 First step is to have a look at the actual object.
 If the brain-atlas is correctly set up, the output should look like the below.
 ```{r}
-dkt
+aseg2
 ```
 ```r
-# dkt cortical brain atlas
-  regions: 31 
-  hemispheres: left, right 
-  side views: lateral, medial 
+# aseg subcortical brain atlas
+  regions: 19 
+  hemispheres: NA, left, right 
+  side views: coronal, sagittal, axial 
   palette: yes 
   use: ggplot() + geom_brain() 
 ----
-   hemi  side    region                label                   roi  
-   <chr> <chr>   <chr>                 <chr>                   <chr>
- 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002 
- 2 left  lateral fusiform              lh_fusiform             0005 
- 3 left  lateral inferior parietal     lh_inferiorparietal     0006 
- 4 left  lateral inferior temporal     lh_inferiortemporal     0007 
- 5 left  lateral lateral occipital     lh_lateraloccipital     0009 
- 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010 
- 7 left  lateral middle temporal       lh_middletemporal       0013 
- 8 left  lateral pars opercularis      lh_parsopercularis      0016 
- 9 left  lateral pars orbitalis        lh_parsorbitalis        0017 
-10 left  lateral pars triangularis     lh_parstriangularis     0018 
-# … with 71 more rows
+   side    hemi  roi   label                      region               
+   <chr>   <chr> <chr> <chr>                      <chr>                
+ 1 coronal left  0002  Left-Cerebral-White-Matter cerebral white matter
+ 2 coronal left  0003  Left-Cerebral-Cortex       cerebral cortex      
+ 3 coronal left  0004  Left-Lateral-Ventricle     lateral ventricle    
+ 4 coronal left  0010  Left-Thalamus-Proper       thalamus proper      
+ 5 coronal left  0012  Left-Putamen               putamen              
+ 6 coronal <NA>  0014  3rd-Ventricle              3rd ventricle        
+ 7 coronal <NA>  0016  Brain-Stem                 brain stem           
+ 8 coronal left  0017  Left-Hippocampus           hippocampus          
+ 9 coronal <NA>  0024  CSF                        csf                  
+10 coronal left  0028  Left-VentralDC             ventraldc            
+# … with 96 more rows
 ```
 
 Second step is to make sure the data is being plotted correctly.
 ```{r}
-plot(dkt)
+plot(aseg2)
 ```
 ```{r, echo = FALSE, eval = TRUE}
-knitr::include_graphics("figures/dkt.png")
+knitr::include_graphics("figures/aseg2_first.png")
+```
+
+We can clearly see something is wrong, but the legend indicated that there is data there we cannot see.
+Setting the `alpha` might expose something.
+
+```{r}
+plot(aseg2, alpha = .5)
+```
+```{r, echo = FALSE, eval = TRUE}
+knitr::include_graphics("figures/aseg2_second.png")
+```
+
+We can see that the polygons are there, but they are hidden behind something.
+The colour of the polygons indicate that these are `NA` values.
+Inspecting the atlas data directly is a good idea.
+
+```{r}
+aseg2$data
+```
+```r
+Simple feature collection with 112 features and 5 fields
+geometry type:  MULTIPOLYGON
+dimension:      XY
+bbox:           xmin: 0 ymin: 0 xmax: 578.2364 ymax: 203.3227
+CRS:            NA
+# A tibble: 112 x 6
+   side   hemi  roi                                               geometry label          region      
+ * <chr>  <chr> <chr>                                       <MULTIPOLYGON> <chr>          <chr>       
+ 1 coron… NA    0000  (((8.596379 105.0979, 8.532187 105.0767, 8.469717 1… Unknown        NA          
+ 2 coron… left  0002  (((82.41844 102.0004, 82.39649 101.9761, 82.37604 1… Left-Cerebral… cerebral wh…
+ 3 coron… left  0003  (((88.86371 171.1159, 88.76302 171.0871, 88.66764 1… Left-Cerebral… cerebral co…
+ 4 coron… left  0004  (((101.7151 116.3753, 101.64 116.3752, 101.5623 116… Left-Lateral-… lateral ven…
+ 5 coron… left  0010  (((100.0108 100.9053, 99.87905 100.9186, 99.74468 1… Left-Thalamus… thalamus pr…
+ 6 coron… left  0012  (((116.5521 82.86438, 116.5237 82.81094, 116.4955 8… Left-Putamen   putamen     
+ 7 coron… NA    0014  (((78.65921 86.42692, 78.55424 86.38102, 78.45397 8… 3rd-Ventricle  3rd ventric…
+ 8 coron… NA    0016  (((88.73587 62.17754, 88.62459 62.18198, 88.51179 6… Brain-Stem     brain stem  
+ 9 coron… left  0017  (((113.3849 67.15476, 113.2684 67.12281, 113.1575 6… Left-Hippocam… hippocampus 
+10 coron… NA    0024  (((78.87844 101.8815, 78.78444 101.8421, 78.69133 1… CSF            csf         
+# … with 102 more rows
+```
+
+We should remove the `NA` data from the atlas, and also the white-matter regions, since these dont really fit in.
+Additionally, subcortical atlases have the cortex as region `NA` so that these are plotted, but not really treated as true parcellation regions.
+
+```{r}
+aseg2$data <- filter(aseg2$data, 
+                     !grepl("Unknown", label, ignore.case = TRUE),
+                     !grepl("White-matter", label, ignore.case = TRUE)
+) %>% 
+  mutate(region = ifelse(grepl("cortex", region), NA, region))
+
+aseg2
+```
+```r
+# aseg subcortical brain atlas
+  regions: 15 
+  hemispheres: left, NA, right 
+  side views: coronal, sagittal, axial 
+  palette: yes 
+  use: ggplot() + geom_brain() 
+----
+   side    hemi  roi   label                   region           
+   <chr>   <chr> <chr> <chr>                   <chr>            
+ 1 coronal left  0004  Left-Lateral-Ventricle  lateral ventricle
+ 2 coronal left  0010  Left-Thalamus-Proper    thalamus proper  
+ 3 coronal left  0012  Left-Putamen            putamen          
+ 4 coronal <NA>  0014  3rd-Ventricle           3rd ventricle    
+ 5 coronal <NA>  0016  Brain-Stem              brain stem       
+ 6 coronal left  0017  Left-Hippocampus        hippocampus      
+ 7 coronal <NA>  0024  CSF                     csf              
+ 8 coronal left  0028  Left-VentralDC          ventraldc        
+ 9 coronal right 0043  Right-Lateral-Ventricle lateral ventricle
+10 coronal right 0049  Right-Thalamus-Proper   thalamus proper  
+# … with 70 more rows
+```
+
+```{r}
+plot(aseg2)
+```
+```{r, echo = FALSE, eval = TRUE}
+knitr::include_graphics("figures/aseg2_complete.png")
 ```
 
 In most cases, given the values in the 3d-atlas' `colour` column is correctly applied, but problems may arise given how annotation files are set up.
 
 ### Fixing the palette
 
-Many annotation files have a unique colour for the same regions but in different hemispheres.
+Many colour tables have a unique colour for the same regions but in different hemispheres.
 This can often mess up the palette for the 2d-atlas, which needs the regions in the different hemispheres to have the same palette colour.
 
 If you are working with an atlas that does not have a colour-scheme dispatched with the atlas, the palette should be set to `NULL`.
 
 ```{r}
-dkt$palette <- NULL
-dkt
+aseg2$palette <- NULL
+aseg2
 ```
 ```r
-# dkt cortical brain atlas
-  regions: 31 
-  hemispheres: left, right 
-  side views: lateral, medial 
+# aseg subcortical brain atlas
+  regions: 15 
+  hemispheres: left, NA, right 
+  side views: coronal, sagittal, axial 
   palette: no 
   use: ggplot() + geom_brain() 
 ----
-   hemi  side    region                label                   roi  
-   <chr> <chr>   <chr>                 <chr>                   <chr>
- 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002 
- 2 left  lateral fusiform              lh_fusiform             0005 
- 3 left  lateral inferior parietal     lh_inferiorparietal     0006 
- 4 left  lateral inferior temporal     lh_inferiortemporal     0007 
- 5 left  lateral lateral occipital     lh_lateraloccipital     0009 
- 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010 
- 7 left  lateral middle temporal       lh_middletemporal       0013 
- 8 left  lateral pars opercularis      lh_parsopercularis      0016 
- 9 left  lateral pars orbitalis        lh_parsorbitalis        0017 
-10 left  lateral pars triangularis     lh_parstriangularis     0018 
-# … with 71 more rows
+   side    hemi  roi   label                   region           
+   <chr>   <chr> <chr> <chr>                   <chr>            
+ 1 coronal left  0004  Left-Lateral-Ventricle  lateral ventricle
+ 2 coronal left  0010  Left-Thalamus-Proper    thalamus proper  
+ 3 coronal left  0012  Left-Putamen            putamen          
+ 4 coronal <NA>  0014  3rd-Ventricle           3rd ventricle    
+ 5 coronal <NA>  0016  Brain-Stem              brain stem       
+ 6 coronal left  0017  Left-Hippocampus        hippocampus      
+ 7 coronal <NA>  0024  CSF                     csf              
+ 8 coronal left  0028  Left-VentralDC          ventraldc        
+ 9 coronal right 0043  Right-Lateral-Ventricle lateral ventricle
+10 coronal right 0049  Right-Thalamus-Proper   thalamus proper  
+# … with 70 more rows
 ```
 
 When there is no palette, the default atlas plot will return with default ggplot2 colours. 
 This is absolutely a valid option. The palette is an optional part of the atlas. 
 
 ```{r}
-plot(dkt)
+plot(aseg2)
 ```
 ```{r, echo = FALSE, eval = TRUE, out.width="90%"}
-knitr::include_graphics("figures/dkt_nocol.png")
+knitr::include_graphics("figures/aseg2_nocol.png")
 ```
 
-If you want to correctly apply a palette, the `dkt$palette` part of the atlas is a named character vector, where the value of the vector is the hex-colour code, and the names of the elements are the region names as seen in the `region` column of the atlas data.
+If you want to correctly apply a palette, the `aseg2$palette` part of the atlas is a named character vector, where the value of the vector is the hex-colour code, and the names of the elements are the region names as seen in the `region` column of the atlas data.
 
 
 ## Summary
@@ -423,7 +523,9 @@ aseg2$data <- filter(aseg2$data,
   mutate(region = ifelse(grepl("cortex", region), NA, region))
 plot(aseg2, alpha = .8)
 ```
-
+```{r, echo = FALSE, eval = TRUE}
+knitr::include_graphics("figures/aseg2_complete.png")
+```
 
 
 

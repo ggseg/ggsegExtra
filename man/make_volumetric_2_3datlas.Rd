@@ -22,7 +22,7 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{subjects_dir}{Freesurfer subject directory}
 
-\item{template}{tempalte volume.mgz file path}
+\item{template}{template \code{volume.mgz} file path}
 
 \item{color_lut}{Freesurfer colour look-up-table. Either
 as a path or a data.frame that \code{\link{is_ctab}}}

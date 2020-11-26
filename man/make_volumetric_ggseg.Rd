@@ -62,7 +62,7 @@ brain-atlas class
 Make ggseg atlas from volumetric template
 }
 \examples{
-if(!freesurfer::have_fs()){
+\dontrun{
 
 aseg2 <- make_volumetric_ggseg(label_file =  file.path(subjects_dir, subject, "mri/aseg.mgz"))
 
