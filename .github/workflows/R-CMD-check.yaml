@@ -41,6 +41,13 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
       
+      - name: Query dependencies
+        run: |
+          install.packages('remotes')
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
+        shell: Rscript {0}
+        
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         env:
@@ -69,13 +76,6 @@ jobs:
           sudo apt-get install libudunits2-dev
           sudo apt-get install libgdal-dev
           sudo apt-get install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
-          
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
 
       - name: Cache R packages
         if: runner.os != 'Windows'
