@@ -68,6 +68,7 @@ jobs:
           # sudo systemctl restart apache2
           sudo apt-get install libudunits2-dev
           sudo apt-get install libgdal-dev
+          sudo apt-get install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
           
       - name: Query dependencies
         run: |
