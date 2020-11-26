@@ -51,10 +51,10 @@ jobs:
            sudo installer -pkg "/Volumes/XQuartz-${XQUARTZ_VERSION}/XQuartz.pkg" -target /
            sudo hdiutil detach /Volumes/XQuartz-${XQUARTZ_VERSION}
            rm /tmp/XQuartz.dmg
-          # conflicts with gfortran from r-lib/actions when linking gcc
-          rm '/usr/local/bin/gfortran'
-          brew install pkg-config gdal proj geos
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+           # conflicts with gfortran from r-lib/actions when linking gcc
+           rm '/usr/local/bin/gfortran'
+           brew install pkg-config gdal proj geos
+           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install linux dependencies
         if: runner.os == 'Linux'
