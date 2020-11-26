@@ -299,102 +299,176 @@
 <div id="creating-the-2d-atlas" class="section level2">
 <h2 class="hasAnchor">
 <a href="#creating-the-2d-atlas" class="anchor"></a>Creating the 2d atlas</h2>
-<p>Unlike the pipeline for cortical atlases which uses the newly made ggseg3d-atlas to create polygon data, the volumetric pipeline uses the volumetric-image just as for creating the ggseg3d-atlas above. Using a combination of FreeSurfer’s Freeview snapshotting andImageMagick, the <code><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg()</a></code> function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooth’es them, reduces the vertices and organizes the data into a brain-atlas class object. The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. While the function at default stores these files in a temporary folder, we highly recommend setting the <code>output_dir</code> option, so that you do not need to rerun all steps when testing another configuration of settings. For instance, the step taking the longest time and most processing time is snapshotting the regions and extracting the contours. But these two steps only need to be run once, as long as the ggseg3d-atlas has not changed somehow.</p>
+<p>Unlike the pipeline for cortical atlases which uses the newly made ggseg3d-atlas to create polygon data, the volumetric pipeline uses the volumetric-image just as for creating the ggseg3d-atlas above. Using a combination of FreeSurfer’s Freeview snapshotting and ImageMagick, the <code><a href="../reference/make_ggseg3d_2_ggseg.html">make_ggseg3d_2_ggseg()</a></code> function takes snapshots of each region and slice combination, extracts the contours of these regions, smooth’es them, reduces the vertices and organizes the data into a brain-atlas class object. The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. While the function at default stores these files in a temporary folder, we highly recommend setting the <code>output_dir</code> option, so that you do not need to rerun all steps when testing another configuration of settings. For instance, the step taking the longest time and most processing time is snapshotting the regions and extracting the contours. But these two steps only need to be run once, as long as the ggseg3d-atlas has not changed somehow.</p>
+<p>The creation function need a data.frame with information on which slices to snapshot using Freeview.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">slices</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">122</span>, <span class="fl">122</span><span class="op">)</span>, 
+           y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">235</span>, <span class="fl">112</span><span class="op">)</span>, 
+           z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">130</span>, <span class="fl">100</span>, <span class="fl">106</span><span class="op">)</span>,
+           view <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"axial"</span>, <span class="st">"sagittal"</span>, <span class="st">"coronal"</span><span class="op">)</span>,
+           stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="va">slices</span></code></pre></div>
+<p>This data.frame is provided to the <code>slices</code> arguments, and will ultimately become the slices in your plot.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># make atlas ----</span>
 <span class="va">aseg2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_volumetric_ggseg.html">make_volumetric_ggseg</a></span><span class="op">(</span>
   label_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="fu">freesurfer</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html">fs_subj_dir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"fsaverage5"</span>, <span class="st">"mri/aseg.mgz"</span><span class="op">)</span>,
-  vertex_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="cn">NA</span><span class="op">)</span>,
+  slices <span class="op">=</span> <span class="va">slices</span>,
+  vertex_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="cn">NA</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>● <span class="dv">1</span><span class="op">/</span><span class="dv">7</span> Snapshotting views of entire atlas to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt</span>
-<span id="cb20-2"><a href="#cb20-2"></a>✓ Snapshots complete</span>
-<span id="cb20-3"><a href="#cb20-3"></a>● <span class="dv">2</span><span class="op">/</span><span class="dv">7</span> Snapshotting individual regions to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt<span class="op">/</span>img</span>
-<span id="cb20-4"><a href="#cb20-4"></a>✓ Region snapshots complete</span>
-<span id="cb20-5"><a href="#cb20-5"></a>● <span class="dv">3</span><span class="op">/</span><span class="dv">7</span> Isolating regions to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt<span class="op">/</span>masks</span>
-<span id="cb20-6"><a href="#cb20-6"></a>● <span class="op">&amp;</span><span class="st"> </span>writing masks to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span><span class="er">/</span>dkt<span class="op">/</span>regions</span>
-<span id="cb20-7"><a href="#cb20-7"></a>✓ isolation complete</span>
-<span id="cb20-8"><a href="#cb20-8"></a>● <span class="dv">4</span><span class="op">/</span><span class="dv">7</span> Extracting contours from regions</span>
-<span id="cb20-9"><a href="#cb20-9"></a>  <span class="op">|</span><span class="er">===================================================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">00</span><span class="op">:</span><span class="dv">25</span></span>
-<span id="cb20-10"><a href="#cb20-10"></a>✓ contours complete</span>
-<span id="cb20-11"><a href="#cb20-11"></a>● <span class="dv">5</span><span class="op">/</span><span class="dv">7</span> Smoothing contours</span>
-<span id="cb20-12"><a href="#cb20-12"></a>✓ Smoothing complete</span>
-<span id="cb20-13"><a href="#cb20-13"></a>● <span class="dv">6</span><span class="op">/</span><span class="dv">7</span> Reducing vertexes</span>
-<span id="cb20-14"><a href="#cb20-14"></a>✓ Vertexes reduced</span>
-<span id="cb20-15"><a href="#cb20-15"></a>● <span class="dv">7</span><span class="op">/</span><span class="dv">7</span> Making data frame</span>
-<span id="cb20-16"><a href="#cb20-16"></a>✓ Atlas complete with <span class="dv">3694</span> vertices</span></code></pre></div>
-<p>The most likely steps to redo are steps 5-7, tweaking the <code>smoothness</code> and <code>tolerance</code> arguments to improve how the polygons look and how many vertices there are. The fewer vertices, the faster the plot renders, but too few and the polygons will look poor.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>● <span class="dv">1</span><span class="op">/</span><span class="dv">8</span> Preparing labels</span>
+<span id="cb21-2"><a href="#cb21-2"></a>  <span class="op">|</span><span class="er">==============================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">00</span><span class="op">:</span><span class="dv">24</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>✓ labels ready</span>
+<span id="cb21-4"><a href="#cb21-4"></a>● <span class="dv">2</span><span class="op">/</span><span class="dv">8</span> Snapshotting views of regions to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span>aseg<span class="op">/</span>snapshots, </span>
+<span id="cb21-5"><a href="#cb21-5"></a>  <span class="op">|</span><span class="er">======================================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">03</span><span class="op">:</span><span class="dv">20</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a>✓ snapshots complete</span>
+<span id="cb21-7"><a href="#cb21-7"></a>● <span class="dv">3</span><span class="op">/</span><span class="dv">8</span> isolating regions to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span>aseg<span class="op">/</span>interrim</span>
+<span id="cb21-8"><a href="#cb21-8"></a>  <span class="op">|</span><span class="er">======================================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">00</span><span class="op">:</span><span class="dv">01</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>✓ isolation complete</span>
+<span id="cb21-10"><a href="#cb21-10"></a>● <span class="dv">4</span><span class="op">/</span><span class="dv">8</span> Writing masks to <span class="op">~</span><span class="er">/</span>Desktop<span class="op">/</span>aseg<span class="op">/</span>masks</span>
+<span id="cb21-11"><a href="#cb21-11"></a>  <span class="op">|</span><span class="er">======================================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">00</span><span class="op">:</span><span class="dv">02</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a>✓ masks complete</span>
+<span id="cb21-13"><a href="#cb21-13"></a>● <span class="dv">5</span><span class="op">/</span><span class="dv">8</span> Extracting contours from regions</span>
+<span id="cb21-14"><a href="#cb21-14"></a>  <span class="op">|</span><span class="er">======================================================|</span><span class="st"> </span><span class="dv">100</span>%, Elapsed <span class="dv">00</span><span class="op">:</span><span class="dv">31</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>✓ contours complete</span>
+<span id="cb21-16"><a href="#cb21-16"></a>● <span class="dv">6</span><span class="op">/</span><span class="dv">8</span> Smoothing contours</span>
+<span id="cb21-17"><a href="#cb21-17"></a>✓ Smoothing complete</span>
+<span id="cb21-18"><a href="#cb21-18"></a>● <span class="dv">7</span><span class="op">/</span><span class="dv">8</span> Reducing vertexes</span>
+<span id="cb21-19"><a href="#cb21-19"></a>✓ Vertexes reduced</span>
+<span id="cb21-20"><a href="#cb21-20"></a>● <span class="dv">8</span><span class="op">/</span><span class="dv">8</span> Cleaning up data</span>
+<span id="cb21-21"><a href="#cb21-21"></a>● Atlas is complete with <span class="dv">244718</span> vertices, try re<span class="op">-</span>running steps <span class="dv">7</span><span class="op">:</span><span class="dv">8</span> with a higher <span class="st">'tolerance'</span> number.</span>
+<span id="cb21-22"><a href="#cb21-22"></a>✓ cleanup complete</span></code></pre></div>
+<p>The most likely steps to redo are steps 6-8, tweaking the <code>smoothness</code> and <code>tolerance</code> arguments to improve how the polygons look and how many vertices there are. The fewer vertices, the faster the plot renders, but too few and the polygons will look poor.</p>
 <div id="inspecting-the-atlas-object" class="section level3">
 <h3 class="hasAnchor">
 <a href="#inspecting-the-atlas-object" class="anchor"></a>Inspecting the atlas object</h3>
 <p>First step is to have a look at the actual object. If the brain-atlas is correctly set up, the output should look like the below.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dkt</span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># dkt cortical brain atlas</span></span>
-<span id="cb22-2"><a href="#cb22-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">31</span> </span>
-<span id="cb22-3"><a href="#cb22-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span>left, right </span>
-<span id="cb22-4"><a href="#cb22-4"></a>  side views<span class="op">:</span><span class="st"> </span>lateral, medial </span>
-<span id="cb22-5"><a href="#cb22-5"></a>  palette<span class="op">:</span><span class="st"> </span>yes </span>
-<span id="cb22-6"><a href="#cb22-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
-<span id="cb22-7"><a href="#cb22-7"></a><span class="op">----</span></span>
-<span id="cb22-8"><a href="#cb22-8"></a><span class="st">   </span>hemi  side    region                label                   roi  </span>
-<span id="cb22-9"><a href="#cb22-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                 </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span></span>
-<span id="cb22-10"><a href="#cb22-10"></a><span class="st"> </span><span class="dv">1</span> left  lateral caudal middle frontal lh_caudalmiddlefrontal  <span class="dv">0002</span> </span>
-<span id="cb22-11"><a href="#cb22-11"></a> <span class="dv">2</span> left  lateral fusiform              lh_fusiform             <span class="dv">0005</span> </span>
-<span id="cb22-12"><a href="#cb22-12"></a> <span class="dv">3</span> left  lateral inferior parietal     lh_inferiorparietal     <span class="dv">0006</span> </span>
-<span id="cb22-13"><a href="#cb22-13"></a> <span class="dv">4</span> left  lateral inferior temporal     lh_inferiortemporal     <span class="dv">0007</span> </span>
-<span id="cb22-14"><a href="#cb22-14"></a> <span class="dv">5</span> left  lateral lateral occipital     lh_lateraloccipital     <span class="dv">0009</span> </span>
-<span id="cb22-15"><a href="#cb22-15"></a> <span class="dv">6</span> left  lateral lateral orbitofrontal lh_lateralorbitofrontal <span class="dv">0010</span> </span>
-<span id="cb22-16"><a href="#cb22-16"></a> <span class="dv">7</span> left  lateral middle temporal       lh_middletemporal       <span class="dv">0013</span> </span>
-<span id="cb22-17"><a href="#cb22-17"></a> <span class="dv">8</span> left  lateral pars opercularis      lh_parsopercularis      <span class="dv">0016</span> </span>
-<span id="cb22-18"><a href="#cb22-18"></a> <span class="dv">9</span> left  lateral pars orbitalis        lh_parsorbitalis        <span class="dv">0017</span> </span>
-<span id="cb22-19"><a href="#cb22-19"></a><span class="dv">10</span> left  lateral pars triangularis     lh_parstriangularis     <span class="dv">0018</span> </span>
-<span id="cb22-20"><a href="#cb22-20"></a><span class="co"># … with 71 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aseg2</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># aseg subcortical brain atlas</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">19</span> </span>
+<span id="cb23-3"><a href="#cb23-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span><span class="ot">NA</span>, left, right </span>
+<span id="cb23-4"><a href="#cb23-4"></a>  side views<span class="op">:</span><span class="st"> </span>coronal, sagittal, axial </span>
+<span id="cb23-5"><a href="#cb23-5"></a>  palette<span class="op">:</span><span class="st"> </span>yes </span>
+<span id="cb23-6"><a href="#cb23-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="op">----</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="st">   </span>side    hemi  roi   label                      region               </span>
+<span id="cb23-9"><a href="#cb23-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                      </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                </span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="st"> </span><span class="dv">1</span> coronal left  <span class="dv">0002</span>  Left<span class="op">-</span>Cerebral<span class="op">-</span>White<span class="op">-</span>Matter cerebral white matter</span>
+<span id="cb23-11"><a href="#cb23-11"></a> <span class="dv">2</span> coronal left  <span class="dv">0003</span>  Left<span class="op">-</span>Cerebral<span class="op">-</span>Cortex       cerebral cortex      </span>
+<span id="cb23-12"><a href="#cb23-12"></a> <span class="dv">3</span> coronal left  <span class="dv">0004</span>  Left<span class="op">-</span>Lateral<span class="op">-</span>Ventricle     lateral ventricle    </span>
+<span id="cb23-13"><a href="#cb23-13"></a> <span class="dv">4</span> coronal left  <span class="dv">0010</span>  Left<span class="op">-</span>Thalamus<span class="op">-</span>Proper       thalamus proper      </span>
+<span id="cb23-14"><a href="#cb23-14"></a> <span class="dv">5</span> coronal left  <span class="dv">0012</span>  Left<span class="op">-</span>Putamen               putamen              </span>
+<span id="cb23-15"><a href="#cb23-15"></a> <span class="dv">6</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0014</span>  3rd<span class="op">-</span>Ventricle              3rd ventricle        </span>
+<span id="cb23-16"><a href="#cb23-16"></a> <span class="dv">7</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0016</span>  Brain<span class="op">-</span>Stem                 brain stem           </span>
+<span id="cb23-17"><a href="#cb23-17"></a> <span class="dv">8</span> coronal left  <span class="dv">0017</span>  Left<span class="op">-</span>Hippocampus           hippocampus          </span>
+<span id="cb23-18"><a href="#cb23-18"></a> <span class="dv">9</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0024</span>  CSF                        csf                  </span>
+<span id="cb23-19"><a href="#cb23-19"></a><span class="dv">10</span> coronal left  <span class="dv">0028</span>  Left<span class="op">-</span>VentralDC             ventraldc            </span>
+<span id="cb23-20"><a href="#cb23-20"></a><span class="co"># … with 96 more rows</span></span></code></pre></div>
 <p>Second step is to make sure the data is being plotted correctly.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dkt</span><span class="op">)</span></code></pre></div>
-<p><img src="figures/dkt.png"><!-- --></p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aseg2</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/aseg2_first.png"><!-- --></p>
+<p>We can clearly see something is wrong, but the legend indicated that there is data there we cannot see. Setting the <code>alpha</code> might expose something.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aseg2</span>, alpha <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/aseg2_second.png"><!-- --></p>
+<p>We can see that the polygons are there, but they are hidden behind something. The colour of the polygons indicate that these are <code>NA</code> values. Inspecting the atlas data directly is a good idea.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aseg2</span><span class="op">$</span><span class="va">data</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>Simple feature collection with <span class="dv">112</span> features and <span class="dv">5</span> fields</span>
+<span id="cb27-2"><a href="#cb27-2"></a>geometry type<span class="op">:</span><span class="st">  </span>MULTIPOLYGON</span>
+<span id="cb27-3"><a href="#cb27-3"></a>dimension<span class="op">:</span><span class="st">      </span>XY</span>
+<span id="cb27-4"><a href="#cb27-4"></a>bbox<span class="op">:</span><span class="st">           </span>xmin<span class="op">:</span><span class="st"> </span><span class="dv">0</span> ymin<span class="op">:</span><span class="st"> </span><span class="dv">0</span> xmax<span class="op">:</span><span class="st"> </span><span class="fl">578.2364</span> ymax<span class="op">:</span><span class="st"> </span><span class="fl">203.3227</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a>CRS<span class="op">:</span><span class="st">            </span><span class="ot">NA</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a><span class="co"># A tibble: 112 x 6</span></span>
+<span id="cb27-7"><a href="#cb27-7"></a>   side   hemi  roi                                               geometry label          region      </span>
+<span id="cb27-8"><a href="#cb27-8"></a> <span class="op">*</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">  </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                                       </span><span class="er">&lt;</span>MULTIPOLYGON<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">          </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">       </span></span>
+<span id="cb27-9"><a href="#cb27-9"></a><span class="st"> </span><span class="dv">1</span> coron… <span class="ot">NA</span>    <span class="dv">0000</span>  (((<span class="fl">8.596379</span> <span class="fl">105.0979</span>, <span class="fl">8.532187</span> <span class="fl">105.0767</span>, <span class="fl">8.469717</span> 1… Unknown        <span class="ot">NA</span>          </span>
+<span id="cb27-10"><a href="#cb27-10"></a> <span class="dv">2</span> coron… left  <span class="dv">0002</span>  (((<span class="fl">82.41844</span> <span class="fl">102.0004</span>, <span class="fl">82.39649</span> <span class="fl">101.9761</span>, <span class="fl">82.37604</span> 1… Left<span class="op">-</span>Cerebral… cerebral wh…</span>
+<span id="cb27-11"><a href="#cb27-11"></a> <span class="dv">3</span> coron… left  <span class="dv">0003</span>  (((<span class="fl">88.86371</span> <span class="fl">171.1159</span>, <span class="fl">88.76302</span> <span class="fl">171.0871</span>, <span class="fl">88.66764</span> 1… Left<span class="op">-</span>Cerebral… cerebral co…</span>
+<span id="cb27-12"><a href="#cb27-12"></a> <span class="dv">4</span> coron… left  <span class="dv">0004</span>  (((<span class="fl">101.7151</span> <span class="fl">116.3753</span>, <span class="fl">101.64</span> <span class="fl">116.3752</span>, <span class="fl">101.5623</span> 116… Left<span class="op">-</span>Lateral<span class="op">-</span>… lateral ven…</span>
+<span id="cb27-13"><a href="#cb27-13"></a> <span class="dv">5</span> coron… left  <span class="dv">0010</span>  (((<span class="fl">100.0108</span> <span class="fl">100.9053</span>, <span class="fl">99.87905</span> <span class="fl">100.9186</span>, <span class="fl">99.74468</span> 1… Left<span class="op">-</span>Thalamus… thalamus pr…</span>
+<span id="cb27-14"><a href="#cb27-14"></a> <span class="dv">6</span> coron… left  <span class="dv">0012</span>  (((<span class="fl">116.5521</span> <span class="fl">82.86438</span>, <span class="fl">116.5237</span> <span class="fl">82.81094</span>, <span class="fl">116.4955</span> 8… Left<span class="op">-</span>Putamen   putamen     </span>
+<span id="cb27-15"><a href="#cb27-15"></a> <span class="dv">7</span> coron… <span class="ot">NA</span>    <span class="dv">0014</span>  (((<span class="fl">78.65921</span> <span class="fl">86.42692</span>, <span class="fl">78.55424</span> <span class="fl">86.38102</span>, <span class="fl">78.45397</span> 8… 3rd<span class="op">-</span>Ventricle  3rd ventric…</span>
+<span id="cb27-16"><a href="#cb27-16"></a> <span class="dv">8</span> coron… <span class="ot">NA</span>    <span class="dv">0016</span>  (((<span class="fl">88.73587</span> <span class="fl">62.17754</span>, <span class="fl">88.62459</span> <span class="fl">62.18198</span>, <span class="fl">88.51179</span> 6… Brain<span class="op">-</span>Stem     brain stem  </span>
+<span id="cb27-17"><a href="#cb27-17"></a> <span class="dv">9</span> coron… left  <span class="dv">0017</span>  (((<span class="fl">113.3849</span> <span class="fl">67.15476</span>, <span class="fl">113.2684</span> <span class="fl">67.12281</span>, <span class="fl">113.1575</span> 6… Left<span class="op">-</span>Hippocam… hippocampus </span>
+<span id="cb27-18"><a href="#cb27-18"></a><span class="dv">10</span> coron… <span class="ot">NA</span>    <span class="dv">0024</span>  (((<span class="fl">78.87844</span> <span class="fl">101.8815</span>, <span class="fl">78.78444</span> <span class="fl">101.8421</span>, <span class="fl">78.69133</span> 1… CSF            csf         </span>
+<span id="cb27-19"><a href="#cb27-19"></a><span class="co"># … with 102 more rows</span></span></code></pre></div>
+<p>We should remove the <code>NA</code> data from the atlas, and also the white-matter regions, since these dont really fit in. Additionally, subcortical atlases have the cortex as region <code>NA</code> so that these are plotted, but not really treated as true parcellation regions.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aseg2</span><span class="op">$</span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">aseg2</span><span class="op">$</span><span class="va">data</span>, 
+                     <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"Unknown"</span>, <span class="va">label</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,
+                     <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"White-matter"</span>, <span class="va">label</span>, ignore.case <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"cortex"</span>, <span class="va">region</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="va">region</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">aseg2</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="co"># aseg subcortical brain atlas</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">15</span> </span>
+<span id="cb29-3"><a href="#cb29-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span>left, <span class="ot">NA</span>, right </span>
+<span id="cb29-4"><a href="#cb29-4"></a>  side views<span class="op">:</span><span class="st"> </span>coronal, sagittal, axial </span>
+<span id="cb29-5"><a href="#cb29-5"></a>  palette<span class="op">:</span><span class="st"> </span>yes </span>
+<span id="cb29-6"><a href="#cb29-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="op">----</span></span>
+<span id="cb29-8"><a href="#cb29-8"></a><span class="st">   </span>side    hemi  roi   label                   region           </span>
+<span id="cb29-9"><a href="#cb29-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">            </span></span>
+<span id="cb29-10"><a href="#cb29-10"></a><span class="st"> </span><span class="dv">1</span> coronal left  <span class="dv">0004</span>  Left<span class="op">-</span>Lateral<span class="op">-</span>Ventricle  lateral ventricle</span>
+<span id="cb29-11"><a href="#cb29-11"></a> <span class="dv">2</span> coronal left  <span class="dv">0010</span>  Left<span class="op">-</span>Thalamus<span class="op">-</span>Proper    thalamus proper  </span>
+<span id="cb29-12"><a href="#cb29-12"></a> <span class="dv">3</span> coronal left  <span class="dv">0012</span>  Left<span class="op">-</span>Putamen            putamen          </span>
+<span id="cb29-13"><a href="#cb29-13"></a> <span class="dv">4</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0014</span>  3rd<span class="op">-</span>Ventricle           3rd ventricle    </span>
+<span id="cb29-14"><a href="#cb29-14"></a> <span class="dv">5</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0016</span>  Brain<span class="op">-</span>Stem              brain stem       </span>
+<span id="cb29-15"><a href="#cb29-15"></a> <span class="dv">6</span> coronal left  <span class="dv">0017</span>  Left<span class="op">-</span>Hippocampus        hippocampus      </span>
+<span id="cb29-16"><a href="#cb29-16"></a> <span class="dv">7</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0024</span>  CSF                     csf              </span>
+<span id="cb29-17"><a href="#cb29-17"></a> <span class="dv">8</span> coronal left  <span class="dv">0028</span>  Left<span class="op">-</span>VentralDC          ventraldc        </span>
+<span id="cb29-18"><a href="#cb29-18"></a> <span class="dv">9</span> coronal right <span class="dv">0043</span>  Right<span class="op">-</span>Lateral<span class="op">-</span>Ventricle lateral ventricle</span>
+<span id="cb29-19"><a href="#cb29-19"></a><span class="dv">10</span> coronal right <span class="dv">0049</span>  Right<span class="op">-</span>Thalamus<span class="op">-</span>Proper   thalamus proper  </span>
+<span id="cb29-20"><a href="#cb29-20"></a><span class="co"># … with 70 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aseg2</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/aseg2_complete.png"><!-- --></p>
 <p>In most cases, given the values in the 3d-atlas’ <code>colour</code> column is correctly applied, but problems may arise given how annotation files are set up.</p>
 </div>
 <div id="fixing-the-palette" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fixing-the-palette" class="anchor"></a>Fixing the palette</h3>
-<p>Many annotation files have a unique colour for the same regions but in different hemispheres. This can often mess up the palette for the 2d-atlas, which needs the regions in the different hemispheres to have the same palette colour.</p>
+<p>Many colour tables have a unique colour for the same regions but in different hemispheres. This can often mess up the palette for the 2d-atlas, which needs the regions in the different hemispheres to have the same palette colour.</p>
 <p>If you are working with an atlas that does not have a colour-scheme dispatched with the atlas, the palette should be set to <code>NULL</code>.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">dkt</span><span class="op">$</span><span class="va">palette</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
-<span class="va">dkt</span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="co"># dkt cortical brain atlas</span></span>
-<span id="cb25-2"><a href="#cb25-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">31</span> </span>
-<span id="cb25-3"><a href="#cb25-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span>left, right </span>
-<span id="cb25-4"><a href="#cb25-4"></a>  side views<span class="op">:</span><span class="st"> </span>lateral, medial </span>
-<span id="cb25-5"><a href="#cb25-5"></a>  palette<span class="op">:</span><span class="st"> </span>no </span>
-<span id="cb25-6"><a href="#cb25-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
-<span id="cb25-7"><a href="#cb25-7"></a><span class="op">----</span></span>
-<span id="cb25-8"><a href="#cb25-8"></a><span class="st">   </span>hemi  side    region                label                   roi  </span>
-<span id="cb25-9"><a href="#cb25-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                 </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span></span>
-<span id="cb25-10"><a href="#cb25-10"></a><span class="st"> </span><span class="dv">1</span> left  lateral caudal middle frontal lh_caudalmiddlefrontal  <span class="dv">0002</span> </span>
-<span id="cb25-11"><a href="#cb25-11"></a> <span class="dv">2</span> left  lateral fusiform              lh_fusiform             <span class="dv">0005</span> </span>
-<span id="cb25-12"><a href="#cb25-12"></a> <span class="dv">3</span> left  lateral inferior parietal     lh_inferiorparietal     <span class="dv">0006</span> </span>
-<span id="cb25-13"><a href="#cb25-13"></a> <span class="dv">4</span> left  lateral inferior temporal     lh_inferiortemporal     <span class="dv">0007</span> </span>
-<span id="cb25-14"><a href="#cb25-14"></a> <span class="dv">5</span> left  lateral lateral occipital     lh_lateraloccipital     <span class="dv">0009</span> </span>
-<span id="cb25-15"><a href="#cb25-15"></a> <span class="dv">6</span> left  lateral lateral orbitofrontal lh_lateralorbitofrontal <span class="dv">0010</span> </span>
-<span id="cb25-16"><a href="#cb25-16"></a> <span class="dv">7</span> left  lateral middle temporal       lh_middletemporal       <span class="dv">0013</span> </span>
-<span id="cb25-17"><a href="#cb25-17"></a> <span class="dv">8</span> left  lateral pars opercularis      lh_parsopercularis      <span class="dv">0016</span> </span>
-<span id="cb25-18"><a href="#cb25-18"></a> <span class="dv">9</span> left  lateral pars orbitalis        lh_parsorbitalis        <span class="dv">0017</span> </span>
-<span id="cb25-19"><a href="#cb25-19"></a><span class="dv">10</span> left  lateral pars triangularis     lh_parstriangularis     <span class="dv">0018</span> </span>
-<span id="cb25-20"><a href="#cb25-20"></a><span class="co"># … with 71 more rows</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">aseg2</span><span class="op">$</span><span class="va">palette</span> <span class="op">&lt;-</span> <span class="cn">NULL</span>
+<span class="va">aseg2</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co"># aseg subcortical brain atlas</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a>  regions<span class="op">:</span><span class="st"> </span><span class="dv">15</span> </span>
+<span id="cb32-3"><a href="#cb32-3"></a>  hemispheres<span class="op">:</span><span class="st"> </span>left, <span class="ot">NA</span>, right </span>
+<span id="cb32-4"><a href="#cb32-4"></a>  side views<span class="op">:</span><span class="st"> </span>coronal, sagittal, axial </span>
+<span id="cb32-5"><a href="#cb32-5"></a>  palette<span class="op">:</span><span class="st"> </span>no </span>
+<span id="cb32-6"><a href="#cb32-6"></a>  use<span class="op">:</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">geom_brain</span>() </span>
+<span id="cb32-7"><a href="#cb32-7"></a><span class="op">----</span></span>
+<span id="cb32-8"><a href="#cb32-8"></a><span class="st">   </span>side    hemi  roi   label                   region           </span>
+<span id="cb32-9"><a href="#cb32-9"></a>   <span class="op">&lt;</span>chr<span class="op">&gt;</span><span class="st">   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st"> </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">                   </span><span class="er">&lt;</span>chr<span class="op">&gt;</span><span class="st">            </span></span>
+<span id="cb32-10"><a href="#cb32-10"></a><span class="st"> </span><span class="dv">1</span> coronal left  <span class="dv">0004</span>  Left<span class="op">-</span>Lateral<span class="op">-</span>Ventricle  lateral ventricle</span>
+<span id="cb32-11"><a href="#cb32-11"></a> <span class="dv">2</span> coronal left  <span class="dv">0010</span>  Left<span class="op">-</span>Thalamus<span class="op">-</span>Proper    thalamus proper  </span>
+<span id="cb32-12"><a href="#cb32-12"></a> <span class="dv">3</span> coronal left  <span class="dv">0012</span>  Left<span class="op">-</span>Putamen            putamen          </span>
+<span id="cb32-13"><a href="#cb32-13"></a> <span class="dv">4</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0014</span>  3rd<span class="op">-</span>Ventricle           3rd ventricle    </span>
+<span id="cb32-14"><a href="#cb32-14"></a> <span class="dv">5</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0016</span>  Brain<span class="op">-</span>Stem              brain stem       </span>
+<span id="cb32-15"><a href="#cb32-15"></a> <span class="dv">6</span> coronal left  <span class="dv">0017</span>  Left<span class="op">-</span>Hippocampus        hippocampus      </span>
+<span id="cb32-16"><a href="#cb32-16"></a> <span class="dv">7</span> coronal <span class="op">&lt;</span><span class="ot">NA</span><span class="op">&gt;</span><span class="st">  </span><span class="dv">0024</span>  CSF                     csf              </span>
+<span id="cb32-17"><a href="#cb32-17"></a> <span class="dv">8</span> coronal left  <span class="dv">0028</span>  Left<span class="op">-</span>VentralDC          ventraldc        </span>
+<span id="cb32-18"><a href="#cb32-18"></a> <span class="dv">9</span> coronal right <span class="dv">0043</span>  Right<span class="op">-</span>Lateral<span class="op">-</span>Ventricle lateral ventricle</span>
+<span id="cb32-19"><a href="#cb32-19"></a><span class="dv">10</span> coronal right <span class="dv">0049</span>  Right<span class="op">-</span>Thalamus<span class="op">-</span>Proper   thalamus proper  </span>
+<span id="cb32-20"><a href="#cb32-20"></a><span class="co"># … with 70 more rows</span></span></code></pre></div>
 <p>When there is no palette, the default atlas plot will return with default ggplot2 colours. This is absolutely a valid option. The palette is an optional part of the atlas.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">dkt</span><span class="op">)</span></code></pre></div>
-<p><img src="figures/dkt_nocol.png" width="90%"></p>
-<p>If you want to correctly apply a palette, the <code>dkt$palette</code> part of the atlas is a named character vector, where the value of the vector is the hex-colour code, and the names of the elements are the region names as seen in the <code>region</code> column of the atlas data.</p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aseg2</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/aseg2_nocol.png" width="90%"></p>
+<p>If you want to correctly apply a palette, the <code>aseg2$palette</code> part of the atlas is a named character vector, where the value of the vector is the hex-colour code, and the names of the elements are the region names as seen in the <code>region</code> column of the atlas data.</p>
 </div>
 </div>
 <div id="summary" class="section level2">
 <h2 class="hasAnchor">
 <a href="#summary" class="anchor"></a>Summary</h2>
 <p>All together, the script to create both 3d and 2d atlases of the aseg parcellation looks like this:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggseg">ggseg</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span>
@@ -422,6 +496,7 @@
 <span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"cortex"</span>, <span class="va">region</span><span class="op">)</span>, <span class="cn">NA</span>, <span class="va">region</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">aseg2</span>, alpha <span class="op">=</span> <span class="fl">.8</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/aseg2_complete.png"><!-- --></p>
 </div>
   </div>
 
