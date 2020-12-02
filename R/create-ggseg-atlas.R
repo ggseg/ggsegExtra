@@ -243,18 +243,19 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
 #' @param ggseg3d_atlas ggseg3d-atlas
 #' @return list
 #' @export
-#'
+#' @importFrom tidyr unnest
+#' @importFrom dplyr select distinct
+#' @importFrom stats na.omit setNames
 #' @examples
 #' make_palette_ggseg(ggseg3d::dk_3d)
 make_palette_ggseg <- function(ggseg3d_atlas){
   
-  j <- dplyr::filter(ggseg3d_atlas, surf == "LCBC")
-  j <- tidyr::unnest(j, ggseg_3d)
-  j <- dplyr::select(j, region, colour)
-  j <- dplyr::distinct(j)
-  j <- stats::na.omit(j)
+  j <- unnest(ggseg3d_atlas, ggseg_3d)
+  j <- select(j, region, colour)
+  j <- distinct(j)
+  j <- na.omit(j)
   
-  k <- list(stats::setNames(
+  k <- list(setNames(
     j$colour,
     j$region
   ))
