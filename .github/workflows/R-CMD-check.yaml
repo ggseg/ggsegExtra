@@ -63,7 +63,7 @@ jobs:
            brew install pkg-config gdal proj geos
       
       - name: Install Linux dependencies
-        if: runner.os == "Linux"
+        if: runner.os == 'Linux'
         run: |
           while read -r cmd 
           do
