@@ -61,7 +61,23 @@ jobs:
            # conflicts with gfortran from r-lib/actions when linking gcc
            rm '/usr/local/bin/gfortran'
            brew install pkg-config gdal proj geos
-           
+      
+      - name: Install Linux dependencies
+        if: runner.os == "Linux"
+        run: |
+          while read -r cmd 
+          do
+            eval sudo $cmd
+          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
+          sudo apt-get -qq update ;
+          sudo apt-get install -y libmagick++-dev ;
+          sudo apt-get install -y libv8-dev libssh-dev;
+          sudo apt-get install -y ghostscript imagemagick || true ;
+          sudo apt-get install libudunits2-dev libgdal-dev
+          sudo apt-get install -y mesa-common-dev libglu1-mesa-dev || true;
+          sudo apt-get install libxi-dev libxmu-dev
+          sudo apt-get install libgdal-dev
+
       - name: Install FreeSurfer
         if: runner.os == 'Linux'
         run: |
