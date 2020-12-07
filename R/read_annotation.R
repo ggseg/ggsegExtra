@@ -120,7 +120,7 @@ read_annotation <- function(path, verbose = TRUE){
   }
   
   return(
-    list(vertices = vertices,
+    annotation(vertices = vertices,
          label = label,
          colortable = colortable)
   )

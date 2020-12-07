@@ -61,29 +61,18 @@ jobs:
            # conflicts with gfortran from r-lib/actions when linking gcc
            rm '/usr/local/bin/gfortran'
            brew install pkg-config gdal proj geos
-
-      - name: Install linux dependencies
+           
+      - name: Install FreeSurfer
         if: runner.os == 'Linux'
         run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-          # sudo apt install php php-common gcc
-          sudo apt install imagemagick
-          # sudo apt install php-imagick
-          # sudo systemctl restart apache2
-          sudo apt-get install libudunits2-dev
-          sudo apt-get install libgdal-dev
-          sudo apt-get install libglu1-mesa libxi-dev libxmu-dev libglu1-mesa-dev
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-
+          sudo apt-get -y install bc binutils libgomp1 perl psmisc sudo tar tcsh unzip uuid-dev vim-common libjpeg62-dev || true ;
+          wget --quiet -O freesurfer.tar.gz https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/6.0.0/freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz ;
+          sudo tar -C /usr/local -xzf freesurfer.tar.gz ;
+          sudo rm -rf freesurfer.tar.gz ;
+          # sudo rm travis_wait*.log ;
+          export FREESURFER_HOME=/usr/local/freesurfer; source $FREESURFER_HOME/SetUpFreeSurfer.sh ;
+          export PATH=${PATH}:${FREESURFER_HOME}/bin:${FREESURFER_HOME}/mni/bin ;
+          sudo chown -R $(whoami) ${FREESURFER_HOME};
 
       - name: Install dependencies
         run: |
