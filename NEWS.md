@@ -1,4 +1,13 @@
-# ggsegExtra 1.5.3
+
+# ggsegExtra 1.5
+
+## ggsegExtra 1.5.32
+
+* non-standard columns in 3d atlas are retained in 2d atlas
+* Freesurfer annotation file custom S3 class implemented
+* progressbar for region snapshots
+
+## ggsegExtra 1.5.3
 
 * Added pipeline functions for:  
     - creating ggseg3d-atlas from annotation files 
