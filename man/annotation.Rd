@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_annotation.R
 \name{annotation}
 \alias{annotation}
-\title{Contructor for freesurfer_annotation-class}
+\title{Constructor for freesurfer_annotation-class}
 \usage{
 annotation(vertices, labels, colortable = NULL)
 }

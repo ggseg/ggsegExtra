@@ -11,7 +11,6 @@
 #' @template smoothness
 #' @template tolerance
 #' @template cleanup
-# #' @template verbose
 #'
 #' @return data.frame ready for manual cleaning
 #' @export

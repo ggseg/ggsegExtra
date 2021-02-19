@@ -140,7 +140,7 @@ as_annotation <- function(x){
   )
 }
 
-#' Contructor for freesurfer_annotation-class
+#' Constructor for freesurfer_annotation-class
 #' 
 #' freesurfer_annotation is a special object
 #' containing the three components of a 
