@@ -63,7 +63,7 @@ jobs:
            brew install pkg-config gdal proj geos
            brew install imagemagick libpng ghostscript wget 
            brew tap coin-or-tools/coinor
-           brew install symphony.
+           brew install coin-or-tools/coinor/symphony.
            Rscript -e "install.packages('R2OpenBUGS',type='source')"
       
       - name: Install Linux dependencies

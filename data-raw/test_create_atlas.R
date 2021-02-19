@@ -1,4 +1,4 @@
-library(ggsegExtra)
+devtools::load_all(".")
 library(tidyverse)
 
 # cortical ----
@@ -15,24 +15,25 @@ mri_surf2surf_rereg(subject = "bert",
 
 
 # Make  3d ----
-
-dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
+dkt_3d_init <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
                                annot_dir = "data-raw/",
-                               output_dir = "~/Desktop") %>%
+                               output_dir = "~/Desktop")
+dkt_3d <- dkt_3d_init %>% 
   mutate(atlas = "dkt_3d")%>%
   unnest(ggseg_3d) %>%
   select(-region) %>%
   left_join(select(dk$data, hemi, region, label)) %>%
+  mutate(random = "test column") %>% 
   nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
   as_ggseg3d_atlas()
 
 # make atlas ----
 dkt <- make_ggseg3d_2_ggseg(dkt_3d,
-                            steps = 1:7,
+                            steps = 6:7,
                             smoothness = 2,
-                            tolerance = .5,
+                            tolerance = .8,
                             output_dir = "~/Desktop/")
-plot(dkt)
+plot(dkt, show.legend = FALSE)
 
 
 # subcortical ----
