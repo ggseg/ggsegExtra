@@ -24,6 +24,9 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                                  ncores = parallel::detectCores()-2
 ){
   
+  if(!has_orca()) stop("Orca (for plotly) not installed, cannot run pipeline. See https://github.com/plotly/orca#installation", call. = FALSE)
+  if(!has_magick()) stop("ImageMagick not installed, cannot run pipeline. See https://imagemagick.org/script/download.php", call. = FALSE)
+  
   if(!ggseg3d::is_ggseg3d_atlas(ggseg3d_atlas)){
     cat(crayon::red("Atlas must be a valid ggseg3d-atlas\n"),
         "Check atlas with", usethis::ui_code('is_ggseg3d_atlas()')
@@ -86,8 +89,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
   
   # region snapshots ----
   if(2 %in% steps){
-    if(!has_orca())
-      stop(call. = FALSE)
+    if(!has_orca()) stop(call. = FALSE)
     
     usethis::ui_todo("2/7 Snapshotting individual regions to {dirs[2]}")
     
@@ -292,11 +294,16 @@ make_palette_ggseg <- function(ggseg3d_atlas){
 #' @examples
 #' \dontrun{
 #' 
-#' aseg2 <- make_volumetric_ggseg(label_file =  file.path(subjects_dir, subject, "mri/aseg.mgz"))
+#'    label_file <- file.path(freesurfer::fs_subj_dir(), subject, "mri/aseg.mgz")
+#'    slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
+#'    
+#'    aseg2 <- make_volumetric_ggseg(
+#'       label_file =  label_file,
+#'       slices = slices
+#'    )
 #' 
-#' # Have a look at the atlas
-#' plot(aseg2)
-#' 
+#'    # Have a look at the atlas
+#'    plot(aseg2)
 #' }
 make_volumetric_ggseg <- function(label_file,
                                   subject = "fsaverage5",
@@ -320,7 +327,10 @@ make_volumetric_ggseg <- function(label_file,
 ){
   
   if(!freesurfer::have_fs())
-    stop("FreeSurfer not installed. Cannot run pipeline", call. = FALSE)
+    stop("FreeSurfer not installed. Cannot run pipeline. See http://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall", call. = FALSE)
+  if(!has_magick()) 
+    stop("ImageMagick not installed, cannot run pipeline. See https://imagemagick.org/script/download.php", call. = FALSE)
+  
   
   viewport <- match.arg(slices$view,
                         c('sagittal','coronal', 'axial'), 
@@ -548,6 +558,6 @@ make_volumetric_ggseg <- function(label_file,
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
   utils::globalVariables(c("roi", ".subid", "color",
-                           ".lat", ".long", ".id",
+                           ".lat", ".long", ".id", "mesh", 
                            "filenm", "colour", "tmp_dt", "ggseg"))
 }

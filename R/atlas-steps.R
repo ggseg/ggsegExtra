@@ -95,6 +95,7 @@ save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose){
 
 snapshot_brain <- function(ggseg3d_atlas, hemisphere, view, surface, 
                            output_dir, pb = NULL) {
+  if(!has_orca()) stop("Orca (for plotly) not installed, cannot run command", call. = FALSE)
   if(!is.null(pb)) pb$tick()$print()
   p <- ggseg3d::ggseg3d(atlas = ggseg3d_atlas, 
                         hemisphere = hemisphere, 

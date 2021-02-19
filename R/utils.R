@@ -90,11 +90,13 @@ isolate_colour <- function(file, outdir,
 
 
 has_magick <- function(){
-  k <- system("which convert", intern = TRUE)
-  ifelse(k == "", FALSE, TRUE)
-  
+  k <- magick_version()
+  ifelse(length(k) > 1, TRUE, FALSE)
 }
 
+magick_version <- function()(
+  system("identify --version", intern = TRUE)
+)
 
 check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
   
@@ -137,19 +139,22 @@ has_gdal <- function(min_version = gdal_min(), verbose = TRUE){
   
 }
 
+has_orca <- function(){
+  k <- Sys.getenv("orca")
+  if(length(k)>0) return(TRUE)
+  
+  k <- system("which orca", intern = TRUE)
+  ifelse(k == "", FALSE, TRUE)
+}
 
-has_orca <- function(verbose = TRUE){
-  
-  x <- system2("orca", "--version", stdout = TRUE, stderr = TRUE)
-  
-  if(length(x) == 0|| x == ""){
-    if(verbose)
-      cat("Cannot find orca installed.\n See install instructions at: https://github.com/plotly/orca")
-    return(FALSE)
+
+orca_version <- function(){
+  if(has_orca()){
+    cat("Cannot find orca installed.\n See install instructions at: https://github.com/plotly/orca")
+    return(NA_character_)
   }
-
- return(TRUE)
   
+  system2("orca", "--version", stdout = TRUE, stderr = TRUE)
 }
 
 

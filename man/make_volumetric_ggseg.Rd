@@ -64,10 +64,15 @@ Make ggseg atlas from volumetric template
 \examples{
 \dontrun{
 
-aseg2 <- make_volumetric_ggseg(label_file =  file.path(subjects_dir, subject, "mri/aseg.mgz"))
+   label_file <- file.path(freesurfer::fs_subj_dir(), subject, "mri/aseg.mgz")
+   slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
+   
+   aseg2 <- make_volumetric_ggseg(
+      label_file =  label_file,
+      slices = slices
+   )
 
-# Have a look at the atlas
-plot(aseg2)
-
+   # Have a look at the atlas
+   plot(aseg2)
 }
 }

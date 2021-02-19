@@ -219,7 +219,7 @@ make_aparc_2_3datlas <- function(annot = "aparc",
 #     cleanup = FALSE,
 #     verbose = FALSE
 #   )
-# browser()
+
   dt <- parallel::mcmapply(
     aparc_2_mesh,
     hemisphere = dt2$hemi,
