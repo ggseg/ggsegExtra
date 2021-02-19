@@ -161,7 +161,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     
     tmp_atlas <- dplyr::filter(ggseg3d_atlas, surf == surface)
     tmp_atlas <- tidyr::unnest(tmp_atlas, ggseg_3d)
-    tmp_atlas <- dplyr::select(tmp_atlas, roi, region, label)
+    tmp_atlas <- dplyr::select(tmp_atlas, -mesh, -colour)
     tmp_atlas <- dplyr::mutate(tmp_atlas,
                                hemi = dplyr::case_when(
                                  is.na(region) ~ NA_character_,
@@ -204,7 +204,11 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                                  geometry = sf::st_combine(geometry))
     atlas_df_sf <- dplyr::ungroup(atlas_df_sf)
     
-    # browser()
+    dt <- dplyr::select(dt, 
+                        -dplyr::one_of(c("atlas", "surf", "colour", "mesh", "geometry")))
+    dt <- unique(dt)
+    
+    atlas_df_sf <- suppressMessages(left_join(atlas_df_sf, dt))
     
     if(cleanup){
       unlink(dirs[1], recursive = TRUE)
