@@ -38,13 +38,13 @@ read_annotation <- function(path, verbose = TRUE){
   tmp <- readBin(ff, integer(), n=2*annot, endian = "big")
   
   vertices <- tmp[seq(1, by=2, length.out = length(tmp)/2)]
-  label <- tmp[seq(2, by=2, length.out = length(tmp)/2)]
+  labels <- tmp[seq(2, by=2, length.out = length(tmp)/2)]
   
   bool <- readBin(ff, integer(), endian = "big")
   
   if(is.null(bool)){
     colortable <- data.frame(matrix(NA, ncol=6, nrow = 0))
-    names(colortable) <- c("label", "R", "G", "B", "A", "code")
+    names(colortable) <- c("labels", "R", "G", "B", "A", "code")
     if(verbose) cat('No colortable in file.\n')
     
   }else if(bool == 1){
@@ -80,7 +80,7 @@ read_annotation <- function(path, verbose = TRUE){
     numEntriesToRead <- readBin(ff, integer(), endian = "big")
     
     colortable <- data.frame(matrix(NA, ncol=6, nrow = numEntriesToRead))
-    names(colortable) <- c("label", "R", "G", "B", "A", "code")
+    names(colortable) <- c("labels", "R", "G", "B", "A", "code")
     
     for(i in 1:numEntriesToRead){
       
@@ -88,11 +88,11 @@ read_annotation <- function(path, verbose = TRUE){
       
       if (structure < 0 & verbose) cat(paste('Error! Read entry, index', structure, '\n'))
       
-      if( (structure %in% colortable$label) & verbose) 
+      if( (structure %in% colortable$labels) & verbose) 
         cat(paste('Error! Duplicate Structure', structure, '\n'))
       
       len <- readBin(ff, integer(), endian = "big")
-      colortable$label[structure] = t( readBin(ff, character(), n = 1, endian = "big"))
+      colortable$labels[structure] = t( readBin(ff, character(), n = 1, endian = "big"))
       
       colortable$R[structure] <- readBin(ff, integer(), endian = "big")
       colortable$G[structure] <- readBin(ff, integer(), endian = "big")
@@ -115,13 +115,13 @@ read_annotation <- function(path, verbose = TRUE){
   
   # This makes it so that each empty entry at least has a string, even
   # if it is an empty string. This can happen with average subjects.
-  if( any(is.na(colortable$label))){
-    colortable$label[is.na(colortable$label)] = ""
+  if( any(is.na(colortable$labels))){
+    colortable$labels[is.na(colortable$labels)] = ""
   }
   
   return(
     annotation(vertices = vertices,
-         label = label,
+         labels = labels,
          colortable = colortable)
   )
 }

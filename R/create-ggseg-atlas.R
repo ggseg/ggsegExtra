@@ -105,20 +105,21 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                              hemi = hemi, 
                              view = c("lateral", "medial"))
     
-    j <- parallel::mcmapply(snapshot_region,
-                            region = full_list$roi,
-                            hemisphere = full_list$hemi,
-                            view = full_list$view,
-                            MoreArgs = list(
-                              surface = surface, 
-                              ggseg3d_atlas = ggseg3d_atlas,
-                              .data = tmp_atlas,
-                              output_dir = dirs[2]
-                            ),
-                            
-                            mc.cores = ncores, 
-                            mc.preschedule = TRUE, 
-                            SIMPLIFY = TRUE
+    j <- pbmcapply::pbmcmapply(
+      snapshot_region,
+      region = full_list$roi,
+      hemisphere = full_list$hemi,
+      view = full_list$view,
+      MoreArgs = list(
+        surface = surface, 
+        ggseg3d_atlas = ggseg3d_atlas,
+        .data = tmp_atlas,
+        output_dir = dirs[2]
+      ),
+      
+      mc.cores = ncores, 
+      mc.preschedule = TRUE, 
+      SIMPLIFY = TRUE
     )
     
     usethis::ui_done("Region snapshots complete")
