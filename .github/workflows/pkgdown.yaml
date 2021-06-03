@@ -37,6 +37,24 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
+        
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        env:
+          XQUARTZ_VERSION: 2.7.11
+        run: |
+           curl -fLo /tmp/XQuartz.dmg "https://dl.bintray.com/xquartz/downloads/XQuartz-${XQUARTZ_VERSION}.dmg"
+           sudo hdiutil attach -noverify /tmp/XQuartz.dmg
+           sudo installer -pkg "/Volumes/XQuartz-${XQUARTZ_VERSION}/XQuartz.pkg" -target /
+           sudo hdiutil detach /Volumes/XQuartz-${XQUARTZ_VERSION}
+           rm /tmp/XQuartz.dmg
+           # conflicts with gfortran from r-lib/actions when linking gcc
+           rm '/usr/local/bin/gfortran'
+           brew install pkg-config gdal proj geos
+           brew install imagemagick libpng ghostscript wget 
+           brew tap coin-or-tools/coinor
+           brew install coin-or-tools/coinor/symphony.
+           Rscript -e "install.packages('R2OpenBUGS',type='source')"
 
       - name: Install package
         run: R CMD INSTALL .
