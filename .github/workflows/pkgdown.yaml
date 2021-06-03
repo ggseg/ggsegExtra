@@ -43,8 +43,7 @@ jobs:
         env:
           XQUARTZ_VERSION: 2.7.11
         run: |
-           cd $(brew --repo); git fetch; git reset --hard origin/master; brew update
-           brew cask install xquartz
+           brew install xquartz --cask
            # conflicts with gfortran from r-lib/actions when linking gcc
            rm '/usr/local/bin/gfortran'
            brew install pkg-config gdal proj geos
