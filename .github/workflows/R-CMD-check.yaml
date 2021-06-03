@@ -28,16 +28,14 @@ jobs:
         
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
-        env:
-          XQUARTZ_VERSION: 2.7.11
         run: |
-           brew cask install xquartz
+           brew install xquartz --cask
            # conflicts with gfortran from r-lib/actions when linking gcc
            rm '/usr/local/bin/gfortran'
-           brew install pkg-config gdal proj geos
-           brew install imagemagick libpng ghostscript wget 
+           brew install gdal proj geos
+           brew install imagemagick ghostscript 
            brew tap coin-or-tools/coinor
-           brew install coin-or-tools/coinor/symphony.
+           brew install symphony
            Rscript -e "install.packages('R2OpenBUGS',type='source')"
            
       - name: Check
