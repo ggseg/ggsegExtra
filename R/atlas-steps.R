@@ -1,11 +1,15 @@
 
 #' Nifti volume to surface
+#' 
+#' Transform a Nifti volume to a surface
+#' file for FreeSurfer. Calls
+#' FreeSurfer's \code{mri_vol2surf} for the transformation.
 #'
 #' @param input_file nifti volume
 #' @template output_dir
 #' @param projfrac value to mri_vol2surf -projfrac
 #' @template verbose
-#'
+#' @returns nothing, creates surface files
 #' @export
 atlas_vol2surf <- function(input_file, output_dir, 
                            projfrac = .5, verbose = TRUE){
@@ -21,10 +25,15 @@ atlas_vol2surf <- function(input_file, output_dir,
 }
 
 #' Volume to label
+#' 
+#' Turn volumetric files into labels for
+#' use in annotations. Calls FreeSurfer's
+#' \code{mri_vol2label}.
 #'
 #' @param annot_lab annotation label
 #' @template ncores
 #' @inheritParams atlas_vol2surf 
+#' @returns invisibly returns the list of labels. 
 #' @export
 atlas_vol2label <- function(annot_lab, output_dir, verbose, ncores = parallel::detectCores()-2){
   if(verbose) cat("... extracting labels\n")
@@ -42,9 +51,12 @@ atlas_vol2label <- function(annot_lab, output_dir, verbose, ncores = parallel::d
 }
 
 #' Label to ctab
+#' 
+#' Create a FreeSurfer colortab based
+#' on labels. Calls FreeSurfer's \code{mris_lab2ctab}
 #'
 #' @inheritParams atlas_vol2surf 
-#'
+#' @return returns nothing, creates files on the file system
 #' @export
 atlas_lab2ctab <- function(output_dir, verbose){
   if(verbose) cat("... making ctab\n")
@@ -62,7 +74,7 @@ atlas_lab2ctab <- function(output_dir, verbose){
   }
 }
 
-
+#' @noRd
 save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose){
   if(verbose) cat("\n Saving dataset")
   save(atlas_df_gg,  file=paste0(output_dir, atlas_name, ".rda"))
@@ -92,7 +104,7 @@ save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose){
 #' @param view view
 #' @param pb progressbar
 #' @template output_dir 
-
+#' @noRd
 snapshot_brain <- function(ggseg3d_atlas, hemisphere, view, surface, 
                            output_dir, pb = NULL) {
   if(!has_orca()) stop("Orca (for plotly) not installed, cannot run command", call. = FALSE)
@@ -111,6 +123,7 @@ snapshot_brain <- function(ggseg3d_atlas, hemisphere, view, surface,
                                       ".png")))
 }
 
+#' @noRd
 snapshot_region <- function(.data,  region, ggseg3d_atlas, hemisphere, 
                             view, surface, output_dir, pb = NULL) {
   
@@ -139,6 +152,7 @@ snapshot_region <- function(.data,  region, ggseg3d_atlas, hemisphere,
                                       ".png")))
 }
 
+#' @noRd
 extract_contours <- function(input_dir, output_dir, step, 
                              verbose = TRUE, 
                              ncores = parallel::detectCores()-2,
@@ -184,6 +198,7 @@ extract_contours <- function(input_dir, output_dir, step,
   invisible(contours)
 }
 
+#' @noRd
 smooth_contours <- function(dir, smoothness, step, ncores = parallel::detectCores()-2) {
   usethis::ui_todo("{step} Smoothing contours")
   load(file.path(dir, "contours.rda"))
@@ -199,7 +214,7 @@ smooth_contours <- function(dir, smoothness, step, ncores = parallel::detectCore
   invisible(contours)
 }
 
-
+#' @noRd
 reduce_vertex <- function(dir, tolerance, step) {
   usethis::ui_todo("{step} Reducing vertexes")
   load(file.path(dir, "contours_smoothed.rda"))
@@ -214,7 +229,7 @@ reduce_vertex <- function(dir, tolerance, step) {
   invisible(contours)
 }
 
-
+#' @noRd
 make_multipolygon <- function(contourfile) {
   # make contour polygons to multipolygons
   load(contourfile)
@@ -247,6 +262,7 @@ make_multipolygon <- function(contourfile) {
   return(contours)
 }
 
+#' @noRd
 prep_labels <- function(label_file, color_lut, subject, subjects_dir, 
                         output_dir, step="", verbose, ncores = parallel::detectCores()-2,
                         skip_existing = TRUE) {

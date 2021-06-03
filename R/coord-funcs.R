@@ -34,7 +34,7 @@ resize_coords_sf <- function(data, by){
 #' @param input_file image file path
 #' @param output_file output file path
 #' @param interrim_file interrim image path
-#'
+#' @noRd
 isolate_region <- function(input_file, 
                            output_file, 
                            interrim_file = tempfile()){
@@ -96,13 +96,13 @@ adjust_coords_sf <- function(atlas_df){
                 atlas[[3]]) # right lat
   
   # rescale the small ones
-  atlas <- purrr::map2(atlas, c(.98, .74, .94, .78), 
-                       ~ resize_coords_sf(.x, .y))
-  
+  sz <- c(.98, .74, .94, .78)
+  atlas <- lapply(1:4, function(x) resize_coords_sf(atlas[[x]], sz[x]))
+
   # correct coordinates so they ar ealigned and moved next to eachoter
-  atlas <- purrr::map2(atlas, c(0, 350, 750, 1100), 
-                       ~ correct_coords_sf(.x, .y))
-  
+  sz <-  c(0, 350, 750, 1100)
+  atlas <- lapply(1:4, function(x) correct_coords_sf(atlas[[x]], sz[x]))
+
   atlas_df_r <- do.call(rbind, atlas)
   
   return(dplyr::ungroup(atlas_df_r))
@@ -172,8 +172,7 @@ coords2sf <- function(x, vertex_size_limits = NULL) {
 sf2coords <- function(x){
   dt <- dplyr::mutate(
     x,
-    ggseg = purrr::map2(geometry, 1:nrow(x),
-                        ~ to_coords(.x, .y))
+    ggseg = list(to_coords(geometry, 1:nrow(x)))
   )
   dt$geometry <- NULL
   

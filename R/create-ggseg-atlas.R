@@ -1,9 +1,9 @@
 #' Turn ggseg3d-atlas to ggseg
 #'
-#' Function will create a dataframe
+#' Function will create a data.frame
 #' based on a ggseg3d atlas, based on
 #' the contours of each segment.
-#'
+#' 
 #' @param ggseg3d_atlas object of class ggseg3d-atlas
 #' @template steps
 #' @template output_dir
@@ -12,8 +12,16 @@
 #' @template tolerance
 #' @template cleanup
 #'
-#' @return data.frame ready for manual cleaning
+#' @return data.frame ready for manual cleaning before turning into a proper ggseg3d-atlas
 #' @export
+#' @examples 
+#' \dontrun{
+#' 
+#' # Create the DKT atlas as found in the FreeSurfer Subjects directory
+#' # And output the temporary files to the Desktop.
+#' dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
+#'     output_dir = "~/Desktop/")
+#' }
 make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                                  steps = 1:7,
                                  output_dir = tempdir(),
@@ -208,7 +216,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                         -dplyr::one_of(c("atlas", "surf", "colour", "mesh", "geometry")))
     dt <- unique(dt)
     
-    atlas_df_sf <- suppressMessages(left_join(atlas_df_sf, dt))
+    atlas_df_sf <- suppressMessages(dplyr::left_join(atlas_df_sf, dt))
     
     if(cleanup){
       unlink(dirs[1], recursive = TRUE)
@@ -247,7 +255,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
 #' ready for incorporation to a ggseg-atlas repository
 #'
 #' @param ggseg3d_atlas ggseg3d-atlas
-#' @return list
+#' @return list with a colour palette
 #' @export
 #' @importFrom tidyr unnest
 #' @importFrom dplyr select distinct
@@ -274,7 +282,12 @@ make_palette_ggseg <- function(ggseg3d_atlas){
 
 #' Make ggseg atlas from volumetric template
 #' 
-#' 
+#' If making an atlas from a non-cortical atlas,
+#' volumetric atlases are the best options. 
+#' Instead of snapshotting images of inflated
+#' brain, will snapshot brain slices given x, y, z
+#' coordinates for the slices trhoush the \code{slices}
+#' argument.
 #'
 #' @template subject 
 #' @template subjects_dir 
@@ -282,7 +295,7 @@ make_palette_ggseg <- function(ggseg3d_atlas){
 #' @template output_dir 
 #' @param color_lut a file containing color information for the labels
 #' @template steps 
-#' @param skip_existing logical. If slice snapsnots already exist, should these be skipped.
+#' @param skip_existing logical. If slice snapshots already exist, should these be skipped.
 #' @param slices a data.frame with columns x, y, z, and view specifying coordinates and view of slice snapshots.
 #' @template vertex_size_limits 
 #' @param dilate numeric. Dilation factor for polygons. Default NULL applies no dilation.

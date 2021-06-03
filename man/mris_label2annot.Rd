@@ -6,8 +6,8 @@
 \usage{
 mris_label2annot(
   labels,
-  hemisphere = "rh",
   ctab,
+  hemisphere = "rh",
   subject = "fsaverage5",
   subjects_dir = freesurfer::fs_subj_dir(),
   annot_dir = file.path(subjects_dir, subject, "label"),
@@ -17,11 +17,11 @@ mris_label2annot(
 )
 }
 \arguments{
-\item{labels}{label vector}
-
-\item{hemisphere}{hemisphere, either "rh" or "lh"}
+\item{labels}{label file path vector}
 
 \item{ctab}{colourtable file}
+
+\item{hemisphere}{hemisphere, either "rh" or "lh"}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
@@ -37,5 +37,29 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{verbose}{logical indicating to be verbose or not}
 }
 \description{
-Convert Label to Annotation
+If you have labels rather than a full annotation
+file, these can be combined with FreeSurfer's
+\code{mris_label2annot}.
+}
+\examples{
+if(freesurfer::have_fs()){
+# for freesurfer help see:
+freesurfer::fs_help("mris_label2annot")
+
+# Split up aparc annot into labels
+mri_annotation2label(annot_name = "aparc")
+
+# get annot for colour labels
+annot <- freesurfer::read_annotation(
+              file.path(freesurfer::fs_subj_dir(), 
+                        "fsaverage5/label/rh.aparc.annot"))
+
+labels <- list.files(
+   file.path(freesurfer::fs_subj_dir(), "fsaverage5/label/aparc"), 
+    full.names = TRUE)
+
+# Combine them again into annot.
+mris_label2annot(labels, annot$colortable)
+
+}
 }

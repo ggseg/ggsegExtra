@@ -1,6 +1,7 @@
 #' Find the mode of a vector
 #'
 #' @param x vector
+#' @noRd
 getmode <- function(x) {
   tmp <- tabulate(x)
   if(length(unique(tmp)) == 1){
@@ -10,6 +11,7 @@ getmode <- function(x) {
   }
 }
 
+#' @noRd
 get_contours <- function(raster_object, max_val = 255, 
                          vertex_size_limits = c(3*10^6,3*10^7),
                          verbose = TRUE){
@@ -46,7 +48,7 @@ get_contours <- function(raster_object, max_val = 255,
   }
 }
 
-
+#' @noRd
 isolate_colour <- function(file, outdir, 
                            dilation = NULL, 
                            eroding = NULL, 
@@ -88,16 +90,18 @@ isolate_colour <- function(file, outdir,
   
 }
 
-
+#' @noRd
 has_magick <- function(){
   k <- magick_version()
   ifelse(length(k) > 1, TRUE, FALSE)
 }
 
+#' @noRd
 magick_version <- function()(
   system("identify --version", intern = TRUE)
 )
 
+#' @noRd
 check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
   
   jj <- sum(count_vertices(atlas_df_sf))
@@ -111,8 +115,10 @@ check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
   
 }
 
+#' @noRd
 gdal_min <- function() "2.4.0"
 
+#' @noRd
 has_gdal <- function(min_version = gdal_min(), verbose = TRUE){
   x <- rgdal::getGDALVersionInfo()
   
@@ -139,6 +145,7 @@ has_gdal <- function(min_version = gdal_min(), verbose = TRUE){
   
 }
 
+#' @noRd
 has_orca <- function(){
   k <- Sys.getenv("orca")
   if(length(k)>0) return(TRUE)

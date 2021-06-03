@@ -39,15 +39,15 @@ library(tidyverse) # for cleaning the atlas data efficiently
 ## Creating a 3d atlas
 
 ### The template file
-Subcortical segmentations are usually stored in volumetric images with `.mgz` extension.
+Sub-cortical segmentations are usually stored in volumetric images with `.mgz` extension.
 These usually also include the cortex, white matter and CSF.
-Some volumetric segmentations may contain both segmentations of the cortex and the subcortex.
+Some volumetric segmentations may contain both segmentations of the cortex and the sub-cortex.
 If you have such a template, we would recommend making a version where the cortex is one large segmentation, and rather create a separate cortical atlas.
 
 ### The 3d atlas
-We assume the volumetric image you have is for a freesurfer subject, specifically registered to the "fsaverage5" subject, which is a good balande between number of vertices and details. 
+We assume the volumetric image you have is for a FreeSurfer subject, specifically registered to the "fsaverage5" subject, which is a good balance between number of vertices and details. 
 If you need to register the volume to "fsaverage5", there are FreeSurfer tools to help with this, but we have not set up any function for this in R.
-If you have suggestions or know of an easy command to do this, les ut know in the [issues](https://github.com/LCBC-UiO/ggsegExtra/issues) so we can try implementing your solution here.
+If you have suggestions or know of an easy command to do this, let us know in the [issues](https://github.com/ggseg/ggsegExtra/issues) so we can try implementing your solution here.
 
 To turn a volumetric image to a ggseg3d-atlas, use the function `make_volumetric_2_3datlas`. This will call a series of FreeSurfer functions to create ascii and ply files for the mesh plots. 
 The function creates several intermediary files which are saved in the output_dir specified.
@@ -216,8 +216,8 @@ As long as these to not conflict in terms of names with the default atlas column
 For instance, if this is an atlas based on connectivity, there might be a nested structure to the regions, such that certain regions together form a specific network. 
 Adding a `network` column specifying which regions belong to which network is then appropriate.
 
-The data include too much though! We cannot see the subcortical structures because the entire cortex is in the way.
-We should delete the any unnecessary meshes as a whole from the data, so we are only left with subcortical structures.
+The data include too much though! We cannot see the sub-cortical structures because the entire cortex is in the way.
+We should delete the any unnecessary meshes as a whole from the data, so we are only left with sub-cortical structures.
 
 ```{r}
 aseg2_3d <- unnest(aseg2_3d, ggseg_3d) %>%
@@ -268,7 +268,7 @@ knitr::include_graphics("figures/aseg_glass.png")
 ## Creating the 2d atlas
 
 Unlike the pipeline for cortical atlases which uses the newly made ggseg3d-atlas to create polygon data, the volumetric pipeline uses the volumetric-image just as for creating the ggseg3d-atlas above.
-Using a combination of FreeSurfer's Freeview snapshotting and ImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region and slice combination, extracts the contours of these regions, smooth'es them, reduces the vertices and organizes the data into a brain-atlas class object.
+Using a combination of FreeSurfer's Freeview snapshotting and ImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region and slice combination, extracts the contours of these regions, smooths them, reduces the vertices and organizes the data into a brain-atlas class object.
 The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. 
 While the function at default stores these files in a temporary folder, we highly recommend setting the `output_dir` option, so that you do not need to rerun all steps when testing another configuration of settings. 
 For instance, the step taking the longest time and most processing time is snapshotting the regions and extracting the contours.
@@ -399,8 +399,8 @@ CRS:            NA
 # … with 102 more rows
 ```
 
-We should remove the `NA` data from the atlas, and also the white-matter regions, since these dont really fit in.
-Additionally, subcortical atlases have the cortex as region `NA` so that these are plotted, but not really treated as true parcellation regions.
+We should remove the `NA` data from the atlas, and also the white-matter regions, since these don't really fit in.
+Additionally, sub-cortical atlases have the cortex as region `NA` so that these are plotted, but not really treated as true parcellation regions.
 
 ```{r}
 aseg2$data <- filter(aseg2$data, 

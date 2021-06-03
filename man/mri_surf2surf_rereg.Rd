@@ -40,7 +40,12 @@ rendering and speed.
 \examples{
 if(freesurfer::have_fs()){
 
-mri_surf2surf_rereg(subject = "bert", annot = "aparc.DKTatlas")
+# For help see:
+freesurfer::fs_help("mri_surf2surf")
+
+mri_surf2surf_rereg(subject = "bert", 
+                    annot = "aparc.DKTatlas",
+                    target_subject = "fsaverage5")
 }
 
 }

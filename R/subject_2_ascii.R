@@ -2,7 +2,7 @@
 #' Convert subject surface files to ascii
 #'
 #' This function goes through all specified
-#' subject,  per hermisphere, surface,
+#' subject,  per hemisphere, surface,
 #' curvature and no fix curvature specified
 #' and turns them into ascii files.
 #'
@@ -14,8 +14,14 @@
 #' @template subjects_dir 
 #' @template output_dir 
 #' @template verbose 
-#'
+#' @return no return. Writes files.
 #' @export
+#' @examples
+#' \dontrun{
+#' subject_2_ascii()
+#' subject_2_ascii("fsaverage")
+#' subject_2_ascii("bert")
+#' }
 subject_2_ascii <- function(subject = "fsaverage5",
                             hemisphere = c("rh", "lh"),
                             surfaces = fs_surfaces(),

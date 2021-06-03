@@ -1,6 +1,11 @@
 
 # ggsegExtra 1.5
 
+## ggsegExtra 1.5.33
+
+- removes purrr dependency
+- used ggseg [r-universe](https://ggseg.r-universe.dev/ui#builds) as install repo for install functions
+
 ## ggsegExtra 1.5.32
 
 * non-standard columns in 3d atlas are retained in 2d atlas

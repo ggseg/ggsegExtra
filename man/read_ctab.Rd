@@ -7,8 +7,11 @@
 read_ctab(path)
 }
 \arguments{
-\item{path}{path to write to}
+\item{path}{path to read from}
+}
+\value{
+a data.frame with index, label name and RGBA colours
 }
 \description{
-Read colourtab
+Read in a FreeSurfer colortab file.
 }

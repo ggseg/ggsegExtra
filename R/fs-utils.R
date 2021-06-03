@@ -9,7 +9,7 @@
 #' @template verbose
 #' @template opts
 #'
-#' @export
+#' @noRd
 mri_vol2surf <- function(input_file , 
                          output_file,
                          hemisphere,
@@ -45,26 +45,44 @@ mri_vol2surf <- function(input_file ,
 #' statistic value is set to 0.  While this program can be used with any
 #' mri volume, it was designed to convert parcellation volumes, which
 #' happen to be stored in mri format. 
+#' Calls FreeSurfer's \code{mri_vol2label}.
 #' 
 #' 
 #' @param input_file input volume
 #' @param label_id label to run
 #' @template hemisphere
 #' @template subject
-#' @param surface ouput surface
+#' @param surface output surface
 #' @template subjects_dir
 #' @template output_dir
 #' @template verbose
 #' @template opts
-#'
+#' @return returns nothing. Writes a label file.
 #' @export
+#' @examples 
+#' if(freesurfer::have_fs()){
+#' # for freesurfer help see:
+#' freesurfer::fs_help("mri_vol2label")
+#' 
+#' out_dir <- tempdir()
+#' vol <- file.path(freesurfer::fs_subj_dir(),
+#'                  "fsaverage5/mri/aseg.mgz")
+#' 
+#' mri_vol2label(vol, 
+#'      label_id = 2, 
+#'      hemisphere = "rh", 
+#'      output_dir = out_dir)
+#'  
+#'  # delete output dir when not needed
+#'  unlink(out_dir)
+#' }
 mri_vol2label <- function(input_file, 
                           label_id,
                           hemisphere, 
+                          output_dir, 
                           surface = NULL,
                           subject = "fsaverage5",
                           subjects_dir = freesurfer::fs_subj_dir(),
-                          output_dir, 
                           opts = NULL,
                           verbose = TRUE){
   if(!check_fs()) stop(call. = FALSE)
@@ -105,6 +123,7 @@ mri_vol2label <- function(input_file,
 #' @template output_file
 #' @template verbose
 #' @template opts
+#' @noRd
 mri_pretess <- function(template, label, output_file, verbose = TRUE, opts = NULL){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -127,6 +146,7 @@ mri_pretess <- function(template, label, output_file, verbose = TRUE, opts = NUL
 #' @template output_file
 #' @param input_file input file
 #' @template opts
+#' @noRd
 mri_tessellate <- function(input_file, label, output_file, verbose, opts = NULL){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -149,6 +169,7 @@ mri_tessellate <- function(input_file, label, output_file, verbose, opts = NULL)
 #' @template output_file
 #' @template verbose
 #' @template opts
+#' @noRd
 mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -166,8 +187,12 @@ mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
 
 
 #' Convert Label to Annotation
+#' 
+#' If you have labels rather than a full annotation
+#' file, these can be combined with FreeSurfer's
+#' \code{mris_label2annot}. 
 #'
-#' @param labels label vector
+#' @param labels label file path vector
 #' @template hemisphere
 #' @param ctab colourtable file
 #' @template subject
@@ -178,9 +203,30 @@ mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
 #' @template opts
 #'
 #' @export
+#' @examples 
+#' if(freesurfer::have_fs()){
+#' # for freesurfer help see:
+#' freesurfer::fs_help("mris_label2annot")
+#' 
+#' # Split up aparc annot into labels
+#' mri_annotation2label(annot_name = "aparc")
+#' 
+#' # get annot for colour labels
+#' annot <- freesurfer::read_annotation(
+#'               file.path(freesurfer::fs_subj_dir(), 
+#'                         "fsaverage5/label/rh.aparc.annot"))
+#' 
+#' labels <- list.files(
+#'    file.path(freesurfer::fs_subj_dir(), "fsaverage5/label/aparc"), 
+#'     full.names = TRUE)
+#' 
+#' # Combine them again into annot.
+#' mris_label2annot(labels, annot$colortable)
+#' 
+#' }
 mris_label2annot <- function(labels, 
-                             hemisphere = "rh", 
                              ctab, 
+                             hemisphere = "rh", 
                              subject = "fsaverage5",
                              subjects_dir = freesurfer::fs_subj_dir(),
                              annot_dir = file.path(subjects_dir, subject, "label"),
@@ -216,13 +262,28 @@ mris_label2annot <- function(labels,
 
 #' Convert annotation to label
 #' 
-#' @param annot_file annotation file path
+#' Calls FreeSurfer's \code{mri_annotation2label}
+#' to split an annotation file into several labels.
+#' 
+#' @param annot_name annotation name. File should exist in subjects label directory
 #' @template subject
 #' @template hemisphere
 #' @template output_dir
 #' @template verbose
 #' @template opts
-mris_annot2label <- function(annot_file, 
+#' @return nothing. Runs command line to write label files
+#' @export
+#' @examples 
+#' if(freesurfer::have_fs()){
+#' # for freesurfer help see:
+#' freesurfer::fs_help("mri_annotation2label")
+#' mri_annotation2label(annot_name = "aparc")
+#' 
+#' mri_annotation2label(annot_name = "aparc.a2009s")
+#' 
+#' mri_annotation2label(subject = "fsaverage", annot_name = "aparc.a2009s")
+#' }
+mri_annotation2label <- function(annot_name, 
                              subject = "fsaverage5",
                              hemisphere = "lh", 
                              output_dir = freesurfer::fs_subj_dir(), 
@@ -233,12 +294,12 @@ mris_annot2label <- function(annot_file,
   hemisphere <- match.arg(hemisphere, c("rh", "lh"))
   
   outdir <- file.path(output_dir, subject, "label", 
-                      gsub("rh\\.|lh\\.|annot|\\.", "", basename(annot_file)))
+                      gsub("rh\\.|lh\\.|annot|\\.", "", basename(annot_name)))
   if(!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
   out_file <- file.path(outdir, hemisphere)
   
   fs_cmd <- paste0(freesurfer::get_fs(),
-                   "freeview")
+                   "mri_annotation2label")
   if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
   
   
@@ -247,7 +308,7 @@ mris_annot2label <- function(annot_file,
     "--subject", subject,
     "--hemi", hemisphere,
     "--labelbase", file.path(outdir, hemisphere),
-    "--annotation", annot_file
+    "--annotation", annot_name
   )
   
   k <- system(cmd, intern=!verbose)
@@ -334,7 +395,12 @@ mris_ca_label <- function(subject = "fsaverage5",
 #' @examples
 #' if(freesurfer::have_fs()){
 #' 
-#' mri_surf2surf_rereg(subject = "bert", annot = "aparc.DKTatlas")
+#' # For help see:
+#' freesurfer::fs_help("mri_surf2surf")
+#' 
+#' mri_surf2surf_rereg(subject = "bert", 
+#'                     annot = "aparc.DKTatlas",
+#'                     target_subject = "fsaverage5")
 #' }
 #' 
 mri_surf2surf_rereg <- function(subject,
@@ -377,7 +443,7 @@ mri_surf2surf_rereg <- function(subject,
 #' @template verbose
 #'
 #' @return ascii data
-#' @export
+#' @noRd
 surf2asc <- function(input_file, output_file, verbose = TRUE){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -422,7 +488,7 @@ surf2asc <- function(input_file, output_file, verbose = TRUE){
 #' @template verbose
 #'
 #' @return ascii data
-#' @export
+#' @noRd
 curv2asc <- function(input_file, white, output_file, verbose = TRUE){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -466,7 +532,7 @@ curv2asc <- function(input_file, white, output_file, verbose = TRUE){
 #' @template verbose
 #' 
 #' @return ascii data
-#' @export
+#' @noRd
 curvnf2asc <- function(input_file, nofix, output_file, verbose = TRUE){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -513,14 +579,14 @@ curvnf2asc <- function(input_file, nofix, output_file, verbose = TRUE){
 #' @template verbose
 #'
 #' @return data frame
-#' @export
+#' @noRd
 annot2dpv <- function(input_file, 
                       output_file,
                       coordinates = NULL,
                       indeces = NULL,
                       verbose = TRUE){
   
-  annot <- read_annotation(input_file, verbose = verbose)
+  annot <- freesurfer::read_annotation(input_file, verbose = verbose)
   
   # For each structure, replace its coded colour by its index
   labs <- match(annot$label, annot$colortable$code)
@@ -575,7 +641,7 @@ annot2dpv <- function(input_file,
 #' @template output_file
 #'
 #' @return ply text file
-#' @export
+#' @noRd
 asc2ply <- function(input_file, 
                     output_file = gsub("\\.dpv", ".ply", input_file)){
   srf_file <- readLines(input_file)

@@ -1,6 +1,6 @@
 Package: ggsegExtra
-Title: Extra Utilities for the 'ggseg'-Plotting Tool
-Version: 1.5.32
+Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
+Version: 1.5.33.001
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
                     role = c("aut", "cre"),
@@ -13,14 +13,15 @@ Authors@R: c(person("Athanasia Mo", "Mowinckel",
                     email = "muschellij2@gmail.com", 
                     role = c("ctb"),
                     comment = c(ORCID = "0000-0001-6469-1750")))
-Description: Supporting atlas datasets and functions for the 'ggseg', and 'ggseg3d' 
-    packages. The plotting functions from those two packages should be 
-    used on these atlas data.
+Description: Contains functions to create new data sets compatible with the 'ggseg' and 'ggseg3d'
+    packages for plotting brain segmentations through R. Requires several external software to
+    be installed on the system for atlas creations to work, and most of these are not available 
+    for windows. But atlas creation tools exist for 2d simple features data, and also 3d tri-surface
+    mesh plots. Also has a list of compatible data sets and functions for easy installation of these.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.1
 Depends: R (>= 2.10)
-LazyData: true
 Imports: 
     usethis,
     smoothr,
@@ -29,7 +30,6 @@ Imports:
     withr,
     freesurfer,
     janitor,
-    purrr,
     readr,
     dplyr,
     tidyr,
@@ -59,26 +59,28 @@ Suggests:
     ggsegTracula,
     ggsegICBM,
     ggsegHO,
-    ggsegDefaultExtra, 
-    ggsegDKT, 
+    ggsegDefaultExtra,
+    ggsegDKT,
     knitr,
     rmarkdown,
     covr,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    spelling
 VignetteBuilder: knitr
 Remotes: 
-    LCBC-UiO/ggseg,
-    LCBC-UiO/ggseg3d,
-    LCBC-UiO/ggsegYeo2011,
-    LCBC-UiO/ggsegDesterieux,
-    LCBC-UiO/ggsegChen,
-    LCBC-UiO/ggsegSchaefer,
-    LCBC-UiO/ggsegGlasser,
-    LCBC-UiO/ggsegJHU,
-    LCBC-UiO/ggsegTracula,
-    LCBC-UiO/ggsegICBM,
-    LCBC-UiO/ggsegHO,
-    LCBC-UiO/ggsegDefaultExtra,
-    LCBC-UiO/ggsegDKT
-URL: https://github.com/LCBC-UiO/ggsegExtra
-BugReports: https://github.com/LCBC-UiO/ggsegExtra/issues
+    ggseg/ggseg,
+    ggseg/ggseg3d,
+    ggseg/ggsegYeo2011,
+    ggseg/ggsegDesterieux,
+    ggseg/ggsegChen,
+    ggseg/ggsegSchaefer,
+    ggseg/ggsegGlasser,
+    ggseg/ggsegJHU,
+    ggseg/ggsegTracula,
+    ggseg/ggsegICBM,
+    ggseg/ggsegHO,
+    ggseg/ggsegDefaultExtra,
+    ggseg/ggsegDKT
+URL: https://github.com/ggseg/ggsegExtra
+BugReports: https://github.com/ggseg/ggsegExtra/issues
+Language: en-US

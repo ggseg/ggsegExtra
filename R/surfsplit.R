@@ -1,6 +1,6 @@
 #' Split surface file into separate plys
 #' 
-#' Function to splot up a surface ply
+#' Function to split up a surface ply
 #' into several ply's based on a freesurfer
 #' label file.
 #' 
@@ -13,7 +13,7 @@
 #' @template output_dir
 #' @template verbose
 #'
-#' @return list of ply meshes
+#' @return list of ply meshes. Will also write ply meshes to files.
 surfsplit <- function(srf_ply, 
                       label_path, 
                       prefix = "test", 
@@ -208,7 +208,6 @@ surfsplit <- function(srf_ply,
         # Save the resulting surface
         fname[lab] = file.path(output_dir,"ascii", sprintf("%s.%04d.dpv", prefix, lab))
         write_dpv(fname[lab], vtxL[[lab]], facL[[lab]]);
-        closeAllConnections()
         
         if(verbose) utils::setTxtProgressBar(pb, lab)
         
@@ -220,11 +219,9 @@ surfsplit <- function(srf_ply,
   plys <- sapply(fname, function(x) asc2ply(x,
                  output_file = gsub("\\.dpv", "\\.ply", gsub("ascii", "ply", x)))
   )
-  closeAllConnections()
-  
+
   plys <- lapply(gsub("\\.dpv", "\\.ply", gsub("ascii", "ply", fname)), 
                       get_mesh, ShowSpecimen = FALSE)
-  closeAllConnections()
 
   names(plys) <- gsub(paste0(prefix, "\\.|\\.dpv"), "", basename(fname))
 
@@ -233,20 +230,20 @@ surfsplit <- function(srf_ply,
 
 
 
-#' prep data for verteces/faces
+#' prep data for vertices/faces
 #'
-#' @param n unnused arg, need for apply
+#' @param n unused arg, need for apply
 #' @param type vertex or face
+#' @noRd
 prep_n_data <- function(n, type = "vertex"){
   
   type <- match.arg(type, c("vertex", "face"))
-  nms <- switch(type,
-                "vertex" = c("x", "y", "z"),
-                "face" = c("i", "j", "k"))
-  
+
   x <- matrix(NA, nrow = 0, ncol = 3)
   x <- as.data.frame(x)
-  names(x) <- nms
+  names(x) <- switch(type,
+                     "vertex" = c("x", "y", "z"),
+                     "face" = c("i", "j", "k"))
   
   x
 }

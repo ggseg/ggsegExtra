@@ -11,6 +11,10 @@ write_ctab(x, path)
 
 \item{path}{path to write to}
 }
+\value{
+returns nothing, writes file
+}
 \description{
-Write colourtab
+write a colortab to file, will be in a
+format that is accessible by FreeSurfer.
 }

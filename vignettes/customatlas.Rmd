@@ -13,6 +13,7 @@ collapse = TRUE,
 comment = "#>",
 eval = FALSE
 )
+dt <- ggseg::dk
 ```
 
 ## Creating ggseg-atlas from a ggseg3d-atlas
@@ -54,14 +55,15 @@ This column should ideally have human readable names, be short, and have space r
 This is to enable nicer labelling when plotting.
 Once this is done, try plotting it with ggseg.
 
-```{r, eval=FALSE}
-dt <- ggseg(atlas = dk)
+```{r}
+ggplot() +
+  geom_brain(atlas = dt)
 ```
 
 ### DKT example
 If you have successfully created a 3d atlas [following these steps](customatlas3d.html), you can proceed using the 3d-atlas to make the 2d-atlas.
 As long as the 3d atlas is correctly made, you should have little difficulty making a 2d version.
-This pipeline also makes alot of intermediary files, so be aware of that.
+This pipeline also makes a lot of intermediary files, so be aware of that.
 
 ```{r}
 # make atlas ----
@@ -79,8 +81,6 @@ Some times, annot-files have a unique colour per hemisphere*region combination.
 This is does not work well with ggseg.
 If you fint that the parcellations themselves look fine, but that the colours are off, the atlas palette is surely wrong.
 You will here need to do some manual editing of the named character vector in the atlas to fix it.
-
-
 
 ## Skipping ggseg3d-atlas
 
@@ -100,6 +100,7 @@ parts, via FreeSurfer, to a ggseg format.
 1. Take a copy of the fsaverage folder, and set up SUBJECTS_DIR to point to the folder containing the fsaverage copy.
 
 2. Import the atlas as a surface
+
 ```bash
 cd ${SUBJECTS_DIR}/fsaverage/mri
 mri_vol2surf --sd $(pwd)/../.. --src ${FSLDIR}/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz --mni152reg --out  harvard_oxford_surf_rh.mgh --hemi rh --projfrac 0.5
@@ -109,18 +110,22 @@ mri_vol2surf --sd $(pwd)/../.. --src ${FSLDIR}/data/atlases/HarvardOxford/Harvar
 ```
 
 3. Create a color table. Run an R session in `${SUBJECTS_DIR}/fsaverage/mri`
+
 ```r
 source("ho_ctab.R")
 ```
 
 4. Create a series of individual label files
+
 ```
 mkdir Labels
 seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_rh.mgh --id {} --surf fsaverage rh --l ./Labels/rh_HO_{}.label
 seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_lh.mgh --id {} --surf fsaverage lh --l ./Labels/lh_HO_{}.label
 
 ```
+
 5. Create annotation files
+
 ``` bash
 LABS=$(seq 1 48 | parallel echo -n '\ --l ./Labels/lh_HO_{}.label\ ')
 mris_label2annot --sd ${SUBJECTS_DIR} --s fsaverage --ctab ../label/ho.annot.ctab ${LABS} --h lh --a ho
@@ -132,11 +137,13 @@ mris_label2annot --sd ${SUBJECTS_DIR} --s fsaverage --ctab ../label/ho.annot.cta
 
 6. Check how the surface looks - note lots of holes etc. Using the 0 prob threshold leads to more
 bleed to neighboring sulci, which I think is harder to fix.
+
 ```bash
 vglrun freeview  --surface ../surf/rh.inflated:annot=../label/rh.ho.annot --surface ../surf/lh.inflated:annot=../label/lh.ho.annot
-
 ```
+
 7. Fill and smooth
+
 ``` bash
 # convert to gifti
 mris_convert --annot ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii
@@ -161,6 +168,7 @@ done
 ```
 
 9. Rename the unknowns to medial wall
+
 ```bash
 mv PicsHarvardOxford/lh_\?\?\?_med.tif PicsHarvardOxford/lh_medialwall_med.tif
 mv PicsHarvardOxford/rh_\?\?\?_med.tif PicsHarvardOxford/rh_medialwall_med.tif
@@ -169,6 +177,7 @@ rm PicsHarvardOxford/*_\?*
 ```
 
 10. Finally, let the R spatial tools work their magic...
+
 ```R
 source("mkHO.R")
 ```

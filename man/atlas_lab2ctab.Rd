@@ -11,6 +11,10 @@ atlas_lab2ctab(output_dir, verbose)
 
 \item{verbose}{logical indicating to be verbose or not}
 }
+\value{
+returns nothing, creates files on the file system
+}
 \description{
-Label to ctab
+Create a FreeSurfer colortab based
+on labels. Calls FreeSurfer's \code{mris_lab2ctab}
 }

@@ -8,10 +8,10 @@ mri_vol2label(
   input_file,
   label_id,
   hemisphere,
+  output_dir,
   surface = NULL,
   subject = "fsaverage5",
   subjects_dir = freesurfer::fs_subj_dir(),
-  output_dir,
   opts = NULL,
   verbose = TRUE
 )
@@ -23,18 +23,21 @@ mri_vol2label(
 
 \item{hemisphere}{hemisphere, either "rh" or "lh"}
 
-\item{surface}{ouput surface}
+\item{output_dir}{output directory path}
+
+\item{surface}{output surface}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
 
 \item{subjects_dir}{Freesurfer subject directory}
 
-\item{output_dir}{output directory path}
-
 \item{opts}{other arguments to freesurfer command}
 
 \item{verbose}{logical indicating to be verbose or not}
+}
+\value{
+returns nothing. Writes a label file.
 }
 \description{
 Converts values in a volume or surface overlay to a label. The program
@@ -44,5 +47,24 @@ matrix (volume) or from the xyz of the specified surface.  The xyz
 values are then stored in labelfile in the label file format. The
 statistic value is set to 0.  While this program can be used with any
 mri volume, it was designed to convert parcellation volumes, which
-happen to be stored in mri format.
+happen to be stored in mri format. 
+Calls FreeSurfer's \code{mri_vol2label}.
+}
+\examples{
+if(freesurfer::have_fs()){
+# for freesurfer help see:
+freesurfer::fs_help("mri_vol2label")
+
+out_dir <- tempdir()
+vol <- file.path(freesurfer::fs_subj_dir(),
+                 "fsaverage5/mri/aseg.mgz")
+
+mri_vol2label(vol, 
+     label_id = 2, 
+     hemisphere = "rh", 
+     output_dir = out_dir)
+ 
+ # delete output dir when not needed
+ unlink(out_dir)
+}
 }

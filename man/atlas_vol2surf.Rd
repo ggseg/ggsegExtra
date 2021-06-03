@@ -15,6 +15,11 @@ atlas_vol2surf(input_file, output_dir, projfrac = 0.5, verbose = TRUE)
 
 \item{verbose}{logical indicating to be verbose or not}
 }
+\value{
+nothing, creates surface files
+}
 \description{
-Nifti volume to surface
+Transform a Nifti volume to a surface
+file for FreeSurfer. Calls
+FreeSurfer's \code{mri_vol2surf} for the transformation.
 }

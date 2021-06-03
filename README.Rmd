@@ -26,19 +26,42 @@ atlases <- lapply(basename(ggsegExtra::ggseg_atlas_repos()$repo),
 atlases <- dplyr::bind_rows(atlases)
 ```
 
-<!-- badges: start -->
-[![Travis build Status](https://travis-ci.com/LCBC-UiO/ggsegExtra.svg?branch=master)](https://travis-ci.com/LCBC-UiO/ggsegExtra)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/LCBC-UiO/ggsegExtra?branch=master&svg=true)](https://ci.appveyor.com/project/LCBC-UiO/ggsegExtra)
-[![Coverage Status](https://codecov.io/gh/LCBC-UiO/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegExtra)
-[![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![R build status](https://github.com/LCBC-UiO/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegExtra/actions)
-<!-- badges: end -->
 
 # ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
 
-This package contains information on verified atlases compatible for use in [ggseg](https://lcbc-uio.github.io/ggseg) and [ggseg3d](https://lcbc-uio.github.io/ggseg3d) plotting packages in R.
+<!-- badges: start -->
+[![Coverage Status](https://codecov.io/gh/ggseg/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/ggseg/ggsegExtra)
+[![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![R build status](https://github.com/ggseg/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegExtra/actions)
+<!-- badges: end -->
+
+
+This package contains information on verified atlases compatible for use in [ggseg](https://ggseg.github.io/ggseg) and [ggseg3d](https://ggseg.github.io/ggseg3d) plotting packages in R.
 It also contains functions and pipelines to create custom atlases.
+
+## Installing 
+
+We recommend installing this package from its [r-universe](https://ggseg.r-universe.dev/ui#builds) build:
+
+```{r, eval = FALSE}
+# Enable this universe
+options(repos = c(
+    ggseg = 'https://ggseg.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'))
+
+# Install some packages
+install.packages('ggsegExtra')
+```
+
+Alternatively, install the package with the remotes package from github.
+
+```{r, eval = FALSE}
+# install.packages("remotes")
+remotes::install_github("ggseg/ggsegExtra")
+```
+
+
 
 ## Atlases
 There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
@@ -51,10 +74,10 @@ library(ggsegExtra)
 ggseg_atlas_repos()
 ```
 
-We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://lcbc-uio.github.io/ggsegExtra/). 
-Currently, the pipeline for making 3d atlases needs Freesufer to be installed on your system and a ready `.annot` file to use for the converions.
+We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://ggseg.github.io/ggsegExtra/). 
+Currently, the pipeline for making 3d atlases needs FreeSufer to be installed on your system and a ready `.annot` file to use for the conversions.
 Improvements to the pipeline in creating cortical atlases both for ggseg and ggseg3d is still being developed.
-Pipelines for creating subcortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
+Pipelines for creating sub-cortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
 Suggestions for improvement are welcome through GH issues or direct Pull requests.
 
 ## Code of Conduct
@@ -62,7 +85,7 @@ Suggestions for improvement are welcome through GH issues or direct Pull request
 Please note that the ggsegExtra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests  
-Don't hesitate to ask for support using [github issues](https://github.com/LCBC-UiO/ggsegExtra/issues), or requesting new atlases. 
+Don't hesitate to ask for support using [github issues](https://github.com/ggseg/ggsegExtra/issues), or requesting new atlases. 
 While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
 
 # Funding

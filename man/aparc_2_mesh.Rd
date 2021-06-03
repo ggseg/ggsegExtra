@@ -2,7 +2,7 @@
 % Please edit documentation in R/create-ggseg3d-atlas.R
 \name{aparc_2_mesh}
 \alias{aparc_2_mesh}
-\title{Converts annotations fo atlas}
+\title{Converts annotations to atlas}
 \usage{
 aparc_2_mesh(
   subject = "fsaverage5",

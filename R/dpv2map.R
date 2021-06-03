@@ -24,7 +24,7 @@
 #' #' @param dual logical.
 #' #' @param coption logical. The behavior varies if 'dual' is true or not. See details.
 #' #' @template verbose 
-#' #'
+#' #' @noRd
 # #' @return
 # #' @export
 # #'

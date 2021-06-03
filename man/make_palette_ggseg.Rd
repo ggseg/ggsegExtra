@@ -10,7 +10,7 @@ make_palette_ggseg(ggseg3d_atlas)
 \item{ggseg3d_atlas}{ggseg3d-atlas}
 }
 \value{
-list
+list with a colour palette
 }
 \description{
 atlases in ggseg have palettes based on

@@ -37,7 +37,7 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{steps}{numeric vector of steps to run}
 
-\item{skip_existing}{logical. If slice snapsnots already exist, should these be skipped.}
+\item{skip_existing}{logical. If slice snapshots already exist, should these be skipped.}
 
 \item{slices}{a data.frame with columns x, y, z, and view specifying coordinates and view of slice snapshots.}
 
@@ -59,7 +59,12 @@ specified or set in the environment with $SUBJECTS_DIR}
 brain-atlas class
 }
 \description{
-Make ggseg atlas from volumetric template
+If making an atlas from a non-cortical atlas,
+volumetric atlases are the best options. 
+Instead of snapshotting images of inflated
+brain, will snapshot brain slices given x, y, z
+coordinates for the slices trhoush the \code{slices}
+argument.
 }
 \examples{
 \dontrun{

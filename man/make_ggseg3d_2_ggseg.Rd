@@ -30,10 +30,19 @@ make_ggseg3d_2_ggseg(
 \item{ncores}{number of cores for parallel processing (default numcores-2)}
 }
 \value{
-data.frame ready for manual cleaning
+data.frame ready for manual cleaning before turning into a proper ggseg3d-atlas
 }
 \description{
-Function will create a dataframe
+Function will create a data.frame
 based on a ggseg3d atlas, based on
 the contours of each segment.
+}
+\examples{
+\dontrun{
+
+# Create the DKT atlas as found in the FreeSurfer Subjects directory
+# And output the temporary files to the Desktop.
+dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
+    output_dir = "~/Desktop/")
+}
 }

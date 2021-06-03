@@ -5,10 +5,10 @@
 \title{Create cortical ggseg3d-atlas from annot-file}
 \usage{
 make_aparc_2_3datlas(
-  annot = "aparc",
+  annot,
   subject = "fsaverage5",
   hemisphere = c("rh", "lh"),
-  surface = c("inflated", "LCBC", "white"),
+  surface = c("inflated", "LCBC"),
   subjects_dir = freesurfer::fs_subj_dir(),
   annot_dir = file.path(subjects_dir, subject, "label"),
   output_dir = tempdir(),
@@ -54,8 +54,8 @@ See the dk_3d atlas for examples.
 }
 \examples{
 \dontrun{
-dt <- aparc_2_3datlas()
 dt <- aparc_2_3datlas(annot = "aparc.a2009s")
-dt <- aparc_2_3datlas(surface = "sphere")
+dt <- aparc_2_3datlas(annot = "aparc.a2009s",
+                      surface = "sphere")
 }
 }

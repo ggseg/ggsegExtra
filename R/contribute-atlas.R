@@ -13,7 +13,7 @@
 #' not necessary), etc. 
 #' 
 #' At the end, a complete atlas ready for addition to
-#' ggsegExtra has noe errors and no warnings,
+#' ggsegExtra has no errors and no warnings,
 #' but notes on data size are acceptable.
 #'
 #' @param atlas_name name for atlases, should be lower snake-case
@@ -106,6 +106,3 @@ make_ggseg_repo <- function(atlas_name,
 
 }
 
-
-
-# unlink(directory, recursive = TRUE)

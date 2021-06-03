@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 Here we provide an example of creating a cortical ggseg and ggseg3d atlas.
 To read more about the details of the process, see the vignette on [creating custom3d atlases](customatlas3d.html) and [creating custom polygon atlases](customatlas.html).
-We will here show the fully automated way we have created the [ggsegDKT](https://lcbc-uio.github.io/ggsegDKT/) atlas data.
+We will here show the fully automated way we have created the [ggsegDKT](https://ggseg.github.io/ggsegDKT/) atlas data.
 
 ## Prerequisites 
 To successfully run these operations, you must have the following installed on your system, and be running it on either a Linux or Mac.  
@@ -58,6 +58,7 @@ mri_surf2surf_rereg(subject = "bert",
                     annot = "aparc.DKTatlas",
                     hemi = "rh")
 ```
+
 ```r
 Setting mapmethod to nnf
 
@@ -115,9 +116,10 @@ Further, by default the converted annotation file will be stored in the target s
 If you for some reason do not have write access to this folder, this can be overridden through the `output_dir` argument. 
 
 ### The 3d atlas
-Once an annotation file is made, you can proceed to creating the 3d-mesg atlas.
+Once an annotation file is made, you can proceed to creating the 3d-mesh atlas.
 The function `make_aparc_2_3datlas()` runs a series of text-conversions to create the atlas,
 ending with several ascii-files and surface files with the extension `.ply`.
+
 ```{r}
 # Make  3d ----
 dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
@@ -233,7 +235,7 @@ unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("medial", "medial ", region),
            region = gsub("rior", "rior ", region),
            region = gsub("cingulate", " cingulate", region),
-           # we've introduced some double whitespace, we dont want that
+           # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region) 
            ) %>% 
     select(region) %>% 
@@ -265,7 +267,7 @@ unnest(dkt_3d, ggseg_3d) %>%
                     "insula"                           NA 
 ```
 
-Onve we are satisfied with the region names, we should also alter the atlas name in the data, to something a little more pleasing.
+Once we are satisfied with the region names, we should also alter the atlas name in the data, to something a little more pleasing.
 
 ```{r}
 unnest(dkt_3d, ggseg_3d) %>%
@@ -277,7 +279,7 @@ unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("medial", "medial ", region),
            region = gsub("rior", "rior ", region),
            region = gsub("cingulate", " cingulate", region),
-           # we've introduced some double whitespace, we dont want that
+           # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region),
            
            atlas = "dkt_3d"
@@ -317,7 +319,7 @@ dkt_3d <- unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("medial", "medial ", region),
            region = gsub("rior", "rior ", region),
            region = gsub("cingulate", " cingulate", region),
-           # we've introduced some double whitespace, we dont want that
+           # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region),
            
            atlas = "dkt_3d"
@@ -347,15 +349,12 @@ ggseg3d(atlas = dkt_3d, hemisphere = "right", surface = "inflated")
 
 ggseg3d(atlas = dkt_3d, hemisphere = "left", surface = "LCBC")
 ggseg3d(atlas = dkt_3d, hemisphere = "right", surface = "LCBC")
-
-ggseg3d(atlas = dkt_3d, hemisphere = "left", surface = "white")
-ggseg3d(atlas = dkt_3d, hemisphere = "right", surface = "white")
 ```
 
 
 ## Creating the 2d atlas
 Once a 3d atlas is made, creating a 2d atlas is _fairly_ straight forward.
-Using ImageMagick, the `make_ggseg3d_2_ggseg()` function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooth'es them, reduces the vertices and organizes the data into a brain-atlas class object.
+Using , the `make_ggseg3d_2_ggseg()` function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooths them, reduces the vertices and organizes the data into a brain-atlas class object.
 The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. 
 While the function at default stores these files in a temporary folder, we highly recommend setting the `output_dir` option, so that you do not need to rerun all steps when testing another configuration of settings. 
 For instance, the step taking the longest time and most processing time is  snapshotting the regions and extracting the contours.
@@ -511,7 +510,7 @@ dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
            region = gsub("medial", "medial ", region),
            region = gsub("rior", "rior ", region),
            region = gsub("cingulate", " cingulate", region),
-           # we've introduced some double whitespace, we dont want that
+           # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region),
            
            atlas = "dkt_3d"

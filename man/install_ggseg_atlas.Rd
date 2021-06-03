@@ -4,19 +4,30 @@
 \alias{install_ggseg_atlas}
 \title{Install ggseg-atlas from repo}
 \usage{
-install_ggseg_atlas(repo, source, ...)
+install_ggseg_atlas(
+  package,
+  repos = c(ggseg = "https://ggseg.r-universe.dev", CRAN =
+    "https://cloud.r-project.org"),
+  ...
+)
 }
 \arguments{
-\item{repo}{repository string}
+\item{package}{package name}
 
-\item{source}{source of repository as string}
+\item{repos}{vector of repositories to install from. Defaults to
+ggseg r-universe and CRAN.}
 
-\item{...}{additional arguments to \code{remotes::install_[source]}
-function called depending on the \code{source}.}
+\item{...}{additional arguments to \code{install.packages}.}
 }
 \description{
 installs ggseg-atlas library from
-online repository.
+the ggseg r-universe <https://ggseg.r-universe.dev/ui#builds> .
+}
+\details{
+To install, will temporarily alter your install
+repo settings to also use the ggseg r-universe
+build as source for packages. These settings will
+be restored when the function exits.
 }
 \examples{
 \dontrun{

@@ -38,6 +38,6 @@ tests run in tests/testthat (comment out what is
 not necessary), etc. 
 
 At the end, a complete atlas ready for addition to
-ggsegExtra has noe errors and no warnings,
+ggsegExtra has no errors and no warnings,
 but notes on data size are acceptable.
 }

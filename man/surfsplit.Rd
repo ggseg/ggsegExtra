@@ -24,10 +24,10 @@ surfsplit(
 \item{verbose}{logical indicating to be verbose or not}
 }
 \value{
-list of ply meshes
+list of ply meshes. Will also write ply meshes to files.
 }
 \description{
-Function to splot up a surface ply
+Function to split up a surface ply
 into several ply's based on a freesurfer
 label file.
 }

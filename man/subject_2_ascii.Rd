@@ -33,9 +33,19 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{verbose}{logical indicating to be verbose or not}
 }
+\value{
+no return. Writes files.
+}
 \description{
 This function goes through all specified
-subject,  per hermisphere, surface,
+subject,  per hemisphere, surface,
 curvature and no fix curvature specified
 and turns them into ascii files.
+}
+\examples{
+\dontrun{
+subject_2_ascii()
+subject_2_ascii("fsaverage")
+subject_2_ascii("bert")
+}
 }

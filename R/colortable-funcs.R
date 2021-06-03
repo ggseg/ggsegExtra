@@ -1,9 +1,12 @@
 # Exported functions ----
 #' Write colourtab
+#' 
+#' write a colortab to file, will be in a
+#' format that is accessible by FreeSurfer.
 #'
 #' @param x colourtab data
 #' @param path path to write to
-#'
+#' @return returns nothing, writes file
 #' @export
 write_ctab <- function(x, path){
   lls <- apply(x, 1, function(c)
@@ -19,9 +22,11 @@ write_ctab <- function(x, path){
 }
 
 #' Read colourtab
+#' 
+#' Read in a FreeSurfer colortab file.
 #'
-#' @param path path to write to
-#'
+#' @param path path to read from
+#' @return a data.frame with index, label name and RGBA colours 
 #' @export
 read_ctab <- function(path){
   x <- utils::read.table(path)
@@ -46,10 +51,14 @@ is_ctab <- function(colourtable){
 
 # Non-exported ----
 #' Get colour lut table
+#' 
+#' Create a color table based on a 
+#' FreeSurfer color lut. 
 #'
 #' @param color_lut path to lut or data.frame that \code{\link{is_ctab}}
 #'
-#' @return colour table
+#' @return colour table as a data.frame, with hex colours.
+#' @noRd
 get_ctab <- function(color_lut){
   
   colourtable <- if(is.character(color_lut)){
@@ -78,6 +87,7 @@ get_ctab <- function(color_lut){
 #' @param G roi green value
 #' @param B roi blue value
 #' @param A roi opacity/alpha value
+#' @noRd
 ctab_line <- function(idx, name, R, G, B, A){
   
   if(nchar(name) > 29){

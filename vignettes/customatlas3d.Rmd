@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 New ggseg3d-atlases can be obtained by converting surfaces into tridimensional meshes in `.ply` format. 
 The pipeline for creating cortical surfaces and volumetric images into ggseg3d-atlases is slightly different than for ggseg-atlases. 
 
-One has to convert the images with information on your labels to a Freesurfer annotation file (cortical) or to a `.mgz` file (subcortical), and then run an R-function calling Freesurfer and FSL to create the ggseg3d-atlas.
+One has to convert the images with information on your labels to a Freesurfer annotation file (cortical) or to a `.mgz` file (sub-cortical), and then run an R-function calling Freesurfer and FSL to create the ggseg3d-atlas.
 
 The conversion is based on the scripts available in https://github.com/andersonwinkler/areal by Anderson Winkler. 
 Essentially, the functions are identical to A. Winkler's work, with small edits to better adapt to the R and the specific purpose of ggseg3d-atlas creation. 
@@ -39,7 +39,7 @@ Finally one has to have R and the ggseg-family of packages to convert the `.ply`
 
 ### 1)	Make annotation file (bash + Freesurfer)
 Atlases already available in Freesurfer have annotation files, making this step unnecessary.
-These can be found in the Freesufer subject directory, within a subject in the `label/` folder, look for files ending with `.annot`. 
+These can be found in the FreeSurfer subject directory, within a subject in the `label/` folder, look for files ending with `.annot`. 
 For other files (like results from your vertex-vise analyses etc), you will need to convert the ROIs you have to annotation files.
 This may require any of the following conversions: 
 
@@ -67,10 +67,10 @@ For this to work function to work, the `annot` file _must_ be in `$FREESURFER_HO
 
 ### 2)	Run `make_aparc_2_3datlas()`(R)
 This script converts your annotations (`.annot`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
-Without any arguments, it will create the aparc (Desikan-Killany atlas), based on annotation files in the Freesurfer subejcts directory.
+Without any arguments, it will create the aparc (Desikan-Killiany atlas), based on annotation files in the Freesurfer subjects directory.
 
 ```{r}
-# Desikan-Killany atlas (a.k.a aparc)
+# Desikan-Killiany atlas (a.k.a aparc)
 dt <- make_aparc_2_3datlas()
 
 # Desterieux atlas
@@ -143,7 +143,7 @@ Once the function has created an atlas object for us, we here do a little extra 
 Firstly, we alter the `atlas` column from the value "aparc.DKTatlas"  to "dkt_3d".
 Then we `unnest` the data, exposing all the underlying atlas information, and remove the `region` column.
 We do this because the default names for "region"  are taken directly from the annotation file, which in this case are not very pretty.
-Because the DKT atlas is the same as the DK atlas, minus a couple of regions, we here joing in the label and region column from the `ggseg::dk` data, to re-populate the `region` column with nicer names.
+Because the DKT atlas is the same as the DK atlas, minus a couple of regions, we here joining in the label and region column from the `ggseg::dk` data, to re-populate the `region` column with nicer names.
 In most cases, you will need to do some string manipulations to tidy up the region names.
 Then we re-nest the data, and make it into a ggseg3d-atlas.
 

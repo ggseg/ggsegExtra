@@ -9,8 +9,8 @@
 #' @param path path to file
 #' @param vertices object with vertices
 #' @param faces object with faces
-#'
-#' @export
+#' @noRd
+# #' @export
 write_dpv <- function(path, vertices, faces){
   # face index start at 0
   if(min(faces) == 1) faces <- faces - 1
@@ -43,9 +43,9 @@ write_dpv <- function(path, vertices, faces){
 #' \code{\link{curv2asc}}, \code{\link{curvnf2asc}}
 #'
 #' @param path path to dpv file
-#'
+#' @noRd
 #' @return list of vertices and faces
-#' @export
+# #' @export
 read_dpv <- function(path){
   
   k <- readLines(path)
@@ -70,6 +70,7 @@ read_dpv <- function(path){
 #' @param dpx vertex or face data
 #' @param surface surface vertex and face list
 #' @template verbose 
+#' @noRd
 is_facewise <- function(dpx, surface, verbose = TRUE){
 
   nX = nrow(dpx)

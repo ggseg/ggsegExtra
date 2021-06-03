@@ -16,17 +16,17 @@
 ggseg_atlas_repos <- function(pattern = NULL, ...){
   repos <- dplyr::tribble(
     ~ repo,                       ~ggseg, ~ggseg3d, ~source,  ~comment,
-    "LCBC-UiO/ggsegYeo2011",      TRUE,    TRUE,    "github", "both 17 and 7 Network data",
-    "LCBC-UiO/ggsegDesterieux",   FALSE,   TRUE,    "github", "the 2009 atlas",
-    "LCBC-UiO/ggsegChen",         FALSE,   TRUE,    "github", "both thickness and area maps",
-    "LCBC-UiO/ggsegSchaefer",     FALSE,   TRUE,    "github", "both 17 and 7 networks",
-    "LCBC-UiO/ggsegGlasser",      TRUE,    TRUE,    "github", "full atlas",
-    "LCBC-UiO/ggsegJHU",          TRUE,    TRUE,    "github", "white tract atlas",
-    "LCBC-UiO/ggsegTracula",      TRUE,    TRUE,    "github", "white tract atlas",
-    "LCBC-UiO/ggsegICBM",         FALSE,   TRUE,    "github", "white tract atlas",
-    "LCBC-UiO/ggsegHO",           TRUE,    FALSE,   "github", "Harvard-Oxford cortical (FSL)",
-    "LCBC-UiO/ggsegDefaultExtra", TRUE,    FALSE,   "github", "extra 2d view for dk, p/a division of aseg hippocampus",
-    "LCBC-UiO/ggsegDKT",          TRUE,    TRUE,    "github", "Desikan-Killiany-Tourville cortical atlas"
+    "ggseg/ggsegYeo2011",      TRUE,    TRUE,    "github", "both 17 and 7 Network data",
+    "ggseg/ggsegDesterieux",   FALSE,   TRUE,    "github", "the 2009 atlas",
+    "ggseg/ggsegChen",         FALSE,   TRUE,    "github", "both thickness and area maps",
+    "ggseg/ggsegSchaefer",     FALSE,   TRUE,    "github", "both 17 and 7 networks",
+    "ggseg/ggsegGlasser",      TRUE,    TRUE,    "github", "full atlas",
+    "ggseg/ggsegJHU",          TRUE,    TRUE,    "github", "white tract atlas",
+    "ggseg/ggsegTracula",      TRUE,    TRUE,    "github", "white tract atlas",
+    "ggseg/ggsegICBM",         FALSE,   TRUE,    "github", "white tract atlas",
+    "ggseg/ggsegHO",           TRUE,    FALSE,   "github", "Harvard-Oxford cortical (FSL)",
+    "ggseg/ggsegDefaultExtra", TRUE,    FALSE,   "github", "extra 2d view for dk, p/a division of aseg hippocampus",
+    "ggseg/ggsegDKT",          TRUE,    TRUE,    "github", "Desikan-Killiany-Tourville cortical atlas"
   )
   repos$package = basename(repos$repo)
   
@@ -35,7 +35,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
     repos <- repos[idx, ]
   }
   
-  return(repos)
+  repos
 }
 
 
@@ -43,13 +43,17 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
 #' Install ggseg-atlas from repo
 #' 
 #' installs ggseg-atlas library from
-#' online repository. 
+#' the ggseg r-universe <https://ggseg.r-universe.dev/ui#builds> .
+#' 
+#' To install, will temporarily alter your install
+#' repo settings to also use the ggseg r-universe
+#' build as source for packages. These settings will
+#' be restored when the function exits.
 #'
-#' @param repo repository string
-#' @param source source of repository as string
-#' @param ... additional arguments to \code{remotes::install_[source]}
-#' function called depending on the \code{source}.
-#'
+#' @param package package name
+#' @param ... additional arguments to \code{install.packages}.
+#' @param repos vector of repositories to install from. Defaults to
+#'   ggseg r-universe and CRAN.
 #' @export
 #'
 #' @examples
@@ -57,11 +61,14 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
 #' yeo2011_repo <- ggseg_atlas_repos("yeo2011")
 #' install_ggseg_atlas(yeo2011_repo$repo, yeo2011_repo$source)
 #' }
-install_ggseg_atlas <- function(repo, source, ...){
-  src <- paste0("remotes::install_", source)
-  install_func <- eval(parse(text = src))
-  
-  install_func(repo, ...)
+install_ggseg_atlas <- function(package, 
+                                repos = c(
+                                  ggseg = 'https://ggseg.r-universe.dev',
+                                  CRAN = 'https://cloud.r-project.org'), 
+                                ...){
+  utils::install.packages(package, 
+                   repos = repos,
+                   ...)
   
 }
 
@@ -76,19 +83,26 @@ install_ggseg_atlas <- function(repo, source, ...){
 #' heavy data. We recommend only installing 
 #' atlases you are likely to use and on demand.
 #'
-#' @param ... additional arguments to \code{remotes::install_*}
-#' function called depending on the \code{source}.
+#' @param repos repositories to install from. Defaults to ggseg 
+#'    r-universe and a CRAN mirror.
+#' @param ... additional arguments to \code{install.packages}.
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' install_ggseg_atlas_all()
 #' }
-install_ggseg_atlas_all <- function(...){
+install_ggseg_atlas_all <- function(
+  repos = c(
+    ggseg = 'https://ggseg.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'), 
+  ...){
   
-  repos <- ggseg_atlas_repos()
+  pkgs <- ggseg_atlas_repos()$package
   
-  mapply(install_ggseg_atlas, repos$repo, repos$source, ...)
+  utils::install.packages(pkgs, 
+                   repos = repos,
+                   ...)
 }
 
 

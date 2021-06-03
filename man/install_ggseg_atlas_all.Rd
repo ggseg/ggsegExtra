@@ -4,11 +4,17 @@
 \alias{install_ggseg_atlas_all}
 \title{Install all ggseg-atlases registeres}
 \usage{
-install_ggseg_atlas_all(...)
+install_ggseg_atlas_all(
+  repos = c(ggseg = "https://ggseg.r-universe.dev", CRAN =
+    "https://cloud.r-project.org"),
+  ...
+)
 }
 \arguments{
-\item{...}{additional arguments to \code{remotes::install_*}
-function called depending on the \code{source}.}
+\item{repos}{repositories to install from. Defaults to ggseg 
+r-universe and a CRAN mirror.}
+
+\item{...}{additional arguments to \code{install.packages}.}
 }
 \description{
 Calls \code{\link{ggseg_atlas_repos}}, 

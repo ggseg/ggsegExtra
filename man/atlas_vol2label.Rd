@@ -20,6 +20,11 @@ atlas_vol2label(
 
 \item{ncores}{number of cores for parallel processing (default numcores-2)}
 }
+\value{
+invisibly returns the list of labels.
+}
 \description{
-Volume to label
+Turn volumetric files into labels for
+use in annotations. Calls FreeSurfer's
+\code{mri_vol2label}.
 }

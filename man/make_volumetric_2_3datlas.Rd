@@ -5,10 +5,10 @@
 \title{Volumetric segmentation to 3d-atlas}
 \usage{
 make_volumetric_2_3datlas(
+  template,
+  color_lut,
   subject = "fsaverage5",
   subjects_dir = freesurfer::fs_subj_dir(),
-  template = file.path(subjects_dir, subject, "mri/aseg.mgz"),
-  color_lut = file.path(freesurfer::fs_dir(), "ASegStatsLUT.txt"),
   steps = 1:5,
   output_dir = tempdir(),
   verbose = TRUE,
@@ -17,15 +17,15 @@ make_volumetric_2_3datlas(
 )
 }
 \arguments{
-\item{subject}{Freesurfer subject, must exist in whatever subject directory
-specified or set in the environment with $SUBJECTS_DIR}
-
-\item{subjects_dir}{Freesurfer subject directory}
-
 \item{template}{template \code{volume.mgz} file path}
 
 \item{color_lut}{Freesurfer colour look-up-table. Either
 as a path or a data.frame that \code{\link{is_ctab}}}
+
+\item{subject}{Freesurfer subject, must exist in whatever subject directory
+specified or set in the environment with $SUBJECTS_DIR}
+
+\item{subjects_dir}{Freesurfer subject directory}
 
 \item{steps}{if cleanup is disabled, all files are
 saved, and steps can be re-run individually}
@@ -39,7 +39,8 @@ saved, and steps can be re-run individually}
 \item{cleanup}{logical to toggle removal of all intermediary files}
 }
 \value{
-returns a ggseg3d-atlas ready object
+returns a ggseg3d-atlas ready object. Might need manual
+   cleaning to become a good atlas.
 }
 \description{
 Function to create a ggseg3d-atlas
@@ -53,4 +54,14 @@ the function is aggressive in the number
 of cores used to minimize time taken to
 create the atlas. Set the  \code{ncores}
 argument for less aggressive approach.
+}
+\examples{
+\dontrun{
+
+fs_subject_dir <- freesurfer::fs_dir()
+aseg_temp <- file.path(fs_subject_dir, "fsaverage5/mri/aseg.mgz")
+colorlut <- file.path(fs_subject_dir, "ASegStatsLUT.txt")
+
+make_volumetric_2_3datlas(aseg_temp, colorlut)
+}
 }
