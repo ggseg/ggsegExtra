@@ -27,7 +27,7 @@ atlases <- dplyr::bind_rows(atlases)
 ```
 
 
-# ggsegExtra <img src="man/img/logo.png" align="right" alt="" width="120" />  
+# ggsegExtra <img src="man/figures/logo.png" align="right" alt="" width="120" />  
 
 <!-- badges: start -->
 [![Coverage Status](https://codecov.io/gh/ggseg/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/ggseg/ggsegExtra)
