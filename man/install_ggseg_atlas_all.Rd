@@ -5,8 +5,7 @@
 \title{Install all ggseg-atlases registeres}
 \usage{
 install_ggseg_atlas_all(
-  repos = c(ggseg = "https://ggseg.r-universe.dev", CRAN =
-    "https://cloud.r-project.org"),
+  repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
   ...
 )
 }

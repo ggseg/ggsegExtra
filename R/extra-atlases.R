@@ -8,34 +8,21 @@
 #'
 #' @return data frame of online repositories with ggseg-atlases
 #' @export
-#'
+#' @importFrom jsonlite stream_in
 #' @examples
 #' ggseg_atlas_repos()
 #' 
 #' ggseg_atlas_repos("yeo")
 ggseg_atlas_repos <- function(pattern = NULL, ...){
-  repos <- dplyr::tribble(
-    ~ repo,                       ~ggseg, ~ggseg3d, ~source,  ~comment,
-    "ggseg/ggsegYeo2011",      TRUE,    TRUE,    "github", "both 17 and 7 Network data",
-    "ggseg/ggsegDesterieux",   FALSE,   TRUE,    "github", "the 2009 atlas",
-    "ggseg/ggsegChen",         FALSE,   TRUE,    "github", "both thickness and area maps",
-    "ggseg/ggsegSchaefer",     FALSE,   TRUE,    "github", "both 17 and 7 networks",
-    "ggseg/ggsegGlasser",      TRUE,    TRUE,    "github", "full atlas",
-    "ggseg/ggsegJHU",          TRUE,    TRUE,    "github", "white tract atlas",
-    "ggseg/ggsegTracula",      TRUE,    TRUE,    "github", "white tract atlas",
-    "ggseg/ggsegICBM",         FALSE,   TRUE,    "github", "white tract atlas",
-    "ggseg/ggsegHO",           TRUE,    FALSE,   "github", "Harvard-Oxford cortical (FSL)",
-    "ggseg/ggsegDefaultExtra", TRUE,    FALSE,   "github", "extra 2d view for dk, p/a division of aseg hippocampus",
-    "ggseg/ggsegDKT",          TRUE,    TRUE,    "github", "Desikan-Killiany-Tourville cortical atlas"
-  )
-  repos$package = basename(repos$repo)
+  con <- url("https://ggseg.r-universe.dev/stats/descriptions")
+  repos <- stream_in(con)
   
   if(!is.null(pattern)){
-    idx <- grep(pattern, repos$repo, ...)
+    idx <- grep(pattern, repos$Package, ...)
     repos <- repos[idx, ]
   }
   
-  repos
+  repos[, c("Package", "Title", "Version", "Description", "License", "RemoteUrl")]
 }
 
 
@@ -62,9 +49,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
 #' install_ggseg_atlas(yeo2011_repo$repo, yeo2011_repo$source)
 #' }
 install_ggseg_atlas <- function(package, 
-                                repos = c(
-                                  ggseg = 'https://ggseg.r-universe.dev',
-                                  CRAN = 'https://cloud.r-project.org'), 
+                                repos = c(ggseg = 'https://ggseg.r-universe.dev', getOption("repos")), 
                                 ...){
   utils::install.packages(package, 
                    repos = repos,
@@ -93,9 +78,7 @@ install_ggseg_atlas <- function(package,
 #' install_ggseg_atlas_all()
 #' }
 install_ggseg_atlas_all <- function(
-  repos = c(
-    ggseg = 'https://ggseg.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'), 
+  repos = c(ggseg = 'https://ggseg.r-universe.dev', getOption("repos")), 
   ...){
   
   pkgs <- ggseg_atlas_repos()$package

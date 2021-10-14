@@ -30,6 +30,7 @@ Imports:
     withr,
     freesurfer,
     janitor,
+    jsonlite,
     readr,
     dplyr,
     tidyr,
