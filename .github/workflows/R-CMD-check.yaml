@@ -28,6 +28,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+      - run: npm install -g electron@6.1.4 orca
 
       - uses: r-lib/actions/setup-pandoc@v1
 
@@ -49,7 +54,7 @@ jobs:
            brew tap coin-or-tools/coinor
            brew install symphony
            Rscript -e "install.packages('R2OpenBUGS',type='source')
-           npm install -g electron@6.1.4 orca"
+           "
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:
