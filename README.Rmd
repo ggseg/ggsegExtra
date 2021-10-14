@@ -25,6 +25,7 @@ atlases <- atlases[grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert =
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![R-CMD-check](https://github.com/LCBC-UiO/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegExtra/actions)
+[![R-CMD-check](https://github.com/ggseg/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegExtra/actions)
 <!-- badges: end -->
 
 

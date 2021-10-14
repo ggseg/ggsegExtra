@@ -12,6 +12,7 @@ status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![R-CMD-check](https://github.com/LCBC-UiO/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegExtra/actions)
+[![R-CMD-check](https://github.com/ggseg/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegExtra/actions)
 <!-- badges: end -->
 
 This package contains information on verified atlases compatible for use
@@ -43,8 +44,17 @@ remotes::install_github("ggseg/ggsegExtra")
 
 ## Atlases
 
-There are currently 11 available atlases across 11 packages. The
+There are currently 12 available atlases across 12 packages. The
 packages, their repository name and location can be found with:
+
+### [`ggsegBrainnetome`](https://github.com/ggseg/ggsegBrainnetome)<img src="https://github.com/ggseg/ggsegBrainnetome/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegBrainnetome logo" width="120" />
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegBrainnetome)](https://CRAN.R-project.org/package=ggsegBrainnetome)
+
+Brainnetome datasets for the ggseg-plotting toolThis is a support
+package for the ggseg, and ggseg3d packages. It contains the Brainnetome
+atlases to plot using functions from those two packages.
 
 ### [`ggsegJHU`](https://github.com/ggseg/ggsegJHU)<img src="https://github.com/ggseg/ggsegJHU/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegJHU logo" width="120" />
 
