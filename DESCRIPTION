@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
-Version: 1.5.33.001
+Version: 1.5.33.002
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
                     role = c("aut", "cre"),
@@ -85,3 +85,9 @@ Remotes:
 URL: https://github.com/ggseg/ggsegExtra
 BugReports: https://github.com/ggseg/ggsegExtra/issues
 Language: en-US
+SystemRequirements:
+    orca,
+    FSL,
+    Freesurfer,
+    ImageMagick,
+    GDAL
