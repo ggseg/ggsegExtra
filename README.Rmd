@@ -24,7 +24,6 @@ atlases <- atlases[grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert =
 [![Coverage Status](https://codecov.io/gh/ggseg/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/ggseg/ggsegExtra)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![R-CMD-check](https://github.com/LCBC-UiO/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegExtra/actions)
 [![R-CMD-check](https://github.com/ggseg/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegExtra/actions)
 <!-- badges: end -->
 
@@ -39,8 +38,8 @@ We recommend installing this package from its [r-universe](https://ggseg.r-unive
 ```{r, eval = FALSE}
 # Enable this universe
 options(repos = c(
-    ggseg = 'https://ggseg.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'))
+  ggseg = 'https://ggseg.r-universe.dev',
+  CRAN = 'https://cloud.r-project.org'))
 
 # Install some packages
 install.packages('ggsegExtra')
@@ -53,32 +52,29 @@ Alternatively, install the package with the remotes package from github.
 remotes::install_github("ggseg/ggsegExtra")
 ```
 
-
-
-## Atlases
-There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
-The packages, their repository name and location can be found with:
-
-```{r, echo = FALSE, results='asis'}
-for (i in seq_len(nrow(atlases))) {
-  cat(
-    "### [`", atlases[i, "Package"], "`](", atlases[i, "RemoteUrl"], ")", 
-    '<img src="', atlases[i, "RemoteUrl"], '/raw/HEAD/man/figures/logo.png" align="right" alt="', atlases[i, "Package"], ' logo" width="120" />', "\n",
-    "[![CRAN status](https://www.r-pkg.org/badges/version/", atlases[i,"Package"],
-    ")](https://CRAN.R-project.org/package=",atlases[i, "Package"], ")",
-    "\n\n",
-    atlases[i, "Title"], atlases[i, "Description"],
-    "\n\n",
-    sep = ""
-    )
-}
-```
-
+## Create custom atlases
 We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://ggseg.github.io/ggsegExtra/). 
 Currently, the pipeline for making 3d atlases needs FreeSufer to be installed on your system and a ready `.annot` file to use for the conversions.
 Improvements to the pipeline in creating cortical atlases both for ggseg and ggseg3d is still being developed.
 Pipelines for creating sub-cortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
 Suggestions for improvement are welcome through GH issues or direct Pull requests.
+
+## Availale atlases
+There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
+The packages, their repository name and location can be found with:
+
+```{r, echo = FALSE, results='asis'}
+for (i in 1:nrow(atlases)) {
+  cat(sprintf('### [%s](%s)', 
+              atlases[i, "Package"], atlases[i, "RemoteUrl"]),
+      sprintf('<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
+              atlases[i, "RemoteUrl"], atlases[i, "Package"]),
+      sprintf('\n[![R-CMD-check](https://github.com/ggseg/%s/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/%s/actions)', 
+              atlases[i, "Package"], atlases[i, "Package"]),
+      sprintf("\n%s\n%s\n", atlases[i, "Title"], atlases[i, "Description"]),
+      sep = "\n")
+}
+```
 
 ## Code of Conduct
 

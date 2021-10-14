@@ -9,6 +9,7 @@
 #' @return data frame of online repositories with ggseg-atlases
 #' @export
 #' @importFrom jsonlite stream_in
+#' @importFrom dplyr as_tibble
 #' @examples
 #' ggseg_atlas_repos()
 #' 
@@ -22,7 +23,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
     repos <- repos[idx, ]
   }
   
-  repos[, c("Package", "Title", "Version", "Description", "License", "RemoteUrl")]
+  as_tibble(repos)
 }
 
 
