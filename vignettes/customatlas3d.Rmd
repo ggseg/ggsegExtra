@@ -30,6 +30,7 @@ All credit goes to Anderson Winkler for making these pipelines, see more informa
 - [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)  
 - [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)  
 - [R](https://www.r-project.org/)  
+- [orca](https://github.com/plotly/orca)
 
 These functions will not work on Windows systems, as Freesurfer is not available for Windows.
 If you desperately need to use it on Windows-bases systems, you can look into Freesurfer docker containers and see if you can connect that to R, but we have not tried this. 
