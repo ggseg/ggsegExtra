@@ -575,7 +575,7 @@ curvnf2asc <- function(input_file, nofix, output_file, verbose = TRUE){
 #' @param input_file annotation file path
 #' @template output_file
 #' @param coordinates contains the vertex coordinates or face indices
-#' @param indeces vertex or face sequential index
+#' @param indices vertex or face sequential index
 #' @template verbose
 #'
 #' @return data frame
@@ -583,7 +583,7 @@ curvnf2asc <- function(input_file, nofix, output_file, verbose = TRUE){
 annot2dpv <- function(input_file, 
                       output_file,
                       coordinates = NULL,
-                      indeces = NULL,
+                      indices = NULL,
                       verbose = TRUE){
   
   annot <- freesurfer::read_annotation(input_file, verbose = verbose)
@@ -597,14 +597,14 @@ annot2dpv <- function(input_file,
     fstr = '%0.10f'
   }
   
-  if(!all(is.null(coordinates) & is.null(indeces))){
+  if(!all(is.null(coordinates) & is.null(indices))){
     # Organise the coords
     if(dim(coordinates)[1] < dim(coordinates)[2]) {
       coordinates = t(coordinates)
     }
     
     # Prepare to save
-    dpx = cbind(indeces,  coordinates, labs)
+    dpx = cbind(indices,  coordinates, labs)
     
   } else {
     
