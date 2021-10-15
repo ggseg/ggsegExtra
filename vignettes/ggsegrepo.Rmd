@@ -36,18 +36,7 @@ It contains tests, and some general set-up we would expect from a ggseg-atlas pa
 If you already are comfortable making R-packages, skip this step. 
 If not, it is intended to help you set up a skeleton for the package.
 
-
-```{r, eval = FALSE}
-library(ggsegExtra)
-
-make_ggseg_repo(atlas_name = "cc200", 
-                package_name = "ggsegCC200", 
-                git_init = TRUE, 
-                remote_repo = "https://github.com/youruser/ggsegCC200")
-```
-
-This will start setting up a folder named `ggsegCC200`, that is a copy of the `ggsegTracula` package.
-It will proceed to delete unnecessary files, rename them and substitute "tracula" with "cc200" in the files. 
+To create a ggseg repo, use the RStudio New Project creation GUI, and look for the ggseg icon.
 
 ### Change DESCRIPTION
 The DESCRIPTION file is a text-file with important information regarding the contents of the package.
@@ -103,7 +92,7 @@ Look at the error messages and try to resolve them by reading the carefully.
 - if you have only included a single atlas of either ggseg or ggseg3d:  
     - remove the unneeded atlas in the `data/atlas.rda` file, it contains information
     to both atlases and will fail if only one of them are present in `data/`.  
-- you have not added a licence: try using `usethis::use_mit_license("Your Name Here")`  
+- you have not added a license: try using `usethis::use_mit_license("Your Name Here")`  
 
 There will likely be some failures, try to resolve them. 
 Let us know if you struggle. 

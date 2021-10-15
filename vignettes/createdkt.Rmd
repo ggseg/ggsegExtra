@@ -25,7 +25,7 @@ To successfully run these operations, you must have the following installed on y
 - [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)  
 - [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)  
 - [R](https://www.r-project.org/)  
-- [Imagemagick](https://imagemagick.org/index.php)  
+- [ImageMagick](https://imagemagick.org/index.php)  
 - [orca](https://github.com/plotly/orca)  
 
 Initiate your R script with the following library calls:
@@ -42,10 +42,10 @@ library(tidyverse) # for cleaning the atlas data efficiently
 ### The annotation file
 The first step is to create a FreeSurfer annotation file for the "fsaverage5" subject.
 This subject is ideal as it has fewer vertices than fsaverage6 or fsaverage (and thereby plots faster), but still contains enough detail to produce a good representation of the cortical surface.
-Freesurfer comes with a DKT cortical annotation file, but only for the "bert" example subject. 
+FreeSurfer comes with a DKT cortical annotation file, but only for the "bert" example subject. 
 Since "bert" is not an average brain composite, it is not well suited for our purposes.
 We will first need to convert the annotation file for "bert" into an annotation file for "fsaverage5". 
-In Freesurfer this is done with the `mri_surf2surf` command, with very specific arguments.
+In FreeSurfer this is done with the `mri_surf2surf` command, with very specific arguments.
 We have in _ggsegExtra_ created a specialized function specifically for this type of transformation, calling FreeSurfer's `mri_surf2surf` with the `mri_surf2surf_rereg()` function.
 
 ```{r}

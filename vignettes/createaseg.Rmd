@@ -24,7 +24,7 @@ To successfully run these operations, you must have the following installed on y
 - [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)  
 - [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)  
 - [R](https://www.r-project.org/)  
-- [Imagemagick](https://imagemagick.org/index.php)  
+- [ImageMagick](https://imagemagick.org/index.php)  
 - [orca](https://github.com/plotly/orca)  
 
 Initiate your R script with the following library calls:

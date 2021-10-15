@@ -25,7 +25,7 @@ Once you have a ggseg3d-atlas, the function `ggseg3d_2_ggseg()` can convert that
 
 ### Prerequisites
 - R
-- [Imagemagick](https://imagemagick.org/index.php)
+- [ImageMagick](https://imagemagick.org/index.php)
 - [orca](https://github.com/plotly/orca)
 
 ```{r, eval = FALSE}
