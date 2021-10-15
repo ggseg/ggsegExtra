@@ -53,8 +53,8 @@ jobs:
            brew install imagemagick ghostscript 
            brew tap coin-or-tools/coinor
            brew install symphony
-           Rscript -e "install.packages('R2OpenBUGS',type='source')
-           "
+           Rscript -e "install.packages('R2OpenBUGS',type='source')"
+           
 
       - uses: r-lib/actions/setup-r-dependencies@v1
         with:

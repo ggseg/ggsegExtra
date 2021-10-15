@@ -18,6 +18,13 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v1
 
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: |
+          npm install
+          npm install -g electron@6.1.4 orca
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
