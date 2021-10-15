@@ -14,9 +14,10 @@ RoxygenNote: 7.1.1
 Depends: R (>= 3.5.0)
 LazyData: true
 LazyDataCompression: xz
-Suggests:
+Imports:
     ggseg,
-    ggseg3d,
+    ggseg3d
+Suggests:
     ggplot2,
     tidyr,
     knitr,
