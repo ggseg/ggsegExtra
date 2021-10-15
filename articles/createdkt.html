@@ -122,7 +122,7 @@
 - <a href="https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/">FSL</a><br>
 - <a href="https://surfer.nmr.mgh.harvard.edu/">FreeSurfer</a><br>
 - <a href="https://www.r-project.org/">R</a><br>
-- <a href="https://imagemagick.org/index.php">Imagemagick</a><br>
+- <a href="https://imagemagick.org/index.php">ImageMagick</a><br>
 - <a href="https://github.com/plotly/orca">orca</a></p>
 <p>Initiate your R script with the following library calls:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -137,7 +137,7 @@
 <div id="the-annotation-file" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-annotation-file" class="anchor"></a>The annotation file</h3>
-<p>The first step is to create a FreeSurfer annotation file for the “fsaverage5” subject. This subject is ideal as it has fewer vertices than fsaverage6 or fsaverage (and thereby plots faster), but still contains enough detail to produce a good representation of the cortical surface. Freesurfer comes with a DKT cortical annotation file, but only for the “bert” example subject. Since “bert” is not an average brain composite, it is not well suited for our purposes. We will first need to convert the annotation file for “bert” into an annotation file for “fsaverage5”. In Freesurfer this is done with the <code>mri_surf2surf</code> command, with very specific arguments. We have in <em>ggsegExtra</em> created a specialized function specifically for this type of transformation, calling FreeSurfer’s <code>mri_surf2surf</code> with the <code><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg()</a></code> function.</p>
+<p>The first step is to create a FreeSurfer annotation file for the “fsaverage5” subject. This subject is ideal as it has fewer vertices than fsaverage6 or fsaverage (and thereby plots faster), but still contains enough detail to produce a good representation of the cortical surface. FreeSurfer comes with a DKT cortical annotation file, but only for the “bert” example subject. Since “bert” is not an average brain composite, it is not well suited for our purposes. We will first need to convert the annotation file for “bert” into an annotation file for “fsaverage5”. In FreeSurfer this is done with the <code>mri_surf2surf</code> command, with very specific arguments. We have in <em>ggsegExtra</em> created a specialized function specifically for this type of transformation, calling FreeSurfer’s <code>mri_surf2surf</code> with the <code><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg()</a></code> function.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># convert DKT to fsaverage5</span>
 <span class="fu"><a href="../reference/mri_surf2surf_rereg.html">mri_surf2surf_rereg</a></span><span class="op">(</span>subject <span class="op">=</span> <span class="st">"bert"</span>,

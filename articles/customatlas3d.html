@@ -115,7 +115,7 @@
     
     
 <p>New ggseg3d-atlases can be obtained by converting surfaces into tridimensional meshes in <code>.ply</code> format. The pipeline for creating cortical surfaces and volumetric images into ggseg3d-atlases is slightly different than for ggseg-atlases.</p>
-<p>One has to convert the images with information on your labels to a Freesurfer annotation file (cortical) or to a <code>.mgz</code> file (sub-cortical), and then run an R-function calling Freesurfer and FSL to create the ggseg3d-atlas.</p>
+<p>One has to convert the images with information on your labels to a FreeSurfer annotation file (cortical) or to a <code>.mgz</code> file (sub-cortical), and then run an R-function calling FreeSurfer and FSL to create the ggseg3d-atlas.</p>
 <p>The conversion is based on the scripts available in <a href="https://github.com/andersonwinkler/areal" class="uri">https://github.com/andersonwinkler/areal</a> by Anderson Winkler. Essentially, the functions are identical to A. Winkler’s work, with small edits to better adapt to the R and the specific purpose of ggseg3d-atlas creation. All credit goes to Anderson Winkler for making these pipelines, see more information on his <a href="https://brainder.org/research/brain-for-blender/">webpage</a>.</p>
 <div id="prerequisites" class="section level2">
 <h2 class="hasAnchor">
@@ -132,15 +132,15 @@
 </li>
 <li><a href="https://github.com/plotly/orca">orca</a></li>
 </ul>
-<p>These functions will not work on Windows systems, as Freesurfer is not available for Windows. If you desperately need to use it on Windows-bases systems, you can look into Freesurfer docker containers and see if you can connect that to R, but we have not tried this. Finally one has to have R and the ggseg-family of packages to convert the <code>.ply</code> meshes into a ggseg3d-atlas.</p>
+<p>These functions will not work on Windows systems, as FreeSurfer is not available for Windows. If you desperately need to use it on Windows-bases systems, you can look into FreeSurfer docker containers and see if you can connect that to R, but we have not tried this. Finally one has to have R and the ggseg-family of packages to convert the <code>.ply</code> meshes into a ggseg3d-atlas.</p>
 </div>
 <div id="from-a-surface-image-" class="section level2">
 <h2 class="hasAnchor">
 <a href="#from-a-surface-image-" class="anchor"></a>From a surface image.</h2>
 <div id="make-annotation-file-bash-freesurfer" class="section level3">
 <h3 class="hasAnchor">
-<a href="#make-annotation-file-bash-freesurfer" class="anchor"></a>1) Make annotation file (bash + Freesurfer)</h3>
-<p>Atlases already available in Freesurfer have annotation files, making this step unnecessary. These can be found in the FreeSurfer subject directory, within a subject in the <code>label/</code> folder, look for files ending with <code>.annot</code>. For other files (like results from your vertex-vise analyses etc), you will need to convert the ROIs you have to annotation files. This may require any of the following conversions:</p>
+<a href="#make-annotation-file-bash-freesurfer" class="anchor"></a>1) Make annotation file (bash + FreeSurfer)</h3>
+<p>Atlases already available in FreeSurfer have annotation files, making this step unnecessary. These can be found in the FreeSurfer subject directory, within a subject in the <code>label/</code> folder, look for files ending with <code>.annot</code>. For other files (like results from your vertex-vise analyses etc), you will need to convert the ROIs you have to annotation files. This may require any of the following conversions:</p>
 <ol style="list-style-type: decimal">
 <li>Convert overlay files into annotations. (e.g. overlay results to annotations)<br>
 </li>
@@ -169,7 +169,7 @@
 <div id="run-make_aparc_2_3datlasr" class="section level3">
 <h3 class="hasAnchor">
 <a href="#run-make_aparc_2_3datlasr" class="anchor"></a>2) Run <code>make_aparc_2_3datlas()</code>(R)</h3>
-<p>This script converts your annotations (<code>.annot</code>) into tridimensional (<code>.ply</code>) meshes, and then to a ggseg3d-atlas. Without any arguments, it will create the aparc (Desikan-Killiany atlas), based on annotation files in the Freesurfer subjects directory.</p>
+<p>This script converts your annotations (<code>.annot</code>) into tridimensional (<code>.ply</code>) meshes, and then to a ggseg3d-atlas. Without any arguments, it will create the aparc (Desikan-Killiany atlas), based on annotation files in the FreeSurfer subjects directory.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Desikan-Killiany atlas (a.k.a aparc)</span>
 <span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span><span class="op">)</span>
@@ -185,7 +185,7 @@
 <code>annot</code> : annotation base name, “aparc” default<br>
 </li>
 <li>
-<code>subject</code> : Freesufer subject, “fsaverage5” default<br>
+<code>subject</code> : FreeSurfer subject, “fsaverage5” default<br>
 </li>
 <li>
 <code>hemisphere</code> : hemisphere(s), c(“rh”, “lh”) default<br>
@@ -194,7 +194,7 @@
 <code>surface</code> : surfaces to create atlas from, c(“inflated”, “LCBC”, “white”) default<br>
 </li>
 <li>
-<code>subjects_dir</code> : path to Freesurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default<br>
+<code>subjects_dir</code> : path to FreeSurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default<br>
 </li>
 <li>
 <code>annot_dir</code> : directory where the annot files are, file.path(subjects_dir, subject, “label”) default<br>
@@ -213,7 +213,7 @@
 <code class="sourceCode R"><span class="co"># myResults atlas</span>
 <span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_aparc_2_3datlas.html">make_aparc_2_3datlas</a></span><span class="op">(</span>annot <span class="op">=</span> <span class="st">"myResults"</span>, 
                        annot_dir <span class="op">=</span> <span class="st">"~/Desktop"</span><span class="op">)</span></code></pre></div>
-<p><strong>Note</strong> that the “LCBC” surface only works for subject “fsaverage5”, if you want any other subject, you will need to convert it with <code>freesurfer::mri_surf2srf()</code>. If you want to make your own specialized surface, you can, but you should look into Freesurfer documentation to do that.</p>
+<p><strong>Note</strong> that the “LCBC” surface only works for subject “fsaverage5”, if you want any other subject, you will need to convert it with <code>freesurfer::mri_surf2srf()</code>. If you want to make your own specialized surface, you can, but you should look into FreeSurfer documentation to do that.</p>
 <p>You will notice that the <code>atlas</code> column takes directly the name of the <code>annot</code> file, and that the <code>region</code> and <code>label</code> columns are the same. If you are in the process of making an atlas contribution, there are a couple steps necessary for the atlas to be included.</p>
 <ol style="list-style-type: decimal">
 <li>atlas-name should be short and easily recognisable<br>
@@ -263,16 +263,16 @@
 <p><strong>This still has quite some kinks in it!</strong></p>
 <div id="create-volumetric-image-bash-freesurfer-fsl" class="section level3">
 <h3 class="hasAnchor">
-<a href="#create-volumetric-image-bash-freesurfer-fsl" class="anchor"></a>1) Create volumetric image (bash + Freesurfer / FSL)</h3>
+<a href="#create-volumetric-image-bash-freesurfer-fsl" class="anchor"></a>1) Create volumetric image (bash + FreeSurfer / FSL)</h3>
 <p>The image needs to have the following characteristics:</p>
 <ol style="list-style-type: decimal">
 <li>Be in MNI305; 2mm FreeSurfer space<br>
 </li>
 <li>Consists of integer values, in which each integer reflects a different ROI
 <ul>
-<li>One will have to perform basic transformations (mostly thresholding, binarizing and, registration) with neuroimaging software tools like Freesurfer and FSL.</li>
+<li>One will have to perform basic transformations (mostly thresholding, binarizing and, registration) with neuroimaging software tools like FreeSurfer and FSL.</li>
 <li>The specific process will depend on the initial information, but one should manage to convert the data using the following functions: <code>fslmaths</code> (FSL) and <code>mri_convert</code>, <code>mri_vol2vol</code>, <code>mris_calc</code> (FreeSurfer).</li>
-<li>The resulting template file must be in Freesurfer<code>.mgz</code> format.</li>
+<li>The resulting template file must be in FreeSurfer<code>.mgz</code> format.</li>
 </ul>
 </li>
 </ol>
@@ -280,7 +280,7 @@
 <div id="run-make_aseg_2_3datlas-r" class="section level3">
 <h3 class="hasAnchor">
 <a href="#run-make_aseg_2_3datlas-r" class="anchor"></a>2) Run <code>make_aseg_2_3datlas()</code> (R)</h3>
-<p>This script converts your template images (<code>.mgz</code>) into tridimensional (<code>.ply</code>) meshes, and then to a ggseg3d-atlas. Without any arguments, it will create the aseg atlas, based on <code>mri/aseg.mgz</code> file in the Freesurfer subjects directory, together with the “ASegStatsLUT.txt” file from the Freesurfer main directory.</p>
+<p>This script converts your template images (<code>.mgz</code>) into tridimensional (<code>.ply</code>) meshes, and then to a ggseg3d-atlas. Without any arguments, it will create the aseg atlas, based on <code>mri/aseg.mgz</code> file in the FreeSurfer subjects directory, together with the “ASegStatsLUT.txt” file from the FreeSurfer main directory.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># aseg atlas (a.k.a aseg)</span>
 <span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu">make_aseg_2_3datlas</span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -293,10 +293,10 @@
 <li>
 <code>steps</code> : there are 5 steps in the transformation, if partial transformation has been done before, and there has been no <code>cleanup</code>, then you can skip the steps already run.</li>
 <li>
-<code>subject</code> : Freesufer subject, “fsaverage5” default<br>
+<code>subject</code> : FreeSurfer subject, “fsaverage5” default<br>
 </li>
 <li>
-<code>subjects_dir</code> : path to Freesurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default<br>
+<code>subjects_dir</code> : path to FreeSurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default<br>
 </li>
 <li>
 <code>output_dir</code> : output directory for intermediary files, tempdir() default<br>
