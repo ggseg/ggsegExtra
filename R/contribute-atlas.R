@@ -3,7 +3,7 @@
 #' This function will clone an existing
 #' ggseg atlas, and rename files and substitute
 #' strings in files to prepare a repository for
-#' ggseg atlas constribution. 
+#' ggseg atlas contribution. 
 #' 
 #' This process is not perfect, and you will need
 #' to go through files and make sure the information
@@ -33,7 +33,7 @@ make_ggseg_repo <- function(atlas_name,
   if(dir.exists(directory)) stop("Directory already exists. Aborting.", call. = FALSE)
   
   usethis::ui_todo(paste("\tSetting up package skeleton.\n"))
-  system(paste0("git clone https://github.com/LCBC-UiO/ggsegTracula ", directory))
+  system(paste0("git clone https://github.com/ggseg/ggsegBrainnetome ", directory))
   
   # remove raw and data. they must create new
   dd <- list.files(file.path(directory, c("data-raw/", "data")), 
@@ -43,23 +43,23 @@ make_ggseg_repo <- function(atlas_name,
   k <- sapply(dd, file.remove)
   
   # rename atlas name files
-  dd <- list.files(directory, "tracula", recursive = TRUE, full.names = TRUE)
+  dd <- list.files(directory, "brainnetome", recursive = TRUE, full.names = TRUE)
   k <- sapply(dd, function(x) 
-    file.rename(from = x, to = gsub("tracula", atlas_name, x))
+    file.rename(from = x, to = gsub("brainnetome", atlas_name, x))
   )
   
   # rename package name files
-  dd <- list.files(directory, "ggsegTracula", recursive = TRUE, full.names = TRUE)
+  dd <- list.files(directory, "ggsegBrainnetome", recursive = TRUE, full.names = TRUE)
   k <- sapply(dd, function(x) 
-    file.rename(from = x, to = gsub("ggsegTracula", package_name, x))
+    file.rename(from = x, to = gsub("ggsegBrainnetome", package_name, x))
   )
   
   # find strings in files and rename them
   dd <- list.files(directory, recursive = TRUE, full.names = TRUE)
   d2 <- lapply(dd, readLines)
   
-  d2 <- lapply(d2, function(x) gsub("tracula", atlas_name, x))
-  d2 <- lapply(d2, function(x) gsub("ggsegTracula", package_name, x))
+  d2 <- lapply(d2, function(x) gsub("brainnetome", atlas_name, x))
+  d2 <- lapply(d2, function(x) gsub("ggsegBrainnetome", package_name, x))
   
   j <- mapply(writeLines, d2, dd)
   

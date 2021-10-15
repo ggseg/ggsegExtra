@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
-Version: 1.5.33.002
+Version: 1.5.33.003
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
                     role = c("aut", "cre"),
@@ -65,6 +65,7 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
+    hexSticker,
     testthat (>= 2.1.0),
     spelling
 VignetteBuilder: knitr

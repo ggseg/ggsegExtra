@@ -1,0 +1,88 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  fig.width = 10, 
+  fig.retina = 3
+)
+```
+
+# {REPO} <img src='man/figures/logo.png' align="right" height="138.5" />
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+This package contains dataset for plotting the [{GGSEG}](add url here) atlas ggseg and ggseg3d. 
+
+Add reference here.
+
+To learn how to use these atlases, please look at the documentation for [ggseg](https://ggseg.github.io/ggseg/) and [ggseg3d](https://ggseg.github.io/ggseg3d)
+
+## Installation
+
+We recommend installing the ggseg-atlases through the ggseg [r-universe](https://ggseg.r-universe.dev/ui#builds):
+
+```{r eval = FALSE}
+# Enable this universe
+options(repos = c(
+    ggseg = 'https://ggseg.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'))
+
+# Install some packages
+install.packages('{REPO}')
+```
+
+You can install the released version of {REPO} from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("ggseg/{REPO}")
+```
+
+```{r, fig.height=7}
+library(ggseg)
+library(ggseg3d)
+library({REPO})
+
+plot({GGSEG}) +
+  theme(legend.position = "bottom", 
+        legend.text = element_text(size = 9)) +
+  guides(fill = guide_legend(ncol = 6))
+
+```
+
+```{r "noneval", eval=FALSE}
+library(dplyr)
+ggseg3d(atlas = {GGSEG}_3d) %>% 
+  add_glassbrain() %>% 
+  pan_camera("right lateral")
+```
+
+```{r "orca", include=FALSE}
+library(dplyr)
+p <- ggseg3d(atlas = {GGSEG}_3d) %>%
+  add_glassbrain(hemisphere = "left")%>%
+  pan_camera("right lateral") %>%
+  plotly::add_annotations( text="Screen capture",
+                  legendtitle=TRUE, showarrow=FALSE,
+                  font = list(color = "#000000b4",
+                              family = 'sans serif',
+                              size = 50))
+plotly::orca(p, "man/figures/README-3d-plot.png")
+```
+
+```{r "incl", echo=FALSE}
+knitr::include_graphics("man/figures/README-3d-plot.png")
+```
+
+Please note that the '{REPO}' project is released with a
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.

@@ -1,6 +1,10 @@
 
 # ggsegExtra 1.5
 
+## 1.5.33.003
+- small bug fix that prevented calls to FreeSurfer
+- Possibility to initiate new atlas project from the RStudio Project GUI
+
 ## ggsegExtra 1.5.33
 
 - removes purrr dependency
