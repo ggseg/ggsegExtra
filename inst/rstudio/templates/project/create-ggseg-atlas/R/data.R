@@ -19,9 +19,9 @@
 #' @rdname {GGSEG}
 #' @examples
 #' data({GGSEG})
+#' data({GGSEG}_3d)
 "{GGSEG}"
 
 #' @rdname {GGSEG}
-#' data({GGSEG}_3d)
 "{GGSEG}_3d"
 

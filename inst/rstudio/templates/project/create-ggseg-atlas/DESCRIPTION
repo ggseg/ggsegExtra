@@ -11,12 +11,12 @@ Description: This is a support package for the ggseg, and ggseg3d packages.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.1
-Depends: R (>= 3.5.0)
-LazyData: true
-LazyDataCompression: xz
-Imports:
+Depends: 
+    R (>= 3.5.0),
     ggseg,
     ggseg3d
+LazyData: true
+LazyDataCompression: xz
 Suggests:
     ggplot2,
     tidyr,

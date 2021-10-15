@@ -2,3 +2,4 @@
 ^README*
 ^.*\.Rproj$
 ^\.Rproj\.user$
+pkgdown
