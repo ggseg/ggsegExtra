@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.004</span>
       </span>
     </div>
 
@@ -116,7 +116,16 @@
     
 <p>Using the ggseExtra package requires the two main ggseg-packages, containing the functions needed to plot the data. ggsegExtra is a meta-repository of data-sets that fit with the functions in those main packages, with functions to help you create your own custom atlases.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggsegExtra">ggsegExtra</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
+<span class="co">## Loading required package: ggseg</span>
+<span class="co">## Loading required package: ggplot2</span>
+<span class="co">## Loading required package: ggseg3d</span>
+<span class="co">## Warning in rgl.init(initValue, onlyNULL): RGL: unable to open X11 display</span>
+<span class="co">## Warning: 'rgl.init' failed, running with 'rgl.useNULL = TRUE'.</span>
+<span class="co">## Registered S3 methods overwritten by 'stars':</span>
+<span class="co">##   method             from</span>
+<span class="co">##   st_bbox.SpatRaster sf  </span>
+<span class="co">##   st_crs.SpatRaster  sf</span></code></pre></div>
 <div id="installing-atlases" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installing-atlases" class="anchor"></a>Installing atlases</h2>
@@ -124,93 +133,88 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">ggseg_atlas_repos</span>()</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="co">## opening url input connection.</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a><span class="co">## </span></span>
-<span id="cb2-4"><a href="#cb2-4"></a> Found <span class="dv">15</span> records...</span>
-<span id="cb2-5"><a href="#cb2-5"></a> Imported <span class="dv">15</span> records. Simplifying...</span>
+<span id="cb2-4"><a href="#cb2-4"></a> Found <span class="dv">21</span> records...</span>
+<span id="cb2-5"><a href="#cb2-5"></a> Imported <span class="dv">21</span> records. Simplifying...</span>
 <span id="cb2-6"><a href="#cb2-6"></a><span class="co">## closing url input connection.</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="co">## # A tibble: 15 × 31</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">## # A tibble: 21 × 31</span></span>
 <span id="cb2-8"><a href="#cb2-8"></a><span class="co">##    Package  Title  Version  `Authors@R` Description License Encoding RoxygenNote</span></span>
 <span id="cb2-9"><a href="#cb2-9"></a><span class="co">##    &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;      </span></span>
-<span id="cb2-10"><a href="#cb2-10"></a><span class="co">##  1 ggsegBr… Brain… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-11"><a href="#cb2-11"></a><span class="co">##  2 ggsegJHU JHU d… 1.0.1.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-12"><a href="#cb2-12"></a><span class="co">##  3 ggsegHO  Harva… 1.0.2.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-13"><a href="#cb2-13"></a><span class="co">##  4 ggsegIC… ICBM … 1.0.0    "c(person(… "This is a… MIT + … UTF-8    7.1.0      </span></span>
-<span id="cb2-14"><a href="#cb2-14"></a><span class="co">##  5 ggsegDe… Extra… 1.0.01   "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-15"><a href="#cb2-15"></a><span class="co">##  6 ggsegDKT Desik… 1.0.1.0… "c(person(… "This is a… CC0     UTF-8    7.1.1      </span></span>
-<span id="cb2-16"><a href="#cb2-16"></a><span class="co">##  7 ggsegTr… Tracu… 1.0.1.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-17"><a href="#cb2-17"></a><span class="co">##  8 ggsegCh… Chen … 1.0.01   "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-18"><a href="#cb2-18"></a><span class="co">##  9 ggsegDe… Deste… 1.0.1.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-19"><a href="#cb2-19"></a><span class="co">## 10 ggsegSc… Schae… 2.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="co">## 11 ggsegEx… Extra… 1.5.33.… "c(person(… "Contains … MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-21"><a href="#cb2-21"></a><span class="co">## 12 ggsegGl… Glass… 1.0.01   "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-22"><a href="#cb2-22"></a><span class="co">## 13 ggsegYe… Yeo 2… 1.0.2.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-23"><a href="#cb2-23"></a><span class="co">## 14 ggseg    Plott… 1.6.4.9… "c(\nperso… "Contains … MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-24"><a href="#cb2-24"></a><span class="co">## 15 ggseg3d  Tri-S… 1.6.3    "c(person(… "Mainly co… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-25"><a href="#cb2-25"></a><span class="co">## # … with 23 more variables: LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
-<span id="cb2-26"><a href="#cb2-26"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;,</span></span>
-<span id="cb2-27"><a href="#cb2-27"></a><span class="co">## #   Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;, RemoteSha &lt;chr&gt;,</span></span>
-<span id="cb2-28"><a href="#cb2-28"></a><span class="co">## #   NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;, Maintainer &lt;chr&gt;,</span></span>
-<span id="cb2-29"><a href="#cb2-29"></a><span class="co">## #   _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;, _builder &lt;df[,13]&gt;,</span></span>
-<span id="cb2-30"><a href="#cb2-30"></a><span class="co">## #   MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;, _soft_deps &lt;list&gt;, Language &lt;chr&gt;,</span></span>
-<span id="cb2-31"><a href="#cb2-31"></a><span class="co">## #   SystemRequirements &lt;chr&gt;</span></span>
-<span id="cb2-32"><a href="#cb2-32"></a></span>
-<span id="cb2-33"><a href="#cb2-33"></a><span class="co"># Search for repos with pattern</span></span>
-<span id="cb2-34"><a href="#cb2-34"></a><span class="kw">ggseg_atlas_repos</span>(<span class="st">"Yeo"</span>)</span>
-<span id="cb2-35"><a href="#cb2-35"></a><span class="co">## opening url input connection.</span></span>
-<span id="cb2-36"><a href="#cb2-36"></a><span class="co">## </span></span>
-<span id="cb2-37"><a href="#cb2-37"></a> Found <span class="dv">15</span> records...</span>
-<span id="cb2-38"><a href="#cb2-38"></a> Imported <span class="dv">15</span> records. Simplifying...</span>
-<span id="cb2-39"><a href="#cb2-39"></a><span class="co">## closing url input connection.</span></span>
-<span id="cb2-40"><a href="#cb2-40"></a><span class="co">## # A tibble: 1 × 31</span></span>
-<span id="cb2-41"><a href="#cb2-41"></a><span class="co">##   Package      Title Version `Authors@R` Description License Encoding RoxygenNote</span></span>
-<span id="cb2-42"><a href="#cb2-42"></a><span class="co">##   &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;      </span></span>
-<span id="cb2-43"><a href="#cb2-43"></a><span class="co">## 1 ggsegYeo2011 Yeo … 1.0.2.… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-44"><a href="#cb2-44"></a><span class="co">## # … with 23 more variables: LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
-<span id="cb2-45"><a href="#cb2-45"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;,</span></span>
-<span id="cb2-46"><a href="#cb2-46"></a><span class="co">## #   Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;, RemoteSha &lt;chr&gt;,</span></span>
-<span id="cb2-47"><a href="#cb2-47"></a><span class="co">## #   NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;, Maintainer &lt;chr&gt;,</span></span>
-<span id="cb2-48"><a href="#cb2-48"></a><span class="co">## #   _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;, _builder &lt;df[,13]&gt;,</span></span>
-<span id="cb2-49"><a href="#cb2-49"></a><span class="co">## #   MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;, _soft_deps &lt;list&gt;, Language &lt;chr&gt;,</span></span>
-<span id="cb2-50"><a href="#cb2-50"></a><span class="co">## #   SystemRequirements &lt;chr&gt;</span></span>
-<span id="cb2-51"><a href="#cb2-51"></a></span>
-<span id="cb2-52"><a href="#cb2-52"></a><span class="co"># Search is case-sensitive</span></span>
-<span id="cb2-53"><a href="#cb2-53"></a><span class="kw">ggseg_atlas_repos</span>(<span class="st">"yeo"</span>)</span>
-<span id="cb2-54"><a href="#cb2-54"></a><span class="co">## opening url input connection.</span></span>
-<span id="cb2-55"><a href="#cb2-55"></a><span class="co">## </span></span>
-<span id="cb2-56"><a href="#cb2-56"></a> Found <span class="dv">15</span> records...</span>
-<span id="cb2-57"><a href="#cb2-57"></a> Imported <span class="dv">15</span> records. Simplifying...</span>
-<span id="cb2-58"><a href="#cb2-58"></a><span class="co">## closing url input connection.</span></span>
-<span id="cb2-59"><a href="#cb2-59"></a><span class="co">## # A tibble: 0 × 31</span></span>
-<span id="cb2-60"><a href="#cb2-60"></a><span class="co">## # … with 31 variables: Package &lt;chr&gt;, Title &lt;chr&gt;, Version &lt;chr&gt;,</span></span>
-<span id="cb2-61"><a href="#cb2-61"></a><span class="co">## #   Authors@R &lt;chr&gt;, Description &lt;chr&gt;, License &lt;chr&gt;, Encoding &lt;chr&gt;,</span></span>
-<span id="cb2-62"><a href="#cb2-62"></a><span class="co">## #   RoxygenNote &lt;chr&gt;, LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
-<span id="cb2-63"><a href="#cb2-63"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;,</span></span>
-<span id="cb2-64"><a href="#cb2-64"></a><span class="co">## #   Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;, RemoteSha &lt;chr&gt;,</span></span>
-<span id="cb2-65"><a href="#cb2-65"></a><span class="co">## #   NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;, Maintainer &lt;chr&gt;,</span></span>
-<span id="cb2-66"><a href="#cb2-66"></a><span class="co">## #   _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;, _builder &lt;df[,13]&gt;, …</span></span>
-<span id="cb2-67"><a href="#cb2-67"></a></span>
-<span id="cb2-68"><a href="#cb2-68"></a><span class="co"># Search is case-sensitive, but this can be fixed</span></span>
-<span id="cb2-69"><a href="#cb2-69"></a><span class="kw">ggseg_atlas_repos</span>(<span class="st">"yeo"</span>, <span class="dt">ignore.case =</span> <span class="ot">TRUE</span>)</span>
-<span id="cb2-70"><a href="#cb2-70"></a><span class="co">## opening url input connection.</span></span>
-<span id="cb2-71"><a href="#cb2-71"></a><span class="co">## </span></span>
-<span id="cb2-72"><a href="#cb2-72"></a> Found <span class="dv">15</span> records...</span>
-<span id="cb2-73"><a href="#cb2-73"></a> Imported <span class="dv">15</span> records. Simplifying...</span>
-<span id="cb2-74"><a href="#cb2-74"></a><span class="co">## closing url input connection.</span></span>
-<span id="cb2-75"><a href="#cb2-75"></a><span class="co">## # A tibble: 1 × 31</span></span>
-<span id="cb2-76"><a href="#cb2-76"></a><span class="co">##   Package      Title Version `Authors@R` Description License Encoding RoxygenNote</span></span>
-<span id="cb2-77"><a href="#cb2-77"></a><span class="co">##   &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;      </span></span>
-<span id="cb2-78"><a href="#cb2-78"></a><span class="co">## 1 ggsegYeo2011 Yeo … 1.0.2.… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
-<span id="cb2-79"><a href="#cb2-79"></a><span class="co">## # … with 23 more variables: LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
-<span id="cb2-80"><a href="#cb2-80"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;,</span></span>
-<span id="cb2-81"><a href="#cb2-81"></a><span class="co">## #   Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;, RemoteSha &lt;chr&gt;,</span></span>
-<span id="cb2-82"><a href="#cb2-82"></a><span class="co">## #   NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;, Maintainer &lt;chr&gt;,</span></span>
-<span id="cb2-83"><a href="#cb2-83"></a><span class="co">## #   _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;, _builder &lt;df[,13]&gt;,</span></span>
-<span id="cb2-84"><a href="#cb2-84"></a><span class="co">## #   MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;, _soft_deps &lt;list&gt;, Language &lt;chr&gt;,</span></span>
-<span id="cb2-85"><a href="#cb2-85"></a><span class="co">## #   SystemRequirements &lt;chr&gt;</span></span></code></pre></div>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="co">##  1 ggsegIca ica d… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co">##  2 ggsegAr… arsla… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-12"><a href="#cb2-12"></a><span class="co">##  3 ggsegGo… gordo… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">##  4 ggsegAi… aicha… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-14"><a href="#cb2-14"></a><span class="co">##  5 ggsegAal aal d… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="co">##  6 ggsegPo… power… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="co">##  7 ggsegBr… Brain… 0.0.1    "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="co">##  8 ggsegJHU JHU d… 1.0.1.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-18"><a href="#cb2-18"></a><span class="co">##  9 ggsegHO  Harva… 1.0.2.0… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="co">## 10 ggsegIC… ICBM … 1.0.0    "c(person(… "This is a… MIT + … UTF-8    7.1.0      </span></span>
+<span id="cb2-20"><a href="#cb2-20"></a><span class="co">## # … with 11 more rows, and 23 more variables: LazyData &lt;chr&gt;,</span></span>
+<span id="cb2-21"><a href="#cb2-21"></a><span class="co">## #   LazyDataCompression &lt;chr&gt;, VignetteBuilder &lt;chr&gt;, Repository &lt;chr&gt;,</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a><span class="co">## #   RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;, RemoteSha &lt;chr&gt;, NeedsCompilation &lt;chr&gt;,</span></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="co">## #   Packaged &lt;chr&gt;, Author &lt;chr&gt;, Maintainer &lt;chr&gt;, _user &lt;chr&gt;, _file &lt;chr&gt;,</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a><span class="co">## #   _published &lt;chr&gt;, _builder &lt;df[,13]&gt;, MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;,</span></span>
+<span id="cb2-25"><a href="#cb2-25"></a><span class="co">## #   _soft_deps &lt;list&gt;, Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;,</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a><span class="co">## #   Language &lt;chr&gt;, SystemRequirements &lt;chr&gt;</span></span>
+<span id="cb2-27"><a href="#cb2-27"></a></span>
+<span id="cb2-28"><a href="#cb2-28"></a><span class="co"># Search for repos with pattern</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a><span class="kw">ggseg_atlas_repos</span>(<span class="st">"Yeo"</span>)</span>
+<span id="cb2-30"><a href="#cb2-30"></a><span class="co">## opening url input connection.</span></span>
+<span id="cb2-31"><a href="#cb2-31"></a><span class="co">## </span></span>
+<span id="cb2-32"><a href="#cb2-32"></a> Found <span class="dv">21</span> records...</span>
+<span id="cb2-33"><a href="#cb2-33"></a> Imported <span class="dv">21</span> records. Simplifying...</span>
+<span id="cb2-34"><a href="#cb2-34"></a><span class="co">## closing url input connection.</span></span>
+<span id="cb2-35"><a href="#cb2-35"></a><span class="co">## # A tibble: 1 × 31</span></span>
+<span id="cb2-36"><a href="#cb2-36"></a><span class="co">##   Package      Title Version `Authors@R` Description License Encoding RoxygenNote</span></span>
+<span id="cb2-37"><a href="#cb2-37"></a><span class="co">##   &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;      </span></span>
+<span id="cb2-38"><a href="#cb2-38"></a><span class="co">## 1 ggsegYeo2011 Yeo … 1.0.2.… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-39"><a href="#cb2-39"></a><span class="co">## # … with 23 more variables: LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
+<span id="cb2-40"><a href="#cb2-40"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;,</span></span>
+<span id="cb2-41"><a href="#cb2-41"></a><span class="co">## #   RemoteSha &lt;chr&gt;, NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;,</span></span>
+<span id="cb2-42"><a href="#cb2-42"></a><span class="co">## #   Maintainer &lt;chr&gt;, _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;,</span></span>
+<span id="cb2-43"><a href="#cb2-43"></a><span class="co">## #   _builder &lt;df[,13]&gt;, MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;, _soft_deps &lt;list&gt;,</span></span>
+<span id="cb2-44"><a href="#cb2-44"></a><span class="co">## #   Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;, Language &lt;chr&gt;,</span></span>
+<span id="cb2-45"><a href="#cb2-45"></a><span class="co">## #   SystemRequirements &lt;chr&gt;</span></span>
+<span id="cb2-46"><a href="#cb2-46"></a></span>
+<span id="cb2-47"><a href="#cb2-47"></a><span class="co"># Search is case-sensitive</span></span>
+<span id="cb2-48"><a href="#cb2-48"></a><span class="kw">ggseg_atlas_repos</span>(<span class="st">"yeo"</span>)</span>
+<span id="cb2-49"><a href="#cb2-49"></a><span class="co">## opening url input connection.</span></span>
+<span id="cb2-50"><a href="#cb2-50"></a><span class="co">## </span></span>
+<span id="cb2-51"><a href="#cb2-51"></a> Found <span class="dv">21</span> records...</span>
+<span id="cb2-52"><a href="#cb2-52"></a> Imported <span class="dv">21</span> records. Simplifying...</span>
+<span id="cb2-53"><a href="#cb2-53"></a><span class="co">## closing url input connection.</span></span>
+<span id="cb2-54"><a href="#cb2-54"></a><span class="co">## # A tibble: 0 × 31</span></span>
+<span id="cb2-55"><a href="#cb2-55"></a><span class="co">## # … with 31 variables: Package &lt;chr&gt;, Title &lt;chr&gt;, Version &lt;chr&gt;,</span></span>
+<span id="cb2-56"><a href="#cb2-56"></a><span class="co">## #   Authors@R &lt;chr&gt;, Description &lt;chr&gt;, License &lt;chr&gt;, Encoding &lt;chr&gt;,</span></span>
+<span id="cb2-57"><a href="#cb2-57"></a><span class="co">## #   RoxygenNote &lt;chr&gt;, LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
+<span id="cb2-58"><a href="#cb2-58"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;,</span></span>
+<span id="cb2-59"><a href="#cb2-59"></a><span class="co">## #   RemoteSha &lt;chr&gt;, NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;,</span></span>
+<span id="cb2-60"><a href="#cb2-60"></a><span class="co">## #   Maintainer &lt;chr&gt;, _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;,</span></span>
+<span id="cb2-61"><a href="#cb2-61"></a><span class="co">## #   _builder &lt;df[,13]&gt;, MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;, _soft_deps &lt;list&gt;, …</span></span>
+<span id="cb2-62"><a href="#cb2-62"></a></span>
+<span id="cb2-63"><a href="#cb2-63"></a><span class="co"># Search is case-sensitive, but this can be fixed</span></span>
+<span id="cb2-64"><a href="#cb2-64"></a><span class="kw">ggseg_atlas_repos</span>(<span class="st">"yeo"</span>, <span class="dt">ignore.case =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb2-65"><a href="#cb2-65"></a><span class="co">## opening url input connection.</span></span>
+<span id="cb2-66"><a href="#cb2-66"></a><span class="co">## </span></span>
+<span id="cb2-67"><a href="#cb2-67"></a> Found <span class="dv">21</span> records...</span>
+<span id="cb2-68"><a href="#cb2-68"></a> Imported <span class="dv">21</span> records. Simplifying...</span>
+<span id="cb2-69"><a href="#cb2-69"></a><span class="co">## closing url input connection.</span></span>
+<span id="cb2-70"><a href="#cb2-70"></a><span class="co">## # A tibble: 1 × 31</span></span>
+<span id="cb2-71"><a href="#cb2-71"></a><span class="co">##   Package      Title Version `Authors@R` Description License Encoding RoxygenNote</span></span>
+<span id="cb2-72"><a href="#cb2-72"></a><span class="co">##   &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;      </span></span>
+<span id="cb2-73"><a href="#cb2-73"></a><span class="co">## 1 ggsegYeo2011 Yeo … 1.0.2.… "c(person(… "This is a… MIT + … UTF-8    7.1.1      </span></span>
+<span id="cb2-74"><a href="#cb2-74"></a><span class="co">## # … with 23 more variables: LazyData &lt;chr&gt;, LazyDataCompression &lt;chr&gt;,</span></span>
+<span id="cb2-75"><a href="#cb2-75"></a><span class="co">## #   VignetteBuilder &lt;chr&gt;, Repository &lt;chr&gt;, RemoteUrl &lt;chr&gt;, RemoteRef &lt;chr&gt;,</span></span>
+<span id="cb2-76"><a href="#cb2-76"></a><span class="co">## #   RemoteSha &lt;chr&gt;, NeedsCompilation &lt;chr&gt;, Packaged &lt;chr&gt;, Author &lt;chr&gt;,</span></span>
+<span id="cb2-77"><a href="#cb2-77"></a><span class="co">## #   Maintainer &lt;chr&gt;, _user &lt;chr&gt;, _file &lt;chr&gt;, _published &lt;chr&gt;,</span></span>
+<span id="cb2-78"><a href="#cb2-78"></a><span class="co">## #   _builder &lt;df[,13]&gt;, MD5sum &lt;chr&gt;, _hard_deps &lt;list&gt;, _soft_deps &lt;list&gt;,</span></span>
+<span id="cb2-79"><a href="#cb2-79"></a><span class="co">## #   Remotes &lt;list&gt;, URL &lt;chr&gt;, BugReports &lt;chr&gt;, Language &lt;chr&gt;,</span></span>
+<span id="cb2-80"><a href="#cb2-80"></a><span class="co">## #   SystemRequirements &lt;chr&gt;</span></span></code></pre></div>
 <p>Installing atlases from the repos, we have convenience function, using the r-universe for <a href="https://ggseg.r-universe.dev/ui#builds">all the ggseg packages</a></p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>repo &lt;-<span class="st"> </span><span class="kw">ggseg_atlas_repos</span>(<span class="st">"dkt"</span>, <span class="dt">ignore.case =</span> <span class="ot">TRUE</span>)</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="co">## </span></span>
-<span id="cb3-3"><a href="#cb3-3"></a> Found <span class="dv">15</span> records...</span>
-<span id="cb3-4"><a href="#cb3-4"></a> Imported <span class="dv">15</span> records. Simplifying...</span>
+<span id="cb3-3"><a href="#cb3-3"></a> Found <span class="dv">21</span> records...</span>
+<span id="cb3-4"><a href="#cb3-4"></a> Imported <span class="dv">21</span> records. Simplifying...</span>
 <span id="cb3-5"><a href="#cb3-5"></a><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">"ggsegDKT"</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)) {</span>
 <span id="cb3-6"><a href="#cb3-6"></a>  <span class="kw">install_ggseg_atlas</span>(repo<span class="op">$</span>package)</span>
 <span id="cb3-7"><a href="#cb3-7"></a>}</span></code></pre></div>
