@@ -16,3 +16,5 @@
 ^CODE_OF_CONDUCT\.md$
 ^man-roxygen$
 ^\.github$
+orca-build
+package-lock.json
