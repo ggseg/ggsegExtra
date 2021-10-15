@@ -14,6 +14,8 @@
 #' @template verbose
 #'
 #' @return list of ply meshes. Will also write ply meshes to files.
+#' @importFrom dplyr bind_rows
+#' @importFrom utils read.table txtProgressBar setTxtProgressBar
 surfsplit <- function(srf_ply, 
                       label_path, 
                       prefix = "test", 
@@ -25,7 +27,7 @@ surfsplit <- function(srf_ply,
   
   surf <- get_mesh(srf_ply, ShowSpecimen = FALSE)  
   
-  dpx <- utils::read.table(label_path)
+  dpx <- read.table(label_path)
   
   nV <- nrow(surf$vertices)
 
@@ -128,7 +130,7 @@ surfsplit <- function(srf_ply,
       
       if(verbose){
         cat("Re-indexing faces\n")
-        pb <- utils::txtProgressBar(min = 1, max = nrow(surf$faces), style = 3)
+        pb <- txtProgressBar(min = 1, max = nrow(surf$faces), style = 3)
       } 
       
       # If vertexwise data
@@ -159,20 +161,20 @@ surfsplit <- function(srf_ply,
           if(is.null(getmode(Cidx))) print(paste0(f, ": mode is ", getmode(Cidx)))
           
           # Add the new faces to their respective labels
-          facL[[Cidx[1]]] <- dplyr::bind_rows(facL[[Cidx[1]]], facnew[1,])
-          facL[[Cidx[2]]] <- dplyr::bind_rows(facL[[Cidx[2]]], facnew[2,])
-          facL[[Cidx[3]]] <- dplyr::bind_rows(facL[[Cidx[3]]], facnew[3,])
-          facL[[getmode(Cidx)]] <- dplyr::bind_rows(facL[[getmode(Cidx)]], facnew[4,]) # central face
+          facL[[Cidx[1]]] <- bind_rows(facL[[Cidx[1]]], facnew[1,])
+          facL[[Cidx[2]]] <- bind_rows(facL[[Cidx[2]]], facnew[2,])
+          facL[[Cidx[3]]] <- bind_rows(facL[[Cidx[3]]], facnew[3,])
+          facL[[getmode(Cidx)]] <- bind_rows(facL[[getmode(Cidx)]], facnew[4,]) # central face
           
           # Create 3 new vertices at the midpoints of the 3 edges
           vtxCfac <- surf$vertices[Cfac_l,]
           vtxnew <- (vtxCfac + vtxCfac[c(2, 3, 1), ]) / 2
-          surf$vertices <- dplyr::bind_rows(surf$vertices, vtxnew)
+          surf$vertices <- bind_rows(surf$vertices, vtxnew)
           
           nV <- nrow(surf$vertices) # Update nV for the next loop
         } # if length(unique(Cidx)) == 1
         
-        if(verbose) utils::setTxtProgressBar(pb, f)
+        if(verbose) setTxtProgressBar(pb, f)
       } #for f
       if(verbose) close(pb)
       
@@ -181,7 +183,7 @@ surfsplit <- function(srf_ply,
 
       if(verbose){
         cat("Writing dpv\n")
-        pb <- utils::txtProgressBar(min = 1, max = length(uidx), style = 3)
+        pb <- txtProgressBar(min = 1, max = length(uidx), style = 3)
       } 
       
       fname <- rep(NA_character_, length(uidx))
@@ -209,7 +211,7 @@ surfsplit <- function(srf_ply,
         fname[lab] = file.path(output_dir,"ascii", sprintf("%s.%04d.dpv", prefix, lab))
         write_dpv(fname[lab], vtxL[[lab]], facL[[lab]]);
         
-        if(verbose) utils::setTxtProgressBar(pb, lab)
+        if(verbose) setTxtProgressBar(pb, lab)
         
       } # for lab
       

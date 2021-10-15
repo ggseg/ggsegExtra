@@ -5,13 +5,13 @@
 \title{Turn ggseg3d-atlas to ggseg}
 \usage{
 make_ggseg3d_2_ggseg(
-  ggseg3d_atlas = ggseg3d::dk_3d,
+  ggseg3d_atlas,
   steps = 1:7,
   output_dir = tempdir(),
   tolerance = 0,
   smoothness = 5,
   cleanup = FALSE,
-  ncores = parallel::detectCores() - 2
+  ncores = 2
 )
 }
 \arguments{

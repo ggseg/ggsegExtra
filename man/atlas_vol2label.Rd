@@ -4,12 +4,7 @@
 \alias{atlas_vol2label}
 \title{Volume to label}
 \usage{
-atlas_vol2label(
-  annot_lab,
-  output_dir,
-  verbose,
-  ncores = parallel::detectCores() - 2
-)
+atlas_vol2label(annot_lab, output_dir, verbose, ncores = 2)
 }
 \arguments{
 \item{annot_lab}{annotation label}

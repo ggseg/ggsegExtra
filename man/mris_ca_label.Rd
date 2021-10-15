@@ -8,9 +8,9 @@ mris_ca_label(
   subject = "fsaverage5",
   hemisphere = "lh",
   canonsurf = "sphere.reg",
-  classifier = file.path(freesurfer::fs_dir(), "average/lh.DKTatlas40.gcs"),
+  classifier = file.path(fs_dir(), "average/lh.DKTatlas40.gcs"),
   output_file,
-  subjects_dir = freesurfer::fs_subj_dir(),
+  subjects_dir = fs_subj_dir(),
   opts = NULL
 )
 }

@@ -9,7 +9,7 @@ mris_label2annot(
   ctab,
   hemisphere = "rh",
   subject = "fsaverage5",
-  subjects_dir = freesurfer::fs_subj_dir(),
+  subjects_dir = fs_subj_dir(),
   annot_dir = file.path(subjects_dir, subject, "label"),
   output_dir = subjects_dir,
   opts = NULL,
@@ -46,16 +46,17 @@ if(freesurfer::have_fs()){
 # for freesurfer help see:
 freesurfer::fs_help("mris_label2annot")
 
+subj_dir <- freesurfer::fs_subj_dir()
 # Split up aparc annot into labels
 mri_annotation2label(annot_name = "aparc")
 
 # get annot for colour labels
 annot <- freesurfer::read_annotation(
-              file.path(freesurfer::fs_subj_dir(), 
+              file.path(subj_dir, 
                         "fsaverage5/label/rh.aparc.annot"))
 
 labels <- list.files(
-   file.path(freesurfer::fs_subj_dir(), "fsaverage5/label/aparc"), 
+   file.path(subj_dir, "fsaverage5/label/aparc"), 
     full.names = TRUE)
 
 # Combine them again into annot.

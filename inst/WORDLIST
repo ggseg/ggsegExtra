@@ -15,16 +15,12 @@ Fjell
 FreeSufer
 FreeSurfer
 FreeSurfer's
-FreeSurfers
-Freesufer
-Freesurfer
 Freeview
 GH
 GitLab
 HCP
 Ie
 ImageMagick
-Imagemagick
 Killiany
 LCBC
 LUT
@@ -80,7 +76,6 @@ labelfile
 labelid
 labelling
 lh
-licence
 mgz
 mri
 mris
@@ -106,6 +101,7 @@ repo
 repos
 reun
 rh
+RStudio
 segmentations
 snapshotting
 subcortical
@@ -124,5 +120,3 @@ tridimensional
 ui
 unnest
 xyz
-’
-’s

@@ -25,7 +25,7 @@ lapply(c("lh", "rh"),
   annot_dir = here::here("data-raw/fsaverage5/"),
   output_dir = here::here("data-raw/")
 )
-ggseg3d(atlas  = {GGSEG}_3d)
+ggseg3d(atlas = {GGSEG}_3d)
 
 ## fix atlas ----
 # you might need to do some alteration of the atlas data,

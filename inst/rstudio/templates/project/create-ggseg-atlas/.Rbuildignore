@@ -1,5 +1,0 @@
-^data-raw$
-^README*
-^.*\.Rproj$
-^\.Rproj\.user$
-pkgdown

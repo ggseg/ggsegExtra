@@ -11,7 +11,7 @@ mri_vol2label(
   output_dir,
   surface = NULL,
   subject = "fsaverage5",
-  subjects_dir = freesurfer::fs_subj_dir(),
+  subjects_dir = fs_subj_dir(),
   opts = NULL,
   verbose = TRUE
 )

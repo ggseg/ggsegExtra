@@ -45,7 +45,7 @@ write_dpv <- function(path, vertices, faces){
 #' @param path path to dpv file
 #' @noRd
 #' @return list of vertices and faces
-# #' @export
+#' @importFrom utils read.table
 read_dpv <- function(path){
   
   k <- readLines(path)
@@ -53,7 +53,7 @@ read_dpv <- function(path){
   ns <- strsplit(k[2], " ")[[1]]
   names(ns) <- c("nvertices", "nfaces")  
   
-  k <- utils::read.table(path, skip = 2)
+  k <- read.table(path, skip = 2)
   
   vertices <- k[1:ns["nvertices"],]
   row.names(vertices) = NULL

@@ -12,10 +12,13 @@ getmode <- function(x) {
 }
 
 #' @noRd
+#' @importFrom raster cellStats
+#' @importFrom sf st_crs st_as_sf st_is_empty st_geometry
+#' @importFrom stars st_as_stars
 get_contours <- function(raster_object, max_val = 255, 
                          vertex_size_limits = c(3*10^6,3*10^7),
                          verbose = TRUE){
-  mx <- raster::cellStats(raster_object, stat=max)
+  mx <- cellStats(raster_object, stat=max)
   
   # Filter out the blank images
   if (mx < max_val) {
@@ -27,9 +30,9 @@ get_contours <- function(raster_object, max_val = 255,
   
   if(verbose) cat(paste("extracting contours for", names(raster_object), "\n"))
 
-  g <- stars::st_as_stars(tmp.rst)
+  g <- st_as_stars(tmp.rst)
   sf::st_crs(g) <- 4326 
-  g <- sf::st_as_sf(g, connect8=TRUE, 
+  g <- st_as_sf(g, connect8=TRUE, 
                     as_points = FALSE, 
                     merge = TRUE)
   
@@ -37,7 +40,7 @@ get_contours <- function(raster_object, max_val = 255,
 
   coords <- coords2sf(coords, vertex_size_limits)
   
-  if(all(nrow(coords)>0 & !sf::st_is_empty(coords))){
+  if(all(nrow(coords)>0 & !st_is_empty(coords))){
     names(coords)[1] <- "geometry"
     sf::st_geometry(coords) <- "geometry"
     coords$filenm <- gsub("^X", "", names(raster_object))
@@ -49,6 +52,7 @@ get_contours <- function(raster_object, max_val = 255,
 }
 
 #' @noRd
+#' @importFrom magick image_read image_convert image_morphology image_transparent image_write
 isolate_colour <- function(file, outdir, 
                            dilation = NULL, 
                            eroding = NULL, 
@@ -63,20 +67,20 @@ isolate_colour <- function(file, outdir,
   if(!dir.exists(mask_dir)) dir.create(mask_dir, recursive = TRUE)
   if(verbose) cat(paste("Isolating label from", infile, "\n"))
   
-  tmp <- magick::image_read(file)
-  tmp <- magick::image_convert(tmp, "png")
+  tmp <- image_read(file)
+  tmp <- image_convert(tmp, "png")
   
   if(!is.null(dilation)) 
-    tmp <- magick::image_morphology(tmp, "Open", "Disk:2", dilation)
+    tmp <- image_morphology(tmp, "Open", "Disk:2", dilation)
   
   if(!is.null(eroding))  
-    tmp <- magick::image_morphology(tmp, "Erode", "Disk:1.5", eroding)
+    tmp <- image_morphology(tmp, "Erode", "Disk:1.5", eroding)
   
   if(!is.null(smoothing))
-    tmp <- magick::image_morphology(tmp, "Smooth", "Disk:2", smoothing)
+    tmp <- image_morphology(tmp, "Smooth", "Disk:2", smoothing)
   
-  tmp <- magick::image_transparent(tmp, "red", fuzz=45)
-  tmp <- magick::image_write(tmp, paste0(alpha_dir, infile))
+  tmp <- image_transparent(tmp, "red", fuzz=45)
+  tmp <- image_write(tmp, paste0(alpha_dir, infile))
   
   if(has_magick()){
     cmd <- paste("convert", paste0(alpha_dir, infile),
@@ -84,7 +88,7 @@ isolate_colour <- function(file, outdir,
     k <- system(cmd, intern = !verbose)
     invisible(k)
   }else{
-    cat(crayon::red("Cannot complete last extraction step, missing imagemagick. Please install"))
+    cat("Cannot complete last extraction step, missing imagemagick. Please install")
     stop(call. = FALSE)
   }
   
@@ -107,10 +111,10 @@ check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
   jj <- sum(count_vertices(atlas_df_sf))
   
   if(jj > max){
-    usethis::ui_todo(paste("Atlas is complete with", jj,
-                           "vertices, try re-running steps 6:7 with a higher 'tolerance' number."))
+    cat("Atlas is complete with", jj,
+                           "vertices, try re-running steps 6:7 with a higher 'tolerance' number.")
   }else{
-    usethis::ui_done(paste("Atlas complete with", jj, "vertices"))
+    cat("Atlas complete with", jj, "vertices")
   }
   
 }
@@ -119,8 +123,9 @@ check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
 gdal_min <- function() "2.4.0"
 
 #' @noRd
+#' @importFrom rgdal getGDALVersionInfo
 has_gdal <- function(min_version = gdal_min(), verbose = TRUE){
-  x <- rgdal::getGDALVersionInfo()
+  x <- getGDALVersionInfo()
   
   if(x == ""){
     if(verbose)
@@ -167,7 +172,7 @@ orca_version <- function(){
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
-  utils::globalVariables(c("atlas", "surf", "data",
+  globalVariables(c("atlas", "surf", "data",
                            "hemi", "i", "j", "k",
                            "x", "y", "z", "r"))
 }

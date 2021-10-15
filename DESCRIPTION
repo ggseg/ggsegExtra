@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
-Version: 1.5.33.003
+Version: 1.5.33.004
 Authors@R: c(person("Athanasia Mo", "Mowinckel", 
                     email = "a.m.mowinckel@psykologi.uio.no", 
                     role = c("aut", "cre"),
@@ -21,9 +21,12 @@ Description: Contains functions to create new data sets compatible with the 'ggs
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.1.1
-Depends: R (>= 2.10)
+Depends: 
+    R (>= 3.5.0),
+    ggseg (>= 1.6.0),
+    ggseg3d (>= 1.6.0)
 Imports: 
-    usethis,
+    ggplot2,
     smoothr,
     raster,
     magick,
@@ -44,13 +47,9 @@ Imports:
     rmapshaper,
     stars,
     geomorph,
-    crayon,
     rgdal,
     pbmcapply
 Suggests:
-    ggseg (>= 1.6.0),
-    ggplot2,
-    ggseg3d (>= 1.6.0),
     ggsegYeo2011,
     ggsegDesterieux,
     ggsegChen,
@@ -70,8 +69,6 @@ Suggests:
     spelling
 VignetteBuilder: knitr
 Remotes: 
-    ggseg/ggseg,
-    ggseg/ggseg3d,
     ggseg/ggsegYeo2011,
     ggseg/ggsegDesterieux,
     ggseg/ggsegChen,

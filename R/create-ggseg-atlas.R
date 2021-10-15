@@ -14,6 +14,14 @@
 #'
 #' @return data.frame ready for manual cleaning before turning into a proper ggseg3d-atlas
 #' @export
+#' @importFrom dplyr filter select mutate case_when tibble left_join group_by ungroup one_of
+#' @importFrom ggseg brain_atlas
+#' @importFrom ggseg3d is_ggseg3d_atlas
+#' @importFrom parallel mcmapply
+#' @importFrom pbmcapply pbmcmapply
+#' @importFrom sf st_combine
+#' @importFrom tidyr unnest expand_grid separate
+#' @importFrom utils txtProgressBar
 #' @examples 
 #' \dontrun{
 #' 
@@ -22,36 +30,37 @@
 #' dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
 #'     output_dir = "~/Desktop/")
 #' }
-make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
+make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
                                  steps = 1:7,
                                  output_dir = tempdir(),
                                  tolerance = 0,
                                  smoothness = 5,
                                  cleanup = FALSE ,
-                                 ncores = parallel::detectCores()-2
+                                 ncores = 2
 ){
   
-  if(!has_orca()) stop("Orca (for plotly) not installed, cannot run pipeline. See https://github.com/plotly/orca#installation", call. = FALSE)
-  if(!has_magick()) stop("ImageMagick not installed, cannot run pipeline. See https://imagemagick.org/script/download.php", call. = FALSE)
+  if(!has_orca()) 
+    stop("Orca (for plotly) not installed, cannot run pipeline. See https://github.com/plotly/orca#installation", call. = FALSE)
+  if(!has_magick()) 
+    stop("ImageMagick not installed, cannot run pipeline. See https://imagemagick.org/script/download.php", call. = FALSE)
   
-  if(!ggseg3d::is_ggseg3d_atlas(ggseg3d_atlas)){
-    cat(crayon::red("Atlas must be a valid ggseg3d-atlas\n"),
-        "Check atlas with", usethis::ui_code('is_ggseg3d_atlas()')
-    )
-    stop(call. = FALSE)
+  if(!is_ggseg3d_atlas(ggseg3d_atlas)){
+    stop("Atlas must be a valid ggseg3d-atlas\n",
+         "Check atlas with 'is_ggseg3d_atlas()\n'",
+         call. = FALSE)
   }
   
   hemi <- unique(ggseg3d_atlas$hemi)
   surface <- unique(ifelse(hemi == "subcort", "LCBC", "inflated"))
   atlas <- gsub("_3d", "", unique(ggseg3d_atlas$atlas))
   
-  dt <- tidyr::unnest(ggseg3d_atlas, ggseg_3d)
+  dt <- unnest(ggseg3d_atlas, ggseg_3d)
   
   pal <- make_palette_ggseg(ggseg3d_atlas)[[1]]
   
   if(! surface %in% ggseg3d_atlas$surf){
-    cat(crayon::red("Atlas must have surface"), crayon::italic(surface), "\n")
-    stop(call. = FALSE)
+    stop("Atlas must have surface", surface, "\n",
+         call. = FALSE)
   }
   
   # create output dirs
@@ -61,22 +70,18 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
   j <- sapply(dirs[!k], dir.create, recursive = TRUE, showWarnings = FALSE)
   
   if(any(!k) & length(j) == 0){
-    cat(crayon::red("Unable to create output directories. Check if output directory parent is writeable.\n",
-                    "output_dir is set to:", output_dir, "\n"))
-    stop(call. = FALSE)
+    stop("Unable to create output directories. Check if output directory parent is writeable.\n",
+         "output_dir is set to:", output_dir, "\n",
+         call. = FALSE)
   }
   
   # brain snapshot ----
   if(1 %in% steps){
+    cat("%% 1/7 Snapshotting views of entire atlas to {dirs[1]}\n")
     
-    if(!has_orca())
-      stop(call. = FALSE)
-    
-    usethis::ui_todo("1/7 Snapshotting views of entire atlas to {dirs[1]}")
-    
-    all <- tidyr::expand_grid(hemi = hemi,
+    all <- expand_grid(hemi = hemi,
                               view = c("lateral", "medial"))
-    j <- parallel::mcmapply(snapshot_brain,
+    j <- mcmapply(snapshot_brain,
                             hemisphere = all$hemi,
                             view = all$view,
                             MoreArgs = list(
@@ -91,21 +96,19 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     )
     
     
-    usethis::ui_done("Snapshots complete")
+    cat("... v ... snapshots complete\n")
   }
   
   # region snapshots ----
   if(2 %in% steps){
-    if(!has_orca()) stop(call. = FALSE)
+    cat("%% 2/7 Snapshotting individual regions to {dirs[2]}\n")
     
-    usethis::ui_todo("2/7 Snapshotting individual regions to {dirs[2]}")
-    
-    tmp_atlas <- dplyr::filter(ggseg3d_atlas, surf == surface)
-    tmp_atlas <- tidyr::unnest(tmp_atlas, ggseg_3d)
-    tmp_atlas <- dplyr::select(tmp_atlas, roi)
+    tmp_atlas <- filter(ggseg3d_atlas, surf == surface)
+    tmp_atlas <- unnest(tmp_atlas, ggseg_3d)
+    tmp_atlas <- select(tmp_atlas, roi)
     tmp_atlas <- unique(tmp_atlas)
     
-    pb <- utils::txtProgressBar(min = 1,
+    pb <- txtProgressBar(min = 1,
                                 max = length(hemi)*2*length(tmp_atlas$roi),
                                 style = 3)
     
@@ -113,7 +116,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                              hemi = hemi, 
                              view = c("lateral", "medial"))
     
-    j <- pbmcapply::pbmcmapply(
+    j <- pbmcmapply(
       snapshot_region,
       region = full_list$roi,
       hemisphere = full_list$hemi,
@@ -130,13 +133,13 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
       SIMPLIFY = TRUE
     )
     
-    usethis::ui_done("Region snapshots complete")
+    cat("... v ... region snapshots complete\n")
   }
   
   # isolate region snapshots ----
   if(3 %in% steps){
-    usethis::ui_todo("3/7 Isolating regions to {dirs[4]}")
-    usethis::ui_todo("& writing masks to {dirs[3]}")
+    cat("%% 3/7 Isolating regions to {dirs[4]}")
+    cat("& writing masks to {dirs[3]}")
     ffs <- list.files(dirs[2], full.names = TRUE)
     ffso <- file.path(dirs[4], basename(ffs))
     ffsi <- file.path(dirs[3], basename(ffs))
@@ -145,7 +148,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
                       output_file = ffso,
                       interrim_file = ffsi,
                       SIMPLIFY = FALSE)
-    usethis::ui_done("isolation complete")
+    cat("... v ... isolation complete\n")
   }
   
   # contour extraction ----
@@ -165,27 +168,27 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
   
   # create df ----
   if(7 %in% steps){
-    usethis::ui_todo("7/7 Making data frame")
+    cat("%% 7/7 Making data frame\n")
     
-    tmp_atlas <- dplyr::filter(ggseg3d_atlas, surf == surface)
-    tmp_atlas <- tidyr::unnest(tmp_atlas, ggseg_3d)
-    tmp_atlas <- dplyr::select(tmp_atlas, -mesh, -colour)
-    tmp_atlas <- dplyr::mutate(tmp_atlas,
-                               hemi = dplyr::case_when(
+    tmp_atlas <- filter(ggseg3d_atlas, surf == surface)
+    tmp_atlas <- unnest(tmp_atlas, ggseg_3d)
+    tmp_atlas <- select(tmp_atlas, -mesh, -colour)
+    tmp_atlas <- mutate(tmp_atlas,
+                               hemi = case_when(
                                  is.na(region) ~ NA_character_,
                                  grepl("^lh_", label) ~ "left",
                                  grepl("^rh_", label) ~ "right"
                                ))
     
-    atlas_df <- dplyr::tibble(
+    atlas_df <- tibble(
       filenm = gsub("\\.png", "", list.files(dirs[3]))
     )
-    atlas_df <- tidyr::separate(atlas_df,
+    atlas_df <- separate(atlas_df,
                                 filenm, c("roi", "hemi", "side"),
                                 remove = FALSE
     )
     
-    atlas_df <- dplyr::left_join(atlas_df,
+    atlas_df <- left_join(atlas_df,
                                  tmp_atlas,
                                  by = c("roi", "hemi"))
     
@@ -201,26 +204,26 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     contours$region <- atlas_df_sf$region
     contours$label <- atlas_df_sf$label
     
-    atlas_df_sf <- dplyr::select(contours,
+    atlas_df_sf <- select(contours,
                                  hemi, side, 
                                  region, label, roi, geometry)
     
     atlas_df_sf <- adjust_coords_sf(atlas_df_sf)
-    atlas_df_sf <- dplyr::group_by(atlas_df_sf, 
+    atlas_df_sf <- group_by(atlas_df_sf, 
                                    hemi, side, region, label, roi)
-    atlas_df_sf <- dplyr::mutate(atlas_df_sf, 
-                                 geometry = sf::st_combine(geometry))
-    atlas_df_sf <- dplyr::ungroup(atlas_df_sf)
+    atlas_df_sf <- mutate(atlas_df_sf, 
+                                 geometry = st_combine(geometry))
+    atlas_df_sf <- ungroup(atlas_df_sf)
     
-    dt <- dplyr::select(dt, 
-                        -dplyr::one_of(c("atlas", "surf", "colour", "mesh", "geometry")))
+    dt <- select(dt, 
+                        -one_of(c("atlas", "surf", "colour", "mesh", "geometry")))
     dt <- unique(dt)
     
-    atlas_df_sf <- suppressMessages(dplyr::left_join(atlas_df_sf, dt))
+    atlas_df_sf <- suppressMessages(left_join(atlas_df_sf, dt))
     
     if(cleanup){
       unlink(dirs[1], recursive = TRUE)
-      usethis::ui_done("Output directory removed")
+      cat("... v ... Output directory removed")
     }
     
     check_atlas_vertices(atlas_df_sf)
@@ -228,7 +231,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     atlas_df_sf$region <- ifelse(grepl("wall|unknown", atlas_df_sf$region, ignore.case = TRUE),
                                  NA, atlas_df_sf$region)
     
-    atlas <- ggseg::brain_atlas(atlas = gsub("_3d$", "", unique(ggseg3d_atlas$atlas)),
+    atlas <- brain_atlas(atlas = gsub("_3d$", "", unique(ggseg3d_atlas$atlas)),
                                 type = "cortical",
                                 data = atlas_df_sf)
     
@@ -238,7 +241,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
     return(atlas)
     
   }else{
-    usethis::ui_info("Step 7 skipped, no atlas to return")
+    cat("%% Step 7 skipped, no atlas to return")
     return()
   }
 }
@@ -261,7 +264,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas = ggseg3d::dk_3d,
 #' @importFrom dplyr select distinct
 #' @importFrom stats na.omit setNames
 #' @examples
-#' make_palette_ggseg(ggseg3d::dk_3d)
+#' make_palette_ggseg(dk_3d)
 make_palette_ggseg <- function(ggseg3d_atlas){
   
   j <- unnest(ggseg3d_atlas, ggseg_3d)
@@ -307,11 +310,18 @@ make_palette_ggseg <- function(ggseg3d_atlas){
 #'
 #' @return brain-atlas class
 #' @export
-#'
+#' @importFrom dplyr filter left_join case_when select starts_with
+#' @importFrom freesurfer have_fs fs_dir
+#' @importFrom ggseg brain_atlas
+#' @importFrom magick image_read image_convert image_transparent image_morphology image_write
+#' @importFrom pbmcapply pbmcmapply pbmclapply
+#' @importFrom stats setNames
+#' @importFrom tidyr unnest separate
+#' @importFrom utils read.table
 #' @examples
 #' \dontrun{
 #' 
-#'    label_file <- file.path(freesurfer::fs_subj_dir(), subject, "mri/aseg.mgz")
+#'    label_file <- file.path(fs_subj_dir(), subject, "mri/aseg.mgz")
 #'    slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
 #'    
 #'    aseg2 <- make_volumetric_ggseg(
@@ -324,7 +334,7 @@ make_palette_ggseg <- function(ggseg3d_atlas){
 #' }
 make_volumetric_ggseg <- function(label_file,
                                   subject = "fsaverage5",
-                                  subjects_dir = freesurfer::fs_subj_dir(), 
+                                  subjects_dir = fs_subj_dir(), 
                                   output_dir = tempdir(),
                                   color_lut = NULL,
                                   steps = 1:8,
@@ -337,13 +347,13 @@ make_volumetric_ggseg <- function(label_file,
                                   vertex_size_limits = NULL,
                                   dilate = NULL,
                                   tolerance = 0,
-                                  ncores = parallel::detectCores()-2,
+                                  ncores = 2,
                                   smoothness = 5,
                                   verbose = TRUE,
                                   cleanup = FALSE
 ){
   
-  if(!freesurfer::have_fs())
+  if(!have_fs())
     stop("FreeSurfer not installed. Cannot run pipeline. See http://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall", call. = FALSE)
   if(!has_magick()) 
     stop("ImageMagick not installed, cannot run pipeline. See https://imagemagick.org/script/download.php", call. = FALSE)
@@ -363,7 +373,7 @@ make_volumetric_ggseg <- function(label_file,
   )
   
   if(is.null(color_lut)){
-    color_lut = file.path(freesurfer::fs_dir(), "ASegStatsLUT.txt")
+    color_lut = file.path(fs_dir(), "ASegStatsLUT.txt")
   }
   
   for(k in which(!unlist(lapply(dirs, dir.exists)))){
@@ -386,18 +396,18 @@ make_volumetric_ggseg <- function(label_file,
   }
   
   if(2 %in% steps){
-    usethis::ui_todo("2/8 Snapshotting views of regions to {dirs$snaps}, ")
+    cat("2/8 Snapshotting views of regions to {dirs$snaps}, ")
     
     if(!exists("llabs")) llabs <- readLines(file.path(dirs$labs, "labels_list.txt"))
     
     labs_df <- data.frame(labs = llabs, stringsAsFactors = FALSE)
     labs_df$data <- lapply(1:length(llabs), function(x) slices)
-    labs_df <- tidyr::unnest(labs_df, data)
+    labs_df <- unnest(labs_df, data)
     
     # fs_ss_slice(labs_df$labs[1], x = labs_df$x[1], y = labs_df$y[1], z = labs_df$z[1], view =  labs_df$view[1], 
     #             subject = subject, subjects_dir = subjects_dir, output_dir = dirs$snaps, skip_existing = skip_existing)
     
-    j <- pbmcapply::pbmcmapply(fs_ss_slice,
+    j <- pbmcmapply(fs_ss_slice,
                                lab = labs_df$labs,
                                x = labs_df$x,
                                y = labs_df$y,
@@ -411,11 +421,11 @@ make_volumetric_ggseg <- function(label_file,
                                mc.cores = ncores, 
                                mc.preschedule = FALSE)
     
-    usethis::ui_done("snapshots complete")
+    cat("snapshots complete")
   }
   
   if(3 %in% steps){
-    usethis::ui_todo("3/8 isolating regions to {dirs$inter}")
+    cat("3/8 isolating regions to {dirs$inter}")
     
     files <- list.files(dirs$snaps, full.names = TRUE)
     
@@ -426,32 +436,32 @@ make_volumetric_ggseg <- function(label_file,
     }
     
     if(length(files) > 0){
-      tmp <- lapply(files, magick::image_read)
-      tmp <- lapply(tmp, magick::image_convert)
+      tmp <- lapply(files, image_read)
+      tmp <- lapply(tmp, image_convert)
       
-      tmp <- lapply(tmp, magick::image_transparent,
+      tmp <- lapply(tmp, image_transparent,
                     color =  "black", fuzz=10)
       
       if(!is.null(dilate)) 
-        tmp <- pbmcapply::pbmclapply(tmp, magick::image_morphology, 
+        tmp <- pbmclapply(tmp, image_morphology, 
                                      method = 'DilateI', 
                                      kernel = 'diamond', 
                                      iter = dilate,
                                      mc.cores = ncores, 
                                      mc.preschedule = FALSE)
       
-      k <- pbmcapply::pbmcmapply(magick::image_write,
+      k <- pbmcmapply(image_write,
                                  image = tmp, 
                                  path = file.path(dirs$inter, basename(files)),
                                  mc.cores = ncores, 
                                  mc.preschedule = FALSE)
     }
     
-    usethis::ui_done("isolation complete")
+    cat("isolation complete")
   }
   
   if(4 %in% steps){
-    usethis::ui_todo("4/8 Writing masks to {dirs$masks}")
+    cat("4/8 Writing masks to {dirs$masks}")
     
     files <- list.files(dirs$inter, full.names = TRUE)
     
@@ -466,12 +476,12 @@ make_volumetric_ggseg <- function(label_file,
                    "-alpha extract", file.path(dirs$mask, basename(files))
       )
       
-      k <- pbmcapply::pbmclapply(cmd, system, intern = FALSE,
+      k <- pbmclapply(cmd, system, intern = FALSE,
                                  mc.cores = ncores,
                                  mc.preschedule = FALSE) 
     }
     
-    usethis::ui_done("masks complete")
+    cat("masks complete")
   }
   
   # contour extraction ----
@@ -499,9 +509,9 @@ make_volumetric_ggseg <- function(label_file,
   
   # create df ----
   if(8 %in% steps){
-    usethis::ui_todo("8/8 Cleaning up data")
+    cat("8/8 Cleaning up data")
     
-    lut <- utils::read.table(file.path(dirs$labs, "colortable.tsv"), sep="\t", 
+    lut <- read.table(file.path(dirs$labs, "colortable.tsv"), sep="\t", 
                              header = TRUE, colClasses = "character")
     lut <- lut[c("roi", "label", "color")]
     
@@ -511,21 +521,21 @@ make_volumetric_ggseg <- function(label_file,
     slices2 <- apply(slices2, 1, paste, collapse ="_")
     
     conts <- make_multipolygon(file.path(output_dir, "contours_reduced.rda"))
-    conts <- tidyr::separate(conts, filenm, c("view", "file"), 17)
-    conts <- dplyr::filter(conts, view %in% slices2)
+    conts <- separate(conts, filenm, c("view", "file"), 17)
+    conts <- filter(conts, view %in% slices2)
     
     conts <- adjust_coords_sf2(conts)
-    conts <- tidyr::separate(conts, file, c(NA, "hemi", "roi", NA))
+    conts <- separate(conts, file, c(NA, "hemi", "roi", NA))
     
-    conts <- dplyr::left_join(conts, lut, by="roi")
+    conts <- left_join(conts, lut, by="roi")
     
-    conts$hemi <- dplyr::case_when(
+    conts$hemi <- case_when(
       grepl("right|rh", conts$label, ignore.case = TRUE) ~ "right",
       grepl("left|lh", conts$label, ignore.case = TRUE) ~ "left"
     )
     
-    conts <- tidyr::separate(conts, view, c("mni_x", "mni_y", "mni_z", "side"), sep="_")
-    conts$side <- dplyr::case_when(
+    conts <- separate(conts, view, c("mni_x", "mni_y", "mni_z", "side"), sep="_")
+    conts$side <- case_when(
       conts$side == "coron" ~ "coronal",
       conts$side == "axial" ~ "axial",
       conts$side == "sagit" ~ "sagittal"
@@ -538,30 +548,30 @@ make_volumetric_ggseg <- function(label_file,
     atlas_df <- conts
     
     dt <- atlas_df[!duplicated(atlas_df$region) & !is.na(atlas_df$region),c("color", "region")]
-    pal <- stats::setNames(dt$color, dt$region)
+    pal <- setNames(dt$color, dt$region)
     
-    atlas_df <- dplyr::select(atlas_df, -dplyr::starts_with("mni_"), -color)
+    atlas_df <- select(atlas_df, -starts_with("mni_"), -color)
     
     if(cleanup){
       unlink(dirs[1], recursive = TRUE)
-      usethis::ui_done("Output directory removed")
+      cat("Output directory removed")
     }
     
     jj <- sum(count_vertices(atlas_df))
     
     if(jj > 20000){
-      usethis::ui_todo(paste("Atlas is complete with", jj,
+      cat(paste("Atlas is complete with", jj,
                              "vertices, try re-running steps 7:8 with a higher 'tolerance' number."))
     }else{
-      usethis::ui_done(paste("Atlas complete with", jj, "vertices"))
+      cat(paste("Atlas complete with", jj, "vertices"))
     }
     
-    atlas <- ggseg::brain_atlas(atlas = substr(basename(label_file), 1, nchar(basename(label_file))-4),
+    atlas <- brain_atlas(atlas = substr(basename(label_file), 1, nchar(basename(label_file))-4),
                                 type = "subcortical",
                                 data = atlas_df,
                                 palette = pal)
     
-    usethis::ui_done("cleanup complete")
+    cat("cleanup complete")
     
     return(atlas)
   }
@@ -574,7 +584,7 @@ make_volumetric_ggseg <- function(label_file,
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
-  utils::globalVariables(c("roi", ".subid", "color",
+  globalVariables(c("roi", ".subid", "color",
                            ".lat", ".long", ".id", "mesh", 
                            "filenm", "colour", "tmp_dt", "ggseg"))
 }

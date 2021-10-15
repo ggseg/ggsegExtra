@@ -28,8 +28,9 @@ write_ctab <- function(x, path){
 #' @param path path to read from
 #' @return a data.frame with index, label name and RGBA colours 
 #' @export
+#' @importFrom utils read.table
 read_ctab <- function(path){
-  x <- utils::read.table(path)
+  x <- read.table(path)
   names(x) <- c("idx", "label", "R", "G", "B", "A")
   
   return(x)
@@ -59,6 +60,7 @@ is_ctab <- function(colourtable){
 #'
 #' @return colour table as a data.frame, with hex colours.
 #' @noRd
+#' @importFrom grDevices rgb
 get_ctab <- function(color_lut){
   
   colourtable <- if(is.character(color_lut)){
@@ -73,7 +75,7 @@ get_ctab <- function(color_lut){
                                 paste(c("idx", "label", "R", "G", "B", "A"), collapse = ", "))
   
   colourtable$roi <- sprintf("%04d", colourtable$idx)
-  colourtable$color <- grDevices::rgb(colourtable$R, colourtable$G, colourtable$B, 
+  colourtable$color <- rgb(colourtable$R, colourtable$G, colourtable$B, 
                                      maxColorValue = 255)
   
   return(colourtable)

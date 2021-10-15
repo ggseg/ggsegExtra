@@ -8,7 +8,7 @@ mri_annotation2label(
   annot_name,
   subject = "fsaverage5",
   hemisphere = "lh",
-  output_dir = freesurfer::fs_subj_dir(),
+  output_dir = fs_subj_dir(),
   verbose = TRUE,
   opts = NULL
 )

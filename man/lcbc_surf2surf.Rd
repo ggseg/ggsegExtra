@@ -9,7 +9,7 @@ lcbc_surf2surf(
   source_subject = "fsaverage",
   target_subject = "fsaverage5",
   hemisphere = "rh",
-  subjects_dir = freesurfer::fs_subj_dir(),
+  subjects_dir = fs_subj_dir(),
   output_dir = file.path(subjects_dir, target_subject, "surf"),
   cortex = TRUE,
   verbose = TRUE

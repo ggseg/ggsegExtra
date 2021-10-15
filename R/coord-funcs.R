@@ -1,30 +1,34 @@
 
-
+#' @importFrom dplyr filter mutate
 move_hemi_side <- function(data, by, predicate){
-  tmp <- dplyr::filter(data, {{predicate}}) 
-  tmp <- dplyr::mutate(tmp, 
+  tmp <- filter(data, {{predicate}}) 
+  tmp <- mutate(tmp, 
                        `.long` = `.long` + by )
   return(tmp)
 }
 
+#' @importFrom dplyr mutate
+#' @importFrom sf st_coordinates
 correct_coords_sf <- function(data, by){
   
-  ymin <- min(sf::st_coordinates(data)[,"Y"])
+  ymin <- min(st_coordinates(data)[,"Y"])
   
-  tmp <- dplyr::mutate(data, 
+  tmp <- mutate(data, 
                        geometry = geometry + c(by, 0),
                        geometry = geometry - c(0, ymin))
   return(tmp)
 }
 
+#' @importFrom dplyr mutate
+#' @importFrom sf st_bbox
 resize_coords_sf <- function(data, by){
   # resize
-  tmp <- dplyr::mutate(data, 
+  tmp <- mutate(data, 
                        geometry = geometry*by)
   
   # get back to middle  
-  bbx <- sf::st_bbox(tmp)
-  tmp <- dplyr::mutate(tmp, 
+  bbx <- st_bbox(tmp)
+  tmp <- mutate(tmp, 
                        geometry = geometry - bbx[c("xmin", "ymin")])
   return(tmp)
 }
@@ -35,14 +39,15 @@ resize_coords_sf <- function(data, by){
 #' @param output_file output file path
 #' @param interrim_file interrim image path
 #' @noRd
+#' @importFrom magick image_read image_convert image_transparent image_write
 isolate_region <- function(input_file, 
                            output_file, 
                            interrim_file = tempfile()){
-  tmp <- magick::image_read(input_file)
-  tmp <- magick::image_convert(tmp, "png")
+  tmp <- image_read(input_file)
+  tmp <- image_convert(tmp, "png")
   
-  tmp <- magick::image_transparent(tmp, "white", fuzz=30)
-  k <- magick::image_write(tmp, interrim_file)
+  tmp <- image_transparent(tmp, "white", fuzz=30)
+  k <- image_write(tmp, interrim_file)
   
   if(has_magick()){
     cmd <- paste("convert", interrim_file,
@@ -52,21 +57,22 @@ isolate_region <- function(input_file,
     k <- system(cmd, intern = FALSE)
     invisible(k)
   }else{
-    cat(crayon::red("Cannot complete last extraction step, missing imagemagick. Please install"))
+    cat("Cannot complete last extraction step, missing imagemagick. Please install")
     stop(call. = FALSE)
   }
 }
 
+#' @importFrom dplyr group_by mutate ungroup filter
 adjust_coords <- function(atlas_df, by = 1.35){
   
-  atlas_df <- dplyr::group_by(atlas_df, hemi, side)
-  atlas_df <- dplyr::mutate(atlas_df, 
+  atlas_df <- group_by(atlas_df, hemi, side)
+  atlas_df <- mutate(atlas_df, 
                             `.lat`  = `.lat`-min(`.lat`),
                             `.long` = `.long`-min(`.long`))
-  atlas_df <- dplyr::ungroup(atlas_df)
+  atlas_df <- ungroup(atlas_df)
   
   atlas_df_list <- list(
-    lh.lat <- dplyr::filter(atlas_df,
+    lh.lat <- filter(atlas_df,
                             (hemi=="left" & side=="lateral")),
     lh.med = move_hemi_side(atlas_df, 430,
                             (hemi=="left" & side=="medial")),
@@ -85,10 +91,11 @@ adjust_coords <- function(atlas_df, by = 1.35){
   do.call(rbind, atlas_df_list)
 }
 
+#' @importFrom dplyr group_by group_split ungroup
 adjust_coords_sf <- function(atlas_df){
   
-  atlas <- dplyr::group_by(atlas_df, hemi, side)
-  atlas <- dplyr::group_split(atlas)
+  atlas <- group_by(atlas_df, hemi, side)
+  atlas <- group_split(atlas)
   
   atlas <- list(atlas[[1]], # left lat
                 atlas[[2]], # left med
@@ -105,12 +112,13 @@ adjust_coords_sf <- function(atlas_df){
 
   atlas_df_r <- do.call(rbind, atlas)
   
-  return(dplyr::ungroup(atlas_df_r))
+  return(ungroup(atlas_df_r))
 }
 
+#' @importFrom dplyr group_by group_split
 adjust_coords_sf2 <- function(atlas_df){
-  atlas <- dplyr::group_by(atlas_df, view)
-  atlas <- dplyr::group_split(atlas)
+  atlas <- group_by(atlas_df, view)
+  atlas <- group_split(atlas)
   
   atlas <- lapply(atlas, gather_geometry)
   
@@ -119,23 +127,25 @@ adjust_coords_sf2 <- function(atlas_df){
   return(atlas2$df)
 }
 
-
+#' @importFrom sf st_coordinates
 count_vertices <- function(x){
   sapply(x$geometry, 
-         function(i) nrow(sf::st_coordinates(i)))
+         function(i) nrow(st_coordinates(i)))
 }
 
+#' @importFrom dplyr as_tibble group_by mutate row_number ungroup
+#' @importFrom sf st_combine st_coordinates
 to_coords <- function(x, n){
   if(nrow(x) != 0){
       
-    k <- sf::st_combine(x)
-    k <- sf::st_coordinates(k)
-    k <- dplyr::as_tibble(k)
+    k <- st_combine(x)
+    k <- st_coordinates(k)
+    k <- as_tibble(k)
     k$L2 <- n * 10000 + k$L2
   
-    k <- dplyr::group_by(k, L2)
-    k <- dplyr::mutate(k, .order = dplyr::row_number())
-    k <- dplyr::ungroup(k)
+    k <- group_by(k, L2)
+    k <- mutate(k, .order = row_number())
+    k <- ungroup(k)
     
   }else{
     k <- data.frame(matrix(nrow = 0, ncol = 6))
@@ -145,10 +155,12 @@ to_coords <- function(x, n){
   k
 }
 
+#' @importFrom dplyr group_by group_split
+#' @importFrom sf st_polygon st_sfc st_sf st_zm st_cast
 coords2sf <- function(x, vertex_size_limits = NULL) {
 
-  dt <- dplyr::group_by(x, .subid, .id)
-  dt <- dplyr::group_split(dt)
+  dt <- group_by(x, .subid, .id)
+  dt <- group_split(dt)
   
   if(!is.null(vertex_size_limits)){
     if(!is.na(vertex_size_limits[1]))
@@ -161,16 +173,17 @@ coords2sf <- function(x, vertex_size_limits = NULL) {
   dt <- lapply(dt, as.matrix)
   dt <- lapply(dt, function(x) matrix(as.numeric(x[, 1:4]), ncol = 4))
   
-  dt <- sf::st_polygon(dt)
-  dt <- sf::st_sfc(dt)
-  dt <- sf::st_sf(dt)
-  dt <- sf::st_zm(dt)
-  dt <- sf::st_cast(dt, "MULTIPOLYGON")
+  dt <- st_polygon(dt)
+  dt <- st_sfc(dt)
+  dt <- st_sf(dt)
+  dt <- st_zm(dt)
+  dt <- st_cast(dt, "MULTIPOLYGON")
   dt
 }
 
+#' @importFrom dplyr mutate
 sf2coords <- function(x){
-  dt <- dplyr::mutate(
+  dt <- mutate(
     x,
     ggseg = list(to_coords(geometry, 1:nrow(x)))
   )
@@ -179,9 +192,9 @@ sf2coords <- function(x){
   dt
 }
 
-
+#' @importFrom sf st_bbox
 gather_geometry <- function(df){
-  bbx <- sf::st_bbox(df$geometry)
+  bbx <- st_bbox(df$geometry)
   
   # cent <- bbx[c("xmin", "ymin")]
   cent <- center_coord(df)
@@ -198,18 +211,21 @@ center_coord <- function(x){
   cent
 }
 
+#' @importFrom sf st_coordinates
 range_coord <- function(x){
-  cent <- sf::st_coordinates(x)  
+  cent <- st_coordinates(x)  
   cent <- apply(cent, 2, range)
   cent[,1:2]
 }
 
+#' @importFrom sf st_bbox
+#' @importFrom stats sd
 restack <- function(df){
   
   rr <- lapply(df, range_coord)
   rr2 <- lapply(rr, function(k) apply(k, 2, function(x) x[2]*2))
   rr2 <- do.call(rbind, rr2)
-  rr_sd <- apply(rr2, 2, stats::sd)*2
+  rr_sd <- apply(rr2, 2, sd)*2
   
   x_rr <- abs(rr[[1]][,1])[1]
   y_rr <- apply(abs(do.call(rbind, rr)), 2, max)[2]
@@ -227,7 +243,7 @@ restack <- function(df){
       mes <- c(bx[[k-1]][3] + rr_sd[1], 0)
       df2[[k]]$geometry <- df2[[k]]$geometry + mes
     }
-    bx[[k]] <- sf::st_bbox(df2[[k]]$geometry )
+    bx[[k]] <- st_bbox(df2[[k]]$geometry )
   }
   
   bx <- do.call(rbind, bx)
@@ -243,5 +259,5 @@ restack <- function(df){
 
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
-  utils::globalVariables(c("L2"))
+  globalVariables(c("L2"))
 }

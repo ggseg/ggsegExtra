@@ -1,6 +1,7 @@
 Binding: new_project_create_atlas_repo
-Title: ggseg brain atlas
-OpenFiles: DESCRIPTION, README.Rmd, tests/testthat/test-atlas.R, data-raw/create-atlas.R, R/data.R
+Title: Create ggseg brain atlas
+Icon: ggseg-logo.png
+OpenFiles:  data-raw/create-atlas.R, R/data.R, DESCRIPTION, README.Rmd, tests/testthat/test-atlas.R
 
 Parameter: atlas_name
 Default: atlas

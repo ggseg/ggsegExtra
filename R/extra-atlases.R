@@ -43,7 +43,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
 #' @param repos vector of repositories to install from. Defaults to
 #'   ggseg r-universe and CRAN.
 #' @export
-#'
+#' @importFrom utils install.packages
 #' @examples
 #' \dontrun{
 #' yeo2011_repo <- ggseg_atlas_repos("yeo2011")
@@ -52,7 +52,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...){
 install_ggseg_atlas <- function(package, 
                                 repos = c(ggseg = 'https://ggseg.r-universe.dev', getOption("repos")), 
                                 ...){
-  utils::install.packages(package, 
+  install.packages(package, 
                    repos = repos,
                    ...)
   
@@ -73,7 +73,7 @@ install_ggseg_atlas <- function(package,
 #'    r-universe and a CRAN mirror.
 #' @param ... additional arguments to \code{install.packages}.
 #' @export
-#'
+#' @importFrom utils install.packages
 #' @examples
 #' \dontrun{
 #' install_ggseg_atlas_all()
@@ -84,7 +84,7 @@ install_ggseg_atlas_all <- function(
   
   pkgs <- ggseg_atlas_repos()$package
   
-  utils::install.packages(pkgs, 
+  install.packages(pkgs, 
                    repos = repos,
                    ...)
 }

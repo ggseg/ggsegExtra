@@ -21,5 +21,5 @@ This function extracts those and makes a object
 ready for incorporation to a ggseg-atlas repository
 }
 \examples{
-make_palette_ggseg(ggseg3d::dk_3d)
+make_palette_ggseg(dk_3d)
 }

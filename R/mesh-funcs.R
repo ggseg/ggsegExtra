@@ -24,10 +24,11 @@
 #' # Turn off showing the ply when reading
 #' get_mesh("path/to/surface.ply", ShowSpecimen = FALSE)
 #' }
+#' @importFrom geomorph read.ply
 get_mesh <- function(ply, ...){
   
   if(is.character(ply)) 
-    ply <- geomorph::read.ply(ply, ...)
+    ply <- read.ply(ply, ...)
   
   vertices <- data.frame(
     x = ply$vb[1,],
@@ -48,15 +49,17 @@ get_mesh <- function(ply, ...){
 #' Change old atlas setup to new
 #'
 #' @param atlas_data ggseg3d-atlas object
+#' @importFrom dplyr group_by rename ungroup
+#' @importFrom tidyr unnest nest
 restruct_old_3datlas <- function(atlas_data){
-  x <- tidyr::unnest(atlas_data, ggseg_3d)
+  x <- unnest(atlas_data, ggseg_3d)
   x$mesh <- lapply(x$mesh, change_meshes)
   
   #as_ggseg3d_atlas(atlas)
-  x <- dplyr::group_by(x, atlas, surf, hemi)
-  x <- tidyr::nest(x)
-  x <- dplyr::rename(x, ggseg_3d = data)
-  dplyr::ungroup(x)
+  x <- group_by(x, atlas, surf, hemi)
+  x <- nest(x)
+  x <- rename(x, ggseg_3d = data)
+  ungroup(x)
 }
 
 

@@ -7,7 +7,7 @@
 make_volumetric_ggseg(
   label_file,
   subject = "fsaverage5",
-  subjects_dir = freesurfer::fs_subj_dir(),
+  subjects_dir = fs_subj_dir(),
   output_dir = tempdir(),
   color_lut = NULL,
   steps = 1:8,
@@ -17,7 +17,7 @@ make_volumetric_ggseg(
   vertex_size_limits = NULL,
   dilate = NULL,
   tolerance = 0,
-  ncores = parallel::detectCores() - 2,
+  ncores = 2,
   smoothness = 5,
   verbose = TRUE,
   cleanup = FALSE
@@ -69,7 +69,7 @@ argument.
 \examples{
 \dontrun{
 
-   label_file <- file.path(freesurfer::fs_subj_dir(), subject, "mri/aseg.mgz")
+   label_file <- file.path(fs_subj_dir(), subject, "mri/aseg.mgz")
    slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
    
    aseg2 <- make_volumetric_ggseg(
