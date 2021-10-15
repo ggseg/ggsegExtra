@@ -1,5 +1,6 @@
 library(ggseg)
 library(ggseg3d)
+library(ggplot2)
 
 # ggseg ----
 context("test-palettes")

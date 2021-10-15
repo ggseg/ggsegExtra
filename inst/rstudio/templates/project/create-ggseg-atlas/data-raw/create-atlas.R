@@ -35,7 +35,8 @@ ggseg3d(atlas  = {GGSEG}_3d)
 {GGSEG}_n <- unnest({GGSEG}_n, ggseg_3d)
 {GGSEG}_n <- mutate({GGSEG}_n,
                     region = gsub("_L$|_R$", "", region),
-                    region = ifelse(grepl("Unknown|\?", region), NA, region),
+                    region = ifelse(grepl("Unknown|\\?", region, ignore.case = TRUE), 
+                                    NA, region),
                     atlas = "{GGSEG}_3d"
 )
 {GGSEG}_3d <- as_ggseg3d_atlas({GGSEG}_n)
@@ -80,34 +81,22 @@ p <- ggseg(atlas = atlas,
   theme_void() +
   hexSticker::theme_transparent()
 
-hexSticker::sticker(p,
-                    package = "{REPO}",
-                    filename="man/figures/logo.svg",
-                    s_y = 1.2,
-                    s_x = 1,
-                    s_width = 1.5,
-                    s_height = 1.5,
-                    p_family = "mono",
-                    p_size = 10,
-                    p_color = "grey30",
-                    p_y = .6,
-                    h_fill = "white",
-                    h_color = "grey30"
-)
-
-hexSticker::sticker(p,
-                    package = "{REPO}",
-                    filename="man/figures/logo.png",
-                    s_y = 1.2,
-                    s_x = 1,
-                    s_width = 1.5,
-                    s_height = 1.5,
-                    p_family = "mono",
-                    p_size = 10,
-                    p_color = "grey30",
-                    p_y = .6,
-                    h_fill = "white",
-                    h_color = "grey30"
-)
+lapply(c("png", "svg"), function(x){
+  hexSticker::sticker(p,
+                      package = "{REPO}",
+                      filename = sprintf("man/figures/logo.%s", x),
+                      s_y = 1.2,
+                      s_x = 1,
+                      s_width = 1.5,
+                      s_height = 1.5,
+                      p_family = "mono",
+                      p_size = 10,
+                      p_color = "grey30",
+                      p_y = .6,
+                      h_fill = "white",
+                      h_color = "grey30"
+  )
+  
+})
 
 pkgdown::build_favicons(overwrite = TRUE)
