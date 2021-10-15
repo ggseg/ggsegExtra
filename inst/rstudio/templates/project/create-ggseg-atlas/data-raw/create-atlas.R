@@ -22,8 +22,11 @@ mri_surf2surf_rereg(subject = "fsaverage",
 
 
 # Make  3d ----
-{GGSEG}_3d <- make_aparc_2_3datlas(annot = annot_name,
-                               output_dir = here::here("data-raw/"))
+{GGSEG}_3d <- make_aparc_2_3datlas(
+  annot = annot_name,
+  annot_dir = here::here("data-raw/fsaverage5/"),
+  output_dir = here::here("data-raw/")
+)
 ggseg3d(atlas  = {GGSEG}_3d)
 
 ## fix atlas ----
@@ -33,9 +36,9 @@ ggseg3d(atlas  = {GGSEG}_3d)
 {GGSEG}_n <- {GGSEG}_3d
 {GGSEG}_n <- unnest({GGSEG}_n, ggseg_3d)
 {GGSEG}_n <- mutate({GGSEG}_n,
-                        region = gsub("_L$|_R$", "", region),
-                        region = ifelse(grepl("Unknown", region), NA, region),
-                        atlas = "{GGSEG}_3d"
+                    region = gsub("_L$|_R$", "", region),
+                    region = ifelse(grepl("Unknown|\?", region), NA, region),
+                    atlas = "{GGSEG}_3d"
 )
 {GGSEG}_3d <- as_ggseg3d_atlas({GGSEG}_n)
 ggseg3d(atlas  = {GGSEG}_3d)
@@ -80,33 +83,33 @@ p <- ggseg(atlas = atlas,
   hexSticker::theme_transparent()
 
 hexSticker::sticker(p,
-        package = "{REPO}",
-        filename="man/figures/logo.svg",
-        s_y = 1.2,
-        s_x = 1,
-        s_width = 1.5,
-        s_height = 1.5,
-        p_family = "mono",
-        p_size = 10,
-        p_color = "grey30",
-        p_y = .6,
-        h_fill = "white",
-        h_color = "grey30"
+                    package = "{REPO}",
+                    filename="man/figures/logo.svg",
+                    s_y = 1.2,
+                    s_x = 1,
+                    s_width = 1.5,
+                    s_height = 1.5,
+                    p_family = "mono",
+                    p_size = 10,
+                    p_color = "grey30",
+                    p_y = .6,
+                    h_fill = "white",
+                    h_color = "grey30"
 )
 
 hexSticker::sticker(p,
-        package = "{REPO}",
-        filename="man/figures/logo.png",
-        s_y = 1.2,
-        s_x = 1,
-        s_width = 1.5,
-        s_height = 1.5,
-        p_family = "mono",
-        p_size = 10,
-        p_color = "grey30",
-        p_y = .6,
-        h_fill = "white",
-        h_color = "grey30"
+                    package = "{REPO}",
+                    filename="man/figures/logo.png",
+                    s_y = 1.2,
+                    s_x = 1,
+                    s_width = 1.5,
+                    s_height = 1.5,
+                    p_family = "mono",
+                    p_size = 10,
+                    p_color = "grey30",
+                    p_y = .6,
+                    h_fill = "white",
+                    h_color = "grey30"
 )
 
 pkgdown::build_favicons(overwrite = TRUE)
