@@ -10,15 +10,13 @@ annot_name <- "aparc.2009"
 
 # You might need to convert the annotation file
 # convert atlas to fsaverage5
-mri_surf2surf_rereg(subject = "fsaverage",
-                    annot = annot_name,
-                    hemi = "lh",
-                    output_dir = here::here("data-raw/fsaverage5/"))
-
-mri_surf2surf_rereg(subject = "fsaverage",
-                    annot = annot_name,
-                    hemi = "rh",
-                    output_dir = here::here("data-raw/fsaverage5/"))
+lapply(c("lh", "rh"),
+       function(x){
+         mri_surf2surf_rereg(subject = "fsaverage",
+                             annot = annot_name,
+                             hemi = x,
+                             output_dir = here::here("data-raw/fsaverage5/"))
+       })
 
 
 # Make  3d ----

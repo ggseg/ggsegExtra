@@ -1,5 +1,5 @@
 library(testthat)
 
-test_check("ggsegBrainnetome")
+test_check("{{REPO}}")
 
 # covr::zero_coverage(covr::package_coverage("."))
