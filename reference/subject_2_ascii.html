@@ -8,6 +8,13 @@
 
 <title>Convert subject surface files to ascii — subject_2_ascii • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -41,9 +48,10 @@
 
 <meta property="og:title" content="Convert subject surface files to ascii — subject_2_ascii" />
 <meta property="og:description" content="This function goes through all specified
-subject,  per hermisphere, surface,
+subject,  per hemisphere, surface,
 curvature and no fix curvature specified
 and turns them into ascii files." />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -75,7 +83,7 @@ and turns them into ascii files." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -123,7 +131,7 @@ and turns them into ascii files." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -142,13 +150,13 @@ and turns them into ascii files." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Convert subject surface files to ascii</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/subject_2_ascii.R'><code>R/subject_2_ascii.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/subject_2_ascii.R'><code>R/subject_2_ascii.R</code></a></small>
     <div class="hidden name"><code>subject_2_ascii.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>This function goes through all specified
-subject,  per hermisphere, surface,
+subject,  per hemisphere, surface,
 curvature and no fix curvature specified
 and turns them into ascii files.</p>
     </div>
@@ -202,7 +210,17 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>no return. Writes files.</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>subject_2_ascii</span><span class='op'>(</span><span class='op'>)</span>
+<span class='fu'>subject_2_ascii</span><span class='op'>(</span><span class='st'>"fsaverage"</span><span class='op'>)</span>
+<span class='fu'>subject_2_ascii</span><span class='op'>(</span><span class='st'>"bert"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

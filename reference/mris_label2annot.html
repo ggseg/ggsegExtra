@@ -8,6 +8,13 @@
 
 <title>Convert Label to Annotation — mris_label2annot • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,7 +47,10 @@
 
 
 <meta property="og:title" content="Convert Label to Annotation — mris_label2annot" />
-<meta property="og:description" content="Convert Label to Annotation" />
+<meta property="og:description" content="If you have labels rather than a full annotation
+file, these can be combined with FreeSurfer's
+mris_label2annot." />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -72,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -120,7 +130,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -139,18 +149,20 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Convert Label to Annotation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/fs-utils.R'><code>R/fs-utils.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/fs-utils.R'><code>R/fs-utils.R</code></a></small>
     <div class="hidden name"><code>mris_label2annot.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Convert Label to Annotation</p>
+    <p>If you have labels rather than a full annotation
+file, these can be combined with FreeSurfer's
+<code>mris_label2annot</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>mris_label2annot</span><span class='op'>(</span>
   <span class='va'>labels</span>,
-  hemisphere <span class='op'>=</span> <span class='st'>"rh"</span>,
   <span class='va'>ctab</span>,
+  hemisphere <span class='op'>=</span> <span class='st'>"rh"</span>,
   subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
   subjects_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
   annot_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subjects_dir</span>, <span class='va'>subject</span>, <span class='st'>"label"</span><span class='op'>)</span>,
@@ -164,15 +176,15 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>labels</th>
-      <td><p>label vector</p></td>
-    </tr>
-    <tr>
-      <th>hemisphere</th>
-      <td><p>hemisphere, either "rh" or "lh"</p></td>
+      <td><p>label file path vector</p></td>
     </tr>
     <tr>
       <th>ctab</th>
       <td><p>colourtable file</p></td>
+    </tr>
+    <tr>
+      <th>hemisphere</th>
+      <td><p>hemisphere, either "rh" or "lh"</p></td>
     </tr>
     <tr>
       <th>subject</th>
@@ -202,6 +214,28 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     </table>
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span>
+<span class='co'># for freesurfer help see:</span>
+<span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_help.html'>fs_help</a></span><span class='op'>(</span><span class='st'>"mris_label2annot"</span><span class='op'>)</span>
+
+<span class='co'># Split up aparc annot into labels</span>
+<span class='fu'><a href='mri_annotation2label.html'>mri_annotation2label</a></span><span class='op'>(</span>annot_name <span class='op'>=</span> <span class='st'>"aparc"</span><span class='op'>)</span>
+
+<span class='co'># get annot for colour labels</span>
+<span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/read_annotation.html'>read_annotation</a></span><span class='op'>(</span>
+              <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>, 
+                        <span class='st'>"fsaverage5/label/rh.aparc.annot"</span><span class='op'>)</span><span class='op'>)</span>
+
+<span class='va'>labels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span>
+   <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='st'>"fsaverage5/label/aparc"</span><span class='op'>)</span>, 
+    full.names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+
+<span class='co'># Combine them again into annot.</span>
+<span class='fu'>mris_label2annot</span><span class='op'>(</span><span class='va'>labels</span>, <span class='va'>annot</span><span class='op'>$</span><span class='va'>colortable</span><span class='op'>)</span>
+
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

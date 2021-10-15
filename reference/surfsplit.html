@@ -8,6 +8,13 @@
 
 <title>Split surface file into separate plys — surfsplit • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,9 +47,10 @@
 
 
 <meta property="og:title" content="Split surface file into separate plys — surfsplit" />
-<meta property="og:description" content="Function to splot up a surface ply
+<meta property="og:description" content="Function to split up a surface ply
 into several ply's based on a freesurfer
 label file." />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -74,7 +82,7 @@ label file." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -122,7 +130,7 @@ label file." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -141,12 +149,12 @@ label file." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Split surface file into separate plys</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/surfsplit.R'><code>R/surfsplit.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/surfsplit.R'><code>R/surfsplit.R</code></a></small>
     <div class="hidden name"><code>surfsplit.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Function to splot up a surface ply
+    <p>Function to split up a surface ply
 into several ply's based on a freesurfer
 label file.</p>
     </div>
@@ -186,7 +194,7 @@ label file.</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>list of ply meshes</p>
+    <p>list of ply meshes. Will also write ply meshes to files.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Script adapted to R and ggseg based on scripts

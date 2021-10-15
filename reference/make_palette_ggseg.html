@@ -8,6 +8,13 @@
 
 <title>Create ggseg palette from ggseg3d-atlas — make_palette_ggseg • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -46,6 +53,7 @@ introducing the atlas. These
 colours are hard-coded into ggseg3d-atlases.
 This function extracts those and makes a object
 ready for incorporation to a ggseg-atlas repository" />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -77,7 +85,7 @@ ready for incorporation to a ggseg-atlas repository" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -125,7 +133,7 @@ ready for incorporation to a ggseg-atlas repository" />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -144,7 +152,7 @@ ready for incorporation to a ggseg-atlas repository" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create ggseg palette from ggseg3d-atlas</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/create-ggseg-atlas.R'><code>R/create-ggseg-atlas.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/create-ggseg-atlas.R'><code>R/create-ggseg-atlas.R</code></a></small>
     <div class="hidden name"><code>make_palette_ggseg.Rd</code></div>
     </div>
 
@@ -170,7 +178,7 @@ ready for incorporation to a ggseg-atlas repository</p>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>list</p>
+    <p>list with a colour palette</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>make_palette_ggseg</span><span class='op'>(</span><span class='fu'>ggseg3d</span><span class='fu'>::</span><span class='va'><a href='https://rdrr.io/pkg/ggseg3d/man/dk_3d.html'>dk_3d</a></span><span class='op'>)</span>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Available Freesurfer no fix curvatures — fs_nofixcurv • ggsegExtra</title>
+<title>Convert annotation to label — mri_annotation2label • ggsegExtra</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,9 @@
 
 
 
-<meta property="og:title" content="Available Freesurfer no fix curvatures — fs_nofixcurv" />
-<meta property="og:description" content="Available Freesurfer no fix curvatures" />
+<meta property="og:title" content="Convert annotation to label — mri_annotation2label" />
+<meta property="og:description" content="Calls FreeSurfer's mri_annotation2label
+to split an annotation file into several labels." />
 <meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
@@ -146,25 +147,70 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Available Freesurfer no fix curvatures</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/fs-structs.R'><code>R/fs-structs.R</code></a></small>
-    <div class="hidden name"><code>fs_nofixcurv.Rd</code></div>
+    <h1>Convert annotation to label</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/fs-utils.R'><code>R/fs-utils.R</code></a></small>
+    <div class="hidden name"><code>mri_annotation2label.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Available Freesurfer no fix curvatures</p>
+    <p>Calls FreeSurfer's <code>mri_annotation2label</code>
+to split an annotation file into several labels.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fs_nofixcurv</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>mri_annotation2label</span><span class='op'>(</span>
+  <span class='va'>annot_name</span>,
+  subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
+  hemisphere <span class='op'>=</span> <span class='st'>"lh"</span>,
+  output_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  opts <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>annot_name</th>
+      <td><p>annotation name. File should exist in subjects label directory</p></td>
+    </tr>
+    <tr>
+      <th>subject</th>
+      <td><p>Freesurfer subject, must exist in whatever subject directory
+specified or set in the environment with $SUBJECTS_DIR</p></td>
+    </tr>
+    <tr>
+      <th>hemisphere</th>
+      <td><p>hemisphere, either "rh" or "lh"</p></td>
+    </tr>
+    <tr>
+      <th>output_dir</th>
+      <td><p>output directory path</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>logical indicating to be verbose or not</p></td>
+    </tr>
+    <tr>
+      <th>opts</th>
+      <td><p>other arguments to freesurfer command</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>character</p>
+    <p>nothing. Runs command line to write label files</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>fs_nofixcurv</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "defect_borders" "defect_chull"   "defect_labels" </div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>if</span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span>
+<span class='co'># for freesurfer help see:</span>
+<span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_help.html'>fs_help</a></span><span class='op'>(</span><span class='st'>"mri_annotation2label"</span><span class='op'>)</span>
+<span class='fu'>mri_annotation2label</span><span class='op'>(</span>annot_name <span class='op'>=</span> <span class='st'>"aparc"</span><span class='op'>)</span>
+
+<span class='fu'>mri_annotation2label</span><span class='op'>(</span>annot_name <span class='op'>=</span> <span class='st'>"aparc.a2009s"</span><span class='op'>)</span>
+
+<span class='fu'>mri_annotation2label</span><span class='op'>(</span>subject <span class='op'>=</span> <span class='st'>"fsaverage"</span>, annot_name <span class='op'>=</span> <span class='st'>"aparc.a2009s"</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

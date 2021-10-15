@@ -8,6 +8,13 @@
 
 <title>Volume to label — atlas_vol2label • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,7 +47,10 @@
 
 
 <meta property="og:title" content="Volume to label — atlas_vol2label" />
-<meta property="og:description" content="Volume to label" />
+<meta property="og:description" content="Turn volumetric files into labels for
+use in annotations. Calls FreeSurfer's
+mri_vol2label." />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -72,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -120,7 +130,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -139,12 +149,14 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Volume to label</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/atlas-steps.R'><code>R/atlas-steps.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/atlas-steps.R'><code>R/atlas-steps.R</code></a></small>
     <div class="hidden name"><code>atlas_vol2label.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Volume to label</p>
+    <p>Turn volumetric files into labels for
+use in annotations. Calls FreeSurfer's
+<code>mri_vol2label</code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>atlas_vol2label</span><span class='op'>(</span>
@@ -175,6 +187,9 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>invisibly returns the list of labels.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

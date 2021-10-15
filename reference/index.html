@@ -8,6 +8,13 @@
 
 <title>Function reference • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,6 +47,7 @@
 
 
 <meta property="og:title" content="Function reference" />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -71,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -119,7 +127,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -163,33 +171,9 @@
       <tr>
         
         <td>
-          <p><code><a href="annot2dpv.html">annot2dpv()</a></code> </p>
-        </td>
-        <td><p>Convert annotation file to dpv</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="annotation.html">annotation()</a></code> </p>
-        </td>
-        <td><p>Constructor for freesurfer_annotation-class</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="aparc_2_mesh.html">aparc_2_mesh()</a></code> </p>
         </td>
-        <td><p>Converts annotations fo atlas</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="as_annotation.html">as_annotation()</a></code> </p>
-        </td>
-        <td><p>Make object into class freesurfer_annotation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="asc2ply.html">asc2ply()</a></code> </p>
-        </td>
-        <td><p>Convert ascii to .ply</p></td>
+        <td><p>Converts annotations to atlas</p></td>
       </tr><tr>
         
         <td>
@@ -223,27 +207,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="ctab_line.html">ctab_line()</a></code> </p>
-        </td>
-        <td><p>Make a string for ctab writing</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="curv2asc.html">curv2asc()</a></code> </p>
-        </td>
-        <td><p>Convert Freesurfer curvature file to ascii</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="curv2ply.html">curv2ply()</a></code> </p>
         </td>
         <td><p>Convert Freesurfer curvature file to ply</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="curvnf2asc.html">curvnf2asc()</a></code> </p>
-        </td>
-        <td><p>Convert Freesurfer no fix curvature file to ascii</p></td>
       </tr><tr>
         
         <td>
@@ -265,21 +231,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="get_ctab.html">get_ctab()</a></code> </p>
-        </td>
-        <td><p>Get colour lut table</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="get_mesh.html">get_mesh()</a></code> </p>
         </td>
         <td><p>Extract mesh data from ply</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="getmode.html">getmode()</a></code> </p>
-        </td>
-        <td><p>Find the mode of a vector</p></td>
       </tr><tr>
         
         <td>
@@ -304,18 +258,6 @@
           <p><code><a href="is_ctab.html">is_ctab()</a></code> </p>
         </td>
         <td><p>Check if object is colourtable</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="is_facewise.html">is_facewise()</a></code> </p>
-        </td>
-        <td><p>Check if dpv is facewise</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="isolate_region.html">isolate_region()</a></code> </p>
-        </td>
-        <td><p>Isolate region to alpha channel</p></td>
       </tr><tr>
         
         <td>
@@ -361,15 +303,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="mri_pretess.html">mri_pretess()</a></code> </p>
+          <p><code><a href="mri_annotation2label.html">mri_annotation2label()</a></code> </p>
         </td>
-        <td><p>Run pre-tesselation on file</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mri_smooth.html">mri_smooth()</a></code> </p>
-        </td>
-        <td><p>Smooth data</p></td>
+        <td><p>Convert annotation to label</p></td>
       </tr><tr>
         
         <td>
@@ -379,27 +315,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="mri_tessellate.html">mri_tessellate()</a></code> </p>
-        </td>
-        <td><p>Tesselate data</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="mri_vol2label.html">mri_vol2label()</a></code> </p>
         </td>
         <td><p>Convert volume to label</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mri_vol2surf.html">mri_vol2surf()</a></code> </p>
-        </td>
-        <td><p>Convert volume to surface</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mris_annot2label.html">mris_annot2label()</a></code> </p>
-        </td>
-        <td><p>Convert annotation to label</p></td>
       </tr><tr>
         
         <td>
@@ -415,27 +333,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="prep_n_data.html">prep_n_data()</a></code> </p>
-        </td>
-        <td><p>prep data for verteces/faces</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read_annotation.html">read_annotation()</a></code> </p>
-        </td>
-        <td><p>Read Freesurfer annotation file</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="read_ctab.html">read_ctab()</a></code> </p>
         </td>
         <td><p>Read colourtab</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read_dpv.html">read_dpv()</a></code> </p>
-        </td>
-        <td><p>Read dpv file</p></td>
       </tr><tr>
         
         <td>
@@ -451,21 +351,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="snapshot_brain.html">snapshot_brain()</a></code> </p>
-        </td>
-        <td><p>Make snapshots through orca and plotly</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="subject_2_ascii.html">subject_2_ascii()</a></code> </p>
         </td>
         <td><p>Convert subject surface files to ascii</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="surf2asc.html">surf2asc()</a></code> </p>
-        </td>
-        <td><p>Convert Freesurfer surface file to ascii</p></td>
       </tr><tr>
         
         <td>
@@ -484,12 +372,6 @@
           <p><code><a href="write_ctab.html">write_ctab()</a></code> </p>
         </td>
         <td><p>Write colourtab</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="write_dpv.html">write_dpv()</a></code> </p>
-        </td>
-        <td><p>Write DPV file</p></td>
       </tr>
     </tbody>
     </table>

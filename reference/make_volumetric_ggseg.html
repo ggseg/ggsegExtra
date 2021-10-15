@@ -8,6 +8,13 @@
 
 <title>Make ggseg atlas from volumetric template — make_volumetric_ggseg • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -40,7 +47,13 @@
 
 
 <meta property="og:title" content="Make ggseg atlas from volumetric template — make_volumetric_ggseg" />
-<meta property="og:description" content="Make ggseg atlas from volumetric template" />
+<meta property="og:description" content="If making an atlas from a non-cortical atlas,
+volumetric atlases are the best options. 
+Instead of snapshotting images of inflated
+brain, will snapshot brain slices given x, y, z
+coordinates for the slices trhoush the slices
+argument." />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -72,7 +85,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -120,7 +133,7 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -139,12 +152,17 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Make ggseg atlas from volumetric template</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/create-ggseg-atlas.R'><code>R/create-ggseg-atlas.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/create-ggseg-atlas.R'><code>R/create-ggseg-atlas.R</code></a></small>
     <div class="hidden name"><code>make_volumetric_ggseg.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make ggseg atlas from volumetric template</p>
+    <p>If making an atlas from a non-cortical atlas,
+volumetric atlases are the best options. 
+Instead of snapshotting images of inflated
+brain, will snapshot brain slices given x, y, z
+coordinates for the slices trhoush the <code>slices</code>
+argument.</p>
     </div>
 
     <pre class="usage"><span class='fu'>make_volumetric_ggseg</span><span class='op'>(</span>
@@ -196,7 +214,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     </tr>
     <tr>
       <th>skip_existing</th>
-      <td><p>logical. If slice snapsnots already exist, should these be skipped.</p></td>
+      <td><p>logical. If slice snapshots already exist, should these be skipped.</p></td>
     </tr>
     <tr>
       <th>slices</th>
@@ -220,7 +238,7 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     </tr>
     <tr>
       <th>smoothness</th>
-      <td><p>smoothing factor, argument to <code><a href='http://strimas.com/smoothr/reference/smooth.html'>smooth</a></code></p></td>
+      <td><p>smoothing factor, argument to <code><a href='https://strimas.com/smoothr/reference/smooth.html'>smooth</a></code></p></td>
     </tr>
     <tr>
       <th>verbose</th>

@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Contributing: prepare a repository for the atlas • ggsegExtra</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -13,6 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Contributing: prepare a repository for the atlas">
 <meta property="og:description" content="ggsegExtra">
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -31,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -79,7 +86,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -100,7 +107,7 @@
       <h1 data-toc-skip>Contributing: prepare a repository for the atlas</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/LCBC-UiO/ggsegExtra/blob/master/vignettes/ggsegrepo.Rmd"><code>vignettes/ggsegrepo.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ggseg/ggsegExtra/blob/master/vignettes/ggsegrepo.Rmd"><code>vignettes/ggsegrepo.Rmd</code></a></small>
       <div class="hidden name"><code>ggsegrepo.Rmd</code></div>
 
     </div>
@@ -121,9 +128,9 @@
 </li>
 <li>Let us know about the atlas so we can check it out.
 <ul>
-<li>either through <a href="https://github.com/LCBC-UiO/ggsegExtra/issues">github-issues</a> with information on the online repository it is in.<br>
+<li>either through <a href="https://github.com/ggseg/ggsegExtra/issues">github-issues</a> with information on the online repository it is in.<br>
 </li>
-<li>or by doing a pull request after adding atlas information in the <a href="https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/extra-atlases.R">atlas list</a><br>
+<li>or by doing a pull request after adding atlas information in the <a href="https://github.com/ggseg/ggsegExtra/blob/master/R/extra-atlases.R">atlas list</a><br>
 </li>
 </ul>
 </li>
@@ -132,21 +139,21 @@
 <div id="help-setting-up-the-package-repository" class="section level2">
 <h2 class="hasAnchor">
 <a href="#help-setting-up-the-package-repository" class="anchor"></a>Help setting up the package repository</h2>
-<p>Since setting up a package for the first time, particularly a data package, we set up a function to help you get started. It contains tests, and some general setup we would expect from a ggseg-atlas package. If you already are comfortable making R-packages, skip this step. If not, it is intended to help you set up a skeleton for the package.</p>
+<p>Since setting up a package for the first time, particularly a data package, we set up a function to help you get started. It contains tests, and some general set-up we would expect from a ggseg-atlas package. If you already are comfortable making R-packages, skip this step. If not, it is intended to help you set up a skeleton for the package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/LCBC-UiO/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
 
 <span class="fu"><a href="../reference/make_ggseg_repo.html">make_ggseg_repo</a></span><span class="op">(</span>atlas_name <span class="op">=</span> <span class="st">"cc200"</span>, 
                 package_name <span class="op">=</span> <span class="st">"ggsegCC200"</span>, 
                 git_init <span class="op">=</span> <span class="cn">TRUE</span>, 
                 remote_repo <span class="op">=</span> <span class="st">"https://github.com/youruser/ggsegCC200"</span><span class="op">)</span></code></pre></div>
-<p>This will start setting up a folder named <code>ggsegCC200</code>, that is a copy of the <code>ggsegTracula</code> package. It will proceed to delete unecessary files, rename them and substitue “tracula” with “cc200” in the files.</p>
+<p>This will start setting up a folder named <code>ggsegCC200</code>, that is a copy of the <code>ggsegTracula</code> package. It will proceed to delete unnecessary files, rename them and substitute “tracula” with “cc200” in the files.</p>
 <div id="change-description" class="section level3">
 <h3 class="hasAnchor">
 <a href="#change-description" class="anchor"></a>Change DESCRIPTION</h3>
 <p>The DESCRIPTION file is a text-file with important information regarding the contents of the package. This file is necessary to edit for several reasons:</p>
 <ul>
-<li>You (and whoever assisted you) should be listed as authors and maintainers of the package, remove Athanasia and Didac and add your own names in stead (ORCID is optional, delete if you dont have one).<br>
+<li>You (and whoever assisted you) should be listed as authors and maintainers of the package, remove Athanasia and Didac and add your own names in stead (ORCID is optional, delete if you don’t have one).<br>
 </li>
 <li>The <code>Description:</code> section should be altered to reflect the contents of the package.<br>
 </li>
@@ -161,7 +168,7 @@
 <div id="add-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#add-data" class="anchor"></a>Add data</h3>
-<p>You will need to place your atlas files, as <code>.rda</code> files in the <code>data/</code> folder. The atlas data-objects must have the same name as the file. In this case <code>cc200.rda</code> should load the object <code>cc200</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200.rda")</a></code>, and contain a ggseg-atlas (use <code><a href="https://rdrr.io/pkg/ggseg/man/is_ggseg_atlas.html">is_ggseg_atlas()</a></code> and <code>as_ggseg_atlas</code> to check). Likewise, <code>cc200_3d.rda</code>should load the object <code>cc200_3d</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200_3d.rda")</a></code>, adn should contains a ggseg3d-atlas (use <code><a href="https://rdrr.io/pkg/ggseg3d/man/is_ggseg3d_atlas.html">is_ggseg3d_atlas()</a></code> and <code>as_ggseg3d_atlas</code> to check). And then adapt the atlas information in the <code>R/cc200.R</code> to match the atlas you are adding. Take particular care with the reference to the atlas with the original paper first introducing the parcellation.</p>
+<p>You will need to place your atlas files, as <code>.rda</code> files in the <code>data/</code> folder. The atlas data-objects must have the same name as the file. In this case <code>cc200.rda</code> should load the object <code>cc200</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200.rda")</a></code>, and contain a ggseg-atlas (use <code><a href="https://rdrr.io/pkg/ggseg/man/is_ggseg_atlas.html">is_ggseg_atlas()</a></code> and <code>as_ggseg_atlas</code> to check). Likewise, <code>cc200_3d.rda</code>should load the object <code>cc200_3d</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200_3d.rda")</a></code>, and should contains a ggseg3d-atlas (use <code><a href="https://rdrr.io/pkg/ggseg3d/man/is_ggseg3d_atlas.html">is_ggseg3d_atlas()</a></code> and <code>as_ggseg3d_atlas</code> to check). And then adapt the atlas information in the <code>R/cc200.R</code> to match the atlas you are adding. Take particular care with the reference to the atlas with the original paper first introducing the parcellation.</p>
 </div>
 <div id="getting-tests-to-pass" class="section level3">
 <h3 class="hasAnchor">
@@ -182,7 +189,7 @@
 </ul>
 </li>
 </ul>
-<p>Let ut know if you struggle. We would love to improve this tutorial with the issues you might encounter.</p>
+<p>Let us know if you struggle. We would love to improve this tutorial with the issues you might encounter.</p>
 </div>
 <div id="getting-package-tests-to-pass" class="section level3">
 <h3 class="hasAnchor">
@@ -203,7 +210,7 @@
 <li>you have not added a licence: try using <code><a href="https://usethis.r-lib.org/reference/licenses.html">usethis::use_mit_license("Your Name Here")</a></code>
 </li>
 </ul>
-<p>There will likely be some failures, try to resolve them. Let ut know if you struggle. We would love to improve this tutorial with the issues you might encounter.</p>
+<p>There will likely be some failures, try to resolve them. Let us know if you struggle. We would love to improve this tutorial with the issues you might encounter.</p>
 <p>If everything goes well, push it all to your remote repository and let us know about it. We will double check and add it if it all checks out!</p>
 </div>
 </div>

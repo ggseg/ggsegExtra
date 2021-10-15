@@ -8,6 +8,13 @@
 
 <title>Volumetric segmentation to 3d-atlas — make_volumetric_2_3datlas • ggsegExtra</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -45,6 +52,7 @@ from a volumetric parcellation.
 Currently only tested using .mgz
 extension images. Will call command-line
 tools to complete the process." />
+<meta property="og:image" content="https://lcbc-uio.github.io/ggsegExtra/logo.png" />
 
 
 
@@ -76,7 +84,7 @@ tools to complete the process." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggsegExtra</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.32</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.5.33.003</span>
       </span>
     </div>
 
@@ -124,7 +132,7 @@ tools to complete the process." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/LCBC-UiO/ggsegExtra/">
+  <a href="https://github.com/ggseg/ggsegExtra/">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -143,7 +151,7 @@ tools to complete the process." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Volumetric segmentation to 3d-atlas</h1>
-    <small class="dont-index">Source: <a href='https://github.com/LCBC-UiO/ggsegExtra/blob/master/R/create-ggseg3d-atlas.R'><code>R/create-ggseg3d-atlas.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/ggseg/ggsegExtra/blob/master/R/create-ggseg3d-atlas.R'><code>R/create-ggseg3d-atlas.R</code></a></small>
     <div class="hidden name"><code>make_volumetric_2_3datlas.Rd</code></div>
     </div>
 
@@ -156,10 +164,10 @@ tools to complete the process.</p>
     </div>
 
     <pre class="usage"><span class='fu'>make_volumetric_2_3datlas</span><span class='op'>(</span>
+  <span class='va'>template</span>,
+  <span class='va'>color_lut</span>,
   subject <span class='op'>=</span> <span class='st'>"fsaverage5"</span>,
   subjects_dir <span class='op'>=</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>,
-  template <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subjects_dir</span>, <span class='va'>subject</span>, <span class='st'>"mri/aseg.mgz"</span><span class='op'>)</span>,
-  color_lut <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/freesurferdir.html'>fs_dir</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='st'>"ASegStatsLUT.txt"</span><span class='op'>)</span>,
   steps <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>5</span>,
   output_dir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>,
   verbose <span class='op'>=</span> <span class='cn'>TRUE</span>,
@@ -171,15 +179,6 @@ tools to complete the process.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>subject</th>
-      <td><p>Freesurfer subject, must exist in whatever subject directory
-specified or set in the environment with $SUBJECTS_DIR</p></td>
-    </tr>
-    <tr>
-      <th>subjects_dir</th>
-      <td><p>Freesurfer subject directory</p></td>
-    </tr>
-    <tr>
       <th>template</th>
       <td><p>template <code>volume.mgz</code> file path</p></td>
     </tr>
@@ -187,6 +186,15 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
       <th>color_lut</th>
       <td><p>Freesurfer colour look-up-table. Either
 as a path or a data.frame that <code><a href='is_ctab.html'>is_ctab</a></code></p></td>
+    </tr>
+    <tr>
+      <th>subject</th>
+      <td><p>Freesurfer subject, must exist in whatever subject directory
+specified or set in the environment with $SUBJECTS_DIR</p></td>
+    </tr>
+    <tr>
+      <th>subjects_dir</th>
+      <td><p>Freesurfer subject directory</p></td>
     </tr>
     <tr>
       <th>steps</th>
@@ -213,7 +221,8 @@ saved, and steps can be re-run individually</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>returns a ggseg3d-atlas ready object</p>
+    <p>returns a ggseg3d-atlas ready object. Might need manual
+   cleaning to become a good atlas.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>the function is aggressive in the number
@@ -221,6 +230,16 @@ of cores used to minimize time taken to
 create the atlas. Set the  <code>ncores</code>
 argument for less aggressive approach.</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+
+<span class='va'>fs_subject_dir</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/freesurferdir.html'>fs_dir</a></span><span class='op'>(</span><span class='op'>)</span>
+<span class='va'>aseg_temp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>fs_subject_dir</span>, <span class='st'>"fsaverage5/mri/aseg.mgz"</span><span class='op'>)</span>
+<span class='va'>colorlut</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>fs_subject_dir</span>, <span class='st'>"ASegStatsLUT.txt"</span><span class='op'>)</span>
+
+<span class='fu'>make_volumetric_2_3datlas</span><span class='op'>(</span><span class='va'>aseg_temp</span>, <span class='va'>colorlut</span><span class='op'>)</span>
+<span class='op'>}</span>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
