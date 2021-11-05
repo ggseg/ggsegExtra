@@ -215,28 +215,28 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span>
-<span class='co'># for freesurfer help see:</span>
-<span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_help.html'>fs_help</a></span><span class='op'>(</span><span class='st'>"mris_label2annot"</span><span class='op'>)</span>
-
-<span class='va'>subj_dir</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='co'># Split up aparc annot into labels</span>
-<span class='fu'><a href='mri_annotation2label.html'>mri_annotation2label</a></span><span class='op'>(</span>annot_name <span class='op'>=</span> <span class='st'>"aparc"</span><span class='op'>)</span>
-
-<span class='co'># get annot for colour labels</span>
-<span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/read_annotation.html'>read_annotation</a></span><span class='op'>(</span>
-              <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subj_dir</span>, 
-                        <span class='st'>"fsaverage5/label/rh.aparc.annot"</span><span class='op'>)</span><span class='op'>)</span>
-
-<span class='va'>labels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span>
-   <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subj_dir</span>, <span class='st'>"fsaverage5/label/aparc"</span><span class='op'>)</span>, 
-    full.names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-
-<span class='co'># Combine them again into annot.</span>
-<span class='fu'>mris_label2annot</span><span class='op'>(</span><span class='va'>labels</span>, <span class='va'>annot</span><span class='op'>$</span><span class='va'>colortable</span><span class='op'>)</span>
-
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span><span class='op'>(</span><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/have_fs.html'>have_fs</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span class='r-in'><span class='co'># for freesurfer help see:</span></span>
+<span class='r-in'><span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_help.html'>fs_help</a></span><span class='op'>(</span><span class='st'>"mris_label2annot"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>subj_dir</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/fs_subj_dir.html'>fs_subj_dir</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'><span class='co'># Split up aparc annot into labels</span></span>
+<span class='r-in'><span class='fu'><a href='mri_annotation2label.html'>mri_annotation2label</a></span><span class='op'>(</span>annot_name <span class='op'>=</span> <span class='st'>"aparc"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># get annot for colour labels</span></span>
+<span class='r-in'><span class='va'>annot</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/read_annotation.html'>read_annotation</a></span><span class='op'>(</span></span>
+<span class='r-in'>              <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subj_dir</span>, </span>
+<span class='r-in'>                        <span class='st'>"fsaverage5/label/rh.aparc.annot"</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>labels</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='op'>(</span></span>
+<span class='r-in'>   <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>subj_dir</span>, <span class='st'>"fsaverage5/label/aparc"</span><span class='op'>)</span>, </span>
+<span class='r-in'>    full.names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># Combine them again into annot.</span></span>
+<span class='r-in'><span class='fu'>mris_label2annot</span><span class='op'>(</span><span class='va'>labels</span>, <span class='va'>annot</span><span class='op'>$</span><span class='va'>colortable</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

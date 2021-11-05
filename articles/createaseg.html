@@ -129,7 +129,7 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggseg">ggseg</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggseg3d/">ggseg3d</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span> <span class="co"># for cleaning the atlas data efficiently</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span> <span class="co"># for cleaning the atlas data efficiently</span></code></pre></div>
 </div>
 <div id="creating-a-3d-atlas" class="section level2">
 <h2 class="hasAnchor">
@@ -212,7 +212,7 @@
 <span id="cb9-20"><a href="#cb9-20"></a>           <span class="st">"WM-hypointensities"</span>                  <span class="st">"Optic-Chiasm"</span>                  <span class="st">"CC_Posterior"</span>              <span class="st">"CC_Mid_Posterior"</span> </span>
 <span id="cb9-21"><a href="#cb9-21"></a>                       region41                        region42                        region43 </span>
 <span id="cb9-22"><a href="#cb9-22"></a>                   <span class="st">"CC_Central"</span>               <span class="st">"CC_Mid_Anterior"</span>                   <span class="st">"CC_Anterior"</span> </span></code></pre></div>
-<p>The region names for this atlas mainly need some white space in-between certain words to make the names readable. For instance, all dashes (<code><a href="https://rdrr.io/r/base/Arithmetic.html">-</a></code>) can be replaced with white space. We’ll try to see other such patterns and how we can easily alter names so they look nicer.</p>
+<p>The region names for this atlas mainly need some white space in-between certain words to make the names readable. For instance, all dashes (<code>-</code>) can be replaced with white space. We’ll try to see other such patterns and how we can easily alter names so they look nicer.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">unnest</span><span class="op">(</span><span class="va">aseg2_3d</span>, <span class="va">ggseg_3d</span><span class="op">)</span> <span class="op">%&gt;%</span>
     <span class="fu">mutate</span><span class="op">(</span>region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">gsub</a></span><span class="op">(</span><span class="st">"-|_"</span>, <span class="st">" "</span>, <span class="va">region</span><span class="op">)</span>,
@@ -477,7 +477,7 @@
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggsegExtra">ggsegExtra</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggseg/ggseg">ggseg</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tidyverse</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span>
 
 <span class="co"># Make  3d ----</span>
 <span class="va">aseg2_3d</span> <span class="op">&lt;-</span> <span class="fu">make_aseg_2_3datlas</span><span class="op">(</span>

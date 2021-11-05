@@ -255,20 +255,20 @@ specified or set in the environment with $SUBJECTS_DIR</p></td>
     <p>brain-atlas class</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-
-   <span class='va'>label_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'>fs_subj_dir</span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>subject</span>, <span class='st'>"mri/aseg.mgz"</span><span class='op'>)</span>
-   <span class='va'>slices</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='fl'>130</span>, y<span class='op'>=</span><span class='fl'>130</span>, z<span class='op'>=</span><span class='fl'>130</span>, view<span class='op'>=</span><span class='st'>"axial"</span>, stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-   
-   <span class='va'>aseg2</span> <span class='op'>&lt;-</span> <span class='fu'>make_volumetric_ggseg</span><span class='op'>(</span>
-      label_file <span class='op'>=</span>  <span class='va'>label_file</span>,
-      slices <span class='op'>=</span> <span class='va'>slices</span>
-   <span class='op'>)</span>
-
-   <span class='co'># Have a look at the atlas</span>
-   <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>aseg2</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'></span>
+<span class='r-in'>   <span class='va'>label_file</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='fu'>fs_subj_dir</span><span class='op'>(</span><span class='op'>)</span>, <span class='va'>subject</span>, <span class='st'>"mri/aseg.mgz"</span><span class='op'>)</span></span>
+<span class='r-in'>   <span class='va'>slices</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='fl'>130</span>, y<span class='op'>=</span><span class='fl'>130</span>, z<span class='op'>=</span><span class='fl'>130</span>, view<span class='op'>=</span><span class='st'>"axial"</span>, stringsAsFactors <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'>   </span>
+<span class='r-in'>   <span class='va'>aseg2</span> <span class='op'>&lt;-</span> <span class='fu'>make_volumetric_ggseg</span><span class='op'>(</span></span>
+<span class='r-in'>      label_file <span class='op'>=</span>  <span class='va'>label_file</span>,</span>
+<span class='r-in'>      slices <span class='op'>=</span> <span class='va'>slices</span></span>
+<span class='r-in'>   <span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'>   <span class='co'># Have a look at the atlas</span></span>
+<span class='r-in'>   <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>aseg2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

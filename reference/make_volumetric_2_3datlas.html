@@ -231,15 +231,15 @@ create the atlas. Set the  <code>ncores</code>
 argument for less aggressive approach.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-
-<span class='va'>fs_subject_dir</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/freesurferdir.html'>fs_dir</a></span><span class='op'>(</span><span class='op'>)</span>
-<span class='va'>aseg_temp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>fs_subject_dir</span>, <span class='st'>"fsaverage5/mri/aseg.mgz"</span><span class='op'>)</span>
-<span class='va'>colorlut</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>fs_subject_dir</span>, <span class='st'>"ASegStatsLUT.txt"</span><span class='op'>)</span>
-
-<span class='fu'>make_volumetric_2_3datlas</span><span class='op'>(</span><span class='va'>aseg_temp</span>, <span class='va'>colorlut</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>fs_subject_dir</span> <span class='op'>&lt;-</span> <span class='fu'>freesurfer</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/freesurfer/man/freesurferdir.html'>fs_dir</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>aseg_temp</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>fs_subject_dir</span>, <span class='st'>"fsaverage5/mri/aseg.mgz"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>colorlut</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='op'>(</span><span class='va'>fs_subject_dir</span>, <span class='st'>"ASegStatsLUT.txt"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='fu'>make_volumetric_2_3datlas</span><span class='op'>(</span><span class='va'>aseg_temp</span>, <span class='va'>colorlut</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

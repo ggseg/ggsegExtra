@@ -161,7 +161,7 @@
 <div id="add-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#add-data" class="anchor"></a>Add data</h3>
-<p>You will need to place your atlas files, as <code>.rda</code> files in the <code>data/</code> folder. The atlas data-objects must have the same name as the file. In this case <code>cc200.rda</code> should load the object <code>cc200</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200.rda")</a></code>, and contain a ggseg-atlas (use <code><a href="https://rdrr.io/pkg/ggseg/man/is_ggseg_atlas.html">is_ggseg_atlas()</a></code> and <code>as_ggseg_atlas</code> to check). Likewise, <code>cc200_3d.rda</code>should load the object <code>cc200_3d</code> into an R-environment using <code><a href="https://rdrr.io/r/base/load.html">load("data/cc200_3d.rda")</a></code>, and should contains a ggseg3d-atlas (use <code><a href="https://rdrr.io/pkg/ggseg3d/man/is_ggseg3d_atlas.html">is_ggseg3d_atlas()</a></code> and <code>as_ggseg3d_atlas</code> to check). And then adapt the atlas information in the <code>R/cc200.R</code> to match the atlas you are adding. Take particular care with the reference to the atlas with the original paper first introducing the parcellation.</p>
+<p>You will need to place your atlas files, as <code>.rda</code> files in the <code>data/</code> folder. The atlas data-objects must have the same name as the file. In this case <code>cc200.rda</code> should load the object <code>cc200</code> into an R-environment using <code>load("data/cc200.rda")</code>, and contain a ggseg-atlas (use <code><a href="https://rdrr.io/pkg/ggseg/man/is_ggseg_atlas.html">is_ggseg_atlas()</a></code> and <code>as_ggseg_atlas</code> to check). Likewise, <code>cc200_3d.rda</code>should load the object <code>cc200_3d</code> into an R-environment using <code>load("data/cc200_3d.rda")</code>, and should contains a ggseg3d-atlas (use <code><a href="https://rdrr.io/pkg/ggseg3d/man/is_ggseg3d_atlas.html">is_ggseg3d_atlas()</a></code> and <code>as_ggseg3d_atlas</code> to check). And then adapt the atlas information in the <code>R/cc200.R</code> to match the atlas you are adding. Take particular care with the reference to the atlas with the original paper first introducing the parcellation.</p>
 </div>
 <div id="getting-tests-to-pass" class="section level3">
 <h3 class="hasAnchor">
@@ -200,7 +200,7 @@
 </li>
 </ul>
 </li>
-<li>you have not added a license: try using <code><a href="https://usethis.r-lib.org/reference/licenses.html">usethis::use_mit_license("Your Name Here")</a></code>
+<li>you have not added a license: try using <code>usethis::use_mit_license("Your Name Here")</code>
 </li>
 </ul>
 <p>There will likely be some failures, try to resolve them. Let us know if you struggle. We would love to improve this tutorial with the issues you might encounter.</p>
