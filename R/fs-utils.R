@@ -202,7 +202,6 @@ mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
 #' @param ctab colourtable file
 #' @template subject
 #' @template subjects_dir
-#' @template annot_dir
 #' @template output_dir
 #' @template verbose
 #' @template opts
@@ -235,7 +234,6 @@ mris_label2annot <- function(labels,
                              hemisphere = "rh", 
                              subject = "fsaverage5",
                              subjects_dir = fs_subj_dir(),
-                             annot_dir = file.path(subjects_dir, subject, "label"),
                              output_dir = subjects_dir,
                              opts = NULL,
                              verbose = TRUE){
@@ -258,11 +256,9 @@ mris_label2annot <- function(labels,
                 labs,
                 "--h", hemisphere, 
                 "--annot-path", output_dir
-                # "--a tmp"
   )
   
   k <- system(cmd, intern=!verbose)
-  
   invisible(k)
 }
 
