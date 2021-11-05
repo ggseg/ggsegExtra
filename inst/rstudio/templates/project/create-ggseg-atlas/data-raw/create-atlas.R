@@ -1,6 +1,4 @@
 library(ggsegExtra)
-library(ggseg)
-library(ggseg3d)
 library(dplyr) # for cleaning the atlas data efficiently
 library(tidyr) # for cleaning the atlas data efficiently
 

@@ -173,7 +173,7 @@ extract_contours <- function(input_dir, output_dir, step,
                              skip_existing = TRUE,
                              vertex_size_limits = NULL) {
   
-  cat("%%{step} Extracting contours from regions\n")
+  cat("%% ", step, " Extracting contours from regions\n")
   
   regions <- list.files(input_dir, full.names = TRUE)
   rasterobjs <- lapply(regions, raster)
@@ -207,7 +207,7 @@ extract_contours <- function(input_dir, output_dir, step,
   
   save(contours,
        file = file.path(output_dir, "contours.rda"))
-  cat("... v ... contours complete\n")
+  cat("... contours complete\n")
   
   invisible(contours)
 }
@@ -215,7 +215,7 @@ extract_contours <- function(input_dir, output_dir, step,
 #' @noRd
 #' @importFrom smoothr smooth
 smooth_contours <- function(dir, smoothness, step, ncores = 2) {
-  cat("%%{step} Smoothing contours\n")
+  cat("%% ", step, " Smoothing contours\n")
   load(file.path(dir, "contours.rda"))
   
   contours <- smooth(contours, 
@@ -224,7 +224,7 @@ smooth_contours <- function(dir, smoothness, step, ncores = 2) {
   
   save(contours,
        file = file.path(dir, "contours_smoothed.rda"))
-  cat("... v ... smoothing complete\n")
+  cat("... smoothing complete\n")
   
   invisible(contours)
 }
@@ -232,7 +232,7 @@ smooth_contours <- function(dir, smoothness, step, ncores = 2) {
 #' @noRd
 #' @importFrom sf st_simplify
 reduce_vertex <- function(dir, tolerance, step) {
-  cat("%%{step} Reducing vertexes")
+  cat("%% ", step, " Reducing vertexes\n")
   load(file.path(dir, "contours_smoothed.rda"))
   
   contours <- st_simplify(contours,
@@ -240,7 +240,7 @@ reduce_vertex <- function(dir, tolerance, step) {
                           dTolerance = tolerance)
   save(contours,
        file = file.path(dir, "contours_reduced.rda"))
-  cat("Vertexes reduced")
+  cat("Vertexes reduced\n")
   
   invisible(contours)
 }
@@ -289,7 +289,7 @@ make_multipolygon <- function(contourfile) {
 prep_labels <- function(label_file, color_lut, subject, subjects_dir, 
                         output_dir, step="", verbose, ncores = 2,
                         skip_existing = TRUE) {
-  cat("%%Preparing labels")
+  cat("%% Preparing labels\n")
   
   # If there is a LUT supplied,
   # get it, reduce labels to only those in the LUT
@@ -310,7 +310,7 @@ prep_labels <- function(label_file, color_lut, subject, subjects_dir,
     # labs <- tmp[]
     # 
   }else if(grepl("\\.mgz$", label_file)){
-    cat("%%Splitting atlas file into labels")
+    cat("%% Splitting atlas file into labels\n")
     
     # Find unique labels from template
     tmp <- unique(c(readmgz(label_file)))
@@ -349,7 +349,7 @@ prep_labels <- function(label_file, color_lut, subject, subjects_dir,
   write.table(colortable,  file.path(output_dir, "colortable.tsv"), 
               sep="\t", row.names = FALSE)
   
-  cat("labels ready")
+  cat("... labels ready\n")
   list(labels = labs, colortable = colortable)
 }
 
