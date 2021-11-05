@@ -3,10 +3,9 @@ library(ggseg)
 library(ggseg3d)
 library(dplyr) # for cleaning the atlas data efficiently
 library(tidyr) # for cleaning the atlas data efficiently
-devtools::load_all(".")
 
 # The unique name of the atlas annot, without hemisphere in filename
-annot_name <- "aparc.2009"
+annot_name <- "{GGSEG}"
 
 # You might need to convert the annotation file
 # convert atlas to fsaverage5
