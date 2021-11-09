@@ -39,10 +39,12 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install dependencies
+      - name: Install R dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          remotes::install_deps(dependencies = TRUE)
-          install.packages("pkgdown", type = "binary")
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
+          pak::local_install()
         shell: Rscript {0}
         
       - name: Install macOS dependencies

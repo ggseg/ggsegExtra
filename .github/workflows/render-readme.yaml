@@ -27,6 +27,14 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v1
       
+      - name: Install R dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
+          pak::local_install()
+        shell: Rscript {0}
+      
       - name: Render Rmarkdown files
         run: |
           RMD_PATH=README.Rmd
