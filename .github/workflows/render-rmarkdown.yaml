@@ -3,7 +3,9 @@
 on:
   push:
     paths: ['README.Rmd']
-  crontab: 0 14 * * *
+  schedule:
+    # Runs "at minute 55 past every hour" (see https://crontab.guru)
+    - cron: 0 14 * * *
 
 
 name: render-rmarkdown
