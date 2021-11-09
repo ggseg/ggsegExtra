@@ -12,7 +12,7 @@ name: render-rmarkdown
 
 jobs:
   render-rmarkdown:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -27,6 +27,17 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v1
       
+      - name: Install macOS dependencies
+        run: |
+           brew install xquartz --cask
+           # conflicts with gfortran from r-lib/actions when linking gcc
+           rm '/usr/local/bin/gfortran'
+           brew install gdal proj geos
+           brew install imagemagick ghostscript 
+           brew tap coin-or-tools/coinor
+           brew install symphony
+           Rscript -e "install.packages('R2OpenBUGS',type='source')"
+           
       - name: Install R dependencies
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

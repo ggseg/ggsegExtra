@@ -39,14 +39,6 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
-      - name: Install R dependencies
-        env:
-          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-          pak::local_install()
-        shell: Rscript {0}
-        
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: |
@@ -58,7 +50,15 @@ jobs:
            brew tap coin-or-tools/coinor
            brew install symphony
            Rscript -e "install.packages('R2OpenBUGS',type='source')"
-
+           
+      - name: Install R dependencies
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
+          pak::local_install()
+        shell: Rscript {0}
+        
       - name: Install package
         run: R CMD INSTALL .
 
