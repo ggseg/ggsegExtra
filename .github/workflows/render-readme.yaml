@@ -42,7 +42,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          install.packages(c("remotes", "httr"), repos = "https://cloud.r-project.org/")
+          install.packages(c("remotes", "rmarkdown", "httr"), repos = "https://cloud.r-project.org/")
           remotes::install_github("ggseg/ggsegExtra")
         shell: Rscript {0}
       
