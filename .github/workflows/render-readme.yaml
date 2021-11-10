@@ -42,8 +42,8 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-          pak::local_install()
+          install.packages(c("remotes", "httr"), repos = "https://cloud.r-project.org/")
+          remotes::install_github("ggseg/ggsegExtra")
         shell: Rscript {0}
       
       - name: Render Rmarkdown files
