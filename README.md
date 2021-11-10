@@ -63,6 +63,7 @@ packages, their repository name and location can be found with:
 <img src="https://github.com/ggseg/ggsegEconomo/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegEconomo logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegEconomo/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegEconomo/actions)
+[![DOI](https://zenodo.org/badge/424723872.svg)](https://zenodo.org/badge/latestdoi/424723872)
 
 economo datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the economo atlases to
@@ -93,6 +94,7 @@ atlases to plot using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegBrodmann/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegBrodmann logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegBrodmann/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegBrodmann/actions)
+[![DOI](https://zenodo.org/badge/424723872.svg)](https://zenodo.org/badge/latestdoi/424723872)
 
 brodmann datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the brodmann area
@@ -103,9 +105,10 @@ atlases to plot using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegCampbell/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegCampbell logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegCampbell/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegCampbell/actions)
+[![DOI](https://zenodo.org/badge/424732644.svg)](https://zenodo.org/badge/latestdoi/424732644)
 
 Campbell(1905) datasets for the ggseg-plotting tool This is a support
-package for the ggseg, and ggseg3d packages. It contains the campbell
+package for the ggseg, and ggseg3d packages. It contains the Campbell
 (1905) atlases to plot using functions from those two packages.
 
 ### [ggsegIca](https://github.com/ggseg/ggsegIca)
@@ -113,6 +116,7 @@ package for the ggseg, and ggseg3d packages. It contains the campbell
 <img src="https://github.com/ggseg/ggsegIca/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegIca logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegIca/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegIca/actions)
+[![DOI](https://zenodo.org/badge/417492385.svg)](https://zenodo.org/badge/latestdoi/417492385)
 
 ica datasets for the ggseg-plotting tool This is a support package for
 the ggseg, and ggseg3d packages. It contains the ica atlases to plot
@@ -133,6 +137,9 @@ plot using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegGordon/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegGordon logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegGordon/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegGordon/actions)
+[![DOI](https://zenodo.org/badge/417531585.svg)](https://zenodo.org/badge/latestdoi/417531585)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegGordon)](https://CRAN.R-project.org/package=ggsegGordon)
 
 gordon datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the gordon atlases to
@@ -143,6 +150,9 @@ plot using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegAicha/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegAicha logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegAicha/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegAicha/actions)
+[![DOI](https://zenodo.org/badge/417476540.svg)](https://zenodo.org/badge/latestdoi/417476540)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegAicha)](https://CRAN.R-project.org/package=ggsegAicha)
 
 aicha datasets for the ggseg-plotting tool This is a support package for
 the ggseg, and ggseg3d packages. It contains the aicha atlases to plot
@@ -153,6 +163,9 @@ using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegAal/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegAal logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegAal/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegAal/actions)
+[![DOI](https://zenodo.org/badge/417464916.svg)](https://zenodo.org/badge/latestdoi/417464916)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegAal)](https://CRAN.R-project.org/package=ggsegAal)
 
 aal datasets for the ggseg-plotting tool This is a support package for
 the ggseg, and ggseg3d packages. It contains the aal atlases to plot
@@ -163,6 +176,7 @@ using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegPower/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegPower logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegPower/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegPower/actions)
+[![DOI](https://zenodo.org/badge/417497619.svg)](https://zenodo.org/badge/latestdoi/417497619)
 
 power datasets for the ggseg-plotting tool This is a support package for
 the ggseg, and ggseg3d packages. It contains the power atlases to plot
@@ -173,6 +187,7 @@ using functions from those two packages.
 <img src="https://github.com/ggseg/ggsegBrainnetome/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegBrainnetome logo" width="120"/>
 
 [![R-CMD-check](https://github.com/ggseg/ggsegBrainnetome/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegBrainnetome/actions)
+[![DOI](https://zenodo.org/badge/416644902.svg)](https://zenodo.org/badge/latestdoi/416644902)
 
 Brainnetome datasets for the ggseg-plotting tool This is a support
 package for the ggseg, and ggseg3d packages. It contains the Brainnetome
@@ -182,7 +197,11 @@ atlases to plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegJHU/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegJHU logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegJHU/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegJHU/actions)
+[![DOI](https://zenodo.org/badge/250280074.svg)](https://zenodo.org/badge/latestdoi/250280074)
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegJHU/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegJHU?branch=master)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegJHU/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegJHU/actions)
 
 JHU datasets for the ggseg-plotting tool This is a support package for
 the ggseg, and ggseg3d packages. It contains the JHU atlases to plot
@@ -192,7 +211,14 @@ using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegHO/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegHO logo" width="120"/>
 
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegHO/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegHO?branch=master)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegHO)](https://CRAN.R-project.org/package=ggsegHO)
 [![R-CMD-check](https://github.com/ggseg/ggsegHO/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegHO/actions)
+[![DOI](https://zenodo.org/badge/250284032.svg)](https://zenodo.org/badge/latestdoi/250284032)
 
 Harvard-Oxford datasets for the ggseg-plotting tool This is a support
 package for the ggseg, and ggseg3d packages. It contains the
@@ -203,6 +229,7 @@ packages.
 
 <img src="https://github.com/ggseg/ggsegICBM/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegICBM logo" width="120"/>
 
+[![DOI](https://zenodo.org/badge/250281676.svg)](https://zenodo.org/badge/latestdoi/250281676)
 [![R-CMD-check](https://github.com/ggseg/ggsegICBM/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegICBM/actions)
 
 ICBM datasets for the ggseg-plotting tool This is a support package for
@@ -213,7 +240,11 @@ using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegDefaultExtra/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegDefaultExtra logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegDefaultExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegDefaultExtra/actions)
+[![DOI](https://zenodo.org/badge/250292657.svg)](https://zenodo.org/badge/latestdoi/250292657)
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegDefaultExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegDefaultExtra?branch=master)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegDefaultExtra/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegDefaultExtra/actions)
 
 Extra dk and aseg datasets for the ggseg-plotting tool This is a support
 package for the ggseg, and ggseg3d packages. It contains the extra dk
@@ -224,7 +255,9 @@ using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegDKT/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegDKT logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegDKT/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegDKT/actions)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegDKT/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegDKT/actions)
+[![DOI](https://zenodo.org/badge/314486110.svg)](https://zenodo.org/badge/latestdoi/314486110)
 
 Desikan-Killiany-Tourville datasets for the ggseg-plotting tool This is
 a support package for the ggseg, and ggseg3d packages. It contains the
@@ -234,7 +267,11 @@ DKT atlases to plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegTracula/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegTracula logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegTracula/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegTracula/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegTracula/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegTracula?branch=master)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegTracula/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegTracula/actions)
+[![DOI](https://zenodo.org/badge/250281064.svg)](https://zenodo.org/badge/latestdoi/250281064)
 
 Tracula datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the Tracula atlases to
@@ -244,7 +281,15 @@ plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegChen/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegChen logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegChen/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegChen/actions)
+[![DOI](https://zenodo.org/badge/250277410.svg)](https://zenodo.org/badge/latestdoi/250277410)
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegChen/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegChen?branch=master)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegChen/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegChen/actions)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegChen)](https://CRAN.R-project.org/package=ggsegChen)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
 Chen datasets for the ggseg-plotting tool This is a support package for
 the ggseg, and ggseg3d packages. It contains the Chen atlases to plot
@@ -254,7 +299,11 @@ using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegDesterieux/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegDesterieux logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegDesterieux/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegDesterieux/actions)
+[![DOI](https://zenodo.org/badge/250272332.svg)](https://zenodo.org/badge/latestdoi/250272332)
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegDesterieux/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegDesterieux?branch=master)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegDesterieux/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegDesterieux/actions)
 
 Desterieux datasets for the ggseg-plotting tool This is a support
 package for the ggseg, and ggseg3d packages. It contains the Desterieux
@@ -264,6 +313,8 @@ atlases to plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegSchaefer/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegSchaefer logo" width="120"/>
 
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegSchaefer/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegSchaefer?branch=master)
 [![R-CMD-check](https://github.com/ggseg/ggsegSchaefer/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegSchaefer/actions)
 
 Schaefer datasets for the ggseg-plotting tool This is a support package
@@ -274,7 +325,11 @@ plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegGlasser/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegGlasser logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegGlasser/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegGlasser/actions)
+[![DOI](https://zenodo.org/badge/250278991.svg)](https://zenodo.org/badge/latestdoi/250278991)
+[![Codecov test
+coverage](https://codecov.io/gh/LCBC-UiO/ggsegGlasser/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegGlasser?branch=master)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegGlasser/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegGlasser/actions)
 
 Glasser datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the Glasser atlases to
@@ -284,7 +339,11 @@ plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegYeo2011/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegYeo2011 logo" width="120"/>
 
-[![R-CMD-check](https://github.com/ggseg/ggsegYeo2011/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegYeo2011/actions)
+[![R build
+status](https://github.com/LCBC-UiO/ggsegYeo2011/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegYeo2011/actions)
+[![DOI](https://zenodo.org/badge/250192046.svg)](https://zenodo.org/badge/latestdoi/250192046)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegYeo2011)](https://CRAN.R-project.org/package=ggsegYeo2011)
 
 Yeo 2011 Datasets for the ‘ggseg’-Package This is a support package for
 the ggseg, and ggseg3d packages. It contains the Yeo 2011 atlases to
