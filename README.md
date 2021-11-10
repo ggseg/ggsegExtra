@@ -55,8 +55,118 @@ for improvement are welcome through GH issues or direct Pull requests.
 
 ## Availale atlases
 
-There are currently 12 available atlases across 12 packages. The
+There are currently 23 available atlases across 23 packages. The
 packages, their repository name and location can be found with:
+
+### [ggsegEconomo](https://github.com/ggseg/ggsegEconomo)
+
+<img src="https://github.com/ggseg/ggsegEconomo/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegEconomo logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegEconomo/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegEconomo/actions)
+
+economo datasets for the ggseg-plotting tool This is a support package
+for the ggseg, and ggseg3d packages. It contains the economo atlases to
+plot using functions from those two packages.
+
+### [ggsegFlechsig](https://github.com/ggseg/ggsegFlechsig)
+
+<img src="https://github.com/ggseg/ggsegFlechsig/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegFlechsig logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegFlechsig/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegFlechsig/actions)
+
+Flechsig datasets for the ggseg-plotting tool This is a support package
+for the ggseg, and ggseg3d packages. It contains the Flechsig atlases to
+plot using functions from those two packages.
+
+### [ggsegKleist](https://github.com/ggseg/ggsegKleist)
+
+<img src="https://github.com/ggseg/ggsegKleist/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegKleist logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegKleist/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegKleist/actions)
+
+Kleist datasets for the ggseg-plotting tool This is a support package
+for the ggseg, and ggseg3d packages. It contains the historical Kleist
+atlases to plot using functions from those two packages.
+
+### [ggsegBrodmann](https://github.com/ggseg/ggsegBrodmann)
+
+<img src="https://github.com/ggseg/ggsegBrodmann/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegBrodmann logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegBrodmann/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegBrodmann/actions)
+
+brodmann datasets for the ggseg-plotting tool This is a support package
+for the ggseg, and ggseg3d packages. It contains the brodmann area
+atlases to plot using functions from those two packages.
+
+### [ggsegCampbell](https://github.com/ggseg/ggsegCampbell)
+
+<img src="https://github.com/ggseg/ggsegCampbell/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegCampbell logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegCampbell/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegCampbell/actions)
+
+Campbell(1905) datasets for the ggseg-plotting tool This is a support
+package for the ggseg, and ggseg3d packages. It contains the campbell
+(1905) atlases to plot using functions from those two packages.
+
+### [ggsegIca](https://github.com/ggseg/ggsegIca)
+
+<img src="https://github.com/ggseg/ggsegIca/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegIca logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegIca/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegIca/actions)
+
+ica datasets for the ggseg-plotting tool This is a support package for
+the ggseg, and ggseg3d packages. It contains the ica atlases to plot
+using functions from those two packages.
+
+### [ggsegArslan](https://github.com/ggseg/ggsegArslan)
+
+<img src="https://github.com/ggseg/ggsegArslan/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegArslan logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegArslan/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegArslan/actions)
+
+arslan datasets for the ggseg-plotting tool This is a support package
+for the ggseg, and ggseg3d packages. It contains the arslan atlases to
+plot using functions from those two packages.
+
+### [ggsegGordon](https://github.com/ggseg/ggsegGordon)
+
+<img src="https://github.com/ggseg/ggsegGordon/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegGordon logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegGordon/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegGordon/actions)
+
+gordon datasets for the ggseg-plotting tool This is a support package
+for the ggseg, and ggseg3d packages. It contains the gordon atlases to
+plot using functions from those two packages.
+
+### [ggsegAicha](https://github.com/ggseg/ggsegAicha)
+
+<img src="https://github.com/ggseg/ggsegAicha/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegAicha logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegAicha/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegAicha/actions)
+
+aicha datasets for the ggseg-plotting tool This is a support package for
+the ggseg, and ggseg3d packages. It contains the aicha atlases to plot
+using functions from those two packages.
+
+### [ggsegAal](https://github.com/ggseg/ggsegAal)
+
+<img src="https://github.com/ggseg/ggsegAal/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegAal logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegAal/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegAal/actions)
+
+aal datasets for the ggseg-plotting tool This is a support package for
+the ggseg, and ggseg3d packages. It contains the aal atlases to plot
+using functions from those two packages.
+
+### [ggsegPower](https://github.com/ggseg/ggsegPower)
+
+<img src="https://github.com/ggseg/ggsegPower/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegPower logo" width="120"/>
+
+[![R-CMD-check](https://github.com/ggseg/ggsegPower/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegPower/actions)
+
+power datasets for the ggseg-plotting tool This is a support package for
+the ggseg, and ggseg3d packages. It contains the power atlases to plot
+using functions from those two packages.
 
 ### [ggsegBrainnetome](https://github.com/ggseg/ggsegBrainnetome)
 
