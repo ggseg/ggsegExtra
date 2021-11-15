@@ -42,14 +42,14 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          install.packages(c("remotes", "rmarkdown", "httr"), repos = "https://cloud.r-project.org/")
+          install.packages(c("remotes", "knitr", "httr"), repos = "https://cloud.r-project.org/")
           remotes::install_github("ggseg/ggsegExtra")
         shell: Rscript {0}
       
       - name: Render Rmarkdown files
         run: |
           RMD_PATH=README.Rmd
-          Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) rmarkdown::render(f)' ${RMD_PATH[*]}
+          Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) knotr::knit(f)' ${RMD_PATH[*]}
 
       - name: Commit results
         run: |
