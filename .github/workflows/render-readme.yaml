@@ -4,8 +4,8 @@ on:
   push:
     branches: [main, master]
   schedule:
-    # Runs "at minute 55 past every hour" (see https://crontab.guru)
-    - cron: 0 14 * * *
+    # Runs every Sunday at midnight UTC
+    - cron: 0 0 * * 0
 
 
 name: render-rmarkdown
@@ -42,7 +42,7 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          install.packages(c("remotes", "knitr", "httr"), repos = "https://cloud.r-project.org/")
+          install.packages(c("remotes", "rmarkdown", "httr"), repos = "https://cloud.r-project.org/")
           remotes::install_github("ggseg/ggsegExtra")
         shell: Rscript {0}
       
