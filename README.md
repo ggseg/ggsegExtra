@@ -313,9 +313,10 @@ atlases to plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegSchaefer/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegSchaefer logo" width="120"/>
 
-[![Codecov test
-coverage](https://codecov.io/gh/LCBC-UiO/ggsegSchaefer/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegSchaefer?branch=master)
 [![R-CMD-check](https://github.com/ggseg/ggsegSchaefer/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegSchaefer/actions)
+[![DOI](https://zenodo.org/badge/250276444.svg)](https://zenodo.org/badge/latestdoi/250276444)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegSchaefer)](https://CRAN.R-project.org/package=ggsegSchaefer)
 
 Schaefer datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the Schaefer atlases to
@@ -325,11 +326,11 @@ plot using functions from those two packages.
 
 <img src="https://github.com/ggseg/ggsegGlasser/raw/HEAD/man/figures/logo.png" align="right" alt="ggsegGlasser logo" width="120"/>
 
-[![DOI](https://zenodo.org/badge/250278991.svg)](https://zenodo.org/badge/latestdoi/250278991)
-[![Codecov test
-coverage](https://codecov.io/gh/LCBC-UiO/ggsegGlasser/branch/master/graph/badge.svg)](https://codecov.io/gh/LCBC-UiO/ggsegGlasser?branch=master)
 [![R build
 status](https://github.com/LCBC-UiO/ggsegGlasser/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegGlasser/actions)
+[![DOI](https://zenodo.org/badge/250278991.svg)](https://zenodo.org/badge/latestdoi/250278991)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ggsegGlasser)](https://CRAN.R-project.org/package=ggsegGlasser)
 
 Glasser datasets for the ggseg-plotting tool This is a support package
 for the ggseg, and ggseg3d packages. It contains the Glasser atlases to

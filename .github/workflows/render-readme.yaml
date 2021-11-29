@@ -48,8 +48,7 @@ jobs:
       
       - name: Render Rmarkdown files
         run: |
-          RMD_PATH=README.Rmd
-          Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) knotr::knit(f)' ${RMD_PATH[*]}
+          Rscript -e 'rmarkdown::render("README.Rmd", output_document = "github_document")'
 
       - name: Commit results
         run: |
