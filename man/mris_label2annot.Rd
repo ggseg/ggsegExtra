@@ -6,11 +6,10 @@
 \usage{
 mris_label2annot(
   labels,
-  ctab,
   hemisphere = "rh",
+  ctab,
   subject = "fsaverage5",
   subjects_dir = fs_subj_dir(),
-  annot_dir = file.path(subjects_dir, subject, "label"),
   output_dir = subjects_dir,
   opts = NULL,
   verbose = TRUE
@@ -19,16 +18,14 @@ mris_label2annot(
 \arguments{
 \item{labels}{label file path vector}
 
-\item{ctab}{colourtable file}
-
 \item{hemisphere}{hemisphere, either "rh" or "lh"}
+
+\item{ctab}{colourtable file}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
 
 \item{subjects_dir}{Freesurfer subject directory}
-
-\item{annot_dir}{path to directory with annot-files}
 
 \item{output_dir}{output directory path}
 

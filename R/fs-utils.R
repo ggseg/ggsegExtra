@@ -203,8 +203,8 @@ mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
 #' @template subject
 #' @template subjects_dir
 #' @template output_dir
-#' @template verbose
 #' @template opts
+#' @template verbose
 #' @importFrom freesurfer get_fs fs_subj_dir
 #' @export
 #' @examples 
@@ -230,8 +230,8 @@ mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
 #' 
 #' }
 mris_label2annot <- function(labels, 
-                             ctab, 
                              hemisphere = "rh", 
+                             ctab, 
                              subject = "fsaverage5",
                              subjects_dir = fs_subj_dir(),
                              output_dir = subjects_dir,
