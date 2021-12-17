@@ -25,6 +25,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # prevent rgl issues because no X11 display is available
+      RGL_USE_NULL: true
 
     steps:
       - uses: actions/checkout@v2
@@ -45,10 +47,8 @@ jobs:
                  
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
-        env: 
-          DISPLAY: :99
-          RGL_USE_NULL: true
         run: |
+           export DISPLAY=:99
            brew install xquartz --cask
            # conflicts with gfortran from r-lib/actions when linking gcc
            rm '/usr/local/bin/gfortran'
