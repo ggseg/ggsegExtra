@@ -68,21 +68,24 @@ for (i in 1:nrow(atlases)) {
   atl <- as.character(atlases[i, "Package"])
   
   # find doi
-  readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/main/README.md", atl)
+  readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/main/README.Rmd", atl)
   if(httr::http_error(readmeurl))
-    readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/master/README.md", atl)
+    readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/master/README.Rmd", atl)
   
   readme <- readLines(readmeurl)
   idx <- grep("badges: ", readme)
   badges <- readme[(idx[1]+1):(idx[2]-1)]
+  badges <- c("", badges[c(grep("\\[!\\[R", badges), grep("\\[!\\[DOI", badges))])
 
-  cat(sprintf('### [%s](%s)', 
-              atl, atlases[i, "RemoteUrl"]),
-      sprintf('<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
-              atlases[i, "RemoteUrl"], atl),
-      badges,
-      sprintf("\n%s\n%s\n", atlases[i, "Title"], atlases[i, "Description"]),
-      sep = "\n")
+  cat(
+    sprintf('### [%s](%s)', 
+            atl, atlases[i, "RemoteUrl"]),
+    sprintf('<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
+            atlases[i, "RemoteUrl"], atl),
+    badges,
+    sprintf("\n%s\n%s\n", atlases[i, "Title"], atlases[i, "Description"]),
+    sep = "\n"
+  )
 }
 ```
 
