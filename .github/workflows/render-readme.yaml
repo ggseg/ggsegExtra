@@ -47,8 +47,8 @@ jobs:
         shell: Rscript {0}
       
       - name: Render Rmarkdown files
-        run: |
-          Rscript -e 'rmarkdown::render("README.Rmd", output_format = "github_document")'
+        run: rmarkdown::render("README.Rmd", output_format = "github_document")
+        shell: Rscript {0}
 
       - name: Commit results
         run: |
