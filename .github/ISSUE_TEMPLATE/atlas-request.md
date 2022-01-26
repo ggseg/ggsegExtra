@@ -2,7 +2,7 @@
 name: Atlas request
 about: Request a new atlas compatible with ggseg
 title: "[Atlas] atlas request"
-labels: enhancement, good first issue, help wanted
+labels: help wanted, atlas request
 assignees: ''
 
 ---
