@@ -45,7 +45,10 @@ jobs:
           install.packages(c("remotes", "rmarkdown", "httr"), repos = "https://cloud.r-project.org/")
           remotes::install_github("ggseg/ggsegExtra")
         shell: Rscript {0}
-      
+        
+      - name: Install ggsegExtra
+        run: R CMD build ggsegExtra
+        
       - name: Render Rmarkdown files
         run: rmarkdown::render("README.Rmd", output_format = "github_document")
         shell: Rscript {0}
