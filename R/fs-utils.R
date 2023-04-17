@@ -14,7 +14,8 @@ mri_vol2surf <- function(input_file ,
                          output_file,
                          hemisphere,
                          projfrac = .5,
-                         opts = NULL,
+                         opts = c("--float2int tkregister",
+                                  "--fixtkreg"),
                          verbose = TRUE){
   
   if(!check_fs()) stop(call. = FALSE)
@@ -22,7 +23,7 @@ mri_vol2surf <- function(input_file ,
   fs_cmd <- paste0(get_fs(),
                    "mri_vol2surf")
   
-  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
+  if(!is.null(opts)) fs_cmd <- paste(fs_cmd, opts)
   
   cmd <- paste(fs_cmd,
                "--mov", input_file,
@@ -287,35 +288,40 @@ mris_label2annot <- function(labels,
 #' mri_annotation2label(subject = "fsaverage", annot_name = "aparc.a2009s")
 #' }
 mri_annotation2label <- function(annot_name, 
-                             subject = "fsaverage5",
-                             hemisphere = "lh", 
-                             output_dir = fs_subj_dir(), 
-                             verbose = TRUE,
-                             opts = NULL){
+                                 subject = "fsaverage5",
+                                 hemisphere = "lh", 
+                                 output_dir = "./labels", 
+                                 verbose = TRUE,
+                                 opts = NULL){
   if(!check_fs()) stop(call. = FALSE)
   
   hemisphere <- match.arg(hemisphere, c("rh", "lh"))
   
-  outdir <- file.path(output_dir, subject, "label", 
-                      gsub("rh\\.|lh\\.|annot|\\.", "", basename(annot_name)))
-  if(!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
-  out_file <- file.path(outdir, hemisphere)
-  
   fs_cmd <- paste0(get_fs(),
                    "mri_annotation2label")
-  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
-  
+  if(!is.null(opts)) fs_cmd <- paste(fs_cmd, opts)
+  if(!is.null(output_dir)){
+    if(!dir.exists(output_dir)) 
+      dir.create(output_dir, recursive = TRUE)
+    fs_cmd <- paste(fs_cmd, 
+                     "--outdir", 
+                     output_dir)
+  }
   
   cmd <- paste(
     fs_cmd,
     "--subject", subject,
     "--hemi", hemisphere,
-    "--labelbase", file.path(outdir, hemisphere),
     "--annotation", annot_name
   )
   
   k <- system(cmd, intern=!verbose)
-  
+  files <- list.files(output_dir, "label$", full.names = TRUE)
+  labels <- lapply(files, read.table, 
+                   skip = 2,
+                   col.names = c("idx", "x", "y", "z", "col"))
+  names(labels) <- basename(files)
+  invisible(labels)
 }
 
 
@@ -590,37 +596,35 @@ annot2dpv <- function(input_file,
                       verbose = TRUE){
   
   annot <- read_annotation(input_file, verbose = verbose)
-  
+
   # For each structure, replace its coded colour by its index
   labs <- match(annot$label, annot$colortable$code)
   
+  fstr <- '%0.10f'
   if(all(unlist(lapply(labs, is.integer)))){
-    fstr = '%d';
-  } else{
-    fstr = '%0.10f'
+    fstr <- '%d'
   }
+  
+  dpx <- data.frame(
+    idx = 0:(length(labs)-1),
+    V1 = 0,
+    V2 = 0, 
+    V3 = 0,
+    labs = labs
+  )
   
   if(!all(is.null(coordinates) & is.null(indices))){
     # Organise the coords
     if(dim(coordinates)[1] < dim(coordinates)[2]) {
-      coordinates = t(coordinates)
+      coordinates <- t(coordinates)
     }
     
     # Prepare to save
-    dpx = cbind(indices,  coordinates, labs)
-    
-  } else {
-    
-    dpx = data.frame(
-      idx = 0:(length(labs)-1),
-      V1 = 0,
-      V2 = 0, 
-      V3 = 0,
-      labs = labs
-    )
+    dpx <- cbind(indices,  coordinates, labs)
   }
   
-  dpx <- within(dpx,  l <- sprintf(paste('%d %g %g %g', fstr), idx, V1, V2, V3, labs))
+  dpx <- within(dpx,  l <- sprintf(paste('%d %g %g %g', fstr), 
+                                   idx, V1, V2, V3, labs))
   
   # Save
   con <- file(output_file)
@@ -660,7 +664,7 @@ asc2ply <- function(input_file,
   
   face <- cbind(3, srf_data[(nfo["vertex"]+1):nrow(srf_data),1:3])
   face <- unname(apply(face, 1, paste, collapse = " "))
-  
+
   ply_head <- c(
     "ply",
     "format ascii 1.0",
@@ -680,7 +684,7 @@ asc2ply <- function(input_file,
   on.exit(close(con))
   writeLines(ply, con)
   
-  return(ply)
+  return(invisible(get_mesh(output_file)))
 }
 
 
@@ -775,14 +779,14 @@ smooth2srf <- function(input_file, output_file, verbose){
 #' @template verbose 
 #' @importFrom freesurfer fs_subj_dir mri_surf2surf
 lcbc_surf2surf <- function(
-  input_volume,
-  source_subject = "fsaverage", 
-  target_subject = "fsaverage5", 
-  hemisphere = "rh",
-  subjects_dir = fs_subj_dir(),
-  output_dir = file.path(subjects_dir, target_subject, "surf"),
-  cortex = TRUE,
-  verbose = TRUE
+    input_volume,
+    source_subject = "fsaverage", 
+    target_subject = "fsaverage5", 
+    hemisphere = "rh",
+    subjects_dir = fs_subj_dir(),
+    output_dir = file.path(subjects_dir, target_subject, "surf"),
+    cortex = TRUE,
+    verbose = TRUE
 ){
   if(!check_fs()) stop(call. = FALSE)
   
@@ -817,27 +821,26 @@ check_fs <- function(msg = NULL){
 #' @importFrom freesurfer get_fs
 fs_ss_slice <- function(lab, x, y, z, view, subjects_dir, subject, output_dir,
                         skip_existing = TRUE) {
-  coords <- sprintf(c(x, y, z), fmt = "%03d")
-  vv <- paste0(strsplit(view, "")[[1]][1:5], collapse="")
-  
-  filenm <- paste0(paste(c(coords, vv), collapse="_"), "_", basename(lab), ".png")
+  filenm <- sprintf("%03d_%03d_%03d_%s_%s.png",
+          x, y, z,
+          paste0(strsplit(view, "")[[1]][1:5], collapse=""),
+          basename(lab)
+  )
   
   if(file.exists(file.path(output_dir, filenm)) & skip_existing){
-    
-  }else{
-    fs_cmd <- paste0(get_fs(), "freeview")
-    
-    cmd <- paste(fs_cmd,
-                 "--volume", paste0(file.path(subjects_dir, subject, "mri/T1.mgz"), ":opacity=0"),
-                 "--slice", paste0(c(x, y, z), collapse=' '),
-                 "--viewport", view,
-                 paste0("--label ", lab, ":color=red"),
-                 "-ss", file.path(output_dir, filenm),
-                 "") 
-    
-    jj <- system(cmd, intern = TRUE)
-    invisible(jj)
+    return(NULL)
   }
+  fs_cmd <- paste0(get_fs(), "freeview")
+  cmd <- paste(fs_cmd,
+               "--volume", paste0(file.path(subjects_dir, subject, "mri/T1.mgz"), ":opacity=0"),
+               "--slice", paste0(c(x, y, z), collapse=' '),
+               "--viewport", view,
+               paste0("--label ", lab, ":color=red"),
+               "-ss", file.path(output_dir, filenm),
+               "") 
+  
+  jj <- system(cmd, intern = TRUE)
+  invisible(jj)
 }
 
 
@@ -845,8 +848,8 @@ fs_ss_slice <- function(lab, x, y, z, view, subjects_dir, subject, output_dir,
 ## quiets concerns of R CMD check
 if(getRversion() >= "2.15.1"){
   globalVariables(c("idx", 
-                           "key", "view", "val", "vars",
-                           paste0("V", 1:3)))
+                    "key", "view", "val", "vars",
+                    paste0("V", 1:3)))
 }
 
 
