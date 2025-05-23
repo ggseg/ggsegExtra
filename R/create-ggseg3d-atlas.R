@@ -232,8 +232,8 @@ make_aparc_2_3datlas <- function(
       subjects_dir = subjects_dir,
       annot_dir = annot_dir,
       output_dir = output_dir,
-      cleanup = FALSE,
-      verbose = FALSE 
+      cleanup = cleanup,
+      verbose = verbose
     ),
     
     mc.cores = ncores, 
