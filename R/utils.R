@@ -120,37 +120,6 @@ check_atlas_vertices <- function(atlas_df_sf, max = 10000) {
 }
 
 #' @noRd
-gdal_min <- function() "2.4.0"
-
-#' @noRd
-#' @importFrom rgdal getGDALVersionInfo
-has_gdal <- function(min_version = gdal_min(), verbose = TRUE){
-  x <- getGDALVersionInfo()
-  
-  if(x == ""){
-    if(verbose)
-      cat("Cannot find gdal installed.\n See install instructions at: https://github.com/domlysz/BlenderGIS/wiki/How-to-install-GDAL")
-    return(FALSE)
-  }
-  
-  .ver2num <- function(x){
-    x <- strsplit(x, "\\.")[[1]]
-    x <- paste0(x, collapse="")
-    as.numeric(x)
-  }
-  
-  min_ver <- .ver2num(min_version)
-  version <- .ver2num(gsub(",", "", strsplit(x, " ")[[1]][2]))
-  
-  if(version >= min_ver){
-    return(TRUE)
-  }else{
-    return(FALSE)
-  }
-  
-}
-
-#' @noRd
 has_orca <- function(){
   k <- Sys.getenv("orca")
   if(length(k)>0) return(TRUE)

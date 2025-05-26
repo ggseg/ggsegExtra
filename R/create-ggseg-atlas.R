@@ -487,9 +487,6 @@ make_volumetric_ggseg <- function(label_file,
   # contour extraction ----
   if(5 %in% steps){
     
-    if(!has_gdal())
-      stop(paste("You do not have GDAL version above", gdal_min(), "installed. \n Cannot extract contrours"))
-    
     conts <- extract_contours(dirs$mask, output_dir,
                               step = "5/8", 
                               verbose = TRUE, 
