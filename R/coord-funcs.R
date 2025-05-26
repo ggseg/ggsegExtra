@@ -62,7 +62,6 @@ isolate_region <- function(
   if (has_magick()) {
     cmd <- paste("magick", interim_file, "-alpha extract", output_file)
 
-    # cmd <- paste("magick", input_file,"-channel rgba -fuzz 20% -fill none +opaque red", output_file)
     k <- run_cmd(cmd)
     invisible(k)
   } else {
