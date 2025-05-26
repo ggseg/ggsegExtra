@@ -123,19 +123,27 @@ adjust_coords_sf <- function(atlas_df) {
     find_group(c("right", "rh"), "lateral")
   )
 
-  present <- !sapply(atlas, is.null)
-  if (!all(present)) {
-    missing <- c(
-      "left lateral",
-      "left medial",
-      "right medial",
-      "right lateral"
-    )[!present]
-    cli::cli_warn("Missing hemi/side combinations: {missing}")
-  }
-
   sz <- c(.98, .74, .94, .78)
   offsets <- c(0, 350, 750, 1100)
+
+  has_dorsal <- any(keys$side == "dorsal")
+  if (has_dorsal) {
+    atlas <- c(atlas, list(
+      find_group(c("left", "lh"), "dorsal"),
+      find_group(c("right", "rh"), "dorsal"),
+      find_group(c("right", "rh"), "ventral"),
+      find_group(c("left", "lh"), "ventral")
+    ))
+    sz <- c(sz, .75, .75, .65, .65)
+    offsets <- c(offsets, 1500, 1600, 1800, 1900)
+  }
+
+  present <- !sapply(atlas, is.null)
+  base_views <- c("left lateral", "left medial", "right medial", "right lateral")
+  if (!all(present[1:4])) {
+    missing <- base_views[!present[1:4]]
+    cli::cli_warn("Missing hemi/side combinations: {missing}")
+  }
 
   atlas <- lapply(seq_along(atlas), function(x) {
     if (is.null(atlas[[x]])) {

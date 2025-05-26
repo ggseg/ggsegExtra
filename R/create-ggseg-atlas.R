@@ -34,7 +34,7 @@ make_ggseg3d_2_ggseg <- function(
   ggseg3d_atlas,
   steps = 1:7,
   output_dir = tempdir(),
-  view = c("medial", "lateral"),
+  view = c("lateral", "medial", "dorsal", "ventral"),
   tolerance = 0,
   smoothness = 5,
   cleanup = FALSE
