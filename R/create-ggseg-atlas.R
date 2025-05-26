@@ -146,7 +146,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
     regions <- mapply(isolate_region,
                       input_file = ffs,
                       output_file = ffso,
-                      interrim_file = ffsi,
+                      interim_file = ffsi,
                       SIMPLIFY = FALSE)
     cat("... isolation complete\n")
   }

@@ -37,21 +37,29 @@ resize_coords_sf <- function(data, by){
 #'
 #' @param input_file image file path
 #' @param output_file output file path
-#' @param interrim_file interrim image path
+#' @param interim_file interim image path
 #' @noRd
 #' @importFrom magick image_read image_convert image_transparent image_write
 isolate_region <- function(input_file, 
                            output_file, 
-                           interrim_file = tempfile()){
+                           interim_file = tempfile()){
   tmp <- image_read(input_file)
   tmp <- image_convert(tmp, "png")
   
   tmp <- image_transparent(tmp, "white", fuzz=30)
-  k <- image_write(tmp, interrim_file)
+  k <- image_write(tmp, interim_file)
   
   if(has_magick()){
-    cmd <- paste("convert", interrim_file,
-                 "-alpha extract", output_file)
+    magick_full_version <- unlist(strsplit(magick_version()[1], " "))[3]
+    magick_major_version <- as.numeric(unlist(strsplit(magick_full_version, ""))[1])
+    if (magick_major_version >= 7) {
+      # per magick warnings, above v7 the command has been renamed
+      cmd <- paste("magick", interim_file,
+                   "-alpha extract", output_file)
+    } else {
+      cmd <- paste("convert", interim_file,
+                   "-alpha extract", output_file)
+    }
     
     # cmd <- paste("convert", input_file,"-channel rgba -fuzz 20% -fill none +opaque red", output_file)
     k <- system(cmd, intern = FALSE)
