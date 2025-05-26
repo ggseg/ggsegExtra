@@ -80,7 +80,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
     cat("%% 1/7 Snapshotting views of entire atlas to ", dirs[1], "\n")
     
     all <- expand_grid(hemi = hemi,
-                       view = c("lateral", "medial"))
+                       view = c("lateral", "medial", "ventral", "dorsal"))
     j <- mcmapply(snapshot_brain,
                   hemisphere = all$hemi,
                   view = all$view,
@@ -114,7 +114,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
     
     full_list <- expand.grid(roi = tmp_atlas$roi, 
                              hemi = hemi, 
-                             view = c("lateral", "medial"))
+                             view = c("lateral", "medial", "ventral", "dorsal"))
     
     j <- pbmcmapply(
       snapshot_region,

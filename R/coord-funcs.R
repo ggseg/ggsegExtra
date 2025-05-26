@@ -102,21 +102,43 @@ adjust_coords <- function(atlas_df, by = 1.35){
 #' @importFrom dplyr group_by group_split ungroup
 adjust_coords_sf <- function(atlas_df){
   
-  atlas <- group_by(atlas_df, hemi, side)
-  atlas <- group_split(atlas)
+  atlas_split <- group_by(atlas_df, hemi, side)
+  atlas_split <- group_split(atlas_split)
+  views <- lapply(1:length(atlas_split), 
+                  function (x) paste(unique(atlas_split[[x]]$hemi), 
+                                     unique(atlas_split[[x]]$side), 
+                                     sep = "_")
+                  )
+  names(atlas_split) <- views
   
-  atlas <- list(atlas[[1]], # left lat
-                atlas[[2]], # left med
-                atlas[[4]], # right med
-                atlas[[3]]) # right lat
+  atlas <- list(atlas_split[["left_lateral"]],
+                atlas_split[["left_medial"]],
+                atlas_split[["right_medial"]],
+                atlas_split[["right_lateral"]]
+                )
+  
+  rescales <- c(.98, .74, .94, .78)
+  coords <-  c(0, 350, 750, 1100)
+  
+  if (any(grepl("dorsal", views))) {
+    atlas <- c(atlas,
+               list(
+                  atlas_split[["left_dorsal"]],
+                  atlas_split[["right_dorsal"]],
+                  atlas_split[["right_ventral"]],
+                  atlas_split[["left_ventral"]]
+               )
+               )
+    
+    rescales <- c(rescales, .75, .75, .65, .65)
+    coords <- c(coords, 1500, 1600, 1800, 1900)
+  }
   
   # rescale the small ones
-  sz <- c(.98, .74, .94, .78)
-  atlas <- lapply(1:4, function(x) resize_coords_sf(atlas[[x]], sz[x]))
+  atlas <- lapply(1:length(atlas), function(x) resize_coords_sf(atlas[[x]], rescales[x]))
 
-  # correct coordinates so they ar ealigned and moved next to eachoter
-  sz <-  c(0, 350, 750, 1100)
-  atlas <- lapply(1:4, function(x) correct_coords_sf(atlas[[x]], sz[x]))
+  # correct coordinates so they are aligned and moved next to each other
+  atlas <- lapply(1:length(atlas), function(x) correct_coords_sf(atlas[[x]], coords[x]))
 
   atlas_df_r <- do.call(rbind, atlas)
   
