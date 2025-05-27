@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '16'
       - run: |
           npm install
           npm install -g electron@36.3.1 orca
