@@ -191,9 +191,9 @@ This column is populated by the names to each region as specified in the `annota
 We can inspect all the unique values in this column, so we can start setting up some logic for renaming the regions.
 
 ```{r}
-unnest(dkt_3d, ggseg_3d) %>% 
-  select(region) %>% 
-  unique() %>% 
+unnest(dkt_3d, ggseg_3d) |>
+  select(region) |>
+  unique() |>
   unlist()
 ```
 ```r
@@ -237,9 +237,9 @@ unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("cingulate", " cingulate", region),
            # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region) 
-           ) %>% 
-    select(region) %>% 
-    unique() %>% 
+           ) |>
+    select(region) |>
+    unique() |>
     unlist()
 ```
 ```r
@@ -323,7 +323,7 @@ dkt_3d <- unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("  ", " ", region),
            
            atlas = "dkt_3d"
-           ) %>% 
+           ) |>
   nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
   as_ggseg3d_atlas()
 
@@ -514,7 +514,7 @@ dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
            region = gsub("  ", " ", region),
            
            atlas = "dkt_3d"
-           ) %>% 
+           ) |>
   nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
   as_ggseg3d_atlas()
 

@@ -1,0 +1,37 @@
+---
+title: "System Setup"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{system_setup}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ggsegExtra)
+```
+
+- [Freesurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall)
+- [xquartz](https://www.xquartz.org/) (macOS)
+- [Xcode](https://developer.apple.com/xcode/) (macOS)
+- python / miniconda
+- [kaleido pypi](https://pypi.org/project/kaleido/) package installed
+
+```r
+reticulate::install_miniconda()
+reticulate::use_miniconda("/path/outputed/by/the/above")
+```
+
+Install the python kaleido library
+
+```sh
+pip install kaleido
+```
+

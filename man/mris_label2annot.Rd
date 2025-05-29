@@ -49,11 +49,11 @@ mri_annotation2label(annot_name = "aparc")
 
 # get annot for colour labels
 annot <- freesurfer::read_annotation(
-              file.path(subj_dir, 
+              file.path(subj_dir,
                         "fsaverage5/label/rh.aparc.annot"))
 
 labels <- list.files(
-   file.path(subj_dir, "fsaverage5/label/aparc"), 
+   file.path(subj_dir, "fsaverage5/label/aparc"),
     full.names = TRUE)
 
 # Combine them again into annot.

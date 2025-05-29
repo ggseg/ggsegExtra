@@ -20,8 +20,8 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{hemisphere}{hemisphere, either "rh" or "lh"}
 
-\item{canonsurf}{canonical surface file. Ie: the name of the 
-spherical surface file which describes the registration of a 
+\item{canonsurf}{canonical surface file. Ie: the name of the
+spherical surface file which describes the registration of a
 subject's vertices to the reference "average" surface. Example: sphere.reg}
 
 \item{classifier}{specify classifier array input file (atlas file)}
@@ -33,14 +33,14 @@ subject's vertices to the reference "average" surface. Example: sphere.reg}
 \item{opts}{other arguments to freesurfer command}
 }
 \description{
-For a single subject, produces an annotation file, in which each 
+For a single subject, produces an annotation file, in which each
 cortical surface vertex is assigned a neuroanatomical label.
-This automatic procedure employs data from a previously-prepared 
-atlas file. An atlas file is created from a training set, capturing 
-region data manually drawn by neuroanatomists combined with 
-statistics on variability correlated to geometric information 
-derived from the cortical model (sulcus and curvature). Besides the 
-atlases provided with FreeSurfer, new ones can be prepared using 
+This automatic procedure employs data from a previously-prepared
+atlas file. An atlas file is created from a training set, capturing
+region data manually drawn by neuroanatomists combined with
+statistics on variability correlated to geometric information
+derived from the cortical model (sulcus and curvature). Besides the
+atlases provided with FreeSurfer, new ones can be prepared using
 mris_ca_train).
 }
 \examples{

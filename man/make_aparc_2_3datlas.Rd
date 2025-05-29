@@ -18,7 +18,7 @@ make_aparc_2_3datlas(
 )
 }
 \arguments{
-\item{annot}{annotation file, with name [hemi].[annot].annot abd be in annot_dir}
+\item{annot}{annotation file, with name without the hemisphere information or the .annot extension, and be in annot_dir}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
@@ -44,7 +44,7 @@ nested data frame as ggseg3d-atlas
 }
 \description{
 Function loops through hemispheres and surfaces
-to create a data frame that is ready to use with 
+to create a data frame that is ready to use with
 ggseg3d.
 }
 \details{

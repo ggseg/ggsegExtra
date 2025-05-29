@@ -18,12 +18,12 @@ mri_surf2surf_rereg(subject = "bert",
 dkt_3d_init <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
                                annot_dir = "data-raw/",
                                output_dir = "~/Desktop")
-dkt_3d <- dkt_3d_init %>% 
+dkt_3d <- dkt_3d_init |>
   mutate(atlas = "dkt_3d")%>%
   unnest(ggseg_3d) %>%
   select(-region) %>%
   left_join(select(dk$data, hemi, region, label)) %>%
-  mutate(random = "test column") %>% 
+  mutate(random = "test column") |>
   nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
   as_ggseg3d_atlas()
 
@@ -58,6 +58,6 @@ aseg2 <- make_volumetric_ggseg(subject = "fsaverage5",
 aseg2$data <- filter(aseg2$data, 
                      !grepl("Unknown", label, ignore.case = TRUE),
                      !grepl("White-matter", label, ignore.case = TRUE)
-) %>% 
+) |>
   mutate(region = ifelse(grepl("cortex", region), NA, region))
 plot(aseg2, alpha = .8)

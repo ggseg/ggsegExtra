@@ -7,7 +7,7 @@
 mri_vol2label(
   input_file,
   label_id,
-  hemisphere,
+  hemisphere = "rh",
   output_dir,
   surface = NULL,
   subject = "fsaverage5",
@@ -47,7 +47,7 @@ matrix (volume) or from the xyz of the specified surface.  The xyz
 values are then stored in labelfile in the label file format. The
 statistic value is set to 0.  While this program can be used with any
 mri volume, it was designed to convert parcellation volumes, which
-happen to be stored in mri format. 
+happen to be stored in mri format.
 Calls FreeSurfer's \code{mri_vol2label}.
 }
 \examples{
@@ -59,11 +59,11 @@ out_dir <- tempdir()
 vol <- file.path(freesurfer::fs_subj_dir(),
                  "fsaverage5/mri/aseg.mgz")
 
-mri_vol2label(vol, 
-     label_id = 2, 
-     hemisphere = "rh", 
+mri_vol2label(vol,
+     label_id = 2,
+     hemisphere = "rh",
      output_dir = out_dir)
- 
+
  # delete output dir when not needed
  unlink(out_dir)
 }

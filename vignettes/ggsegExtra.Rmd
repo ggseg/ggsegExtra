@@ -90,7 +90,7 @@ The same goes for ggseg3d, the new atlases, now available through the ggsegExtra
 ```{r "noneval1", eval=FALSE}
 library(ggseg3d)
 
-ggseg3d(atlas = dkt_3d) %>% 
+ggseg3d(atlas = dkt_3d) |>
   pan_camera("right lateral")
 ```
 
@@ -105,7 +105,8 @@ p <- ggseg3d(atlas = dkt_3d) %>%
                   font = list(color = "#000000b4",
                               family = 'sans serif',
                               size = 50))
-plotly::orca(p, "figures/vignette-dkt-3d-plot.png")
+reticulate::py_run_string("import sys")
+plotly::save_image(p, "figures/vignette-dkt-3d-plot.png")
 ```
 
 ```{r "incl1", echo=FALSE}

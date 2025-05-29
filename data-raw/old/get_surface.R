@@ -4,9 +4,9 @@ get_surface = function(folder, atlasname){
   
   surfs = list.dirs(folder, full.names = T, recursive = F)
   
-  hemi = sapply(surfs, list.files, full.names = T) %>% as.character()
+  hemi = sapply(surfs, list.files, full.names = T) |>as.character()
   
-  files = sapply(hemi, list.files, pattern="*roi*", full.names = T) %>% as.character()
+  files = sapply(hemi, list.files, pattern="*roi*", full.names = T) |>as.character()
   
   mesh = lapply(files, geomorph::read.ply, ShowSpecimen = F)
   
@@ -48,10 +48,10 @@ rgb2hex = function(r = 0, g = 0, b = 0){
   check = function(x, ix = NULL){
     nm = deparse(substitute(x))
     ix = as.character({ix %||% ''})
-    if(!is.numeric(x))  stop(sprintf("'%s%s' must be numeric",             nm,ix),call. = FALSE)
-    if(length(x) != 1)  stop(sprintf("'%s%s' must be scalar",              nm,ix),call. = FALSE)
-    if(!is.finite(x))   stop(sprintf("'%s%s' must be finite",              nm,ix),call. = FALSE)
-    if(x < 0 | x > 255) stop(sprintf("'%s%s' must be in the range [0,255]",nm,ix),call. = FALSE)
+    if(!is.numeric(x))  cli::cli_abort(sprintf("'%s%s' must be numeric",             nm,ix),call. = FALSE)
+    if(length(x) != 1)  cli::cli_abort(sprintf("'%s%s' must be scalar",              nm,ix),call. = FALSE)
+    if(!is.finite(x))   cli::cli_abort(sprintf("'%s%s' must be finite",              nm,ix),call. = FALSE)
+    if(x < 0 | x > 255) cli::cli_abort(sprintf("'%s%s' must be in the range [0,255]",nm,ix),call. = FALSE)
   }
   nr = nrow(df)
   sapply( c(1:nr), function(ix){

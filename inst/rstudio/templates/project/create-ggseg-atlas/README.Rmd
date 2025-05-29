@@ -61,8 +61,8 @@ plot({GGSEG}) +
 
 ```{r "noneval", eval=FALSE}
 library(dplyr)
-ggseg3d(atlas = {GGSEG}_3d) %>% 
-  add_glassbrain() %>% 
+ggseg3d(atlas = {GGSEG}_3d) |>
+  add_glassbrain() |>
   pan_camera("right lateral")
 ```
 

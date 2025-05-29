@@ -11,7 +11,7 @@ make_ggseg3d_2_ggseg(
   tolerance = 0,
   smoothness = 5,
   cleanup = FALSE,
-  ncores = 2
+  parallel = FALSE
 )
 }
 \arguments{

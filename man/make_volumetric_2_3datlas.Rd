@@ -20,7 +20,7 @@ make_volumetric_2_3datlas(
 \item{template}{template \code{volume.mgz} file path}
 
 \item{color_lut}{Freesurfer colour look-up-table. Either
-as a path or a data.frame that \code{\link{is_ctab}}}
+as a path or a data.frame that \code{\link[=is_ctab]{is_ctab()}}}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
@@ -40,7 +40,7 @@ saved, and steps can be re-run individually}
 }
 \value{
 returns a ggseg3d-atlas ready object. Might need manual
-   cleaning to become a good atlas.
+cleaning to become a good atlas.
 }
 \description{
 Function to create a ggseg3d-atlas

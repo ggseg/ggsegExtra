@@ -114,9 +114,9 @@ This column is populated by the names to each region as specified in the `templa
 We can inspect all the unique values in this column, so we can start setting up some logic for renaming the regions.
 
 ```{r}
-unnest(aseg2_3d, ggseg_3d) %>% 
-  select(region) %>% 
-  unique() %>% 
+unnest(aseg2_3d, ggseg_3d) |>
+  select(region) |>
+  unique() |>
   unlist()
 ```
 ```r
@@ -153,9 +153,9 @@ unnest(aseg2_3d, ggseg_3d) %>%
     mutate(region = gsub("-|_", " ", region),
            region = tolower(region),
            region = gsub("cc ", "corpus callosum ", region) 
-           ) %>% 
-    select(region) %>% 
-    unique() %>% 
+           ) |>
+    select(region) |>
+    unique() |>
     unlist()
 ```
 ```r
@@ -226,7 +226,7 @@ aseg2_3d <- unnest(aseg2_3d, ggseg_3d) %>%
            region = gsub("cc ", "corpus callosum ", region), 
            
            atlas = "aseg2_3d"
-    ) %>% 
+    ) |>
     filter(!grepl("Cortex|White-Matter", label))
 ```
 
@@ -242,7 +242,7 @@ knitr::include_graphics("figures/aseg.png")
 ### Finalizing the atlas
 We are now happy with the atlas data we've cleaned, so we can go ahead and make it into a ggseg3d-atlas class again by nesting the atlas data by surface and hemisphere 
 ```{r}
-aseg2_3d <- aseg2_3d %>% 
+aseg2_3d <- aseg2_3d |>
   nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
   as_ggseg3d_atlas()
 
@@ -256,7 +256,7 @@ aseg2_3d
 ```
 
 ```{r}
-ggseg3d(atlas = aseg2_3d) %>% 
+ggseg3d(atlas = aseg2_3d) |>
   add_glassbrain()
 ```
 
@@ -406,7 +406,7 @@ Additionally, sub-cortical atlases have the cortex as region `NA` so that these 
 aseg2$data <- filter(aseg2$data, 
                      !grepl("Unknown", label, ignore.case = TRUE),
                      !grepl("White-matter", label, ignore.case = TRUE)
-) %>% 
+) |>
   mutate(region = ifelse(grepl("cortex", region), NA, region))
 
 aseg2
@@ -519,7 +519,7 @@ aseg2 <- make_volumetric_ggseg(subject = "fsaverage5",
 aseg2$data <- filter(aseg2$data, 
                      !grepl("Unknown", label, ignore.case = TRUE),
                      !grepl("White-matter", label, ignore.case = TRUE)
-) %>% 
+) |>
   mutate(region = ifelse(grepl("cortex", region), NA, region))
 plot(aseg2, alpha = .8)
 ```

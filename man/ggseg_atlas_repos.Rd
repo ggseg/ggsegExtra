@@ -9,7 +9,7 @@ ggseg_atlas_repos(pattern = NULL, ...)
 \arguments{
 \item{pattern}{string pattern to search repos}
 
-\item{...}{additional arguments to \code{\link[base]{grep}}}
+\item{...}{additional arguments to \code{\link[base:grep]{base::grep()}}}
 }
 \value{
 data frame of online repositories with ggseg-atlases
