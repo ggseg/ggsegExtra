@@ -204,12 +204,19 @@ mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL) {
   check_fs(abort = TRUE)
 
   fscmd <- "mris_smooth"
+  if (!is.null(opts)) {
+    fscmd <- paste(fscmd, opts)
+  }
 
-  if (!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
-
-  cmd <- paste(fscmd, "-nw", input_file, label, output_file)
+  cmd <- paste(
+    fscmd,
+    "-nw",
+    shQuote(input_file),
+    shQuote(output_file)
+  )
 
   k <- run_cmd(cmd, verbose = verbose)
+  invisible(k)
 }
 
 
