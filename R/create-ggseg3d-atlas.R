@@ -303,12 +303,9 @@ aseg_2_mesh <- function(subject = "fsaverage5",
   
   if(3 %in% steps){
     # smoothing
-    mri_smooth(file.path(dirs[3], paste0(lab_string, "_notsmooth")), 
-               label,
-               file.path(dirs[3], lab_string),
+    mri_smooth(file.path(dirs[3], paste0(lab_string, "_notsmooth")),
+               file.path(dirs[3], paste(lab_string, "smooth", sep="_")),
                verbose = verbose)
-    k <- file.rename(file.path(dirs[3], paste0("rh.", label)),
-                     file.path(dirs[3], paste(lab_string, "smooth", sep="_")))
   } #end 3
   
   if(4 %in% steps){

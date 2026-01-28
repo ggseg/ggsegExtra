@@ -155,38 +155,36 @@ mri_tessellate <- function(input_file, label, output_file, verbose, opts = NULL)
   if(!check_fs()) stop(call. = FALSE)
   
   fscmd <- paste0(get_fs(), "mri_tessellate")
-  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
-  
+  if(!is.null(opts)) fscmd <- paste0(fscmd, " ", opts)
+
   cmd <- paste(fscmd,
-               input_file, 
+               input_file,
                label,
                output_file
   )
-  
+
   k <- system(cmd, intern = !verbose)
 }
 
 #' Smooth data
 #'
 #' @param input_file input file to smooth
-#' @param label label to run
 #' @template output_file
 #' @template verbose
 #' @template opts
 #' @importFrom freesurfer get_fs
 #' @noRd
-mri_smooth <- function(input_file, label, output_file, verbose, opts = NULL){
+mri_smooth <- function(input_file, output_file, verbose, opts = NULL){
   if(!check_fs()) stop(call. = FALSE)
-  
+
   fscmd <- paste0(get_fs(), "mris_smooth")
-  if(!is.null(opts)) fs_cmd <- paste0(fs_cmd, opts)
-  
+  if(!is.null(opts)) fscmd <- paste0(fscmd, " ", opts)
+
   cmd <- paste(fscmd, "-nw",
-               input_file, 
-               label,
+               input_file,
                output_file
   )
-  
+
   k <- system(cmd, intern = !verbose)
 }
 
