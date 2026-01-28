@@ -19,6 +19,10 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -31,8 +35,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: npm install
-      - run: npm install -g electron@6.1.4 orca
+
+      - name: Install orca (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          npm install
+          npm install -g electron@6.1.4 orca
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -42,7 +50,7 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: Install macOS dependencies
+      - name: Install macOS system dependencies
         if: runner.os == 'macOS'
         run: |
           export DISPLAY=:99
@@ -53,6 +61,14 @@ jobs:
           brew install symphony
           Rscript -e "install.packages('R2OpenBUGS', type='source')"
 
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgdal-dev libproj-dev libgeos-dev libudunits2-dev
+          sudo apt-get install -y libmagick++-dev libglpk-dev
+          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
@@ -61,6 +77,7 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+          args: 'c("--no-manual", "--as-cran")'
 
       - name: Show testthat output
         if: always()
