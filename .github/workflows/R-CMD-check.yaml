@@ -38,9 +38,7 @@ jobs:
 
       - name: Install orca (macOS)
         if: runner.os == 'macOS'
-        run: |
-          npm install
-          npm install -g electron@6.1.4 orca
+        run: npm install -g electron@6.1.4 orca
 
       - uses: r-lib/actions/setup-pandoc@v2
 
