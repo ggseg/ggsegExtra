@@ -80,7 +80,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
     cat("%% 1/7 Snapshotting views of entire atlas to ", dirs[1], "\n")
     
     all <- expand_grid(hemi = hemi,
-                       view = c("lateral", "medial"))
+                       view = c("lateral", "medial", "ventral", "dorsal"))
     j <- mcmapply(snapshot_brain,
                   hemisphere = all$hemi,
                   view = all$view,
@@ -114,7 +114,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
     
     full_list <- expand.grid(roi = tmp_atlas$roi, 
                              hemi = hemi, 
-                             view = c("lateral", "medial"))
+                             view = c("lateral", "medial", "ventral", "dorsal"))
     
     j <- pbmcmapply(
       snapshot_region,
@@ -146,7 +146,7 @@ make_ggseg3d_2_ggseg <- function(ggseg3d_atlas,
     regions <- mapply(isolate_region,
                       input_file = ffs,
                       output_file = ffso,
-                      interrim_file = ffsi,
+                      interim_file = ffsi,
                       SIMPLIFY = FALSE)
     cat("... isolation complete\n")
   }
@@ -486,9 +486,6 @@ make_volumetric_ggseg <- function(label_file,
   
   # contour extraction ----
   if(5 %in% steps){
-    
-    if(!has_gdal())
-      stop(paste("You do not have GDAL version above", gdal_min(), "installed. \n Cannot extract contrours"))
     
     conts <- extract_contours(dirs$mask, output_dir,
                               step = "5/8", 

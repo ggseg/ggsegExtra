@@ -20,7 +20,7 @@ Description: Contains functions to create new data sets compatible with the 'ggs
     mesh plots. Also has a list of compatible data sets and functions for easy installation of these.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Depends: 
     R (>= 3.5.0),
     ggseg (>= 1.6.0),
@@ -47,7 +47,6 @@ Imports:
     rmapshaper,
     stars,
     geomorph,
-    rgdal,
     pbmcapply
 Suggests:
     ggsegYeo2011,
