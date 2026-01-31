@@ -26,6 +26,11 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Install dev freesurfer
+        run: |
+          pak::pak("drmowinckels/freesurfer@refactor")
+        shell: Rscript {0}
+
       - name: Install Linux system dependencies
         run: |
           sudo apt-get update
@@ -37,11 +42,6 @@ jobs:
         with:
           extra-packages: any::rmarkdown, any::httr, local::.
           needs: build
-
-      - name: Install dev freesurfer
-        run: |
-          pak::pak("drmowinckels/freesurfer@refactor")
-        shell: Rscript {0}
 
       - name: Render README
         run: rmarkdown::render("README.Rmd", output_format = "github_document")
