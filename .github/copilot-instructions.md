@@ -100,6 +100,9 @@
 - Key pipeline code: `R/create-ggseg-atlas.R`, `R/create-ggseg3d-atlas.R`
 - CI workflows: `.github/workflows/*.yaml`
 
----
-If any section is unclear or you want examples expanded (local
-repro steps, or a mock test to add), tell me which part to elaborate.
+### Updating NEWS.md
+
+only add information that is relevant for the R-package to NEWS.md. 
+Any other changes related to workflows, pkgdown etc are not relevant to the R-package releases and thus dont shouldnt be listed in NEWS.
+
+Organise NEWS by user-facing and developer facing changes, and headings for minor vs breaking changes.
