@@ -263,8 +263,10 @@ make_ggseg3d_2_ggseg <- function(
     atlas_df_sf$region
   )
 
-  # Add vertices column (empty for now, vertex mapping is complex)
-  atlas_df_sf$vertices <- lapply(seq_len(nrow(atlas_df_sf)), function(x) numeric(0))
+  # Add vertices column from 3D atlas if not present
+  if (!"vertices" %in% names(atlas_df_sf)) {
+    atlas_df_sf$vertices <- lapply(seq_len(nrow(atlas_df_sf)), function(x) integer(0))
+  }
 
   atlas <- brain_atlas(
     atlas = gsub("_3d$", "", unique(ggseg3d_atlas$atlas)),

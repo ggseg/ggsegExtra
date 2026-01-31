@@ -163,6 +163,12 @@ aparc_2_mesh <- function(
     colortable <- colortable[lab_not_present, ]
   }
 
+  # Extract vertex indices for each region from annotation
+  # ant$label contains color code for each vertex (0-indexed in mesh)
+  region_vertices <- lapply(colortable$code, function(code) {
+    which(ant$label == code) - 1L
+  })
+
   dt <- dplyr::tibble(
     atlas = annot,
     surf = surface,
@@ -176,21 +182,24 @@ aparc_2_mesh <- function(
     ),
     label = paste(hemisphere, colortable$label, sep = "_"),
     roi = sprintf("%04d", 1:nrow(colortable)),
-    annot = colortable$label
+    annot = colortable$label,
+    vertices = region_vertices
   )
 
   # If there are vertices not in the annot,
   # add them to the data here
   idx <- !names(plys) %in% dt$roi
   if (any(idx)) {
-    # add a row
+    # add a row with empty vertices list
+    n_extra <- sum(idx)
     dt <- dplyr::bind_rows(
       dt,
       dplyr::tibble(
         atlas = annot,
         surf = surface,
         hemi = hemi,
-        roi = names(plys)[idx]
+        roi = names(plys)[idx],
+        vertices = lapply(seq_len(n_extra), function(x) integer(0))
       )
     )
   }
