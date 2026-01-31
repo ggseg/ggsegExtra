@@ -18,3 +18,4 @@ logical
 \description{
 Check if FS can be run
 }
+\keyword{internal}

@@ -10,6 +10,7 @@
 - Added documentation for parallel processing and progress bars
 - Added note about freesurfer dev version requirement
 - Updated CITATION to use bibentry()
+- Updated pkgdown site with ggseg brand styling
 - Fixed mris_label2annot example documentation
 
 # ggsegExtra 1.5

@@ -51,6 +51,7 @@ get_mesh <- function(ply, ...) {
 #' @param atlas_data ggseg3d-atlas object
 #' @importFrom dplyr group_by rename ungroup
 #' @importFrom tidyr unnest nest
+#' @keywords internal
 restruct_old_3datlas <- function(atlas_data) {
   x <- unnest(atlas_data, ggseg_3d)
   x$mesh <- lapply(x$mesh, change_meshes)
@@ -66,6 +67,7 @@ restruct_old_3datlas <- function(atlas_data) {
 #' Change meshes to new system
 #'
 #' @param mesh mesh object
+#' @keywords internal
 change_meshes <- function(mesh) {
   vertices <- t(mesh$vb)
   vertices <- as.data.frame(vertices)

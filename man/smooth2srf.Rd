@@ -16,3 +16,4 @@ smooth2srf(input_file, output_file, verbose)
 \description{
 Turn smooth file to ascii
 }
+\keyword{internal}

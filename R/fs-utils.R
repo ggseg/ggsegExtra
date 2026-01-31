@@ -800,6 +800,7 @@ curv2ply <- function(
 #' @template output_file
 #' @template verbose
 #' @importFrom freesurfer get_fs
+#' @keywords internal
 smooth2srf <- function(input_file, output_file, verbose) {
   check_fs(abort = TRUE)
 
@@ -829,6 +830,7 @@ smooth2srf <- function(input_file, output_file, verbose) {
 #' @param cortex toggle "--cortex" (TRUE) or "--no-cortex" (FALSE)
 #' @template verbose
 #' @importFrom freesurfer fs_subj_dir mri_surf2surf
+#' @keywords internal
 lcbc_surf2surf <- function(
   input_volume,
   source_subject = "fsaverage",
@@ -859,6 +861,7 @@ lcbc_surf2surf <- function(
 #' @param abort logical. If function should error
 #'     if Freesurfer is not installed. Defaults to FALSE.
 #' @return logical
+#' @keywords internal
 check_fs <- function(msg = NULL, abort = FALSE) {
   x <- freesurfer::have_fs()
 

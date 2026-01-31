@@ -16,6 +16,7 @@
 #' @return list of ply meshes. Will also write ply meshes to files.
 #' @importFrom dplyr bind_rows
 #' @importFrom utils read.table txtProgressBar setTxtProgressBar
+#' @keywords internal
 surfsplit <- function(
   srf_ply,
   label_path,
