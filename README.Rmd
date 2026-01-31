@@ -14,7 +14,9 @@ knitr::opts_chunk$set(
 )
 library(ggsegExtra)
 atlases <- ggseg_atlas_repos()
-atlases <- atlases[grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert = TRUE),]
+atlases <- atlases[
+  grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert = TRUE),
+]
 ```
 
 
@@ -37,9 +39,12 @@ We recommend installing this package from its [r-universe](https://ggseg.r-unive
 
 ```{r, eval = FALSE}
 # Enable this universe
-options(repos = c(
-  ggseg = 'https://ggseg.r-universe.dev',
-  CRAN = 'https://cloud.r-project.org'))
+options(
+  repos = c(
+    ggseg = 'https://ggseg.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'
+  )
+)
 
 # Install some packages
 install.packages('ggsegExtra')
@@ -59,29 +64,41 @@ Improvements to the pipeline in creating cortical atlases both for ggseg and ggs
 Pipelines for creating sub-cortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
 Suggestions for improvement are welcome through GH issues or direct Pull requests.
 
-## Availale atlases
+## Available atlases
 There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
 The packages, their repository name and location can be found with:
 
 ```{r, echo = FALSE, results='asis'}
 for (i in 1:nrow(atlases)) {
   atl <- as.character(atlases[i, "Package"])
-  
+
   # find doi
-  readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/main/README.Rmd", atl)
-  if(httr::http_error(readmeurl))
-    readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/master/README.Rmd", atl)
-  
+  readmeurl <- sprintf(
+    "https://raw.githubusercontent.com/ggseg/%s/main/README.Rmd",
+    atl
+  )
+  if (httr::http_error(readmeurl)) {
+    readmeurl <- sprintf(
+      "https://raw.githubusercontent.com/ggseg/%s/master/README.Rmd",
+      atl
+    )
+  }
+
   readme <- readLines(readmeurl)
   idx <- grep("badges: ", readme)
-  badges <- readme[(idx[1]+1):(idx[2]-1)]
-  badges <- c("", badges[c(grep("\\[!\\[R", badges), grep("\\[!\\[DOI", badges))])
+  badges <- readme[(idx[1] + 1):(idx[2] - 1)]
+  badges <- c(
+    "",
+    badges[c(grep("\\[!\\[R", badges), grep("\\[!\\[DOI", badges))]
+  )
 
   cat(
-    sprintf('### [%s](%s)', 
-            atl, atlases[i, "RemoteUrl"]),
-    sprintf('<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
-            atlases[i, "RemoteUrl"], atl),
+    sprintf('### [%s](%s)', atl, atlases[i, "RemoteUrl"]),
+    sprintf(
+      '<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
+      atlases[i, "RemoteUrl"],
+      atl
+    ),
     badges,
     sprintf("\n%s\n%s\n", atlases[i, "Title"], atlases[i, "Description"]),
     sep = "\n"

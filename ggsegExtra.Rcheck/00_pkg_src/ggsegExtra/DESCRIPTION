@@ -1,0 +1,41 @@
+Package: ggsegExtra
+Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
+Version: 1.6.0
+Authors@R: c(
+    person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5756-0223")),
+    person("Didac", "Vidal-Piñeiro", , "d.v.pineiro@psykologi.uio.no", role = "aut",
+           comment = c(ORCID = "0000-0001-9997-9156")),
+    person("John", "Muschelli", , "muschellij2@gmail.com", role = "ctb",
+           comment = c(ORCID = "0000-0001-6469-1750"))
+  )
+Description: Contains functions to create new data sets compatible with
+    the 'ggseg' and 'ggseg3d' packages for plotting brain segmentations
+    through R. Requires several external software to be installed on the
+    system for atlas creations to work, and most of these are not
+    available for windows.  But atlas creation tools exist for 2d simple
+    features data, and also 3d tri-surface mesh plots. Also has a list of
+    compatible data sets and functions for easy installation of these.
+License: MIT + file LICENSE
+URL: https://github.com/ggseg/ggsegExtra
+BugReports: https://github.com/ggseg/ggsegExtra/issues
+Depends: ggseg (>= 1.6.0), ggseg3d (>= 1.6.0), R (>= 4.1.0)
+Imports: cli, dplyr, freesurfer, furrr, geomorph, progressr, ggplot2,
+        grDevices, htmlwidgets, jsonlite, magick, purrr, readr, sf,
+        smoothr, stats, stringr, terra, tidyr, utils, webshot2, withr
+Suggests: covr, hexSticker, knitr, rmarkdown, spelling, testthat (>=
+        2.1.0), ggsegDKT
+VignetteBuilder: knitr
+Encoding: UTF-8
+Language: en-US
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+SystemRequirements: Chrome or Chromium, FSL, Freesurfer, ImageMagick
+NeedsCompilation: no
+Packaged: 2026-01-31 11:25:54 UTC; athanasm
+Author: Athanasia Mo Mowinckel [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-5756-0223>),
+  Didac Vidal-Piñeiro [aut] (ORCID:
+    <https://orcid.org/0000-0001-9997-9156>),
+  John Muschelli [ctb] (ORCID: <https://orcid.org/0000-0001-6469-1750>)
+Maintainer: Athanasia Mo Mowinckel <a.m.mowinckel@psykologi.uio.no>

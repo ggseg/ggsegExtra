@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
-Version: 1.5.33.005
+Version: 1.6.0
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5756-0223")),
@@ -22,21 +22,21 @@ BugReports: https://github.com/ggseg/ggsegExtra/issues
 Depends: 
     ggseg (>= 1.6.0),
     ggseg3d (>= 1.6.0),
-    R (>= 3.5.0)
-Imports: 
+    R (>= 4.1.0)
+Imports:
     cli,
     dplyr,
     freesurfer,
+    furrr,
     geomorph,
+    progressr,
     ggplot2,
     grDevices,
+    htmlwidgets,
     jsonlite,
     magick,
-    parallel,
-    plotly,
-    progressr,
+    purrr,
     readr,
-    reticulate,
     sf,
     smoothr,
     stats,
@@ -44,41 +44,20 @@ Imports:
     terra,
     tidyr,
     utils,
+    webshot2,
     withr
 Suggests:
     covr,
-    ggsegChen,
-    ggsegDefaultExtra,
-    ggsegDesterieux,
-    ggsegDKT,
-    ggsegGlasser,
-    ggsegHO,
-    ggsegICBM,
-    ggsegJHU,
-    ggsegSchaefer,
-    ggsegTracula,
-    ggsegYeo2011,
     hexSticker,
     knitr,
     rmarkdown,
     spelling,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    ggsegDKT
 VignetteBuilder: 
     knitr
-Remotes: 
-    ggseg/ggsegChen,
-    ggseg/ggsegDefaultExtra,
-    ggseg/ggsegDesterieux,
-    ggseg/ggsegDKT,
-    ggseg/ggsegGlasser,
-    ggseg/ggsegHO,
-    ggseg/ggsegICBM,
-    ggseg/ggsegJHU,
-    ggseg/ggsegSchaefer,
-    ggseg/ggsegTracula,
-    ggseg/ggsegYeo2011
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-SystemRequirements:orca, FSL, Freesurfer, ImageMagick
+RoxygenNote: 7.3.3
+SystemRequirements: Chrome or Chromium, FSL, Freesurfer, ImageMagick

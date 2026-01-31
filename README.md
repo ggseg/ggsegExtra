@@ -53,7 +53,7 @@ creating sub-cortical atlases of any kind are still in their infancy,
 and we do not yet have good solutions for their creation. Suggestions
 for improvement are welcome through GH issues or direct Pull requests.
 
-## Availale atlases
+## Available atlases
 
 There are currently 23 available atlases across 23 packages. The
 packages, their repository name and location can be found with:

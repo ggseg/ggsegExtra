@@ -1,0 +1,1440 @@
+
+R version 4.5.2 (2025-10-31) -- "[Not] Part in a Rumble"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "ggsegExtra"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('ggsegExtra')
+Loading required package: ggseg
+Loading required package: ggseg3d
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("aparc_2_mesh")
+> ### * aparc_2_mesh
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: aparc_2_mesh
+> ### Title: Converts annotations to atlas
+> ### Aliases: aparc_2_mesh
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D dt <- aparc_2_mesh()
+> ##D dt <- aparc_2_mesh(surface = "white")
+> ##D dt <- aparc_2_mesh(hemisphere = "lh")
+> ##D dt <- aparc_2_mesh(annot = "aparc.a2009s")
+> ## End(Not run)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fs_curvatures")
+> ### * fs_curvatures
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fs_curvatures
+> ### Title: Available Freesurfer curvatures
+> ### Aliases: fs_curvatures
+> 
+> ### ** Examples
+> 
+> fs_curvatures()
+ [1] "area"            "area.mid"        "area.pial"       "avg_curv"       
+ [5] "curv"            "curv.pial"       "inflated.H"      "inflated.K"     
+ [9] "jacobian_white"  "smoothwm.BE.crv" "smoothwm.C.crv"  "smoothwm.FI.crv"
+[13] "smoothwm.H.crv"  "smoothwm.K1.crv" "smoothwm.K2.crv" "smoothwm.K.crv" 
+[17] "smoothwm.S.crv"  "sulc"            "thickness"       "volume"         
+[21] "w-g.pct.mgh"    
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fs_nofixcurv")
+> ### * fs_nofixcurv
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fs_nofixcurv
+> ### Title: Available Freesurfer no fix curvatures
+> ### Aliases: fs_nofixcurv
+> 
+> ### ** Examples
+> 
+> fs_nofixcurv()
+[1] "defect_borders" "defect_chull"   "defect_labels" 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("fs_surfaces")
+> ### * fs_surfaces
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: fs_surfaces
+> ### Title: Available Freesurfer surfaces
+> ### Aliases: fs_surfaces
+> 
+> ### ** Examples
+> 
+> fs_surfaces()
+ [1] "inflated"       "inflated.nofix" "orig"           "orig.nofix"    
+ [5] "pial"           "qsphere.nofix"  "smoothwm"       "smoothwm.nofix"
+ [9] "sphere"         "sphere.reg"     "white"          "LCBC"          
+> 
+> 
+> 
+> cleanEx()
+> nameEx("get_mesh")
+> ### * get_mesh
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: get_mesh
+> ### Title: Extract mesh data from ply
+> ### Aliases: get_mesh
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D get_mesh("path/to/surface.ply")
+> ##D 
+> ##D # Turn off showing the ply when reading
+> ##D get_mesh("path/to/surface.ply", ShowSpecimen = FALSE)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("ggseg_atlas_repos")
+> ### * ggseg_atlas_repos
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: ggseg_atlas_repos
+> ### Title: List all online repositories with ggseg-atlases
+> ### Aliases: ggseg_atlas_repos
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D ggseg_atlas_repos()
+> ##D 
+> ##D ggseg_atlas_repos("yeo")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("install_ggseg_atlas")
+> ### * install_ggseg_atlas
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: install_ggseg_atlas
+> ### Title: Install ggseg-atlas from repo
+> ### Aliases: install_ggseg_atlas
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D ggseg_atlas_repos("yeo")
+> ##D install_ggseg_atlas("ggsegYeo2011")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("install_ggseg_atlas_all")
+> ### * install_ggseg_atlas_all
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: install_ggseg_atlas_all
+> ### Title: Install all registered ggseg-atlases
+> ### Aliases: install_ggseg_atlas_all
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D install_ggseg_atlas_all()
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("make_aparc_2_3datlas")
+> ### * make_aparc_2_3datlas
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: make_aparc_2_3datlas
+> ### Title: Create cortical ggseg3d-atlas from annot-file
+> ### Aliases: make_aparc_2_3datlas
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D dt <- aparc_2_3datlas(annot = "aparc.a2009s")
+> ##D dt <- aparc_2_3datlas(annot = "aparc.a2009s",
+> ##D                       surface = "sphere")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("make_ggseg3d_2_ggseg")
+> ### * make_ggseg3d_2_ggseg
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: make_ggseg3d_2_ggseg
+> ### Title: Turn ggseg3d-atlas to ggseg
+> ### Aliases: make_ggseg3d_2_ggseg
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D 
+> ##D # Create the DKT atlas as found in the FreeSurfer Subjects directory
+> ##D # And output the temporary files to the Desktop.
+> ##D dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
+> ##D     output_dir = "~/Desktop/")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("make_palette_ggseg")
+> ### * make_palette_ggseg
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: make_palette_ggseg
+> ### Title: Create ggseg palette from ggseg3d-atlas
+> ### Aliases: make_palette_ggseg
+> 
+> ### ** Examples
+> 
+> make_palette_ggseg(dk_3d)
+$dk
+                  bankssts  caudal anterior cingulate 
+                 "#196428"                  "#7D64A0" 
+     caudal middle frontal            corpus callosum 
+                 "#641900"                  "#784632" 
+                    cuneus                 entorhinal 
+                 "#DC1464"                  "#DC140A" 
+                  fusiform          inferior parietal 
+                 "#B4DC8C"                  "#DC3CDC" 
+         inferior temporal          isthmus cingulate 
+                 "#B42878"                  "#8C148C" 
+         lateral occipital      lateral orbitofrontal 
+                 "#141E8C"                  "#234B32" 
+                   lingual       medial orbitofrontal 
+                 "#E18C8C"                  "#C8234B" 
+           middle temporal            parahippocampal 
+                 "#A06432"                  "#14DC3C" 
+               paracentral           pars opercularis 
+                 "#3CDC3C"                  "#DCB48C" 
+            pars orbitalis          pars triangularis 
+                 "#146432"                  "#DC3C14" 
+             pericalcarine                postcentral 
+                 "#78643C"                  "#DC1414" 
+       posterior cingulate                 precentral 
+                 "#DCB4DC"                  "#3C14DC" 
+                 precuneus rostral anterior cingulate 
+                 "#A08CB4"                  "#50148C" 
+    rostral middle frontal           superior frontal 
+                 "#4B327D"                  "#14DCA0" 
+         superior parietal          superior temporal 
+                 "#14B48C"                  "#8CDCDC" 
+             supramarginal               frontal pole 
+                 "#50A014"                  "#640064" 
+             temporal pole        transverse temporal 
+                 "#464646"                  "#9696C8" 
+                    insula 
+                 "#FFC020" 
+
+> 
+> 
+> 
+> cleanEx()
+> nameEx("make_volumetric_2_3datlas")
+> ### * make_volumetric_2_3datlas
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: make_volumetric_2_3datlas
+> ### Title: Volumetric segmentation to 3d-atlas
+> ### Aliases: make_volumetric_2_3datlas
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D 
+> ##D fs_subject_dir <- freesurfer::fs_dir()
+> ##D aseg_temp <- file.path(fs_subject_dir, "fsaverage5/mri/aseg.mgz")
+> ##D colorlut <- file.path(fs_subject_dir, "ASegStatsLUT.txt")
+> ##D 
+> ##D make_volumetric_2_3datlas(aseg_temp, colorlut)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("make_volumetric_ggseg")
+> ### * make_volumetric_ggseg
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: make_volumetric_ggseg
+> ### Title: Make ggseg atlas from volumetric template
+> ### Aliases: make_volumetric_ggseg
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D 
+> ##D    label_file <- file.path(fs_subj_dir(), subject, "mri/aseg.mgz")
+> ##D    slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
+> ##D 
+> ##D    aseg2 <- make_volumetric_ggseg(
+> ##D       label_file =  label_file,
+> ##D       slices = slices
+> ##D    )
+> ##D 
+> ##D    # Have a look at the atlas
+> ##D    plot(aseg2)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mri_annotation2label")
+> ### * mri_annotation2label
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mri_annotation2label
+> ### Title: Convert annotation to label
+> ### Aliases: mri_annotation2label
+> 
+> ### ** Examples
+> 
+> ## Don't show: 
+> if (freesurfer::have_fs()) withAutoprint({ # examplesIf
++ ## End(Don't show)
++ # for freesurfer help see:
++ freesurfer::fs_help("mri_annotation2label")
++ mri_annotation2label(annot_name = "aparc")
++ 
++ mri_annotation2label(annot_name = "aparc.a2009s")
++ 
++ mri_annotation2label(subject = "fsaverage", annot_name = "aparc.a2009s")
++ ## Don't show: 
++ }) # examplesIf
+> freesurfer::fs_help("mri_annotation2label")
+USAGE: mri_annotation2label 
+   --subject    source subject
+   --hemi       hemisphere (lh or rh) (with surface)
+   --lobes <LobesFile>
+   	Create an annotation based on cortical lobes.
+   	Note that the precentral and postcentral labels are not
+   	included as part of the 'frontal' and 'parietal' lobes.
+   	The lobar annotation is saved to <LobesFile>.
+   --lobesStrict <LobesFile>
+   	Use a slightly stricter lobe definition that adds the
+   	precentral to the 'frontal' and includes the postcentral
+   	with the 'parietal' lobe.
+   	The lobar annotation is saved to <LobesFile>.
+   --lobesStrictPHCG <LobesFile>
+   	Use stricter lobe definition, and adds an additional lobe called
+   	parahippocampalgyrus, which includes parahippocampal, entorhinal,
+   	temporalpole and fusiform.
+   	The lobar annotation is saved to <LobesFile>.
+Output options:
+   --label <int> : extract only single label 
+   --labelbase  output will be base-XXX.label 
+   --outdir dir :  output will be dir/hemi.name.label 
+   --seg segfile : output will be a segmentation 'volume'
+   --segbase base : add base to the annotation number to get seg value
+   --ctab colortable : colortable like FreeSurferColorLUT.txt
+   --border borderfile : output will be a binary overlay of the parc borders 
+   --border-annot borderannot : default goes in subject/label
+   --annotation as found in SUBJDIR/labels <aparc>
+   --sd <SUBJECTS_DIR>  specify SUBJECTS_DIR on cmdline
+   --surface    name of surface <white>. Only affect xyz in label.
+   --stat statfile : surface overlay file (curv or volume format).
+   --table : obsolete. Now gets from annotation file
+   --help       display help
+   --version    display version
+This program will convert an annotation into multiple label files
+or into a segmentaion 'volume'. It can also create a border overlay.
+User specifies the subject, hemisphere, label base, and (optionally)
+the annotation base and surface. By default, the annotation base is
+aparc. The program will retrieves the annotations from
+SUBJECTS_DIR/subject/label/hemi_annotbase.annot. A separate label file
+is created for each annotation index. The output file names can take
+one of two forms: (1) If --outdir dir is used, then the output will
+be dir/hemi.name.lable, where name is the corresponding name in 
+the embedded color table. (2) If --labelbase is used, name of the file conforms to
+labelbase-XXX.label, where XXX is the zero-padded 3 digit annotation
+index. If labelbase includes a directory path, that directory must
+already exist. If there are no points in the annotation file for a
+particular index, no label file is created. The xyz coordinates in the
+label file are obtained from the values at that vertex of the
+specified surface. The default surface is 'white'. Other options
+include 'pial' and 'orig'.
+The human-readable names that correspond to the annotation indices for 
+aparc are embedded in the annotation file itself. It is no longer
+necessary (or possible) to specify the table explicitly with the
+--table option.
+ 
+--seg segfile 
+--segbase segbase 
+ 
+Convert annotation into a volume-encoded surface segmentation file. This 
+is a volume format where the value at each 'voxel' is an integer index.
+The value of the index depends on several factors. By default, it should 
+match the index for the label as found in $FREESURFER_HOME/FreeSurferColorLUT.txt;
+this requires that the annotation be either aparc or aparc.a2005s. If 
+aparc and hemi=lh, then segbase=1000, etc. This makes the index match
+that found in aparc+aseg.mgz. If the annotation is neither 
+aparc nor aparc.a2005s, then segbase=0. This behavior can be overridden 
+by manually specifying a segbase with --segbase.
+ 
+--border borderfile 
+Creates an overlay file in which the boundaries of the parcellations are 
+set to 1 and everything else is 0. This can then be loaded as an overlay
+in tksurfer.
+ 
+ --stat StatFile
+ 
+ Put the value from the StatFile into the Stat field in the label. StatFile
+ must be a curv or surface overlay (eg, mgh) format (eg, lh.thickness).
+ 
+ 
+Convert annotation into a volume-encoded surface segmentation file. This 
+Bugs:
+  If the name of the label base does not include a forward slash (ie, '/') 
+  then the program will attempt to put the label files in 
+  $SUBJECTS_DIR/subject/label.  So, if you want the labels to go into the 
+  current directory, make sure to put a './' in front of the label base.
+Example:
+  mri_annotation2label --subject LW --hemi rh 
+        --labelbase ./labels/aparc-rh 
+  This will get annotations from $SUBJECTS_DIR/LW/label/rh_aparc.annot
+  and then create about 94 label files: aparc-rh-001.label, 
+  aparc-rh-002.label, ... Note that the directory 'labels' must already
+  exist. 
+Example:
+  mri_annotation2label --subject LW --hemi rh 
+        --outdir ./labels 
+  This will do the same thing as above except that the output files
+  will have names of the form lh.S_occipital_anterior.label
+Testing:
+  1. Start tksurfer:  
+       tksurfer -LW lh inflated
+       read_annotations lh_aparc
+     When a point is clicked on, it prints out a lot of info, including
+     something like:
+       annot = S_temporalis_sup (93, 3988701) (221, 220, 60)
+     This indicates that annotion number 93 was hit. Save this point.
+   
+  2. Start another tksurfer and load the label:
+       tksurfer -LW lh inflated
+       [edit label field and hit the 'Read' button]
+     Verify that label pattern looks like the annotation as seen in
+     the tksurfer window from step 1.
+  3. Load label into tkmedit
+       tkmedit LW T1
+       [Load the label]
+      [Goto the point saved from step 1] 
+> mri_annotation2label(annot_name = "aparc")
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-000.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-001.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-002.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-003.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-004.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-005.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-006.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-007.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-008.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-009.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-010.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-011.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-012.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-013.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-014.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-015.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-016.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-017.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-018.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-019.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-020.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-021.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-022.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-023.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-024.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-025.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-026.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-027.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-028.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-029.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-030.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-031.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-032.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-033.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-034.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparc/rh-035.label 
+> mri_annotation2label(annot_name = "aparc.a2009s")
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-001.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-002.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-003.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-004.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-005.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-006.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-007.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-008.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-009.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-010.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-011.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-012.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-013.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-014.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-015.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-016.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-017.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-018.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-019.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-020.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-021.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-022.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-023.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-024.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-025.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-026.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-027.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-028.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-029.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-030.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-031.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-032.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-033.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-034.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-035.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-036.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-037.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-038.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-039.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-040.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-041.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-042.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-043.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-044.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-045.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-046.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-047.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-048.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-049.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-050.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-051.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-052.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-053.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-054.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-055.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-056.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-057.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-058.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-059.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-060.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-061.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-062.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-063.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-064.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-065.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-066.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-067.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-068.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-069.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-070.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-071.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-072.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-073.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-074.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage5/label/aparca2009s/rh-075.label 
+> mri_annotation2label(subject = "fsaverage", annot_name = "aparc.a2009s")
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-000.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-001.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-002.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-003.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-004.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-005.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-006.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-007.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-008.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-009.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-010.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-011.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-012.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-013.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-014.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-015.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-016.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-017.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-018.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-019.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-020.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-021.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-022.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-023.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-024.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-025.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-026.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-027.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-028.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-029.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-030.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-031.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-032.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-033.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-034.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-035.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-036.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-037.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-038.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-039.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-040.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-041.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-043.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-044.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-045.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-046.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-047.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-048.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-049.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-050.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-051.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-052.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-053.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-054.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-055.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-056.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-057.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-058.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-059.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-060.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-061.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-062.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-063.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-064.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-065.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-066.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-067.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-068.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-069.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-070.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-071.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-072.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-073.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-074.label 
+error: No such file or directory
+error: mri_annotation2label: could not open label file /Applications/freesurfer/7.4.1/subjects/fsaverage/label/aparca2009s/rh-075.label 
+> ## End(Don't show)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mri_surf2surf_rereg")
+> ### * mri_surf2surf_rereg
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mri_surf2surf_rereg
+> ### Title: Re-register an annotation file
+> ### Aliases: mri_surf2surf_rereg
+> 
+> ### ** Examples
+> 
+> ## Don't show: 
+> if (freesurfer::have_fs()) withAutoprint({ # examplesIf
++ ## End(Don't show)
++ # For help see:
++ freesurfer::fs_help("mri_surf2surf")
++ 
++ mri_surf2surf_rereg(subject = "bert",
++                     annot = "aparc.DKTatlas",
++                     target_subject = "fsaverage5")
++ ## Don't show: 
++ }) # examplesIf
+> freesurfer::fs_help("mri_surf2surf")
+USAGE: mri_surf2surf 
+   --srcsubject source subject
+   --sval path of file with input values 
+   --sval-xyz  surfname : use xyz of surfname as input 
+   --projfrac surfname 0.5 : use projected xyz of surfname as input 
+   --projabs  surfname 0.5 : use projected xyz of surfname as input 
+   --sval-tal-xyz  surfname : use tal xyz of surfname as input 
+   --sval-area surfname : use vertex area of surfname as input 
+   --sval-annot annotfile : map annotation 
+   --sval-nxyz surfname : use surface normals of surfname as input 
+   --patch srcpatchfile targsurf ndilations
+   --sfmt   source format
+   --reg register.dat <volgeom> : apply register.dat to sval-xyz
+   --reg-inv register.dat <volgeom> : apply inv(register.dat) to sval-xyz
+   --srcicoorder when srcsubject=ico and src is .w
+   --trgsubject target subject
+   --trgicoorder when trgsubject=ico
+   --tval path of file in which to store output values (or use --o)
+   --tval-xyz volume: save tval as a surface file with source xyz (volume for geometry)
+   --tfmt target format
+   --trgdist distfile : save distance from source to target vtx
+   --s subject : use subject as src and target
+   --hemi       hemisphere : (lh or rh) for both source and targ
+   --srchemi    hemisphere : (lh or rh) for source
+   --trghemi    hemisphere : (lh or rh) for target
+   --dual-hemi  : assume source ?h.?h.surfreg file name
+   --jac  : turn on jacobian correction, needed when applying to area or volume 
+   --surfreg    source and targ surface registration (sphere.reg)  
+   --srcsurfreg source surface registration (sphere.reg)  
+   --trgsurfreg target surface registration (sphere.reg)  
+   --mapmethod  nnfr or nnf
+   --frame      save only nth frame (with --trg_type paint)
+   --fwhm-src fwhmsrc: smooth the source to fwhmsrc
+   --fwhm-trg fwhmtrg: smooth the target to fwhmtrg
+   --nsmooth-in N  : smooth the input
+   --nsmooth-out N : smooth the output
+   --cortex : use ?h.cortex.label as a smoothing mask
+   --no-cortex : do NOT use ?h.cortex.label as a smoothing mask (default)
+   --label-src label : source smoothing mask
+   --label-trg label : target smoothing mask
+     --mul Mul : Multiply the input by the given value
+     --div Div : Divide the input by the given value
+   --reshape  reshape output to multiple 'slices'
+   --reshape-factor Nfactor : reshape to Nfactor 'slices'
+   --reshape3d : reshape fsaverage (ico7) into 42 x 47 x 83
+   --split : output each frame separately
+   --synth : replace input with WGN
+   --ones  : replace input with 1s
+   --normvar : rescale so that stddev=1 (good with --synth)
+   --seed seed : seed for synth (default is auto)
+   --prune - remove any voxel that is zero in any time point (for smoothing)
+   --no-prune - do not prune (default)
+   --proj-surf surf projmagfile scale outsurf : project vertices by mag*scale at each vertex
+   --proj-norm sourcesurf distmm outsurf : project vertices by distmm at each vertex
+   --reg-diff reg2 : subtract reg2 from --reg (primarily for testing)
+   --rms rms.dat   : save rms of reg1-reg2 (primarily for testing)
+   --rms-mask mask : only compute rms in mask (primarily for testing)
+7.4.1
+This program will resample one surface onto another. The source and
+target subjects can be any subject in $SUBJECTS_DIR and/or the
+icosahedron (ico). The source and target file formats can be anything
+supported by mri_convert. The source format can also be a curvature
+file or a paint (.w) file. The user also has the option of smoothing
+on the surface.
+OPTIONS
+  --srcsubject subjectname
+    Name of source subject as found in $SUBJECTS_DIR or ico for icosahedron.
+    The input data must have been sampled onto this subject's surface (eg,
+    using mri_vol2surf)
+  --sval sourcefile
+    Name of file where the data on the source surface is located.
+  --sval-xyz     surfname
+  --sval-tal-xyz surfname
+  --sval-area    surfname
+  --sval-nxyz    surfname
+    Use measures from the input surface as the source (instead of specifying
+    a source file explicitly with --sval). --sval-xyz extracts the x, y, and
+    z of each vertex. --sval-tal-xyz is the same as --sval-xyz, but applies
+    the talairach transform from srcsubject/mri/transforms/talairach.xfm.
+    --sval-area extracts the vertex area. --sval-nxyz extracts the surface
+    normals at each vertex. See also --tval-xyz.
+  --projfrac surfname frac
+  --projabs  surfname dist
+    Use xyz from surfname as the input, project it along the normal, and
+    save new xyz surface. Eg, to create a new surface halfway between
+    the white and the pial:
+      mri_surf2surf --s subject --projfrac white +0.5 --tval lh.mid --hemi lh
+    saves $SUBJECTS_DIR/subject/lh.mid.
+  --sval-annot annotfile
+    Map annotation file to the output. The target data will be saved as an
+    annotation.
+  --sfmt typestring
+    Format type string. Can be either curv (for FreeSurfer curvature file),
+    paint or w (for FreeSurfer paint files), or anything accepted by
+    mri_convert. If no type string  is given, then the type is determined
+    from the sourcefile (if possible). If curv is used, then the curvature
+    file will be looked for in $SUBJECTS_DIR/srcsubject/surf/hemi.sourcefile.
+  --srcicoorder order
+    Icosahedron order of the source. Normally, this can be detected based
+    on the number of verticies, but this will fail with a .w file as input.
+    This is only needed when the source is a .w file.
+  --trgsubject subjectname
+    Name of target subject as found in $SUBJECTS_DIR or ico for icosahedron.
+  --trgicoorder order
+    Icosahedron order number. This specifies the size of the
+    icosahedron according to the following table:
+              Order  Number of Vertices
+                0              12
+                1              42
+                2             162
+                3             642
+                4            2562
+                5           10242
+                6           40962
+                7          163842
+    In general, it is best to use the largest size available.
+  --tval targetfile
+    Name of file where the data on the target surface will be stored.
+    BUG ALERT: for trg_type w or paint, use the full path.
+  --tval-xyz volume
+    Use this flag to indicate that the output (specified by --tval)
+    will be a binary surface file This requires that --sval-xyz or
+    --sval-tal-xyz was also specified. volume is a volume file in
+    the target space; the volume geometry from this file is imbedded
+    into the surface file. This is a good way to map the surface of
+    one subject to an average (talairach) subject. Note: it will save
+    targetfile as trgsubject/surf/targetfile unless targetfile has a
+    path.
+  --tfmt typestring
+    Format type string. Can be paint or w (for FreeSurfer paint files) or curv
+    or anything accepted by mri_convert. If no type string  is given, then the type
+    is determined from the sourcefile (if possible). If using paint, w, or curv,
+    see also --frame.
+  --hemi hemifield (lh or rh)
+  --surfreg registration_surface
+    If the source and target subjects are not the same, this surface is used
+    to register the two surfaces. sphere.reg is used as the default. Don't change
+    this unless you know what you are doing.
+  --mapmethod methodname
+    Method used to map from the vertices in one subject to those of another.
+    Legal values are: nnfr (neighest-neighbor, forward and reverse) and nnf
+    (neighest-neighbor, forward only). Default is nnfr. The mapping is done
+    in the following way. For each vertex on the target surface, the closest
+    vertex in the source surface is found, based on the distance in the
+    registration space (this is the forward map). If nnf is chosen, then the
+    the value at the target vertex is set to that of the closest source vertex.
+    This, however, can leave some source vertices unrepresented in target (ie,
+    'holes'). If nnfr is chosen, then each hole is assigned to the closest
+    target vertex. If a target vertex has multiple source vertices, then the
+    source values are averaged together. It does not seem to make much difference.
+  --fwhm-src fwhmsrc
+  --fwhm-trg fwhmtrg (can also use --fwhm)
+    Smooth the source or target with a gaussian with the given fwhm (mm). This is
+    actually an approximation done using iterative nearest neighbor smoothing.
+    The number of iterations is computed based on the white surface. This
+    method is similar to heat kernel smoothing. This will give the same
+    results as --nsmooth-{in,out}, but automatically computes the the
+    number of iterations based on the desired fwhm.
+  --nsmooth-in  niterations
+  --nsmooth-out niterations  [note: same as --smooth]
+    Number of smoothing iterations. Each iteration consists of averaging each
+    vertex with its neighbors. When only smoothing is desired, just set the
+    the source and target subjects to the same subject. --smooth-in smooths
+    the input surface values prior to any resampling. --smooth-out smooths
+    after any resampling. See also --fwhm-src and --fwhm-trg.
+  --label-src sourcelabel
+  --label-trg targetlabel
+  --cortex
+  --no-cortex
+    Only smooth within the given label. If --cortex is specified, then
+    ?h.cortex.label will be used (this is created by automatically be
+    recon-all). Even if you do not have a label of interest, it is
+    recommended that you only smooth within cortex in order to prevent
+    values from the medial wall from being smoothed into the
+    surrounding cortical areas. At some point, this will be the
+    default at which point you will have to use --no-cortex to turn it
+    off.  This documentation will reflect the change. For --label-src
+    and --label-trg, if you do not give it a full path, it will look
+    in the subjects label dir. There is no need to specify both source
+    and target unless you are smoothing on both (which you probably
+    should not be doing).
+  --frame framenumber
+    When using paint/w output format, this specifies which frame to output. This
+    format can store only one frame. The frame number is zero-based (default is 0).
+  --mul Mul
+  --div Div
+    Multiply or divide the input by the given value
+  --reshape
+    Force mri_surf2surf to save the output as multiple 'slices'; has
+    no effect for paint/w output format. For ico, the output will
+    appear to be a 'volume' with Nv/R colums, 1 row, R slices and Nf
+    frames, where Nv is the number of vertices on the surface. For
+    icosahedrons, R=6. For others, R will be the prime factor of Nv
+    closest to 6 (can be changed with --reshape-factor). Reshaping is
+    for logistical purposes (eg, in the analyze/nifti format the size
+    of a dimension cannot exceed 2^15). Use this flag to prevent this
+    behavior. This has no effect when the output type is paint. At one
+    point, it was the default to reshape.
+  --reshape-factor Nfactor
+    Attempt to reshape to Nfactor 'slices' (will choose closest prime
+    factor) Default is 6.
+  --reshape3d
+    Reshape fsaverage (ico7) into 42 x 47 x 83
+  --sd SUBJECTS_DIR
+    Set SUBJECTS_DIR on the command line.
+EXAMPLES:
+1. Resample a subject's thickness of the left cortical hemisphere on to a
+   7th order icosahedron and save in analyze4d format:
+   mri_surf2surf --hemi lh --srcsubject bert
+      --srcsurfval thickness --src_type curv
+      --trgsubject ico --trgicoorder 7
+      --trgsurfval bert-thickness-lh.img --trg_type analyze4d
+2. Resample data on the icosahedron to the right hemisphere of subject bert.
+   Note that both the source and target data are stored in mgh format
+   as 'volume-encoded suface' data.
+   mri_surf2surf --hemi rh --srcsubject ico --srcsurfval icodata-rh.mgh
+      --trgsubject bert --trgsurfval ./bert-ico-rh.mgh
+3. Convert the surface coordinates of the lh.white of a subject to a
+   (talairach) average (ie, a subject created by make_average_subject):
+   mri_surf2surf --s yoursubject --hemi lh --sval-tal-xyz white
+     --trgsubject youraveragesubject --tval lh.white.yoursubject 
+     --tval-xyz $SUBJECTS_DIR/fsaverage/mri/orig.mgz
+   This will create youraveragesubject/surf/lh.white.yoursubject
+4. Convert the surface coordinates of the lh.white of a subject to 
+   the subject's functional space
+   mri_surf2surf --reg register.dat template.nii.gz --hemi lh 
+      --sval-xyz white --tval-xyz template.nii.gz --tval ./lh.white.func 
+      --s yoursubject
+   This will create lh.white.func in the current directory. template.nii.gz
+   is a volume in the functional space. register.dat is the registration
+   file between anatomical (target) and functional (movable) spaces. 
+   View result with:  freeview -v template.nii.gz -f lh.white.func
+   When using an LTA instead of a register.dat, do not include a target volume
+   mri_surf2surf --reg register.lta --hemi lh 
+      --sval-xyz white --tval-xyz template.nii.gz --tval ./lh.white.func 
+      --s yoursubject
+5. Extract surface normals of the white surface and save in a
+   volume-encoded file:
+   mri_surf2surf --s yoursubject --hemi lh --sval-nxyz white
+      --tval lh.white.norm.mgh
+   This will create youraveragesubject/surf/lh.white.yoursubject
+6. Convert the annotation for one subject to the surface of another
+  mri_surf2surf --srcsubject subj1 --trgsubject subj2 --hemi lh \
+    --sval-annot $SUBJECTS_DIR/subj1/label/lh.aparc.annot \
+    --tval       $SUBJECTS_DIR/subj2/label/lh.subj1.aparc.annot
+   This will create $SUBJECTS_DIR/subj2/label/lh.subj1.aparc.annot.
+   The --sval-annot flag will also change the map method to nnf so that
+   the annot indices are not averaged. Note: this is not a substitute
+   for running the cortical parcellation! The parcellations that it
+   maps to the new subject may not be appropriate for that subject.
+BUG REPORTS: send bugs to analysis-bugs@nmr.mgh.harvard.edu. Make sure
+    to include the version and full command-line and enough information to
+    be able to recreate the problem. Not that anyone does.
+BUGS:
+  When the output format is paint, the output file must be specified with
+  a partial path (eg, ./data-lh.w) or else the output will be written into
+  the subject's anatomical directory.
+> mri_surf2surf_rereg(subject = "bert", annot = "aparc.DKTatlas", target_subject = "fsaverage5")
+error: Permission denied
+error: could not write annot file /Applications/freesurfer/7.4.1/subjects/bert/label/lh.aparc.DKTatlas.annot 
+> ## End(Don't show)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mri_vol2label")
+> ### * mri_vol2label
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mri_vol2label
+> ### Title: Convert volume to label
+> ### Aliases: mri_vol2label
+> 
+> ### ** Examples
+> 
+> ## Don't show: 
+> if (freesurfer::have_fs()) withAutoprint({ # examplesIf
++ ## End(Don't show)
++ # for freesurfer help see:
++ freesurfer::fs_help("mri_vol2label")
++ 
++ out_dir <- tempdir()
++ vol <- file.path(freesurfer::fs_subj_dir(),
++                  "fsaverage5/mri/aseg.mgz")
++ 
++ mri_vol2label(vol,
++      label_id = 2,
++      hemisphere = "rh",
++      output_dir = out_dir)
++ 
++  # delete output dir when not needed
++  unlink(out_dir)
++ ## Don't show: 
++ }) # examplesIf
+> freesurfer::fs_help("mri_vol2label")
+mri_cor2label 
+   --i  input     : vol or surface overlay
+   --id labelid   : value to match in the input
+   --thresh thresh   : threshold the input to make label (ie, input>thresh) instead of --id
+   --l  labelfile : name of output file
+   --v  volfile   : write label volume in file
+   --surf subject hemi <surf> : interpret input as surface overlay
+   --surf-path surface : specify surface path rather than subject/hemi
+   --opt target delta valmap
+   --remove-holes-islands  : remove holes in label and islands (with --surf only)
+   --dilate ndilations : dilate label (with --surf only)
+   --erode  nerosions  : erode label (with --surf only)
+     Note: dilation is done first, then erode
+   --help         :print out help information
+7.4.1
+Converts values in a volume or surface overlay to a label. The program
+searches the input for values equal to labelid. The xyz values for
+each point are then computed based on the tkregister voxel-to-RAS
+matrix (volume) or from the xyz of the specified surface.  The xyz
+values are then stored in labelfile in the label file format. the
+statistic value is set to 0.  While this program can be used with any
+mri volume, it was designed to convert parcellation volumes, which
+happen to be stored in mri format.  See tkmedit for more information
+on parcellations. For volumes, the volume of the labvel in mm^3 can be
+written to the text file designated in by the --v flag. 
+If --opt is used, then treats input as a probability map. It
+thresholds the probability map such that the sum of the suprathreshold
+voxels in the valmap will be closest to target. The application is
+where one is trying to create a label where the total area is as
+close to the mean of the individual labels as possible, eg, 
+   mri_cor2label --i label.prob.mgz --id 1 --l ./lh.junk.label \n     --surf fsaverage lh --opt 922.18 .001 \n    $SUBJECTS_DIR/fsaverage/surf/lh.white.avg.area.mgh
+Performs a brute-force seach of thresholds from 0-1 step delta.
+Note: the name of this program is a bit misleading as it will operate
+on anything readble by mri_convert (eg, mgz, mgh, nifti, bhdr,
+analyze, etc).
+Bugs:
+  If the name of the label does not include a forward slash (ie, '/')
+  then the program will attempt to put the label files in
+  $SUBJECTS_DIR/subject/label.  So, if you want the labels to go into
+  the current directory, make sure to put a './' in front of the label.
+Example 1: Create a label of the left putamen (12) from the automatic
+segmentation
+mri_cor2label --c $SUBJECTS_DIR/subject/mri/aseg.mgz 
+   --id 12 --l ./left-putamen.label
+The value 12 is from $FREESURFER_HOME/FreeSurferColorLUT.txt
+Example 2: Create a label of the left hemi surface vertices whose
+thickness is greater than 2mm.
+# First, create a binarized map of the thickness
+mri_binarize --i $SUBJECTS_DIR/subject/surf/lh.thickness 
+  --min 2 --o lh.thickness.thresh.mgh
+mri_cor2label --i lh.thickness.thresh.mgh 
+  --surf subject lh  --id 1 --l ./lh.thickness.thresh.label
+> out_dir <- tempdir()
+> vol <- file.path(freesurfer::fs_subj_dir(), "fsaverage5/mri/aseg.mgz")
+> mri_vol2label(vol, label_id = 2, hemisphere = "rh", output_dir = out_dir)
+Loading mri /Applications/freesurfer/7.4.1/subjects/fsaverage5/mri/aseg.mgz
+Scanning the volume
+Centroid: -27.32  -21.52   18.48 
+mri_cor2label completed SUCCESSFULLY
+> unlink(out_dir)
+> ## End(Don't show)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mris_ca_label")
+> ### * mris_ca_label
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mris_ca_label
+> ### Title: MRI ca label
+> ### Aliases: mris_ca_label
+> 
+> ### ** Examples
+> 
+> ## Don't show: 
+> if (freesurfer::have_fs()) withAutoprint({ # examplesIf
++ ## End(Don't show)
++ # for freesurfer help see:
++ freesurfer::fs_help("mris_ca_label")
++ mris_ca_label(output_file = "test.lh.annot")
++ 
++ mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
++ ## Don't show: 
++ }) # examplesIf
+> freesurfer::fs_help("mris_ca_label")
+				Help
+NAME
+	mris_ca_label
+SYNOPSIS
+	mris_ca_label [options -seed Seed] <subject> <hemi> <canonsurf> 
+	<classifier> <outputfile>
+DESCRIPTION
+	For a single subject, produces an annotation file, in which each 
+	cortical surface vertex is assigned a neuroanatomical label.This 
+	automatic procedure employs data from a previously-prepared atlas 
+	file. An atlas file is created from a training set, capturing region 
+	data manually drawn by neuroanatomists combined with statistics on 
+	variability correlated to geometric information derived from the 
+	cortical model (sulcus and curvature). Besides the atlases provided 
+	with FreeSurfer, new ones can be prepared using mris_ca_train).
+POSITIONAL ARGUMENTS
+	<subject>
+		subject id
+	<hemi>
+		hemisphere: rh or lh
+	<canonsurf>
+		canonical surface file. Ie: the name of the spherical surface 
+		file which describes the registration of a subject's vertices 
+		to the reference "average" surface. Example: sphere.reg
+	<classifier>
+		specify classifier array input file
+	<outputfile>
+		annotated surface output file. Ie: an annotation file listing 
+		the region label for each vertex.
+REQUIRED FLAGGED ARGUMENTS
+	None.
+OPTIONAL FLAGGED ARGUMENTS
+	-seed <Seed>
+		specify the seed for the random number generator
+	-sdir <subject dir>
+		specify a subjects directory (default=$SUBJECTS_DIR)
+	-orig <filename>
+		specify filename of original surface (default=smoothwm)
+	-long
+		refines the initial labeling read-in from -r (default: 
+		disabled)
+	-r <filename>
+		file containing precomputed parcellation
+	-novar
+		sets all covariance matrices to the identify (default: 
+		disabled)
+	-nbrs <number>
+		neighborhood size (default=2)
+	-f <number>
+		applies mode filter <number> times before writing output 
+		(default=10)
+	-t <filename>
+		specify parcellation table input file (default: none)
+	-p <filename>
+		output a file containing label probability (post,likelihood, 
+		prior)for each vertex.
+	-v <number>
+		diagnostic level (default=0)
+	-w <number> <filename>
+		writes-out snapshots of gibbs process every <number> 
+		iterations to <filename> (default=disabled)
+	--help
+		print help info
+	--version
+		print version info
+OUTPUTS
+	outputfile
+		labeled cortical surface model
+EXAMPLE 1
+	mris_ca_label -orig white  -novar  -t $SUBJECTS_DIR/scripts/colortable
+	_final.txt  my_subject  lh  sphere.reg  $SUBJECTS_DIR/average/
+	lh.rahul.gcs  $SUBJECTS_DIR/my_subject/label/lh.raparc.annot 
+	
+	In this example, mris_ca_label take sphere.reg as the canonical 
+	surface input file, lh.rahul.gcs as the classifier array input file, 
+	and writes the annotated surface info to lh.raparc.annot. The file 
+	colortable_final.txt is embedded into the output file, so that 
+	tksurfer (and other utilities) can read it in.
+	
+	
+BUGS
+	None
+REPORTING
+	Report bugs to <freesurfer@nmr.mgh.harvard.edu>
+SEE ALSO
+	mris_sample_parc, mris_ca_train
+> mris_ca_label(output_file = "test.lh.annot")
+ supposed to be reproducible but seed not set
+error: Permission denied
+error: could not write annot file /Applications/freesurfer/7.4.1/subjects/fsaverage5/surf/../label/lh.test.lh.annot 
+error: Permission denied
+error: mris_ca_label: could not write annot file test.lh.annot for fsaverage5 
+Warning in system(paste0(get_fs(), cmd), intern = TRUE, ignore.stdout = !verbose,  :
+  running command 'source '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_ca_label -sdir /Applications/freesurfer/7.4.1/subjects fsaverage5 lh sphere.reg /Applications/freesurfer/7.4.1/average/lh.DKTatlas40.gcs test.lh.annot' had status 255
+> mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
+ supposed to be reproducible but seed not set
+error: Permission denied
+error: could not write annot file /Applications/freesurfer/7.4.1/subjects/fsaverage5/surf/../label/rh.test.rh.annot 
+error: Permission denied
+error: mris_ca_label: could not write annot file test.rh.annot for fsaverage5 
+Warning in system(paste0(get_fs(), cmd), intern = TRUE, ignore.stdout = !verbose,  :
+  running command 'source '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_ca_label -sdir /Applications/freesurfer/7.4.1/subjects fsaverage5 rh sphere.reg /Applications/freesurfer/7.4.1/average/lh.DKTatlas40.gcs test.rh.annot' had status 255
+> ## End(Don't show)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("mris_label2annot")
+> ### * mris_label2annot
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: mris_label2annot
+> ### Title: Convert Label to Annotation
+> ### Aliases: mris_label2annot
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D # for freesurfer help see:
+> ##D freesurfer::fs_help("mris_label2annot")
+> ##D 
+> ##D subj_dir <- freesurfer::fs_subj_dir()
+> ##D # Split up aparc annot into labels
+> ##D mri_annotation2label(annot_name = "aparc")
+> ##D 
+> ##D # get annot for colour labels
+> ##D annot <- freesurfer::read_annotation(
+> ##D               file.path(subj_dir,
+> ##D                         "fsaverage5/label/rh.aparc.annot"))
+> ##D 
+> ##D labels <- list.files(
+> ##D    file.path(subj_dir, "fsaverage5/label/aparc"),
+> ##D     full.names = TRUE)
+> ##D 
+> ##D # Write colortable to file
+> ##D ctab_file <- tempfile(fileext = ".ctab")
+> ##D write_ctab(annot$colortable, ctab_file)
+> ##D 
+> ##D # Combine labels back into annotation
+> ##D mris_label2annot(labels, hemisphere = "rh", ctab = ctab_file)
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("subject_2_ascii")
+> ### * subject_2_ascii
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: subject_2_ascii
+> ### Title: Convert subject surface files to ascii
+> ### Aliases: subject_2_ascii
+> 
+> ### ** Examples
+> 
+> ## Not run: 
+> ##D subject_2_ascii()
+> ##D subject_2_ascii("fsaverage")
+> ##D subject_2_ascii("bert")
+> ## End(Not run)
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  4.699 0.208 17.402 10.597 1.046 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Contributing: creating new polygon ggseg-atlases</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Contributing: creating new polygon
+ggseg-atlases</h1>
+
+
+
+<div id="creating-ggseg-atlas-from-a-ggseg3d-atlas" class="section level2">
+<h2>Creating ggseg-atlas from a ggseg3d-atlas</h2>
+<p>The best way to create a ggseg-atlas with little manual intervention,
+is to first make a <a href="customatlas3d.html">ggseg3d-atlas</a>, and
+then convert that to ggseg-atlas. The entire process can take anything
+from 10minutes, depending on the number of segmentations in the atlas.
+More segmentations means longer time.</p>
+<p>Once you have a ggseg3d-atlas, the function
+<code>ggseg3d_2_ggseg()</code> can convert that into polygons ready for
+ggseg.</p>
+<div id="prerequisites" class="section level3">
+<h3>Prerequisites</h3>
+<ul>
+<li>R</li>
+<li><a href="https://imagemagick.org/index.php">ImageMagick</a></li>
+<li><a href="https://github.com/plotly/orca">orca</a></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">make_ggseg3d_2_ggseg</span>(</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">ggseg3d_atlas =</span> dk_3d,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  <span class="at">steps =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">output_dir =</span> <span class="fu">tempdir</span>(),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">smoothness =</span> <span class="dv">5</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">tolerance =</span> <span class="dv">0</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="at">cleanup =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The function takes few arguments, but does quite a lot in the
+background. It needs an object that is a ggseg3d-atlas, ad will work
+with no other input changed. We recommend changing the
+<code>output_dir</code> to a folder you can keep track of to see how the
+intermediate results look like. This also makes it possible for you to
+use the <code>steps</code> argument. If early steps have been run
+successfully, you can skip them and only run later steps. Re-running
+steps 5:7 might be necessary to find a good balance between
+<code>smoothness</code> of the polygons for nicer looking parcellations,
+and vertex reductions through <code>tolerance</code> to reduce file
+size. We recommend trying several combinations until you have something
+that looks nice. Vertex reduction is particularly important, as it
+significantly reduces the atlas data size, thus making it much faster to
+plot. This is important for incorporating into Shiny apps, or if you
+have very many facets to plot. We’d generally recommend a 2d-atlas not
+have much more than 10k vertices.</p>
+<p>Once the data is returned, we recommend doing some data cleaning,
+particularly of the <code>region</code> column. This column should
+ideally have human readable names, be short, and have space rather than
+delimiters. This is to enable nicer labelling when plotting. Once this
+is done, try plotting it with ggseg.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">geom_brain</span>(<span class="at">atlas =</span> dt)</span></code></pre></div>
+</div>
+<div id="dkt-example" class="section level3">
+<h3>DKT example</h3>
+<p>If you have successfully created a 3d atlas <a href="customatlas3d.html">following these steps</a>, you can proceed
+using the 3d-atlas to make the 2d-atlas. As long as the 3d atlas is
+correctly made, you should have little difficulty making a 2d version.
+This pipeline also makes a lot of intermediary files, so be aware of
+that.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># make atlas ----</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>dkt <span class="ot">&lt;-</span> <span class="fu">make_ggseg3d_2_ggseg</span>(dkt_3d,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                            <span class="at">steps =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                            <span class="at">smoothness =</span> <span class="dv">2</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                            <span class="at">tolerance =</span> .<span class="dv">5</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>                            <span class="at">output_dir =</span> <span class="st">&quot;~/Desktop&quot;</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># check that it looks ok.</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="fu">plot</span>(dkt)</span></code></pre></div>
+<p>Some times, annot-files have a unique colour per hemisphere*region
+combination. This is does not work well with ggseg. If you fint that the
+parcellations themselves look fine, but that the colours are off, the
+atlas palette is surely wrong. You will here need to do some manual
+editing of the named character vector in the atlas to fix it.</p>
+</div>
+</div>
+<div id="skipping-ggseg3d-atlas" class="section level2">
+<h2>Skipping ggseg3d-atlas</h2>
+<p>This pipeline is contributed by <a href="https://github.com/bbuchsbaum">bbuchsbaum</a>. It is still quite
+error prone, but was instrumental to creating the above
+functionality.</p>
+<p>The Harvard-Oxford atlas is available with FSL. Here is a process for
+converting the cortical parts, via FreeSurfer, to a ggseg format.</p>
+<div id="prerequisites-1" class="section level3">
+<h3>Prerequisites</h3>
+<p><a href="https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/">FSL</a>, <a href="https://surfer.nmr.mgh.harvard.edu/">FreeSurfer</a>, <a href="https://www.humanconnectome.org/software/connectome-workbench">connectome
+workbench</a>, <a href="https://www.gnu.org/software/parallel/">parallel</a>, <a href="https://imagemagick.org/index.php">ImageMagick</a>, <a href="https://www.r-project.org/">R</a>.</p>
+</div>
+<div id="converting-to-freesurfer-and-fixing" class="section level3">
+<h3>Converting to FreeSurfer and fixing</h3>
+<ol style="list-style-type: decimal">
+<li><p>Take a copy of the fsaverage folder, and set up SUBJECTS_DIR to
+point to the folder containing the fsaverage copy.</p></li>
+<li><p>Import the atlas as a surface</p></li>
+</ol>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${SUBJECTS_DIR}</span>/fsaverage/mri</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">mri_vol2surf</span> <span class="at">--sd</span> <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/../.. <span class="at">--src</span> <span class="va">${FSLDIR}</span>/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz <span class="at">--mni152reg</span> <span class="at">--out</span>  harvard_oxford_surf_rh.mgh <span class="at">--hemi</span> rh <span class="at">--projfrac</span> 0.5</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ex">mri_vol2surf</span> <span class="at">--sd</span> <span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/../.. <span class="at">--src</span> <span class="va">${FSLDIR}</span>/data/atlases/HarvardOxford/HarvardOxford-cort-maxprob-thr25-1mm.nii.gz <span class="at">--mni152reg</span> <span class="at">--out</span> harvard_oxford_surf_lh.mgh <span class="at">--hemi</span> lh <span class="at">--projfrac</span> 0.5</span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Create a color table. Run an R session in
+<code>${SUBJECTS_DIR}/fsaverage/mri</code></li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;ho_ctab.R&quot;</span>)</span></code></pre></div>
+<ol start="4" style="list-style-type: decimal">
+<li>Create a series of individual label files</li>
+</ol>
+<pre><code>mkdir Labels
+seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_rh.mgh --id {} --surf fsaverage rh --l ./Labels/rh_HO_{}.label
+seq 1 48 | parallel mri_vol2label --c harvard_oxford_surf_lh.mgh --id {} --surf fsaverage lh --l ./Labels/lh_HO_{}.label
+</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Create annotation files</li>
+</ol>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="va">LABS</span><span class="op">=</span><span class="va">$(</span><span class="fu">seq</span> 1 48 <span class="kw">|</span> <span class="ex">parallel</span> echo <span class="at">-n</span> <span class="st">&#39;\ --l ./Labels/lh_HO_{}.label\ &#39;</span><span class="va">)</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">mris_label2annot</span> <span class="at">--sd</span> <span class="va">${SUBJECTS_DIR}</span> <span class="at">--s</span> fsaverage <span class="at">--ctab</span> ../label/ho.annot.ctab <span class="va">${LABS}</span> <span class="at">--h</span> lh <span class="at">--a</span> ho</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="va">LABS</span><span class="op">=</span><span class="va">$(</span><span class="fu">seq</span> 1 48 <span class="kw">|</span> <span class="ex">parallel</span> echo <span class="at">-n</span> <span class="st">&#39;\ --l ./Labels/rh_HO_{}.label\ &#39;</span><span class="va">)</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="ex">mris_label2annot</span> <span class="at">--sd</span> <span class="va">${SUBJECTS_DIR}</span> <span class="at">--s</span> fsaverage <span class="at">--ctab</span> ../label/ho.annot.ctab <span class="va">${LABS}</span> <span class="at">--h</span> rh <span class="at">--a</span> ho</span></code></pre></div>
+<ol start="6" style="list-style-type: decimal">
+<li>Check how the surface looks - note lots of holes etc. Using the 0
+prob threshold leads to more bleed to neighboring sulci, which I think
+is harder to fix.</li>
+</ol>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="ex">vglrun</span> freeview  <span class="at">--surface</span> ../surf/rh.inflated:annot=../label/rh.ho.annot <span class="at">--surface</span> ../surf/lh.inflated:annot=../label/lh.ho.annot</span></code></pre></div>
+<ol start="7" style="list-style-type: decimal">
+<li>Fill and smooth</li>
+</ol>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># convert to gifti</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="ex">mris_convert</span> <span class="at">--annot</span> ../label/rh.ho.annot ../surf/rh.inflated ./fsaverage_rh.label.gii</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="ex">mris_convert</span> <span class="at">--annot</span> ../label/lh.ho.annot ../surf/lh.inflated ./fsaverage_lh.label.gii</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="ex">mris_convert</span> <span class="at">--annot</span> ../label/rh.aparc.annot ../surf/rh.inflated ./fsaverage_aparc_rh.label.gii</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="ex">mris_convert</span> <span class="at">--annot</span> ../label/lh.aparc.annot ../surf/lh.inflated ./fsaverage_aparc_lh.label.gii</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="ex">./smooth_labels.sh</span> fsaverage_lh_10.label.gii inflated_lh.surf.gii fsaverage_lh_10.smooth.label.gii</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="ex">./smooth_labels.sh</span> fsaverage_rh_10.label.gii inflated_rh.surf.gii fsaverage_rh_10.smooth.label.gii</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">## Back to viewing with freesurfer</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="cf">for</span> hemi <span class="kw">in</span> lh rh <span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="ex">mris_convert</span> <span class="at">--annot</span> fsaverage_<span class="va">${hemi}</span>_10.smooth.label.gii inflated_<span class="va">${hemi}</span>.surf.gii ./<span class="va">${hemi}</span>.ho.smooth.annot</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<ol start="8" style="list-style-type: decimal">
+<li>Screengrabs with tksurfer. This can be reun somewhere other than
+fsaverage.</li>
+</ol>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="ex">./mkPics.sh</span></span></code></pre></div>
+<ol start="9" style="list-style-type: decimal">
+<li>Rename the unknowns to medial wall</li>
+</ol>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">mv</span> PicsHarvardOxford/lh_\?\?\?_med.tif PicsHarvardOxford/lh_medialwall_med.tif</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">mv</span> PicsHarvardOxford/rh_\?\?\?_med.tif PicsHarvardOxford/rh_medialwall_med.tif</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">rm</span> PicsHarvardOxford/<span class="pp">*</span>_\?<span class="pp">*</span></span></code></pre></div>
+<ol start="10" style="list-style-type: decimal">
+<li>Finally, let the R spatial tools work their magic…</li>
+</ol>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;mkHO.R&quot;</span>)</span></code></pre></div>
+<p>This creates <code>ho_atlas.Rda</code> which contains a couple of
+data frames, almost ready for inclusion in ggsegExtra.</p>
+</div>
+<div id="comments" class="section level3">
+<h3>Comments</h3>
+<p>I suspect something similar will be possible with tkedit, or other
+viewers that are able to look at the subcortical structures. Otherwise
+maximal projections after thresholding will probably suffice.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
