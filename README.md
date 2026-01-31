@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Coverage
-Status](https://codecov.io/gh/ggseg/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/ggseg/ggsegExtra)
+Status](https://raw.githubusercontent.com/ggseg/ggsegExtra/coverage/badges/coverage.svg)](https://github.com/ggseg/ggsegExtra/actions/workflows/test-coverage.yaml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle:
