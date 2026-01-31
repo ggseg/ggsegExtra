@@ -31,7 +31,7 @@ ggseg_atlas_repos <- function(pattern = NULL, ...) {
 #' Install ggseg-atlas from repo
 #'
 #' installs ggseg-atlas library from
-#' the ggseg r-universe <https://ggseg.r-universe.dev/ui#builds> .
+#' the ggseg r-universe <https://ggseg.r-universe.dev/#builds> .
 #'
 #' To install, will temporarily alter your install
 #' repo settings to also use the ggseg r-universe

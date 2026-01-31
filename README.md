@@ -22,7 +22,7 @@ also contains functions and pipelines to create custom atlases.
 ## Installing
 
 We recommend installing this package from its
-[r-universe](https://ggseg.r-universe.dev/ui#builds) build:
+[r-universe](https://ggseg.r-universe.dev/#builds) build:
 
 ``` r
 # Enable this universe

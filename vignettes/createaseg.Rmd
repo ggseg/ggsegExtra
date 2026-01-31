@@ -92,7 +92,7 @@ aseg2_3d
 ### Cleaning the atlas data
 
 The atlas data usually needs some manual editing to get it into a nice shape for other users, and for nice plotting.
-We are avid [tidyverse](https://www.tidyverse.org/) users, and as such the procedures we use here to clean the data use tidyverse functions.
+We are avid [tidyverse](https://tidyverse.org/) users, and as such the procedures we use here to clean the data use tidyverse functions.
 
 First, we will unnest the `ggseg_3d` column, so we can see what the atlas data contains.
 

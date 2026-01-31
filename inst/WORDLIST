@@ -52,6 +52,7 @@ Tracula
 Walhovd
 Winkler
 Winkler's
+XQuartz
 Xcode
 Yeo
 aal
@@ -62,9 +63,11 @@ arslan
 aseg
 bbuchsbaum
 bert
+bibentry
 binarizing
 brainder
 brodmann
+codecov
 colortab
 colour
 colours
@@ -72,6 +75,7 @@ colourtab
 colourtable
 connectome
 ctab
+dev
 dk
 dkt
 dpv
@@ -112,6 +116,7 @@ gordon
 hexidecimal
 http
 ica
+js
 kaleido
 labelfile
 labelid
@@ -138,7 +143,9 @@ projfrac
 purrr
 pypi
 recognisable
+reticulate
 reun
+rgdal
 rh
 segmentations
 snapshotted
@@ -147,6 +154,7 @@ subcortical
 sulci
 sulcus
 tempdir
+terra
 tidyverse
 tkedit
 tkregister
@@ -155,6 +163,7 @@ trhoush
 tri
 tridimensional
 unnest
+webshot
 xquartz
 xyz
 ’

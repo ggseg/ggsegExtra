@@ -28,7 +28,7 @@ To learn how to use these atlases, please look at the documentation for [ggseg](
 
 ## Installation
 
-We recommend installing the ggseg-atlases through the ggseg [r-universe](https://ggseg.r-universe.dev/ui#builds):
+We recommend installing the ggseg-atlases through the ggseg [r-universe](https://ggseg.r-universe.dev/#builds):
 
 ```{r eval = FALSE}
 # Enable this universe

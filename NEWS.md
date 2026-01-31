@@ -4,13 +4,12 @@
 
 - Removed rgdal dependency, replaced with sf/terra (#49, #59)
 - Fixed r-universe API calls (JSON array format change)
-- Updated vignettes with Quarto-style chunk labels
 - Fixed vignette build issues with conditional evaluation for suggested packages
 - Replaced reticulate/kaleido with webshot2 for plotly screenshots
 - Updated system setup vignette with new requirements
-- Simplified GitHub Actions workflows (removed orca/node.js)
-- Replaced codecov with self-hosted coverage badge
+- Added documentation for parallel processing and progress bars
 - Added note about freesurfer dev version requirement
+- Updated CITATION to use bibentry()
 - Fixed mris_label2annot example documentation
 
 # ggsegExtra 1.5
@@ -23,7 +22,7 @@
 ## ggsegExtra 1.5.33
 
 - removes purrr dependency
-- used ggseg [r-universe](https://ggseg.r-universe.dev/ui#builds) as install repo for install functions
+- used ggseg [r-universe](https://ggseg.r-universe.dev/#builds) as install repo for install functions
 
 ## ggsegExtra 1.5.32
 

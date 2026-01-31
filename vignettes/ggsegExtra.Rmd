@@ -45,7 +45,7 @@ ggseg_atlas_repos("yeo")
 ggseg_atlas_repos("yeo", ignore.case = TRUE)
 ```
 
-Installing atlases from the repos, we have convenience function, using the r-universe for [all the ggseg packages](https://ggseg.r-universe.dev/ui#builds)
+Installing atlases from the repos, we have convenience function, using the r-universe for [all the ggseg packages](https://ggseg.r-universe.dev/#builds)
 
 ```{r}
 #| label: install-atlas

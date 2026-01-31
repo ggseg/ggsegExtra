@@ -20,7 +20,7 @@ ggseg r-universe and CRAN.}
 }
 \description{
 installs ggseg-atlas library from
-the ggseg r-universe \url{https://ggseg.r-universe.dev/ui#builds} .
+the ggseg r-universe \url{https://ggseg.r-universe.dev/#builds} .
 }
 \details{
 To install, will temporarily alter your install
