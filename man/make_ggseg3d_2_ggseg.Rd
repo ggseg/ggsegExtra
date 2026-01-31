@@ -8,10 +8,10 @@ make_ggseg3d_2_ggseg(
   ggseg3d_atlas,
   steps = 1:7,
   output_dir = tempdir(),
+  view = c("medial", "lateral"),
   tolerance = 0,
   smoothness = 5,
-  cleanup = FALSE,
-  ncores = 2
+  cleanup = FALSE
 )
 }
 \arguments{
@@ -21,13 +21,13 @@ make_ggseg3d_2_ggseg(
 
 \item{output_dir}{output directory path}
 
+\item{view}{which sides of the brain to be snapshotted}
+
 \item{tolerance}{tolerance during vertex reduction \code{\link[sf]{st_simplify}}}
 
 \item{smoothness}{smoothing factor, argument to \code{\link[smoothr]{smooth}}}
 
 \item{cleanup}{logical to toggle removal of all intermediary files}
-
-\item{ncores}{number of cores for parallel processing (default numcores-2)}
 }
 \value{
 data.frame ready for manual cleaning before turning into a proper ggseg3d-atlas

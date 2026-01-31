@@ -12,3 +12,4 @@ restruct_old_3datlas(atlas_data)
 \description{
 Change old atlas setup to new
 }
+\keyword{internal}

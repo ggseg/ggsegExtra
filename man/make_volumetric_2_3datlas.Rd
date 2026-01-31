@@ -6,13 +6,12 @@
 \usage{
 make_volumetric_2_3datlas(
   template,
-  color_lut,
+  color_lut = NULL,
   subject = "fsaverage5",
   subjects_dir = freesurfer::fs_subj_dir(),
   steps = 1:5,
   output_dir = tempdir(),
   verbose = TRUE,
-  ncores = parallel::detectCores() - 2,
   cleanup = TRUE
 )
 }
@@ -20,7 +19,7 @@ make_volumetric_2_3datlas(
 \item{template}{template \code{volume.mgz} file path}
 
 \item{color_lut}{Freesurfer colour look-up-table. Either
-as a path or a data.frame that \code{\link{is_ctab}}}
+as a path or a data.frame that \code{\link[=is_ctab]{is_ctab()}}}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
@@ -34,13 +33,11 @@ saved, and steps can be re-run individually}
 
 \item{verbose}{logical indicating to be verbose or not}
 
-\item{ncores}{number of cores for parallel processing (default numcores-2)}
-
 \item{cleanup}{logical to toggle removal of all intermediary files}
 }
 \value{
 returns a ggseg3d-atlas ready object. Might need manual
-   cleaning to become a good atlas.
+cleaning to become a good atlas.
 }
 \description{
 Function to create a ggseg3d-atlas
@@ -48,12 +45,6 @@ from a volumetric parcellation.
 Currently only tested using \code{.mgz}
 extension images. Will call command-line
 tools to complete the process.
-}
-\details{
-the function is aggressive in the number
-of cores used to minimize time taken to
-create the atlas. Set the  \code{ncores}
-argument for less aggressive approach.
 }
 \examples{
 \dontrun{

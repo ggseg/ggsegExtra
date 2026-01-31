@@ -4,16 +4,14 @@
 \alias{atlas_vol2surf}
 \title{Nifti volume to surface}
 \usage{
-atlas_vol2surf(input_file, output_dir, projfrac = 0.5, verbose = TRUE)
+atlas_vol2surf(input_file, output_dir, projfrac = 0.5)
 }
 \arguments{
 \item{input_file}{nifti volume}
 
 \item{output_dir}{output directory path}
 
-\item{projfrac}{value to mri_vol2surf -projfrac}
-
-\item{verbose}{logical indicating to be verbose or not}
+\item{projfrac}{value to \code{freesurfer mri_vol2surf} -projfrac}
 }
 \value{
 nothing, creates surface files

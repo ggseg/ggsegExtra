@@ -7,3 +7,5 @@ inst/doc
 **.DS_Store
 data-raw/fsaverage*
 README.html
+.claude/
+docs/

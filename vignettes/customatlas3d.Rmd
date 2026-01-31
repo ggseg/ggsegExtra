@@ -7,7 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   eval = FALSE,
@@ -17,41 +19,42 @@ knitr::opts_chunk$set(
 ```
 
 
-New ggseg3d-atlases can be obtained by converting surfaces into tridimensional meshes in `.ply` format. 
-The pipeline for creating cortical surfaces and volumetric images into ggseg3d-atlases is slightly different than for ggseg-atlases. 
+New ggseg3d-atlases can be obtained by converting surfaces into tridimensional meshes in `.ply` format.
+The pipeline for creating cortical surfaces and volumetric images into ggseg3d-atlases is slightly different than for ggseg-atlases.
 
 One has to convert the images with information on your labels to a FreeSurfer annotation file (cortical) or to a `.mgz` file (sub-cortical), and then run an R-function calling FreeSurfer and FSL to create the ggseg3d-atlas.
 
-The conversion is based on the scripts available in https://github.com/andersonwinkler/areal by Anderson Winkler. 
-Essentially, the functions are identical to A. Winkler's work, with small edits to better adapt to the R and the specific purpose of ggseg3d-atlas creation. 
-All credit goes to Anderson Winkler for making these pipelines, see more information on his [webpage](https://brainder.org/research/brain-for-blender/). 
+The conversion is based on the scripts available in https://github.com/andersonwinkler/areal by Anderson Winkler.
+Essentially, the functions are identical to A. Winkler's work, with small edits to better adapt to the R and the specific purpose of ggseg3d-atlas creation.
+All credit goes to Anderson Winkler for making these pipelines, see more information on his [webpage](https://brainder.org/research/brain-for-blender/).
 
-## Prerequisites 
-- [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)  
-- [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)  
-- [R](https://www.r-project.org/)  
+## Prerequisites
+- [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
+- [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)
+- [R](https://www.r-project.org/)
 - [orca](https://github.com/plotly/orca)
 
 These functions will not work on Windows systems, as FreeSurfer is not available for Windows.
-If you desperately need to use it on Windows-bases systems, you can look into FreeSurfer docker containers and see if you can connect that to R, but we have not tried this. 
-Finally one has to have R and the ggseg-family of packages to convert the `.ply` meshes into a ggseg3d-atlas. 
+If you desperately need to use it on Windows-bases systems, you can look into FreeSurfer docker containers and see if you can connect that to R, but we have not tried this.
+Finally one has to have R and the ggseg-family of packages to convert the `.ply` meshes into a ggseg3d-atlas.
 
 ## From a surface image.
 
 ### 1)	Make annotation file (bash + FreeSurfer)
 Atlases already available in FreeSurfer have annotation files, making this step unnecessary.
-These can be found in the FreeSurfer subject directory, within a subject in the `label/` folder, look for files ending with `.annot`. 
+These can be found in the FreeSurfer subject directory, within a subject in the `label/` folder, look for files ending with `.annot`.
 For other files (like results from your vertex-vise analyses etc), you will need to convert the ROIs you have to annotation files.
-This may require any of the following conversions: 
+This may require any of the following conversions:
 
-1.	Convert overlay files into annotations. (e.g. overlay results to annotations)  
-2.	Register files across different subject templates (from 164k_FS_LR [HCP] to fsaverage 5). 
-    - The specific procedure will depend on your original image  
-    - FreeSurfer's `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions  
+1.	Convert overlay files into annotations. (e.g. overlay results to annotations)
+2.	Register files across different subject templates (from 164k_FS_LR [HCP] to fsaverage 5).
+    - The specific procedure will depend on your original image
+    - FreeSurfer's `mri_surf2annot`, `mri_surf2surf`, `mri_label2annot` or `mri_surfcluster`, should be capable to do most of the required conversions
 
 If altering a freesurfer `.annot` file between subjects (like from "bert" to "fsaverage5"), you can use an R convenience function we have made:
 
 ```{r}
+#| label: surf2surf-rereg
 # convert bert's DKT to fsaverage5
 mri_surf2surf_rereg(subject = "bert",
               annot = "aparc.DKTatlas",
@@ -64,13 +67,14 @@ mri_surf2surf_rereg(subject = "bert",
               output_dir = "/path/to/where/you/want/it")
 ```
 
-For this to work function to work, the `annot` file _must_ be in `$FREESURFER_HOME/subjects/bert/label`. 
+For this to work function to work, the `annot` file _must_ be in `$FREESURFER_HOME/subjects/bert/label`.
 
 ### 2)	Run `make_aparc_2_3datlas()`(R)
 This script converts your annotations (`.annot`) into tridimensional (`.ply`) meshes, and then to a ggseg3d-atlas.
 Without any arguments, it will create the aparc (Desikan-Killiany atlas), based on annotation files in the FreeSurfer subjects directory.
 
 ```{r}
+#| label: make-aparc
 # Desikan-Killiany atlas (a.k.a aparc)
 dt <- make_aparc_2_3datlas()
 
@@ -84,48 +88,50 @@ dt <- make_aparc_2_3datlas(annot = "Yeo2011_7Networks_N1000")
 Depending on the set-up you have, where you are storing data, etc. you have many arguments to the function to choose from.
 The arguments for the function are:
 
-- `annot` : annotation base name, "aparc" default   
-- `subject` : FreeSurfer subject, "fsaverage5" default  
-- `hemisphere` : hemisphere(s),  c("rh", "lh") default  
-- `surface` : surfaces to create atlas from,  c("inflated", "LCBC", "white") default  
-- `subjects_dir` : path to FreeSurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default  
-- `annot_dir` : directory where the annot files are, file.path(subjects_dir, subject, "label") default  
-- `output_dir` : output directory for intermediary files,  tempdir() default  
-- `cleanup` : logical if output directory intermediary files should be deleted at completion, TRUE default  
+- `annot` : annotation base name, "aparc" default
+- `subject` : FreeSurfer subject, "fsaverage5" default
+- `hemisphere` : hemisphere(s),  c("rh", "lh") default
+- `surface` : surfaces to create atlas from,  c("inflated", "LCBC", "white") default
+- `subjects_dir` : path to FreeSurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default
+- `annot_dir` : directory where the annot files are, file.path(subjects_dir, subject, "label") default
+- `output_dir` : output directory for intermediary files,  tempdir() default
+- `cleanup` : logical if output directory intermediary files should be deleted at completion, TRUE default
 - `verbose` : logical to be verbose or not, TRUE (default)
 
-Depending on what you need to do, and which folders you may have write-access for on your system, any of these might need changing. 
-You can use any surface already existing in the subjects surf folder. 
+Depending on what you need to do, and which folders you may have write-access for on your system, any of these might need changing.
+You can use any surface already existing in the subjects surf folder.
 If you have made your own custom annotation file, and placed it on the Desktop, with the names "lh.myResults.annot" and
 "rh.myResults.annot", you can use this file doing:
 
 ```{r}
+#| label: custom-annot
 # myResults atlas
-dt <- make_aparc_2_3datlas(annot = "myResults", 
+dt <- make_aparc_2_3datlas(annot = "myResults",
                        annot_dir = "~/Desktop")
 ```
 
 
-**Note** that the "LCBC" surface only works for subject "fsaverage5", if you want any other subject, you will need to convert it with `freesurfer::mri_surf2srf()`. 
+**Note** that the "LCBC" surface only works for subject "fsaverage5", if you want any other subject, you will need to convert it with `freesurfer::mri_surf2srf()`.
 If you want to make your own specialized surface, you can, but you should look into FreeSurfer documentation to do that.
 
 You will notice that the `atlas` column takes directly the name of the `annot` file, and that the `region` and `label` columns are the same.
 If you are in the process of making an atlas contribution, there are a couple steps necessary for the atlas to be included.
 
-1) atlas-name should be short and easily recognisable  
-2) the `atlas` column should have the same name as the atlas object it self  
-3) contents in the `region` column should be cleaned to have proper names, _not_ the label names. This is to make it nicer when plotting and make the regions more human readable. Please take care in this step. 
+1) atlas-name should be short and easily recognisable
+2) the `atlas` column should have the same name as the atlas object it self
+3) contents in the `region` column should be cleaned to have proper names, _not_ the label names. This is to make it nicer when plotting and make the regions more human readable. Please take care in this step.
 
 ### DKT example
 
-The DKT atlas for ggseg was made 100% using the functions in this package. 
+The DKT atlas for ggseg was made 100% using the functions in this package.
 The DKT atlas has an annot file installed with FreeSurfer for the example "bert" subject.
 We first need to transform the `annot` file for bert, into a file for `fsaverage5`, which is the
-recommended surface for the mesh plots. 
-We will use the `mri_surf2surf_rereg` function from this package, which calls FreeSurfers `mri_surf2surf` with specific calls to make the transformation. 
+recommended surface for the mesh plots.
+We will use the `mri_surf2surf_rereg` function from this package, which calls FreeSurfers `mri_surf2surf` with specific calls to make the transformation.
 This is done for both hemispheres, and the resulting annotations are here saved on the Desktop.
 
 ```{r}
+#| label: dkt-convert
 # convert DKT to fsaverage5
 mri_surf2surf_rereg(subject = "bert",
                     annot = "aparc.DKTatlas",
@@ -140,7 +146,7 @@ mri_surf2surf_rereg(subject = "bert",
 
 We can then run the `make_aparc_2_3datlas` to create the mesh-plot for this annotation.
 The function will create many files for the mesh to be correctly made.
-Once the function has created an atlas object for us, we here do a little extra data cleaning. 
+Once the function has created an atlas object for us, we here do a little extra data cleaning.
 Firstly, we alter the `atlas` column from the value "aparc.DKTatlas"  to "dkt_3d".
 Then we `unnest` the data, exposing all the underlying atlas information, and remove the `region` column.
 We do this because the default names for "region"  are taken directly from the annotation file, which in this case are not very pretty.
@@ -151,6 +157,7 @@ Then we re-nest the data, and make it into a ggseg3d-atlas.
 Once this atlas is complete and looks to your satisfaction, you can proceed to [making the atlas into a 2d polygon atlas](customatlas.html)
 
 ```{r}
+#| label: dkt-make-3d
 library(dplyr)
 library(tidyr)
 
@@ -158,26 +165,26 @@ library(tidyr)
 dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
                                annot_dir = "~/Desktop/",
                                subjects_dir = freesurfer::fs_subj_dir(),
-                               output_dir = "~/Desktop/") %>%
-  mutate(atlas = "dkt_3d")%>%
-  unnest(ggseg_3d) %>%
-  select(-region) %>%
-  left_join(select(ggseg::dk$data, hemi, region, label)) %>%
-  nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
+                               output_dir = "~/Desktop/") |>
+  mutate(atlas = "dkt_3d")|>
+  unnest(ggseg_3d) |>
+  select(-region) |>
+  left_join(select(ggseg::dk$data, hemi, region, label)) |>
+  nest_by(atlas, surf, hemi, .key = "ggseg_3d") |>
   as_ggseg3d_atlas()
 ```
 
 
 ## From a volume image
-**This still has quite some kinks in it!** 
+**This still has quite some kinks in it!**
 
 ### 1)	Create volumetric image (bash + FreeSurfer / FSL)
-The image needs to have the following characteristics: 
+The image needs to have the following characteristics:
 
-1)	Be in MNI305; 2mm FreeSurfer space    
-2)	Consists of integer values, in which each integer reflects a different ROI  
-    - One will have to perform basic transformations (mostly thresholding, binarizing and, registration) with neuroimaging software tools like FreeSurfer and FSL. 
-    - The specific process will depend on the initial information, but one should manage to convert the data using the following functions: `fslmaths` (FSL) and `mri_convert`, `mri_vol2vol`, `mris_calc` (FreeSurfer). 
+1)	Be in MNI305; 2mm FreeSurfer space
+2)	Consists of integer values, in which each integer reflects a different ROI
+    - One will have to perform basic transformations (mostly thresholding, binarizing and, registration) with neuroimaging software tools like FreeSurfer and FSL.
+    - The specific process will depend on the initial information, but one should manage to convert the data using the following functions: `fslmaths` (FSL) and `mri_convert`, `mri_vol2vol`, `mris_calc` (FreeSurfer).
     - The resulting template file must be in FreeSurfer`.mgz` format.
 
 ### 2)	Run `make_aseg_2_3datlas()` (R)
@@ -186,6 +193,7 @@ This script converts your template images (`.mgz`) into tridimensional (`.ply`) 
 Without any arguments, it will create the aseg atlas, based on `mri/aseg.mgz` file in the FreeSurfer subjects directory, together with the "ASegStatsLUT.txt" file from the FreeSurfer main directory.
 
 ```{r}
+#| label: make-aseg
 # aseg atlas (a.k.a aseg)
 dt <- make_aseg_2_3datlas()
 ```
@@ -195,25 +203,25 @@ The arguments for the function are:
 
 - `template` : path to the template.mgz file
 - `color_lut` : path to color LUT, or a data.frame with color LUT (ctab) properties
-- `steps` : there are 5 steps in the transformation, if partial transformation has been done before, 
-and there has been no `cleanup`, then you can skip the steps already run. 
-- `subject` : FreeSurfer subject, "fsaverage5" default  
-- `subjects_dir` : path to FreeSurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default  
-- `output_dir` : output directory for intermediary files,  tempdir() default  
-- `cleanup` : logical if output directory intermediary files should be deleted at completion, TRUE default  
+- `steps` : there are 5 steps in the transformation, if partial transformation has been done before,
+and there has been no `cleanup`, then you can skip the steps already run.
+- `subject` : FreeSurfer subject, "fsaverage5" default
+- `subjects_dir` : path to FreeSurfer $SUBJECTS_DIR, freesurfer::fs_subj_dir() default
+- `output_dir` : output directory for intermediary files,  tempdir() default
+- `cleanup` : logical if output directory intermediary files should be deleted at completion, TRUE default
 - `verbose` : logical to be verbose or not, TRUE (default)
 
-Depending on what you need to do, and which folders you may have write-access for on your system, any of these might need changing. 
-You will need to make sure you have a `template.mgz` file made in 1) before you can run this. 
+Depending on what you need to do, and which folders you may have write-access for on your system, any of these might need changing.
+You will need to make sure you have a `template.mgz` file made in 1) before you can run this.
 
 ```{r}
-
+#| label: custom-volumetric
 # myResults template without a color LUT
-dt <- make_aparc_2_3datlas(template = "path/to/myResults.mgz", 
+dt <- make_aparc_2_3datlas(template = "path/to/myResults.mgz",
                        color_lut = NULL)
 
 # myResults template with a color LUT
-dt <- make_aparc_2_3datlas(template = "path/to/myResults.mgz", 
+dt <- make_aparc_2_3datlas(template = "path/to/myResults.mgz",
                        color_lut = "path/to/myResults_LUT.txt")
 ```
 

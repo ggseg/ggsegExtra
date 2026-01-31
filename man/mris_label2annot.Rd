@@ -39,7 +39,7 @@ file, these can be combined with FreeSurfer's
 \code{mris_label2annot}.
 }
 \examples{
-if(freesurfer::have_fs()){
+\dontrun{
 # for freesurfer help see:
 freesurfer::fs_help("mris_label2annot")
 
@@ -49,15 +49,18 @@ mri_annotation2label(annot_name = "aparc")
 
 # get annot for colour labels
 annot <- freesurfer::read_annotation(
-              file.path(subj_dir, 
+              file.path(subj_dir,
                         "fsaverage5/label/rh.aparc.annot"))
 
 labels <- list.files(
-   file.path(subj_dir, "fsaverage5/label/aparc"), 
+   file.path(subj_dir, "fsaverage5/label/aparc"),
     full.names = TRUE)
 
-# Combine them again into annot.
-mris_label2annot(labels, annot$colortable)
+# Write colortable to file
+ctab_file <- tempfile(fileext = ".ctab")
+write_ctab(annot$colortable, ctab_file)
 
+# Combine labels back into annotation
+mris_label2annot(labels, hemisphere = "rh", ctab = ctab_file)
 }
 }

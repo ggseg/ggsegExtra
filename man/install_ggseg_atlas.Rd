@@ -20,7 +20,7 @@ ggseg r-universe and CRAN.}
 }
 \description{
 installs ggseg-atlas library from
-the ggseg r-universe <https://ggseg.r-universe.dev/ui#builds> .
+the ggseg r-universe \url{https://ggseg.r-universe.dev/#builds} .
 }
 \details{
 To install, will temporarily alter your install
@@ -30,7 +30,7 @@ be restored when the function exits.
 }
 \examples{
 \dontrun{
-yeo2011_repo <- ggseg_atlas_repos("yeo2011")
-install_ggseg_atlas(yeo2011_repo$repo, yeo2011_repo$source)
+ggseg_atlas_repos("yeo")
+install_ggseg_atlas("ggsegYeo2011")
 }
 }

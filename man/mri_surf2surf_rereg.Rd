@@ -38,14 +38,12 @@ balance in number of vertices for detailed
 rendering and speed.
 }
 \examples{
-if(freesurfer::have_fs()){
-
+\dontshow{if (freesurfer::have_fs()) withAutoprint(\{ # examplesIf}
 # For help see:
 freesurfer::fs_help("mri_surf2surf")
 
-mri_surf2surf_rereg(subject = "bert", 
+mri_surf2surf_rereg(subject = "bert",
                     annot = "aparc.DKTatlas",
                     target_subject = "fsaverage5")
-}
-
+\dontshow{\}) # examplesIf}
 }
