@@ -37,6 +37,11 @@ jobs:
           extra-packages: any::covr
           needs: coverage
 
+      - name: Install dev freesurfer
+        run: |
+          pak::pak("drmowinckels/freesurfer@refactor")
+        shell: Rscript {0}
+
       - name: Test coverage
         run: |
           coverage <- covr::package_coverage(

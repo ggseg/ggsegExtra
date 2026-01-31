@@ -64,6 +64,11 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install dev freesurfer
+        run: |
+          pak::pak("drmowinckels/freesurfer@refactor")
+        shell: Rscript {0}
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true

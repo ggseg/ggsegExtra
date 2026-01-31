@@ -8,6 +8,9 @@
 - Fixed vignette build issues with conditional evaluation for suggested packages
 - Replaced reticulate/kaleido with webshot2 for plotly screenshots
 - Updated system setup vignette with new requirements
+- Simplified GitHub Actions workflows (removed orca/node.js)
+- Replaced codecov with self-hosted coverage badge
+- Added note about freesurfer dev version requirement
 - Fixed mris_label2annot example documentation
 
 # ggsegExtra 1.5

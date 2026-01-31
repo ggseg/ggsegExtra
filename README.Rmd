@@ -57,6 +57,15 @@ Alternatively, install the package with the remotes package from github.
 remotes::install_github("ggseg/ggsegExtra")
 ```
 
+### Development version of freesurfer
+
+The atlas creation functions require a development version of the freesurfer R package that is not yet on CRAN.
+Until the [PR is merged](https://github.com/muschellij2/freesurfer/pull/28), install from:
+
+```{r, eval = FALSE}
+pak::pak("drmowinckels/freesurfer@refactor")
+```
+
 ## Create custom atlases
 We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://ggseg.github.io/ggsegExtra/). 
 Currently, the pipeline for making 3d atlases needs FreeSufer to be installed on your system and a ready `.annot` file to use for the conversions.
