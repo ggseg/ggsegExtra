@@ -16,7 +16,7 @@
 #' @export
 #' @importFrom dplyr filter select mutate case_when tibble left_join group_by ungroup one_of
 #' @importFrom furrr future_pmap
-#' @importFrom ggseg brain_atlas
+#' @importFrom ggseg.formats brain_atlas
 #' @importFrom ggseg3d is_ggseg3d_atlas
 #' @importFrom progressr progressor
 #' @importFrom sf st_combine
@@ -263,6 +263,9 @@ make_ggseg3d_2_ggseg <- function(
     atlas_df_sf$region
   )
 
+  # Add vertices column (empty for now, vertex mapping is complex)
+  atlas_df_sf$vertices <- lapply(seq_len(nrow(atlas_df_sf)), function(x) numeric(0))
+
   atlas <- brain_atlas(
     atlas = gsub("_3d$", "", unique(ggseg3d_atlas$atlas)),
     type = "cortical",
@@ -338,7 +341,7 @@ make_palette_ggseg <- function(ggseg3d_atlas) {
 #' @importFrom dplyr filter left_join case_when select starts_with
 #' @importFrom freesurfer have_fs fs_dir
 #' @importFrom furrr future_pmap
-#' @importFrom ggseg brain_atlas
+#' @importFrom ggseg.formats brain_atlas
 #' @importFrom magick image_read image_convert image_transparent image_morphology image_write
 #' @importFrom progressr progressor
 #' @importFrom stats setNames
@@ -630,12 +633,15 @@ make_volumetric_ggseg <- function(
       cat("Atlas complete with", jj, "vertices\n")
     }
 
+    # Add vertices column (empty for now, vertex mapping is complex)
+    atlas_df$vertices <- lapply(seq_len(nrow(atlas_df)), function(x) numeric(0))
+
     atlas <- brain_atlas(
       atlas = substr(basename(label_file), 1, nchar(basename(label_file)) - 4),
       type = "subcortical",
-      data = atlas_df,
-      palette = pal
+      data = atlas_df
     )
+    atlas$palette <- pal
 
     cat("... cleanup complete\n")
 

@@ -14,7 +14,7 @@ surf2ply(input_file, output_file = paste(input_file, ".ply"), verbose = TRUE)
 \item{verbose}{logical indicating to be verbose or not}
 }
 \value{
-ply text
+mesh object with vertices and faces
 }
 \description{
 Function to convert Freesurfer surface

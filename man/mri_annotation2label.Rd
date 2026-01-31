@@ -7,8 +7,8 @@
 mri_annotation2label(
   annot_name,
   subject = "fsaverage5",
-  hemisphere = "rh",
-  output_dir = fs_subj_dir(),
+  hemisphere = "lh",
+  output_dir = "./labels",
   verbose = TRUE,
   opts = NULL
 )
@@ -28,7 +28,7 @@ specified or set in the environment with $SUBJECTS_DIR}
 \item{opts}{other arguments to freesurfer command}
 }
 \value{
-nothing. Runs command line to write label files
+list of label data frames with vertex coordinates
 }
 \description{
 Calls FreeSurfer's \code{mri_annotation2label}
