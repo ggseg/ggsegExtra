@@ -4,10 +4,13 @@
 \alias{check_fs}
 \title{Check if FS can be run}
 \usage{
-check_fs(msg = NULL)
+check_fs(msg = NULL, abort = FALSE)
 }
 \arguments{
 \item{msg}{message to print on error}
+
+\item{abort}{logical. If function should error
+if Freesurfer is not installed. Defaults to FALSE.}
 }
 \value{
 logical
@@ -15,3 +18,4 @@ logical
 \description{
 Check if FS can be run
 }
+\keyword{internal}

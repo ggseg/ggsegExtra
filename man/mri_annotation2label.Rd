@@ -7,7 +7,7 @@
 mri_annotation2label(
   annot_name,
   subject = "fsaverage5",
-  hemisphere = "lh",
+  hemisphere = "rh",
   output_dir = fs_subj_dir(),
   verbose = TRUE,
   opts = NULL
@@ -35,7 +35,7 @@ Calls FreeSurfer's \code{mri_annotation2label}
 to split an annotation file into several labels.
 }
 \examples{
-if(freesurfer::have_fs()){
+\dontrun{
 # for freesurfer help see:
 freesurfer::fs_help("mri_annotation2label")
 mri_annotation2label(annot_name = "aparc")

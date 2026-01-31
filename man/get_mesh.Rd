@@ -9,7 +9,7 @@ get_mesh(ply, ...)
 \arguments{
 \item{ply}{path to ply-file}
 
-\item{...}{arguments to \code{\link[geomorph]{read.ply}}}
+\item{...}{arguments to \code{\link[geomorph:read.ply]{geomorph::read.ply()}}}
 }
 \value{
 list of meshes and faces
@@ -19,7 +19,7 @@ list of meshes and faces
 for ggseg3d, we only need information
 on the vertices and faces of the mesh.
 Thes function opens a ply file, and
-organises the meshes and faces into 
+organises the meshes and faces into
 a single list.
 }
 \examples{

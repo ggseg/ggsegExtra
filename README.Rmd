@@ -14,14 +14,16 @@ knitr::opts_chunk$set(
 )
 library(ggsegExtra)
 atlases <- ggseg_atlas_repos()
-atlases <- atlases[grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert = TRUE),]
+atlases <- atlases[
+  grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert = TRUE),
+]
 ```
 
 
 # ggsegExtra <img src="man/figures/logo.png" align="right" alt="" width="120" />  
 
 <!-- badges: start -->
-[![Coverage Status](https://codecov.io/gh/ggseg/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/ggseg/ggsegExtra)
+[![Coverage Status](https://raw.githubusercontent.com/ggseg/ggsegExtra/coverage/badges/coverage.svg)](https://github.com/ggseg/ggsegExtra/actions/workflows/test-coverage.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![R-CMD-check](https://github.com/ggseg/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegExtra/actions)
@@ -33,13 +35,16 @@ It also contains functions and pipelines to create custom atlases.
 
 ## Installing 
 
-We recommend installing this package from its [r-universe](https://ggseg.r-universe.dev/ui#builds) build:
+We recommend installing this package from its [r-universe](https://ggseg.r-universe.dev/#builds) build:
 
 ```{r, eval = FALSE}
 # Enable this universe
-options(repos = c(
-  ggseg = 'https://ggseg.r-universe.dev',
-  CRAN = 'https://cloud.r-project.org'))
+options(
+  repos = c(
+    ggseg = 'https://ggseg.r-universe.dev',
+    CRAN = 'https://cloud.r-project.org'
+  )
+)
 
 # Install some packages
 install.packages('ggsegExtra')
@@ -52,6 +57,15 @@ Alternatively, install the package with the remotes package from github.
 remotes::install_github("ggseg/ggsegExtra")
 ```
 
+### Development version of freesurfer
+
+The atlas creation functions require a development version of the freesurfer R package that is not yet on CRAN.
+Until the [PR is merged](https://github.com/muschellij2/freesurfer/pull/28), install from:
+
+```{r, eval = FALSE}
+pak::pak("drmowinckels/freesurfer@refactor")
+```
+
 ## Create custom atlases
 We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://ggseg.github.io/ggsegExtra/). 
 Currently, the pipeline for making 3d atlases needs FreeSufer to be installed on your system and a ready `.annot` file to use for the conversions.
@@ -59,29 +73,41 @@ Improvements to the pipeline in creating cortical atlases both for ggseg and ggs
 Pipelines for creating sub-cortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
 Suggestions for improvement are welcome through GH issues or direct Pull requests.
 
-## Availale atlases
+## Available atlases
 There are currently `r nrow(atlases)` available atlases across `r length(unique(atlases$Package))` packages. 
 The packages, their repository name and location can be found with:
 
 ```{r, echo = FALSE, results='asis'}
 for (i in 1:nrow(atlases)) {
   atl <- as.character(atlases[i, "Package"])
-  
+
   # find doi
-  readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/main/README.Rmd", atl)
-  if(httr::http_error(readmeurl))
-    readmeurl <- sprintf("https://raw.githubusercontent.com/ggseg/%s/master/README.Rmd", atl)
-  
+  readmeurl <- sprintf(
+    "https://raw.githubusercontent.com/ggseg/%s/main/README.Rmd",
+    atl
+  )
+  if (httr::http_error(readmeurl)) {
+    readmeurl <- sprintf(
+      "https://raw.githubusercontent.com/ggseg/%s/master/README.Rmd",
+      atl
+    )
+  }
+
   readme <- readLines(readmeurl)
   idx <- grep("badges: ", readme)
-  badges <- readme[(idx[1]+1):(idx[2]-1)]
-  badges <- c("", badges[c(grep("\\[!\\[R", badges), grep("\\[!\\[DOI", badges))])
+  badges <- readme[(idx[1] + 1):(idx[2] - 1)]
+  badges <- c(
+    "",
+    badges[c(grep("\\[!\\[R", badges), grep("\\[!\\[DOI", badges))]
+  )
 
   cat(
-    sprintf('### [%s](%s)', 
-            atl, atlases[i, "RemoteUrl"]),
-    sprintf('<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
-            atlases[i, "RemoteUrl"], atl),
+    sprintf('### [%s](%s)', atl, atlases[i, "RemoteUrl"]),
+    sprintf(
+      '<img src="%s/raw/HEAD/man/figures/logo.png" align="right" alt="%s logo" width="120"/>',
+      atlases[i, "RemoteUrl"],
+      atl
+    ),
     badges,
     sprintf("\n%s\n%s\n", atlases[i, "Title"], atlases[i, "Description"]),
     sep = "\n"

@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Coverage
-Status](https://codecov.io/gh/ggseg/ggsegExtra/branch/master/graph/badge.svg)](https://codecov.io/gh/ggseg/ggsegExtra)
+Status](https://raw.githubusercontent.com/ggseg/ggsegExtra/coverage/badges/coverage.svg)](https://github.com/ggseg/ggsegExtra/actions/workflows/test-coverage.yaml)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
 [![Lifecycle:
@@ -22,7 +22,7 @@ also contains functions and pipelines to create custom atlases.
 ## Installing
 
 We recommend installing this package from its
-[r-universe](https://ggseg.r-universe.dev/ui#builds) build:
+[r-universe](https://ggseg.r-universe.dev/#builds) build:
 
 ``` r
 # Enable this universe
@@ -41,6 +41,17 @@ Alternatively, install the package with the remotes package from github.
 remotes::install_github("ggseg/ggsegExtra")
 ```
 
+### Development version of freesurfer
+
+The atlas creation functions require a development version of the
+freesurfer R package that is not yet on CRAN. Until the [PR is
+merged](https://github.com/muschellij2/freesurfer/pull/28), install
+from:
+
+``` r
+pak::pak("drmowinckels/freesurfer@refactor") 
+```
+
 ## Create custom atlases
 
 We have tutorials on how to make atlases available in the `Articles` of
@@ -53,7 +64,7 @@ creating sub-cortical atlases of any kind are still in their infancy,
 and we do not yet have good solutions for their creation. Suggestions
 for improvement are welcome through GH issues or direct Pull requests.
 
-## Availale atlases
+## Available atlases
 
 There are currently 23 available atlases across 23 packages. The
 packages, their repository name and location can be found with:

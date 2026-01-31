@@ -1,25 +1,26 @@
-
 # adapted from https://github.com/rstudio/distill/blob/master/R/create.R
 # So that we can easily create new distill pages with uio templateing.
 # Lots of internal calling, just get it working for now
-create_atlas_repo <- function(dir,
-                              atlas_name,
-                              edit = interactive()){
+create_atlas_repo <- function(dir, atlas_name, edit = interactive()) {
   type <- "create-ggseg-atlas"
   atlas_name <- tolower(atlas_name)
   repo_name <- sprintf("ggseg%s", tools::toTitleCase(atlas_name))
-  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
-  
+  mkdir(dir)
+
   # copy template files
-  template_dir <- system.file(file.path("rstudio", "templates","project", type),
-                           package = "ggsegExtra")
+  template_dir <- system.file(
+    file.path("rstudio", "templates", "project", type),
+    package = "ggsegExtra"
+  )
   dirs <- list.dirs(template_dir, full.names = FALSE)
-  k <- lapply(dirs, function(x) dir.create(file.path(dir, x), recursive = TRUE, showWarnings = FALSE))
+  k <- lapply(
+    dirs,
+    function(x) mkdir(file.path(dir, x))
+  )
 
   files <- list.files(template_dir, recursive = TRUE)
-  k <- lapply(files, function(x){
-    file.copy(file.path(template_dir, x), 
-              file.path(dir, x))
+  k <- lapply(files, function(x) {
+    file.copy(file.path(template_dir, x), file.path(dir, x))
   })
 
   files <- list.files(dir, full.names = TRUE, recursive = TRUE)

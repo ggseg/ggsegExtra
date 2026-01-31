@@ -51,7 +51,7 @@ devtools::load_all(".")
 
 plot({GGSEG})
 
-{GGSEG} %>%
+{GGSEG} |>
   ggseg(atlas = ., show.legend = TRUE,
         colour = "black",
         mapping = aes(fill=region)) +

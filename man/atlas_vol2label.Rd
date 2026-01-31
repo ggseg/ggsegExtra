@@ -4,7 +4,7 @@
 \alias{atlas_vol2label}
 \title{Volume to label}
 \usage{
-atlas_vol2label(annot_lab, output_dir, verbose, ncores = 2)
+atlas_vol2label(annot_lab, output_dir, verbose)
 }
 \arguments{
 \item{annot_lab}{annotation label}
@@ -12,8 +12,6 @@ atlas_vol2label(annot_lab, output_dir, verbose, ncores = 2)
 \item{output_dir}{output directory path}
 
 \item{verbose}{logical indicating to be verbose or not}
-
-\item{ncores}{number of cores for parallel processing (default numcores-2)}
 }
 \value{
 invisibly returns the list of labels.

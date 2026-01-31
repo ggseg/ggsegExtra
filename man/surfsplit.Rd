@@ -35,3 +35,4 @@ label file.
 Script adapted to R and ggseg based on scripts
 from Anderson M. Winkler: http://brainder.org
 }
+\keyword{internal}

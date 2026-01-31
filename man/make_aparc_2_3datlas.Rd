@@ -12,13 +12,12 @@ make_aparc_2_3datlas(
   subjects_dir = freesurfer::fs_subj_dir(),
   annot_dir = file.path(subjects_dir, subject, "label"),
   output_dir = tempdir(),
-  ncores = parallel::detectCores() - 2,
   cleanup = TRUE,
   verbose = TRUE
 )
 }
 \arguments{
-\item{annot}{annotation file, with name [hemi].[annot].annot abd be in annot_dir}
+\item{annot}{annotation file, with name without the hemisphere information or the .annot extension, and be in annot_dir}
 
 \item{subject}{Freesurfer subject, must exist in whatever subject directory
 specified or set in the environment with $SUBJECTS_DIR}
@@ -33,8 +32,6 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{output_dir}{output directory path}
 
-\item{ncores}{number of cores for parallel processing (default numcores-2)}
-
 \item{cleanup}{logical to toggle removal of all intermediary files}
 
 \item{verbose}{logical indicating to be verbose or not}
@@ -44,7 +41,7 @@ nested data frame as ggseg3d-atlas
 }
 \description{
 Function loops through hemispheres and surfaces
-to create a data frame that is ready to use with 
+to create a data frame that is ready to use with
 ggseg3d.
 }
 \details{

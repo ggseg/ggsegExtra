@@ -17,7 +17,6 @@ make_volumetric_ggseg(
   vertex_size_limits = NULL,
   dilate = NULL,
   tolerance = 0,
-  ncores = 2,
   smoothness = 5,
   verbose = TRUE,
   cleanup = FALSE
@@ -47,8 +46,6 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{tolerance}{tolerance during vertex reduction \code{\link[sf]{st_simplify}}}
 
-\item{ncores}{number of cores for parallel processing (default numcores-2)}
-
 \item{smoothness}{smoothing factor, argument to \code{\link[smoothr]{smooth}}}
 
 \item{verbose}{logical indicating to be verbose or not}
@@ -60,7 +57,7 @@ brain-atlas class
 }
 \description{
 If making an atlas from a non-cortical atlas,
-volumetric atlases are the best options. 
+volumetric atlases are the best options.
 Instead of snapshotting images of inflated
 brain, will snapshot brain slices given x, y, z
 coordinates for the slices trhoush the \code{slices}
@@ -71,7 +68,7 @@ argument.
 
    label_file <- file.path(fs_subj_dir(), subject, "mri/aseg.mgz")
    slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
-   
+
    aseg2 <- make_volumetric_ggseg(
       label_file =  label_file,
       slices = slices

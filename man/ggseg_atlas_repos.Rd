@@ -9,7 +9,7 @@ ggseg_atlas_repos(pattern = NULL, ...)
 \arguments{
 \item{pattern}{string pattern to search repos}
 
-\item{...}{additional arguments to \code{\link[base]{grep}}}
+\item{...}{additional arguments to \code{\link[base:grep]{base::grep()}}}
 }
 \value{
 data frame of online repositories with ggseg-atlases
@@ -19,7 +19,9 @@ Function to easily find all online repositories that
 contain ggseg atlases
 }
 \examples{
+\dontrun{
 ggseg_atlas_repos()
 
 ggseg_atlas_repos("yeo")
+}
 }

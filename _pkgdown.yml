@@ -1,5 +1,93 @@
-destination: docs
-url: https://lcbc-uio.github.io/ggsegExtra/
+url: https://ggseg.github.io/ggsegExtra/
+
 template:
-  params:
-    bootswatch: cerulean
+  bootstrap: 5
+  brand: _brand.yml
+
+navbar:
+  structure:
+    left: [intro, articles, reference, news]
+    right: [search, github]
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - ggsegExtra
+      - system_setup
+
+  - title: Creating Atlases
+    desc: Step-by-step guides for creating custom brain atlases
+    contents:
+      - customatlas3d
+      - customatlas
+
+  - title: Tutorials
+    desc: Complete worked examples
+    contents:
+      - createdkt
+      - createaseg
+
+  - title: Contributing
+    contents:
+      - ggsegrepo
+
+reference:
+  - title: Atlas Discovery & Installation
+    desc: Find and install ggseg atlas packages
+    contents:
+      - ggseg_atlas_repos
+      - install_ggseg_atlas
+      - install_ggseg_atlas_all
+
+  - title: Create 3D Atlases
+    desc: Functions to create ggseg3d-compatible atlases
+    contents:
+      - make_aparc_2_3datlas
+      - make_volumetric_2_3datlas
+
+  - title: Create 2D Atlases
+    desc: Functions to create ggseg-compatible atlases
+    contents:
+      - make_ggseg3d_2_ggseg
+      - make_volumetric_ggseg
+      - make_palette_ggseg
+
+  - title: Volume & Surface Conversion
+    desc: Convert between volumetric and surface representations
+    contents:
+      - atlas_vol2surf
+      - atlas_vol2label
+      - mri_vol2label
+
+  - title: Color Tables
+    desc: Read, write, and manipulate FreeSurfer color tables
+    contents:
+      - read_ctab
+      - write_ctab
+      - is_ctab
+      - atlas_lab2ctab
+
+  - title: Mesh Functions
+    desc: Work with 3D mesh data
+    contents:
+      - get_mesh
+      - aparc_2_mesh
+      - surf2ply
+      - curv2ply
+
+  - title: FreeSurfer Wrappers
+    desc: R wrappers for FreeSurfer command-line tools
+    contents:
+      - mris_label2annot
+      - mri_annotation2label
+      - mris_ca_label
+      - mri_surf2surf_rereg
+      - subject_2_ascii
+
+  - title: FreeSurfer Constants
+    desc: Available FreeSurfer surfaces and curvatures
+    contents:
+      - fs_surfaces
+      - fs_curvatures
+      - fs_nofixcurv

@@ -7,7 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -20,16 +22,17 @@ Here we provide an example of creating a cortical ggseg and ggseg3d atlas.
 To read more about the details of the process, see the vignette on [creating custom3d atlases](customatlas3d.html) and [creating custom polygon atlases](customatlas.html).
 We will here show the fully automated way we have created the [ggsegDKT](https://ggseg.github.io/ggsegDKT/) atlas data.
 
-## Prerequisites 
-To successfully run these operations, you must have the following installed on your system, and be running it on either a Linux or Mac.  
-- [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)  
-- [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)  
-- [R](https://www.r-project.org/)  
-- [ImageMagick](https://imagemagick.org/index.php)  
-- [orca](https://github.com/plotly/orca)  
+## Prerequisites
+To successfully run these operations, you must have the following installed on your system, and be running it on either a Linux or Mac.
+- [FSL](https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
+- [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)
+- [R](https://www.r-project.org/)
+- [ImageMagick](https://imagemagick.org/index.php)
+- [orca](https://github.com/plotly/orca)
 
 Initiate your R script with the following library calls:
-```{r setup}
+```{r}
+#| label: load-libraries
 library(ggsegExtra)
 library(ggseg)
 library(ggseg3d)
@@ -42,13 +45,14 @@ library(tidyverse) # for cleaning the atlas data efficiently
 ### The annotation file
 The first step is to create a FreeSurfer annotation file for the "fsaverage5" subject.
 This subject is ideal as it has fewer vertices than fsaverage6 or fsaverage (and thereby plots faster), but still contains enough detail to produce a good representation of the cortical surface.
-FreeSurfer comes with a DKT cortical annotation file, but only for the "bert" example subject. 
+FreeSurfer comes with a DKT cortical annotation file, but only for the "bert" example subject.
 Since "bert" is not an average brain composite, it is not well suited for our purposes.
-We will first need to convert the annotation file for "bert" into an annotation file for "fsaverage5". 
+We will first need to convert the annotation file for "bert" into an annotation file for "fsaverage5".
 In FreeSurfer this is done with the `mri_surf2surf` command, with very specific arguments.
 We have in _ggsegExtra_ created a specialized function specifically for this type of transformation, calling FreeSurfer's `mri_surf2surf` with the `mri_surf2surf_rereg()` function.
 
 ```{r}
+#| label: convert-annot
 # convert DKT to fsaverage5
 mri_surf2surf_rereg(subject = "bert",
                     annot = "aparc.DKTatlas",
@@ -66,7 +70,7 @@ $Id: mri_surf2surf.c,v 1.103 2015/11/05 22:07:33 greve Exp $
 
 setenv SUBJECTS_DIR /Applications/freesurfer/subjects
 cd /Users/athanasm/R-stuff/LCBC/ggseg_stuff/atlases/ggsegDKT
-/Applications/freesurfer/bin/mri_surf2surf --srcsubject bert --sval-annot aparc.DKTatlas --trgsubject fsaverage5 --tval data-raw//lh.aparc.DKTatlas --hemi lh 
+/Applications/freesurfer/bin/mri_surf2surf --srcsubject bert --sval-annot aparc.DKTatlas --trgsubject fsaverage5 --tval data-raw//lh.aparc.DKTatlas --hemi lh
 
 sysname  Darwin
 hostname Athanasias-MacBook-Pro.home
@@ -74,10 +78,10 @@ machine  x86_64
 user     athanasm
 srcsubject = bert
 srcval     = (null)
-srctype    = 
+srctype    =
 trgsubject = fsaverage5
 trgval     = data-raw//lh.aparc.DKTatlas
-trgtype    = 
+trgtype    =
 srcsurfreg = sphere.reg
 trgsurfreg = sphere.reg
 srchemi    = lh
@@ -110,10 +114,10 @@ Converting to target annot
 Saving to target annot data-raw//lh.aparc.DKTatlas
 ```
 
-The function defaults to converting the annotation file of a given subject to "fsaverage5", but this can be altered adding the `target_subject` argument. 
+The function defaults to converting the annotation file of a given subject to "fsaverage5", but this can be altered adding the `target_subject` argument.
 The string given to the `annot` argument must match an annotation file name in the subject's `label/` folder as specified in `$FREESURFER_SUBJ_DIR` or specified location though the `subjects_dir` argument to the function.
 Further, by default the converted annotation file will be stored in the target subject's `label/` folder.
-If you for some reason do not have write access to this folder, this can be overridden through the `output_dir` argument. 
+If you for some reason do not have write access to this folder, this can be overridden through the `output_dir` argument.
 
 ### The 3d atlas
 Once an annotation file is made, you can proceed to creating the 3d-mesh atlas.
@@ -121,6 +125,7 @@ The function `make_aparc_2_3datlas()` runs a series of text-conversions to creat
 ending with several ascii-files and surface files with the extension `.ply`.
 
 ```{r}
+#| label: make-3d-atlas
 # Make  3d ----
 dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
                                output_dir = "~/Desktop/")
@@ -136,6 +141,7 @@ Saving /Users/athanasm/Desktop/fsaverage5/srf/ascii/lh.LCBC.asc as a surface
 ```
 
 ```{r}
+#| label: show-3d-atlas
 dkt_3d
 ```
 ```r
@@ -151,27 +157,32 @@ dkt_3d
 ```
 
 ```{r}
+#| label: plot-3d-atlas
 ggseg3d(atlas = dkt_3d)
 ```
-```{r, echo = FALSE, eval = TRUE}
+```{r}
+#| label: include-dkt3d
+#| echo: false
+#| eval: true
 knitr::include_graphics("figures/dkt3d.png")
 ```
 
 ### Cleaning the atlas data
 
 The atlas data usually needs some manual editing to get it into a nice shape for other users, and for nice plotting.
-We are avid [tidyverse](https://www.tidyverse.org/) users, and as such the procedures we use here to clean the data use tidyverse functions. 
+We are avid [tidyverse](https://tidyverse.org/) users, and as such the procedures we use here to clean the data use tidyverse functions.
 
 First, we will unnest the `ggseg_3d` column, so we can see what the atlas data contains.
 
 ```{r}
+#| label: unnest-atlas
 unnest(dkt_3d, ggseg_3d)
 ```
 
 ```r
 # A tibble: 192 x 9
-   atlas      surf    hemi  region        colour  label         roi   annot        mesh     
-   <chr>      <chr>   <chr> <chr>         <chr>   <chr>         <chr> <chr>        <list>   
+   atlas      surf    hemi  region        colour  label         roi   annot        mesh
+   <chr>      <chr>   <chr> <chr>         <chr>   <chr>         <chr> <chr>        <list>
  1 aparc.DKT… inflat… left  caudalanteri… #7D64A0 lh_caudalant… 0001  caudalanter… <named l…
  2 aparc.DKT… inflat… left  caudalmiddle… #641900 lh_caudalmid… 0002  caudalmiddl… <named l…
  3 aparc.DKT… inflat… left  cuneus        #DC1464 lh_cuneus     0003  cuneus       <named l…
@@ -186,47 +197,49 @@ unnest(dkt_3d, ggseg_3d)
 ```
 
 Usually, it is the `region` column we want to do some cleaning of, to make the names of the regions more human readable.
-This column is populated by the names to each region as specified in the `annotation` file. 
+This column is populated by the names to each region as specified in the `annotation` file.
 
 We can inspect all the unique values in this column, so we can start setting up some logic for renaming the regions.
 
 ```{r}
-unnest(dkt_3d, ggseg_3d) %>% 
-  select(region) %>% 
-  unique() %>% 
+#| label: unique-regions
+unnest(dkt_3d, ggseg_3d) |>
+  select(region) |>
+  unique() |>
   unlist()
 ```
 ```r
-                   region1                    region2                    region3 
- "caudalanteriorcingulate"      "caudalmiddlefrontal"                   "cuneus" 
-                   region4                    region5                    region6 
-              "entorhinal"                 "fusiform"         "inferiorparietal" 
-                   region7                    region8                    region9 
-        "inferiortemporal"         "isthmuscingulate"         "lateraloccipital" 
-                  region10                   region11                   region12 
-    "lateralorbitofrontal"                  "lingual"      "medialorbitofrontal" 
-                  region13                   region14                   region15 
-          "middletemporal"          "parahippocampal"              "paracentral" 
-                  region16                   region17                   region18 
-         "parsopercularis"            "parsorbitalis"         "parstriangularis" 
-                  region19                   region20                   region21 
-           "pericalcarine"              "postcentral"       "posteriorcingulate" 
-                  region22                   region23                   region24 
-              "precentral"                "precuneus" "rostralanteriorcingulate" 
-                  region25                   region26                   region27 
-    "rostralmiddlefrontal"          "superiorfrontal"         "superiorparietal" 
-                  region28                   region29                   region30 
-        "superiortemporal"            "supramarginal"       "transversetemporal" 
-                  region31                   region32 
-                  "insula"                         NA 
+                   region1                    region2                    region3
+ "caudalanteriorcingulate"      "caudalmiddlefrontal"                   "cuneus"
+                   region4                    region5                    region6
+              "entorhinal"                 "fusiform"         "inferiorparietal"
+                   region7                    region8                    region9
+        "inferiortemporal"         "isthmuscingulate"         "lateraloccipital"
+                  region10                   region11                   region12
+    "lateralorbitofrontal"                  "lingual"      "medialorbitofrontal"
+                  region13                   region14                   region15
+          "middletemporal"          "parahippocampal"              "paracentral"
+                  region16                   region17                   region18
+         "parsopercularis"            "parsorbitalis"         "parstriangularis"
+                  region19                   region20                   region21
+           "pericalcarine"              "postcentral"       "posteriorcingulate"
+                  region22                   region23                   region24
+              "precentral"                "precuneus" "rostralanteriorcingulate"
+                  region25                   region26                   region27
+    "rostralmiddlefrontal"          "superiorfrontal"         "superiorparietal"
+                  region28                   region29                   region30
+        "superiortemporal"            "supramarginal"       "transversetemporal"
+                  region31                   region32
+                  "insula"                         NA
 ```
 
 The region names for this atlas mainly need some white space in-between certain words to make the names readable.
-For instance, all regions with `temporal` could benefit from a white-space before that word. 
-We'll try to see other such patterns and how we can easily alter names so they look nicer. 
+For instance, all regions with `temporal` could benefit from a white-space before that word.
+We'll try to see other such patterns and how we can easily alter names so they look nicer.
 
 ```{r}
-unnest(dkt_3d, ggseg_3d) %>%
+#| label: clean-regions
+unnest(dkt_3d, ggseg_3d) |>
     mutate(region = gsub("temporal", " temporal", region),
            region = gsub("caudal", "caudal ", region),
            region = gsub("rostral", "rostral ", region),
@@ -236,41 +249,42 @@ unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("rior", "rior ", region),
            region = gsub("cingulate", " cingulate", region),
            # we've introduced some double whitespace, we don't want that
-           region = gsub("  ", " ", region) 
-           ) %>% 
-    select(region) %>% 
-    unique() %>% 
+           region = gsub("  ", " ", region)
+           ) |>
+    select(region) |>
+    unique() |>
     unlist()
 ```
 ```r
-                     region1                      region2                      region3 
- "caudal anterior cingulate"      "caudal middle frontal"                     "cuneus" 
-                     region4                      region5                      region6 
-                "entorhinal"                   "fusiform"          "inferior parietal" 
-                     region7                      region8                      region9 
-         "inferior temporal"          "isthmus cingulate"          "lateral occipital" 
-                    region10                     region11                     region12 
-     "lateral orbitofrontal"                    "lingual"       "medial orbitofrontal" 
-                    region13                     region14                     region15 
-           "middle temporal"            "parahippocampal"                "paracentral" 
-                    region16                     region17                     region18 
-           "parsopercularis"              "parsorbitalis"           "parstriangularis" 
-                    region19                     region20                     region21 
-             "pericalcarine"                "postcentral"        "posterior cingulate" 
-                    region22                     region23                     region24 
-                "precentral"                  "precuneus" "rostral anterior cingulate" 
-                    region25                     region26                     region27 
-    "rostral middle frontal"           "superior frontal"          "superior parietal" 
-                    region28                     region29                     region30 
-         "superior temporal"              "supramarginal"        "transverse temporal" 
-                    region31                     region32 
-                    "insula"                           NA 
+                     region1                      region2                      region3
+ "caudal anterior cingulate"      "caudal middle frontal"                     "cuneus"
+                     region4                      region5                      region6
+                "entorhinal"                   "fusiform"          "inferior parietal"
+                     region7                      region8                      region9
+         "inferior temporal"          "isthmus cingulate"          "lateral occipital"
+                    region10                     region11                     region12
+     "lateral orbitofrontal"                    "lingual"       "medial orbitofrontal"
+                    region13                     region14                     region15
+           "middle temporal"            "parahippocampal"                "paracentral"
+                    region16                     region17                     region18
+           "parsopercularis"              "parsorbitalis"           "parstriangularis"
+                    region19                     region20                     region21
+             "pericalcarine"                "postcentral"        "posterior cingulate"
+                    region22                     region23                     region24
+                "precentral"                  "precuneus" "rostral anterior cingulate"
+                    region25                     region26                     region27
+    "rostral middle frontal"           "superior frontal"          "superior parietal"
+                    region28                     region29                     region30
+         "superior temporal"              "supramarginal"        "transverse temporal"
+                    region31                     region32
+                    "insula"                           NA
 ```
 
 Once we are satisfied with the region names, we should also alter the atlas name in the data, to something a little more pleasing.
 
 ```{r}
-unnest(dkt_3d, ggseg_3d) %>%
+#| label: rename-atlas
+unnest(dkt_3d, ggseg_3d) |>
     mutate(region = gsub("temporal", " temporal", region),
            region = gsub("caudal", "caudal ", region),
            region = gsub("rostral", "rostral ", region),
@@ -281,14 +295,14 @@ unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("cingulate", " cingulate", region),
            # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region),
-           
+
            atlas = "dkt_3d"
-           ) 
+           )
 ```
 ```r
 # A tibble: 192 x 9
-   atlas  surf    hemi  region          colour label          roi   annot         mesh      
-   <chr>  <chr>   <chr> <chr>           <chr>  <chr>          <chr> <chr>         <list>    
+   atlas  surf    hemi  region          colour label          roi   annot         mesh
+   <chr>  <chr>   <chr> <chr>           <chr>  <chr>          <chr> <chr>         <list>
  1 dkt_3d inflat… left  caudal anterio… #7D64… lh_caudalante… 0001  caudalanteri… <named li…
  2 dkt_3d inflat… left  caudal middle … #6419… lh_caudalmidd… 0002  caudalmiddle… <named li…
  3 dkt_3d inflat… left  cuneus          #DC14… lh_cuneus      0003  cuneus        <named li…
@@ -302,15 +316,16 @@ unnest(dkt_3d, ggseg_3d) %>%
 # … with 182 more rows
 ```
 
-Of note, at this stage, you can also add _other columns_ of importance to the atlas. 
-As long as these to not conflict in terms of names with the default atlas columns, you can add as many extra columns as you wish. 
-For instance, if this is an atlas based on connectivity, there might be a nested structure to the regions, such that certain regions together form a specific network. 
+Of note, at this stage, you can also add _other columns_ of importance to the atlas.
+As long as these to not conflict in terms of names with the default atlas columns, you can add as many extra columns as you wish.
+For instance, if this is an atlas based on connectivity, there might be a nested structure to the regions, such that certain regions together form a specific network.
 Adding a `network` column specifying which regions belong to which network is then appropriate.
 
 ### Finalizing the atlas
-We are now happy with the atlas data we've cleaned, so we can go ahead and make it into a ggseg3d-atlas class again by nesting the atlas data by surface and hemisphere 
+We are now happy with the atlas data we've cleaned, so we can go ahead and make it into a ggseg3d-atlas class again by nesting the atlas data by surface and hemisphere
 ```{r}
-dkt_3d <- unnest(dkt_3d, ggseg_3d) %>%
+#| label: finalize-3d
+dkt_3d <- unnest(dkt_3d, ggseg_3d) |>
     mutate(region = gsub("temporal", " temporal", region),
            region = gsub("caudal", "caudal ", region),
            region = gsub("rostral", "rostral ", region),
@@ -321,18 +336,18 @@ dkt_3d <- unnest(dkt_3d, ggseg_3d) %>%
            region = gsub("cingulate", " cingulate", region),
            # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region),
-           
+
            atlas = "dkt_3d"
-           ) %>% 
-  nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
+           ) |>
+  nest_by(atlas, surf, hemi, .key = "ggseg_3d") |>
   as_ggseg3d_atlas()
 
 dkt_3d
 ```
 ```r
 # A tibble: 6 x 4
-  atlas  surf     hemi  ggseg_3d         
-  <chr>  <chr>    <chr> <list>           
+  atlas  surf     hemi  ggseg_3d
+  <chr>  <chr>    <chr> <list>
 1 dkt_3d inflated left  <tibble [32 × 6]>
 2 dkt_3d inflated right <tibble [32 × 6]>
 3 dkt_3d LCBC     left  <tibble [32 × 6]>
@@ -344,6 +359,7 @@ dkt_3d
 When this is done, we recommend plotting all variations and make sure that the expected result is returned.
 
 ```{r}
+#| label: verify-3d
 ggseg3d(atlas = dkt_3d, hemisphere = "left", surface = "inflated")
 ggseg3d(atlas = dkt_3d, hemisphere = "right", surface = "inflated")
 
@@ -355,12 +371,13 @@ ggseg3d(atlas = dkt_3d, hemisphere = "right", surface = "LCBC")
 ## Creating the 2d atlas
 Once a 3d atlas is made, creating a 2d atlas is _fairly_ straight forward.
 Using , the `make_ggseg3d_2_ggseg()` function takes snapshots of each region, for each hemisphere and lateral/medial view, extracts the contours of these regions, smooths them, reduces the vertices and organizes the data into a brain-atlas class object.
-The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result. 
-While the function at default stores these files in a temporary folder, we highly recommend setting the `output_dir` option, so that you do not need to rerun all steps when testing another configuration of settings. 
+The function creates a lot of intermediary files (mostly snapshots), and will likely require you to re-run several steps to produce the wanted end result.
+While the function at default stores these files in a temporary folder, we highly recommend setting the `output_dir` option, so that you do not need to rerun all steps when testing another configuration of settings.
 For instance, the step taking the longest time and most processing time is  snapshotting the regions and extracting the contours.
-But these two steps only need to be run once, as long as the ggseg3d-atlas has not changed somehow. 
+But these two steps only need to be run once, as long as the ggseg3d-atlas has not changed somehow.
 
 ```{r}
+#| label: make-2d-atlas
 # make atlas ----
 dkt <- make_ggseg3d_2_ggseg(dkt_3d,
                             steps = 1:7,
@@ -395,36 +412,41 @@ The fewer vertices, the faster the plot renders, but too few and the polygons wi
 First step is to have a look at the actual object.
 If the brain-atlas is correctly set up, the output should look like the below.
 ```{r}
+#| label: inspect-2d
 dkt
 ```
 ```r
 # dkt cortical brain atlas
-  regions: 31 
-  hemispheres: left, right 
-  side views: lateral, medial 
-  palette: yes 
-  use: ggplot() + geom_brain() 
+  regions: 31
+  hemispheres: left, right
+  side views: lateral, medial
+  palette: yes
+  use: ggplot() + geom_brain()
 ----
-   hemi  side    region                label                   roi  
+   hemi  side    region                label                   roi
    <chr> <chr>   <chr>                 <chr>                   <chr>
- 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002 
- 2 left  lateral fusiform              lh_fusiform             0005 
- 3 left  lateral inferior parietal     lh_inferiorparietal     0006 
- 4 left  lateral inferior temporal     lh_inferiortemporal     0007 
- 5 left  lateral lateral occipital     lh_lateraloccipital     0009 
- 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010 
- 7 left  lateral middle temporal       lh_middletemporal       0013 
- 8 left  lateral pars opercularis      lh_parsopercularis      0016 
- 9 left  lateral pars orbitalis        lh_parsorbitalis        0017 
-10 left  lateral pars triangularis     lh_parstriangularis     0018 
+ 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002
+ 2 left  lateral fusiform              lh_fusiform             0005
+ 3 left  lateral inferior parietal     lh_inferiorparietal     0006
+ 4 left  lateral inferior temporal     lh_inferiortemporal     0007
+ 5 left  lateral lateral occipital     lh_lateraloccipital     0009
+ 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010
+ 7 left  lateral middle temporal       lh_middletemporal       0013
+ 8 left  lateral pars opercularis      lh_parsopercularis      0016
+ 9 left  lateral pars orbitalis        lh_parsorbitalis        0017
+10 left  lateral pars triangularis     lh_parstriangularis     0018
 # … with 71 more rows
 ```
 
 Second step is to make sure the data is being plotted correctly.
 ```{r}
+#| label: plot-2d
 plot(dkt)
 ```
-```{r, echo = FALSE, eval = TRUE}
+```{r}
+#| label: include-dkt
+#| echo: false
+#| eval: true
 knitr::include_graphics("figures/dkt.png")
 ```
 
@@ -438,39 +460,45 @@ This can often mess up the palette for the 2d-atlas, which needs the regions in 
 If you are working with an atlas that does not have a colour-scheme dispatched with the atlas, the palette should be set to `NULL`.
 
 ```{r}
+#| label: remove-palette
 dkt$palette <- NULL
 dkt
 ```
 ```r
 # dkt cortical brain atlas
-  regions: 31 
-  hemispheres: left, right 
-  side views: lateral, medial 
-  palette: no 
-  use: ggplot() + geom_brain() 
+  regions: 31
+  hemispheres: left, right
+  side views: lateral, medial
+  palette: no
+  use: ggplot() + geom_brain()
 ----
-   hemi  side    region                label                   roi  
+   hemi  side    region                label                   roi
    <chr> <chr>   <chr>                 <chr>                   <chr>
- 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002 
- 2 left  lateral fusiform              lh_fusiform             0005 
- 3 left  lateral inferior parietal     lh_inferiorparietal     0006 
- 4 left  lateral inferior temporal     lh_inferiortemporal     0007 
- 5 left  lateral lateral occipital     lh_lateraloccipital     0009 
- 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010 
- 7 left  lateral middle temporal       lh_middletemporal       0013 
- 8 left  lateral pars opercularis      lh_parsopercularis      0016 
- 9 left  lateral pars orbitalis        lh_parsorbitalis        0017 
-10 left  lateral pars triangularis     lh_parstriangularis     0018 
+ 1 left  lateral caudal middle frontal lh_caudalmiddlefrontal  0002
+ 2 left  lateral fusiform              lh_fusiform             0005
+ 3 left  lateral inferior parietal     lh_inferiorparietal     0006
+ 4 left  lateral inferior temporal     lh_inferiortemporal     0007
+ 5 left  lateral lateral occipital     lh_lateraloccipital     0009
+ 6 left  lateral lateral orbitofrontal lh_lateralorbitofrontal 0010
+ 7 left  lateral middle temporal       lh_middletemporal       0013
+ 8 left  lateral pars opercularis      lh_parsopercularis      0016
+ 9 left  lateral pars orbitalis        lh_parsorbitalis        0017
+10 left  lateral pars triangularis     lh_parstriangularis     0018
 # … with 71 more rows
 ```
 
-When there is no palette, the default atlas plot will return with default ggplot2 colours. 
-This is absolutely a valid option. The palette is an optional part of the atlas. 
+When there is no palette, the default atlas plot will return with default ggplot2 colours.
+This is absolutely a valid option. The palette is an optional part of the atlas.
 
 ```{r}
+#| label: plot-no-palette
 plot(dkt)
 ```
-```{r, echo = FALSE, eval = TRUE, out.width="90%"}
+```{r}
+#| label: include-dkt-nocol
+#| echo: false
+#| eval: true
+#| out.width: 90%
 knitr::include_graphics("figures/dkt_nocol.png")
 ```
 
@@ -482,6 +510,7 @@ If you want to correctly apply a palette, the `dkt$palette` part of the atlas is
 All together, the script to create both 3d and 2d atlases of the DKT parcellation looks like this:
 
 ```{r}
+#| label: summary
 library(ggsegExtra)
 library(ggseg)
 library(tidyverse)
@@ -501,7 +530,7 @@ mri_surf2surf_rereg(subject = "bert",
 # Make  3d ----
 dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
                                annot_dir = "data-raw/",
-                               output_dir = "~/Desktop") %>%
+                               output_dir = "~/Desktop") |>
     mutate(region = gsub("temporal", " temporal", region),
            region = gsub("caudal", "caudal ", region),
            region = gsub("rostral", "rostral ", region),
@@ -512,10 +541,10 @@ dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
            region = gsub("cingulate", " cingulate", region),
            # we've introduced some double whitespace, we don't want that
            region = gsub("  ", " ", region),
-           
+
            atlas = "dkt_3d"
-           ) %>% 
-  nest_by(atlas, surf, hemi, .key = "ggseg_3d") %>%
+           ) |>
+  nest_by(atlas, surf, hemi, .key = "ggseg_3d") |>
   as_ggseg3d_atlas()
 
 # make 2d ----
@@ -526,7 +555,6 @@ dkt <- make_ggseg3d_2_ggseg(dkt_3d,
                             output_dir = "~/Desktop/")
 plot(dkt)
 ```
-
 
 
 
