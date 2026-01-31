@@ -34,13 +34,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::covr
+          extra-packages: any::covr, github::drmowinckels/freesurfer@refactor
           needs: coverage
-
-      - name: Install dev freesurfer
-        run: |
-          pak::pak("drmowinckels/freesurfer@refactor")
-        shell: Rscript {0}
 
       - name: Test coverage
         run: |
