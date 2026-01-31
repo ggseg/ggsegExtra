@@ -27,7 +27,7 @@ mri_surf2surf_rereg(
 dkt_3d_init <- make_aparc_2_3datlas(
   annot = "aparc.DKTatlas",
   annot_dir = "data-raw/",
-  output_dir = "~/Desktop"
+  output_dir = "~/Desktop/test1"
 )
 dkt_3d <- dkt_3d_init |>
   mutate(atlas = "dkt_3d") |>
@@ -40,6 +40,7 @@ dkt_3d <- dkt_3d_init |>
   mutate(random = "test column") |>
   nest_by(atlas, surf, hemi, .key = "ggseg_3d") |>
   as_ggseg3d_atlas()
+ggseg3d(atlas = dkt_3d)
 
 # make atlas ----
 dkt <- make_ggseg3d_2_ggseg(
@@ -48,6 +49,6 @@ dkt <- make_ggseg3d_2_ggseg(
   smoothness = 2,
   tolerance = .8,
   output_dir = "~/Desktop/test1",
-  view = c("medial", "lateral")
+  view = c("medial", "lateral", "ventral", "dorsal")
 )
 plot(dkt, show.legend = FALSE)

@@ -51,7 +51,7 @@ happen to be stored in mri format.
 Calls FreeSurfer's \code{mri_vol2label}.
 }
 \examples{
-\dontshow{if (freesurfer::have_fs()) withAutoprint(\{ # examplesIf}
+\dontrun{
 # for freesurfer help see:
 freesurfer::fs_help("mri_vol2label")
 
@@ -66,5 +66,5 @@ mri_vol2label(vol,
 
  # delete output dir when not needed
  unlink(out_dir)
-\dontshow{\}) # examplesIf}
+}
 }

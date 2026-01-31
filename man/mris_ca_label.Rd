@@ -44,11 +44,11 @@ atlases provided with FreeSurfer, new ones can be prepared using
 mris_ca_train).
 }
 \examples{
-\dontshow{if (freesurfer::have_fs()) withAutoprint(\{ # examplesIf}
+\dontrun{
 # for freesurfer help see:
 freesurfer::fs_help("mris_ca_label")
 mris_ca_label(output_file = "test.lh.annot")
 
 mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
-\dontshow{\}) # examplesIf}
+}
 }

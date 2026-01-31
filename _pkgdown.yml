@@ -2,8 +2,7 @@ url: https://ggseg.github.io/ggsegExtra/
 
 template:
   bootstrap: 5
-  bslib:
-    brand: _brand.yml
+  brand: _brand.yml
 
 navbar:
   structure:

@@ -35,7 +35,7 @@ Calls FreeSurfer's \code{mri_annotation2label}
 to split an annotation file into several labels.
 }
 \examples{
-\dontshow{if (freesurfer::have_fs()) withAutoprint(\{ # examplesIf}
+\dontrun{
 # for freesurfer help see:
 freesurfer::fs_help("mri_annotation2label")
 mri_annotation2label(annot_name = "aparc")
@@ -43,5 +43,5 @@ mri_annotation2label(annot_name = "aparc")
 mri_annotation2label(annot_name = "aparc.a2009s")
 
 mri_annotation2label(subject = "fsaverage", annot_name = "aparc.a2009s")
-\dontshow{\}) # examplesIf}
+}
 }

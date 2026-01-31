@@ -70,7 +70,8 @@ mri_vol2surf <- function(
 #' @importFrom freesurfer get_fs fs_subj_dir
 #' @importFrom stringr str_pad
 #' @export
-#' @examplesIf freesurfer::have_fs()
+#' @examples
+#' \dontrun{
 #' # for freesurfer help see:
 #' freesurfer::fs_help("mri_vol2label")
 #'
@@ -85,6 +86,7 @@ mri_vol2surf <- function(
 #'
 #'  # delete output dir when not needed
 #'  unlink(out_dir)
+#' }
 mri_vol2label <- function(
   input_file,
   label_id,
@@ -324,7 +326,8 @@ mris_label2annot <- function(
 #' @return nothing. Runs command line to write label files
 #' @export
 #' @importFrom freesurfer get_fs
-#' @examplesIf freesurfer::have_fs()
+#' @examples
+#' \dontrun{
 #' # for freesurfer help see:
 #' freesurfer::fs_help("mri_annotation2label")
 #' mri_annotation2label(annot_name = "aparc")
@@ -332,6 +335,7 @@ mris_label2annot <- function(
 #' mri_annotation2label(annot_name = "aparc.a2009s")
 #'
 #' mri_annotation2label(subject = "fsaverage", annot_name = "aparc.a2009s")
+#' }
 mri_annotation2label <- function(
   annot_name,
   subject = "fsaverage5",
@@ -399,12 +403,14 @@ mri_annotation2label <- function(
 #'
 #' @export
 #' @importFrom freesurfer get_fs fs_subj_dir
-#' @examplesIf freesurfer::have_fs()
+#' @examples
+#' \dontrun{
 #' # for freesurfer help see:
 #' freesurfer::fs_help("mris_ca_label")
 #' mris_ca_label(output_file = "test.lh.annot")
 #'
 #' mris_ca_label(hemisphere = "rh", output_file = "test.rh.annot")
+#' }
 mris_ca_label <- function(
   subject = "fsaverage5",
   hemisphere = "lh",
@@ -450,14 +456,15 @@ mris_ca_label <- function(
 #' @importFrom freesurfer get_fs
 #' @return nothing
 #' @export
-#' @examplesIf freesurfer::have_fs()
+#' @examples
+#' \dontrun{
 #' # For help see:
 #' freesurfer::fs_help("mri_surf2surf")
 #'
 #' mri_surf2surf_rereg(subject = "bert",
 #'                     annot = "aparc.DKTatlas",
 #'                     target_subject = "fsaverage5")
-#'
+#' }
 mri_surf2surf_rereg <- function(
   subject,
   annot,
