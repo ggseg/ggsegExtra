@@ -19,3 +19,5 @@
 orca-build
 package-lock.json
 .claude/
+_brand.yml
+
