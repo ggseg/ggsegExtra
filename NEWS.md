@@ -1,3 +1,15 @@
+# ggsegExtra 1.6
+
+## 1.6.0
+
+- Removed rgdal dependency, replaced with sf/terra (#49, #59)
+- Fixed r-universe API calls (JSON array format change)
+- Updated vignettes with Quarto-style chunk labels
+- Fixed vignette build issues with conditional evaluation for suggested packages
+- Replaced reticulate/kaleido with webshot2 for plotly screenshots
+- Updated system setup vignette with new requirements
+- Fixed mris_label2annot example documentation
+
 # ggsegExtra 1.5
 
 ## 1.5.33.003

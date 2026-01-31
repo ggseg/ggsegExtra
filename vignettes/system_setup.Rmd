@@ -21,20 +21,22 @@ knitr::opts_chunk$set(
 library(ggsegExtra)
 ```
 
-- [Freesurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall)
-- [xquartz](https://www.xquartz.org/) (macOS)
-- [Xcode](https://developer.apple.com/xcode/) (macOS)
-- python / miniconda
-- [kaleido pypi](https://pypi.org/project/kaleido/) package installed
+## FreeSurfer
+
+Creating custom atlases requires [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/fswiki/DownloadAndInstall) to be installed and configured.
+
+On macOS, you also need:
+
+- [XQuartz](https://www.xquartz.org/)
+- [Xcode](https://developer.apple.com/xcode/) command line tools
+
+## Plotly screenshots
+
+For taking screenshots of 3D plotly brain visualizations, ggsegExtra uses the webshot2 package, which requires Google Chrome or Chromium.
 
 ```r
-reticulate::install_miniconda()
-reticulate::use_miniconda("/path/outputed/by/the/above")
+install.packages("webshot2")
 ```
 
-Install the python kaleido library
-
-```sh
-pip install kaleido
-```
+Chrome/Chromium is typically already installed. If not, webshot2 will attempt to download a suitable version automatically.
 
