@@ -731,7 +731,7 @@ asc2ply <- function(
   on.exit(close(con))
   writeLines(ply, con)
 
-  return(invisible(get_mesh(output_file)))
+  return(invisible(read_ply_mesh(output_file)))
 }
 
 
@@ -868,17 +868,37 @@ check_fs <- function(msg = NULL, abort = FALSE) {
   invisible(x)
 }
 
-#' @importFrom freesurfer get_fs
-fs_ss_slice <- function(
-  lab,
-  x,
-  y,
-  z,
-  view,
-  subjects_dir,
-  subject,
-  output_dir,
-  skip_existing = TRUE
+#' Snapshot a volumetric slice
+#'
+#' Creates a PNG image of a single slice from a volumetric label file.
+#' Uses pure R rendering instead of FreeSurfer's freeview.
+#'
+#' @param lab Path to original MGZ label file or path to .label file.
+#'   If a .label file is provided, label_file must also be provided.
+#' @param x,y,z Slice coordinates
+#' @param view View type: "axial", "sagittal", or "coronal"
+#' @param label_file Path to original MGZ volume (required when lab is a .label file)
+#' @param output_dir Output directory for PNG
+#' @param skip_existing Skip if output file exists
+#' @param width,height Image dimensions in pixels
+#'
+#' @return Invisible NULL
+#' @importFrom freesurfer read_mgz
+#' @importFrom grDevices png dev.off
+#' @importFrom graphics par image
+#' @importFrom readr parse_number
+#' @keywords internal
+snapshot_slice <- function(
+    lab,
+    x,
+    y,
+    z,
+    view,
+    label_file = NULL,
+    output_dir,
+    skip_existing = TRUE,
+    width = 400,
+    height = 400
 ) {
   coords <- sprintf(c(x, y, z), fmt = "%03d")
   vv <- paste0(strsplit(view, "")[[1]][1:5], collapse = "")
@@ -897,17 +917,43 @@ fs_ss_slice <- function(
     return(invisible(NULL))
   }
 
-  cmd <- sprintf(
-    "freeview --volume %s/mri/T1.mgz:opacity=0 --slice %s --viewport %s --label %s:color=red --nocursor -ss %s",
-    file.path(subjects_dir, subject),
-    paste0(c(x, y, z), collapse = ' '),
+  if (grepl("\\.label$", lab)) {
+    if (is.null(label_file)) {
+      cli::cli_abort("label_file must be provided when lab is a .label file")
+    }
+    label_id <- parse_number(lab_name)
+    vol <- freesurfer::read_mgz(label_file)
+    vol[vol != label_id] <- 0
+  } else {
+    vol <- freesurfer::read_mgz(lab)
+  }
+
+  # Neurological convention: left on left, right on right
+  slice_data <- switch(
     view,
-    lab,
-    outfile
+    "axial" = vol[rev(seq_len(dim(vol)[1])), rev(seq_len(dim(vol)[2])), z],
+    "sagittal" = t(vol[x, , ])[, rev(seq_len(dim(vol)[2]))],
+    "coronal" = vol[rev(seq_len(dim(vol)[1])), y, ]
   )
 
-  jj <- run_cmd(cmd, no_ui = TRUE)
-  invisible(jj)
+  slice_data[slice_data == 0] <- NA
+
+  if (!any(is.finite(slice_data))) {
+    return(invisible(NULL))
+  }
+
+  png(outfile, width = width, height = height, bg = "black")
+  par(mar = c(0, 0, 0, 0))
+  image(
+    slice_data,
+    col = "red",
+    useRaster = TRUE,
+    axes = FALSE,
+    asp = 1
+  )
+  dev.off()
+
+  invisible(NULL)
 }
 
 

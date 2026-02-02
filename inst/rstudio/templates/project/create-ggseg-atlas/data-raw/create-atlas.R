@@ -1,99 +1,103 @@
-library(ggsegExtra)
-library(dplyr) # for cleaning the atlas data efficiently
-library(tidyr) # for cleaning the atlas data efficiently
+# Create {GGSEG} atlas for the ggseg ecosystem
+# This script creates a brain_atlas object that works with both ggseg and ggseg3d
 
-# The unique name of the atlas annot, without hemisphere in filename
+library(ggsegExtra)
+library(dplyr)
+
+# =============================================================================
+# STEP 1: Define your atlas source
+# =============================================================================
+# Choose ONE of the following methods depending on your atlas source:
+
+# METHOD A: From FreeSurfer annotation file (most common)
+# --------------------------------------------------------
+# Place your annotation files in data-raw/ with naming: lh.{GGSEG}.annot, rh.{GGSEG}.annot
+# Or use a standard FreeSurfer annotation like "aparc", "aparc.DKTatlas", etc.
+
 annot_name <- "{GGSEG}"
 
-# You might need to convert the annotation file
-# convert atlas to fsaverage5
-lapply(c("lh", "rh"),
-       function(x){
-         mri_surf2surf_rereg(subject = "fsaverage",
-                             annot = annot_name,
-                             hemi = x,
-                             output_dir = here::here("data-raw/fsaverage5/"))
-       })
+# If your annotation is in a custom location:
+# annot_dir <- here::here("data-raw")
+
+# If you need to convert from fsaverage to fsaverage5 (recommended for smaller file size):
+# lapply(c("lh", "rh"), function(hemi) {
+#   ggsegExtra::mri_surf2surf_rereg(
+#     subject = "fsaverage",
+#     annot = annot_name,
+#     hemi = hemi,
+#     output_dir = here::here("data-raw/fsaverage5/")
+#   )
+# })
+
+# METHOD B: From label files
+# --------------------------
+# Place your .label files in data-raw/
+# label_files <- list.files(here::here("data-raw"), pattern = "\\.label$", full.names = TRUE)
 
 
-# Make  3d ----
-{GGSEG}_3d <- make_aparc_2_3datlas(
+# =============================================================================
+# STEP 2: Create the atlas
+# =============================================================================
+
+# METHOD A: From annotation (includes 2D geometry)
+{GGSEG} <- ggsegExtra::make_brain_atlas(
   annot = annot_name,
-  annot_dir = here::here("data-raw/fsaverage5/"),
-  output_dir = here::here("data-raw/")
+  subject = "fsaverage5",
+  include_geometry = TRUE,
+  verbose = TRUE
 )
-ggseg3d(atlas = {GGSEG}_3d)
 
-## fix atlas ----
-# you might need to do some alteration of the atlas data,
-# like cleaning up the region names so they do not contain
-# hemisphere information, and any unknown region should be NA
-{GGSEG}_n <- {GGSEG}_3d
-{GGSEG}_n <- unnest({GGSEG}_n, ggseg_3d)
-{GGSEG}_n <- mutate({GGSEG}_n,
-                    region = gsub("_L$|_R$", "", region),
-                    region = ifelse(grepl("Unknown|\\?", region, ignore.case = TRUE), 
-                                    NA, region),
-                    atlas = "{GGSEG}_3d"
-)
-{GGSEG}_3d <- as_ggseg3d_atlas({GGSEG}_n)
-ggseg3d(atlas  = {GGSEG}_3d)
+# METHOD B: From label files (3D only, faster)
+# {GGSEG} <- ggsegExtra::make_atlas_from_labels(
+#   label_files = label_files,
+#   atlas_name = "{GGSEG}",
+#   type = "cortical",
+#   include_geometry = FALSE,
+#   verbose = TRUE
+# )
 
+# =============================================================================
+# STEP 3: Clean up region names (if needed)
+# =============================================================================
+# Modify region names to be consistent and readable
 
-# Make palette ----
-brain_pals <- make_palette_ggseg({GGSEG}_3d)
-usethis::use_data(brain_pals, internal = TRUE, overwrite = TRUE)
-devtools::load_all(".")
-
-
-# Make 2d polygon ----
-{GGSEG} <- make_ggseg3d_2_ggseg({GGSEG}_3d, output_dir = here::here("data-raw/"))
-
-plot({GGSEG})
-
-{GGSEG} |>
-  ggseg(atlas = ., show.legend = TRUE,
-        colour = "black",
-        mapping = aes(fill=region)) +
-  scale_fill_brain("{GGSEG}", package = "{REPO}", na.value = "black")
-
-
-usethis::use_data({GGSEG}, {GGSEG}_3d,
-                  internal = FALSE,
-                  overwrite = TRUE,
-                  compress="xz")
-
-
-# make hex ----
-atlas <- {GGSEG}
-
-p <- ggseg(atlas = atlas,
-           hemi = "left",
-           view = "lateral",
-           show.legend = FALSE,
-           colour = "grey30",
-           size = .2,
-           mapping = aes(fill =  region)) +
-  scale_fill_brain2(palette = atlas$palette) +
-  theme_void() +
-  hexSticker::theme_transparent()
-
-lapply(c("png", "svg"), function(x){
-  hexSticker::sticker(p,
-                      package = "{REPO}",
-                      filename = sprintf("man/figures/logo.%s", x),
-                      s_y = 1.2,
-                      s_x = 1,
-                      s_width = 1.5,
-                      s_height = 1.5,
-                      p_family = "mono",
-                      p_size = 10,
-                      p_color = "grey30",
-                      p_y = .6,
-                      h_fill = "white",
-                      h_color = "grey30"
+{GGSEG}$data <- {GGSEG}$data |>
+  mutate(
+    # Remove hemisphere suffixes if present
+    region = gsub("_L$|_R$|_lh$|_rh$", "", region),
+    # Set unknown/wall regions to NA
+    region = if_else(
+      grepl("unknown|wall|\\?|corpus.callosum", region, ignore.case = TRUE),
+      NA_character_,
+      region
+    )
   )
-  
-})
 
-pkgdown::build_favicons(overwrite = TRUE)
+
+# =============================================================================
+# STEP 4: Verify the atlas
+# =============================================================================
+
+# Check structure
+print({GGSEG})
+
+# Preview 2D plot
+ggseg::ggseg(atlas = {GGSEG}, show.legend = FALSE)
+
+# Preview 3D plot (if interactive)
+if (interactive()) {
+  ggseg3d::ggseg3d(atlas = {GGSEG}, hemisphere = "left")
+}
+
+
+# =============================================================================
+# STEP 5: Save the atlas
+# =============================================================================
+
+usethis::use_data({GGSEG}, overwrite = TRUE, compress = "xz")
+
+message("Atlas saved to data/{GGSEG}.rda")
+message("Don't forget to:")
+message("1. Update R/data.R with proper documentation")
+message("2. Update the README with atlas citation")
+message("3. Run the hex logo script: source('data-raw/create-hex-logo.R')")

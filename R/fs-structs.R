@@ -58,16 +58,19 @@ fs_curvatures <- function() {
 
 #' Available Freesurfer no fix curvatures
 #'
-#' @return character
+#' @return character vector of no-fix curvature file names
 #' @export
 #'
 #' @examples
-#' fs_nofixcurv()
-fs_nofixcurv <- function() {
+#' fs_nofixcurvatures()
+fs_nofixcurvatures <- function() {
   c("defect_borders", "defect_chull", "defect_labels")
 }
 
-surf_list <- function(hemispheres, surfs) {
-  k <- expand.grid(hemispheres, surfs)
-  tidyr::unite(k, x, c("Var1", "Var2"), sep = ".")$x
+
+#' @describeIn fs_nofixcurvatures Deprecated. Use [fs_nofixcurvatures()] instead.
+#' @export
+fs_nofixcurv <- function() {
+  lifecycle::deprecate_warn("2.0.0", "fs_nofixcurv()", "fs_nofixcurvatures()")
+  fs_nofixcurvatures()
 }

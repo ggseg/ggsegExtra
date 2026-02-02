@@ -1,27 +1,46 @@
-#' {GGSEG} atlas
+#' {GGSEG} Brain Atlas
 #'
-#' Add a short description of this atlas.
+#' A brain atlas for the {GGSEG} parcellation scheme.
 #'
-#' @docType data
-#' @name {GGSEG}
-#' @keywords datasets
-#' @family ggseg_atlases ggseg3d_atlases
-#' @references Add reference to the atlas description paper. make sure to add the url to pubmed
-#'     (\href{https://pubmed.ncbi.nlm.nih.gov/xxxxx/}{PubMed})
-#'     
-#' \itemize{
-#'  \item{{GGSEG}}{ - {GGSEG} atlas}
-#'  \item{{GGSEG}_3d}{ - {GGSEG} 3d mesh atlas}
-#'}
+#' This atlas contains both 2D polygon geometry for plotting with [ggseg::ggseg()]
+#' and vertex indices for 3D rendering with [ggseg3d::ggseg3d()].
 #'
-#' @import ggseg
-#' @import ggseg3d
-#' @rdname {GGSEG}
+#' @format A [ggseg.formats::brain_atlas] object with columns:
+#' \describe{
+#'   \item{hemi}{Hemisphere: "left" or "right"}
+#'   \item{region}{Region name}
+#'   \item{label}{Unique region label (includes hemisphere prefix)}
+#'   \item{colour}{Default colour for the region}
+#'   \item{vertices}{Integer vector of vertex indices for 3D rendering}
+#'   \item{geometry}{sf polygon geometry for 2D plotting}
+#' }
+#'
+#' @section Atlas Citation:
+#' If you use this atlas, please cite:
+#'
+#' TODO: Add the original publication reference here
+#'
+#' @seealso
+#' * [ggseg::ggseg()] for 2D brain plots
+#' * [ggseg3d::ggseg3d()] for 3D brain visualisation
+#' * [ggseg.formats::brain_atlas] for atlas structure details
+#'
+#' @source
+#' TODO: Add source URL or description
+#'
 #' @examples
+#' # Load the atlas
 #' data({GGSEG})
-#' data({GGSEG}_3d)
-"{GGSEG}"
-
-#' @rdname {GGSEG}
-"{GGSEG}_3d"
-
+#'
+#' # 2D plot
+#' ggseg::ggseg(atlas = {GGSEG})
+#'
+#' # 3D plot (interactive)
+#' if (interactive()) {
+#'   ggseg3d::ggseg3d(atlas = {GGSEG})
+#' }
+#'
+#' @name {GGSEG}
+#' @docType data
+#' @keywords datasets
+NULL

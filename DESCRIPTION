@@ -1,6 +1,6 @@
 Package: ggsegExtra
 Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
-Version: 1.6.0
+Version: 2.0.0
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5756-0223")),
@@ -20,8 +20,6 @@ License: MIT + file LICENSE
 URL: https://github.com/ggseg/ggsegExtra
 BugReports: https://github.com/ggseg/ggsegExtra/issues
 Depends:
-    ggseg (>= 1.6.0),
-    ggseg3d (>= 1.6.0),
     ggseg.formats,
     R (>= 4.1.0)
 Imports:
@@ -30,14 +28,18 @@ Imports:
     freesurfer,
     furrr,
     geomorph,
-    progressr,
     ggplot2,
+    ggseg (>= 1.6.0),
+    ggseg3d (>= 1.6.0),
     grDevices,
     htmlwidgets,
     jsonlite,
+    lifecycle,
     magick,
+    progressr,
     purrr,
     readr,
+    rlang,
     sf,
     smoothr,
     stats,
@@ -52,6 +54,7 @@ Suggests:
     hexSticker,
     knitr,
     rmarkdown,
+    rstudioapi,
     spelling,
     testthat (>= 2.1.0),
     ggsegDKT
@@ -65,3 +68,4 @@ SystemRequirements: Chrome or Chromium, FSL, Freesurfer, ImageMagick
 Remotes:
     ggseg/ggseg.formats,
     ggseg/ggsegDKT
+LazyData: true

@@ -1,5 +1,4 @@
 library(testthat)
+library({REPO})
 
 test_check("{REPO}")
-
-# covr::zero_coverage(covr::package_coverage("."))

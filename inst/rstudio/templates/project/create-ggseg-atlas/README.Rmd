@@ -4,85 +4,120 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  fig.width = 10, 
+  fig.width = 10,
   fig.retina = 3
 )
 ```
 
-# {REPO} <img src='man/figures/logo.png' align="right" height="138.5" />
+# {REPO} <img src="man/figures/logo.png" align="right" height="138" />
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/ggseg/{REPO}/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggseg/{REPO}/actions/workflows/R-CMD-check.yaml)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
-This package contains dataset for plotting the [{GGSEG}](add url here) atlas ggseg and ggseg3d. 
+This package provides the **{GGSEG}** brain atlas for use with the [ggseg](https://ggseg.github.io/ggseg/) and [ggseg3d](https://ggseg.github.io/ggseg3d/) packages.
 
-Add reference here.
+## Atlas Citation
 
-To learn how to use these atlases, please look at the documentation for [ggseg](https://ggseg.github.io/ggseg/) and [ggseg3d](https://ggseg.github.io/ggseg3d)
+> **TODO:** Add the original publication reference for this atlas here.
+>
+> Example format:
+> Author A, Author B (Year). Title of the atlas paper. *Journal Name*, Volume(Issue), Pages. DOI: [10.xxxx/xxxxx](https://doi.org/10.xxxx/xxxxx)
+
+If you use this atlas in your work, please cite both the original atlas publication above and the ggseg package:
+
+> Mowinckel AM, Vidal-Piñeiro D (2020). "Visualization of Brain Statistics With R Packages ggseg and ggseg3d." *Advances in Methods and Practices in Psychological Science*, 3(4), 466-483. DOI: [10.1177/2515245920928009](https://doi.org/10.1177/2515245920928009)
+
 
 ## Installation
 
-We recommend installing the ggseg-atlases through the ggseg [r-universe](https://ggseg.r-universe.dev/#builds):
+Install from the ggseg [r-universe](https://ggseg.r-universe.dev/):
 
 ```{r eval = FALSE}
-# Enable this universe
+# Enable the ggseg universe
 options(repos = c(
-    ggseg = 'https://ggseg.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'))
+  ggseg = "https://ggseg.r-universe.dev",
+  CRAN = "https://cloud.r-project.org"
+))
 
-# Install some packages
-install.packages('{REPO}')
+install.packages("{REPO}")
 ```
 
-You can install the released version of {REPO} from [GitHub](https://github.com/) with:
+Or install the development version from GitHub:
 
-``` r
+```{r eval = FALSE}
 # install.packages("remotes")
 remotes::install_github("ggseg/{REPO}")
 ```
 
-```{r, fig.height=7}
+
+## Usage
+
+### 2D Brain Plot
+
+```{r plot-2d}
 library(ggseg)
-library(ggseg3d)
 library({REPO})
 
-plot({GGSEG}) +
-  theme(legend.position = "bottom", 
-        legend.text = element_text(size = 9)) +
-  guides(fill = guide_legend(ncol = 6))
-
+ggseg(atlas = {GGSEG}) +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 7)) +
+  guides(fill = guide_legend(ncol = 4))
 ```
 
-```{r "noneval", eval=FALSE}
-library(dplyr)
-ggseg3d(atlas = {GGSEG}_3d) |>
+### 3D Brain Visualisation
+
+```{r plot-3d-code, eval = FALSE}
+library(ggseg3d)
+
+ggseg3d(atlas = {GGSEG}) |>
   add_glassbrain() |>
   pan_camera("right lateral")
 ```
 
-```{r "orca", include=FALSE}
-library(dplyr)
-p <- ggseg3d(atlas = {GGSEG}_3d) |>
-  add_glassbrain(hemisphere = "left")|>
-  pan_camera("right lateral") |>
-  plotly::add_annotations( text="Screen capture",
-                  legendtitle=TRUE, showarrow=FALSE,
-                  font = list(color = "#000000b4",
-                              family = 'sans serif',
-                              size = 50))
-plotly::orca(p, "man/figures/README-3d-plot.png")
+```{r plot-3d-render, echo = FALSE, eval = FALSE}
+# This chunk generates the 3D screenshot (run manually)
+library(ggseg3d)
+p <- ggseg3d(atlas = {GGSEG}) |>
+  add_glassbrain(hemisphere = "left") |>
+  pan_camera("right lateral")
+# Save screenshot
+htmlwidgets::saveWidget(p, "man/figures/README-3d-plot.html")
+webshot2::webshot("man/figures/README-3d-plot.html", "man/figures/README-3d-plot.png")
 ```
 
-```{r "incl", echo=FALSE}
+```{r show-3d, echo = FALSE, out.width = "50%", eval = file.exists("man/figures/README-3d-plot.png")}
 knitr::include_graphics("man/figures/README-3d-plot.png")
 ```
 
-Please note that the '{REPO}' project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
-By contributing to this project, you agree to abide by its terms.
+
+## Atlas Details
+
+| Property | Value |
+|----------|-------|
+| **Type** | `r {GGSEG}$type` |
+| **Regions** | `r nrow({GGSEG}$data)` |
+| **Hemispheres** | `r paste(unique({GGSEG}$data$hemi), collapse = ", ")` |
+| **Has 2D geometry** | `r "geometry" %in% names({GGSEG}$data)` |
+| **Has 3D vertices** | `r "vertices" %in% names({GGSEG}$data)` |
+
+
+## Region Names
+
+```{r regions, echo = FALSE}
+regions <- unique({GGSEG}$data$region)
+regions <- regions[!is.na(regions)]
+cat(paste("-", sort(regions)), sep = "\n")
+```
+
+
+## Code of Conduct
+
+Please note that the {REPO} project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

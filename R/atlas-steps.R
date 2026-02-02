@@ -125,7 +125,103 @@ save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose) {
 
 # make ggseg atlas steps ----
 
-#' Make snapshots using webshot2
+#' Snapshot full brain with vertex coloring
+#'
+#' Takes a screenshot of a brain_atlas using vertex-based rendering.
+#' Uses ggseg3d's built-in snapshot function.
+#'
+#' @param atlas brain_atlas object with vertices and colour columns
+#' @param hemisphere "lh" or "rh"
+#' @param view "lateral" or "medial"
+#' @param surface Surface type (e.g., "inflated")
+#' @param output_dir Directory to save screenshots
+#' @noRd
+#' @importFrom ggseg3d ggseg3d pan_camera snapshot_brain
+snapshot_brain_unified <- function(
+    atlas,
+    hemisphere,
+    view,
+    surface,
+    output_dir
+) {
+  hemi_long <- if (hemisphere == "lh") "left" else "right"
+
+  p <- ggseg3d(
+    atlas = atlas,
+    hemisphere = hemi_long,
+    surface = surface,
+    show.legend = FALSE,
+    na.colour = "#CCCCCC"
+  )
+  p <- pan_camera(p, paste(hemisphere, view))
+
+  outfile <- file.path(
+    output_dir,
+    paste0(paste("full", hemisphere, view, sep = "_"), ".png")
+  )
+
+  ggseg3d::snapshot_brain(p, outfile)
+}
+
+#' Snapshot single region with vertex coloring
+#'
+#' Takes a screenshot of a single region highlighted in red,
+#' using vertex-based rendering on the unified brain_atlas.
+#' Uses ggseg3d's built-in snapshot function.
+#'
+#' @param atlas brain_atlas object with vertices column
+#' @param region_label Label of region to highlight
+#' @param hemisphere "lh" or "rh"
+#' @param view "lateral" or "medial"
+#' @param surface Surface type
+#' @param output_dir Directory to save screenshots
+#' @noRd
+#' @importFrom ggseg3d ggseg3d pan_camera snapshot_brain
+snapshot_region_unified <- function(
+    atlas,
+    region_label,
+    hemisphere,
+    view,
+    surface,
+    output_dir
+) {
+  outfile <- file.path(
+    output_dir,
+    sprintf("%s_%s_%s.png", region_label, hemisphere, view)
+  )
+
+  if (file.exists(outfile)) {
+    return()
+  }
+
+  hemi_long <- if (hemisphere == "lh") "left" else "right"
+
+  atlas_data <- atlas$data
+  atlas_data$colour <- ifelse(
+    atlas_data$label == region_label,
+    "#FF0000",
+    "#FFFFFF"
+  )
+
+  highlight_atlas <- ggseg.formats::brain_atlas(
+    atlas = atlas$atlas,
+    type = atlas$type,
+    data = atlas_data
+  )
+
+  p <- ggseg3d(
+    atlas = highlight_atlas,
+    hemisphere = hemi_long,
+    surface = surface,
+    show.legend = FALSE,
+    na.colour = "#FFFFFF"
+  )
+  p <- pan_camera(p, paste(hemisphere, view))
+
+  ggseg3d::snapshot_brain(p, outfile)
+}
+
+#' Make snapshots using webshot2 (legacy)
 #'
 #' @param ggseg3d_atlas object of class ggseg3d-atlas
 #' @template hemisphere
@@ -134,7 +230,7 @@ save_atlas <- function(atlas_df_gg, atlas_name, output_dir, verbose) {
 #' @param pb progressbar
 #' @template output_dir
 #' @noRd
-#' @importFrom ggseg3d ggseg3d pan_camera remove_axes add_glassbrain
+#' @importFrom ggseg3d ggseg3d pan_camera add_glassbrain
 snapshot_brain <- function(
   ggseg3d_atlas,
   hemisphere,
@@ -148,7 +244,6 @@ snapshot_brain <- function(
     surface = surface
   )
   p <- pan_camera(p, paste(hemisphere, view))
-  p <- remove_axes(p)
 
   if (surface == "subcort") {
     p <- add_glassbrain(p)
@@ -163,7 +258,7 @@ snapshot_brain <- function(
 
 #' @noRd
 #' @importFrom dplyr filter
-#' @importFrom ggseg3d ggseg3d pan_camera remove_axes add_glassbrain
+#' @importFrom ggseg3d ggseg3d pan_camera add_glassbrain
 snapshot_region <- function(
   .data,
   region,
@@ -197,7 +292,6 @@ snapshot_region <- function(
   )
 
   p <- pan_camera(p, paste(hemisphere, view))
-  p <- remove_axes(p)
 
   if (surface == "subcort") {
     p <- add_glassbrain(p)
@@ -224,8 +318,16 @@ extract_contours <- function(
   regions <- list.files(input_dir, full.names = TRUE)
   region_names <- file_path_sans_ext(basename(regions))
 
-  first_rast <- rast(regions[1])
-  maks <- global(first_rast, fun = "max", na.rm = TRUE)[1, 1]
+  # Binary masks have max value of 1 for non-blank images
+  # Find the actual max by checking a few files until we find a non-blank one
+  maks <- 0
+  for (f in regions[1:min(10, length(regions))]) {
+    r <- rast(f)
+    m <- global(r, fun = "max", na.rm = TRUE)[1, 1]
+    if (m > maks) maks <- m
+    if (maks > 0) break
+  }
+  if (maks == 0) maks <- 1
 
   p <- progressor(steps = length(regions), label = paste(step, "Extracting contours"))
   contourobjs <- furrr::future_map(

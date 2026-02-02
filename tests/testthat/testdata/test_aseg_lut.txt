@@ -1,0 +1,5 @@
+  0  Unknown                          0   0   0   0
+ 10  Left-Test-Region1              255   0   0   0
+ 11  Left-Test-Region2                0 255   0   0
+ 50  Right-Test-Region1             255   0   0   0
+ 51  Right-Test-Region2               0 255   0   0

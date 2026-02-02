@@ -1,0 +1,14 @@
+url: https://ggseg.github.io/{REPO}/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
+
+reference:
+  - title: Atlas Data
+    contents:
+      - "{GGSEG}"

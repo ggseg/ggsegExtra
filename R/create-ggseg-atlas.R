@@ -1,8 +1,15 @@
-#' Turn ggseg3d-atlas to ggseg
+#' Convert legacy ggseg3d-atlas to 2D geometry (deprecated)
 #'
-#' Function will create a data.frame
-#' based on a ggseg3d atlas, based on
-#' the contours of each segment.
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function creates 2D polygon geometry from a legacy mesh-based
+#' ggseg3d_atlas by taking screenshots and extracting contours. For new
+#' atlases, use [make_brain_atlas()] instead which uses the simplified
+#' vertex-based workflow.
+#'
+#' For simple conversion of legacy atlases without re-running the pipeline,
+#' use [convert_ggseg3d_atlas()].
 #'
 #' @param ggseg3d_atlas object of class ggseg3d-atlas
 #' @template steps
@@ -12,8 +19,9 @@
 #' @template cleanup
 #' @param view which sides of the brain to be snapshotted
 #'
-#' @return data.frame ready for manual cleaning before turning into a proper ggseg3d-atlas
+#' @return brain_atlas object with 2D geometry
 #' @export
+#' @keywords internal
 #' @importFrom dplyr filter select mutate case_when tibble left_join group_by ungroup one_of
 #' @importFrom furrr future_pmap
 #' @importFrom ggseg.formats brain_atlas
@@ -27,10 +35,10 @@
 #'
 #' # Create the DKT atlas as found in the FreeSurfer Subjects directory
 #' # And output the temporary files to the Desktop.
-#' dkt_3d <- make_aparc_2_3datlas(annot = "aparc.DKTatlas",
+#' dkt_3d <- make_ggseg3d_atlas(annot = "aparc.DKTatlas",
 #'     output_dir = "~/Desktop/")
 #' }
-make_ggseg3d_2_ggseg <- function(
+ggseg3d_to_ggseg <- function(
   ggseg3d_atlas,
   steps = 1:7,
   output_dir = tempdir(),
@@ -39,6 +47,13 @@ make_ggseg3d_2_ggseg <- function(
   smoothness = 5,
   cleanup = FALSE
 ) {
+  lifecycle::deprecate_warn(
+    "2.0.0",
+    "ggseg3d_to_ggseg()",
+    "make_brain_atlas()",
+    details = "For simple conversion, use convert_ggseg3d_atlas() instead."
+  )
+
   check_magick()
 
   if (!is_ggseg3d_atlas(ggseg3d_atlas)) {
@@ -53,8 +68,6 @@ make_ggseg3d_2_ggseg <- function(
   atlas <- gsub("_3d", "", unique(ggseg3d_atlas$atlas))
 
   dt <- unnest(ggseg3d_atlas, ggseg_3d)
-
-  pal <- make_palette_ggseg(ggseg3d_atlas)[[1]]
 
   if (!surface %in% ggseg3d_atlas$surf) {
     cli::cli_abort("Atlas must have surface {.var {surface}}")
@@ -245,7 +258,7 @@ make_ggseg3d_2_ggseg <- function(
   atlas_df_sf <- mutate(atlas_df_sf, geometry = st_combine(geometry))
   atlas_df_sf <- ungroup(atlas_df_sf)
 
-  dt <- select(dt, -one_of(c("atlas", "surf", "colour", "mesh", "geometry")))
+  dt <- select(dt, -one_of(c("atlas", "surf", "mesh", "geometry")))
   dt <- unique(dt)
 
   atlas_df_sf <- suppressMessages(left_join(atlas_df_sf, dt))
@@ -274,43 +287,7 @@ make_ggseg3d_2_ggseg <- function(
     data = atlas_df_sf
   )
 
-  # Because it is automatic, adding directly above can result in error
-  # when the medial wall have not been made NA
-  atlas$palette <- pal
-  return(atlas)
-}
-
-
-#' Create ggseg palette from ggseg3d-atlas
-#'
-#' atlases in ggseg have palettes based on
-#' colours from the paper originally
-#' introducing the atlas. These
-#' colours are hard-coded into ggseg3d-atlases.
-#' This function extracts those and makes a object
-#' ready for incorporation to a ggseg-atlas repository
-#'
-#' @param ggseg3d_atlas ggseg3d-atlas
-#' @return list with a colour palette
-#' @export
-#' @importFrom tidyr unnest
-#' @importFrom dplyr select distinct
-#' @importFrom stats na.omit setNames
-#' @examples
-#' make_palette_ggseg(dk_3d)
-make_palette_ggseg <- function(ggseg3d_atlas) {
-  j <- unnest(ggseg3d_atlas, ggseg_3d)
-  j <- select(j, region, colour)
-  j <- distinct(j)
-  j <- na.omit(j)
-
-  k <- list(setNames(
-    j$colour,
-    j$region
-  ))
-
-  names(k) <- gsub("_3d$", "", unique(ggseg3d_atlas$atlas))
-  k
+  atlas
 }
 
 
@@ -355,7 +332,7 @@ make_palette_ggseg <- function(ggseg3d_atlas) {
 #'    label_file <- file.path(fs_subj_dir(), subject, "mri/aseg.mgz")
 #'    slices = data.frame(x=130, y=130, z=130, view="axial", stringsAsFactors = FALSE)
 #'
-#'    aseg2 <- make_volumetric_ggseg(
+#'    aseg2 <- make_ggseg_atlas_volumetric(
 #'       label_file =  label_file,
 #'       slices = slices
 #'    )
@@ -363,7 +340,7 @@ make_palette_ggseg <- function(ggseg3d_atlas) {
 #'    # Have a look at the atlas
 #'    plot(aseg2)
 #' }
-make_volumetric_ggseg <- function(
+make_ggseg_atlas_volumetric <- function(
   label_file,
   subject = "fsaverage5",
   subjects_dir = fs_subj_dir(),
@@ -441,14 +418,13 @@ make_volumetric_ggseg <- function(
     invisible(future_pmap(
       labs_df,
       function(lab, x, y, z, view) {
-        fs_ss_slice(
+        snapshot_slice(
           lab = lab,
           x = x,
           y = y,
           z = z,
           view = view,
-          subjects_dir = subjects_dir,
-          subject = subject,
+          label_file = label_file,
           output_dir = dirs$snaps,
           skip_existing = skip_existing
         )
@@ -610,13 +586,8 @@ make_volumetric_ggseg <- function(
 
     atlas_df <- conts
 
-    dt <- atlas_df[
-      !duplicated(atlas_df$region) & !is.na(atlas_df$region),
-      c("color", "region")
-    ]
-    pal <- setNames(dt$color, dt$region)
-
-    atlas_df <- select(atlas_df, -starts_with("mni_"), -color)
+    atlas_df <- select(atlas_df, -starts_with("mni_"))
+    names(atlas_df)[names(atlas_df) == "color"] <- "colour"
 
     if (cleanup) {
       unlink(dirs[1], recursive = TRUE)
@@ -643,7 +614,6 @@ make_volumetric_ggseg <- function(
       type = "subcortical",
       data = atlas_df
     )
-    atlas$palette <- pal
 
     cat("... cleanup complete\n")
 
@@ -667,6 +637,7 @@ if (getRversion() >= "2.15.1") {
     "filenm",
     "colour",
     "tmp_dt",
-    "ggseg"
+    "ggseg",
+    "ggseg_3d"
   ))
 }
