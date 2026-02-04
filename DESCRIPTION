@@ -23,49 +23,54 @@ Depends:
     ggseg.formats,
     R (>= 4.1.0)
 Imports:
+    chromote,
     cli,
     dplyr,
     freesurfer,
     furrr,
     geomorph,
-    ggplot2,
-    ggseg (>= 1.6.0),
     ggseg3d (>= 1.6.0),
     grDevices,
-    htmlwidgets,
     jsonlite,
     lifecycle,
     magick,
     progressr,
-    purrr,
     readr,
     rlang,
+    RNifti,
     sf,
     smoothr,
     stats,
     stringr,
     terra,
     tidyr,
-    utils,
-    webshot2,
-    withr
+    tools,
+    utils
 Suggests:
     covr,
+    freesurferformats,
+    ggplot2,
+    ggseg,
+    ggsegDKT,
     hexSticker,
     knitr,
+    oro.nifti,
     rmarkdown,
     rstudioapi,
+    Rvcg,
     spelling,
-    testthat (>= 2.1.0),
-    ggsegDKT
+    testthat (>= 3.0.0),
+    withr
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-SystemRequirements: Chrome or Chromium, FSL, Freesurfer, ImageMagick
+SystemRequirements: Freesurfer, ImageMagick
 Remotes:
     ggseg/ggseg.formats,
     ggseg/ggsegDKT
 LazyData: true
+Config/testthat/edition: 3
+Config/testthat/parallel: true
