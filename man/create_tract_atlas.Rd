@@ -7,22 +7,19 @@
 create_tract_atlas(
   input_tracts,
   input_aseg = NULL,
+  atlas_name = NULL,
+  input_lut = NULL,
   tract_names = NULL,
   colours = NULL,
   tube_radius = 5,
   tube_segments = 8,
-  centerline_method = c("mean", "medoid"),
   n_points = 50,
-  density_radius_range = c(0.2, 1),
-  verbose = NULL,
+  centerline_method = c("mean", "medoid"),
   views = NULL,
-  cortex_slices = NULL,
   output_dir = tempdir(),
-  tract_radius = 3,
-  cortex_labels = NULL,
-  coords_are_voxels = NULL,
-  smoothness = NULL,
+  verbose = NULL,
   tolerance = NULL,
+  smoothness = NULL,
   cleanup = NULL,
   skip_existing = NULL,
   steps = NULL
@@ -36,8 +33,15 @@ columns (x, y, z).}
 \item{input_aseg}{Path to a segmentation volume (\code{.mgz}, \code{.nii}) used to
 draw cortex outlines in 2D views. Required when running step 2.}
 
+\item{atlas_name}{Name for the atlas. If NULL, derived from the input
+filename.}
+
+\item{input_lut}{Path to a color lookup table (LUT) file, or a data.frame
+with columns \code{label}, \code{region}, and colour columns (R, G, B or hex).
+If provided, overrides tract_names and colours.}
+
 \item{tract_names}{Names for each tract. If NULL and \code{input_tracts} are
-file paths, names are derived from filenames.}
+file paths, names are derived from filenames. Ignored if input_lut provided.}
 
 \item{colours}{Colours for each region/structure. If NULL, assigns colours
 from a rainbow palette.}
@@ -50,15 +54,18 @@ streamlines pass through each point.}
 Higher values make smoother tubes but larger meshes. Default 8 is a
 good balance.}
 
+\item{n_points}{Number of points to resample the centerline to. All tracts
+are resampled to this length for consistent tube generation.}
+
 \item{centerline_method}{How to extract the centerline from multiple
 streamlines: \code{"mean"} averages coordinates point-by-point, \code{"medoid"}
 selects the single most representative streamline.}
 
-\item{n_points}{Number of points to resample the centerline to. All tracts
-are resampled to this length for consistent tube generation.}
+\item{views}{A data.frame specifying projection views. If NULL, uses
+\code{\link[=default_tract_views]{default_tract_views()}}.}
 
-\item{density_radius_range}{When \code{tube_radius = "density"}, the minimum
-and maximum radius values. Default \code{c(0.2, 1.0)}.}
+\item{output_dir}{Directory to store intermediate files (screenshots, masks,
+contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
 \item{verbose}{Control verbosity. If not specified, uses the value from
 \code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
@@ -70,36 +77,15 @@ environment variable. Can be:
 Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
 }}
 
-\item{views}{A data.frame specifying projection views. See
-\code{\link[=create_tract_geometry_volumetric]{create_tract_geometry_volumetric()}} for format details.}
-
-\item{cortex_slices}{A data.frame specifying cortex slice positions for
-2D views. See \code{\link[=create_tract_geometry_volumetric]{create_tract_geometry_volumetric()}} for format details.}
-
-\item{output_dir}{Directory to store intermediate files (screenshots, masks,
-contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
-
-\item{tract_radius}{Dilation radius when rasterising tract coordinates
-to voxels for 2D projection.}
-
-\item{cortex_labels}{Named list with \code{"left"} and \code{"right"} vectors of
-label values identifying cortical voxels in the segmentation. If NULL,
-auto-detects from aparc+aseg or aseg labels.}
-
-\item{coords_are_voxels}{If TRUE, streamline coordinates are already in
-voxel space (0-indexed). If FALSE, coordinates are in RAS (world) space
-and will be transformed. If NULL (default), auto-detects by checking
-coordinate ranges.}
+\item{tolerance}{Simplification tolerance for 2D polygons. Higher values
+produce simpler shapes with fewer vertices. Passed to \code{\link[sf:geos_unary]{sf::st_simplify()}}.
+If not specified, uses \code{options("ggsegExtra.tolerance")} or the
+\code{GGSEGEXTRA_TOLERANCE} environment variable. Default is 0 (no simplification).}
 
 \item{smoothness}{Smoothing factor for 2D contours. Higher values produce
 smoother region boundaries. Passed to \code{\link[smoothr:smooth]{smoothr::smooth()}}. If not
 specified, uses \code{options("ggsegExtra.smoothness")} or the
 \code{GGSEGEXTRA_SMOOTHNESS} environment variable. Default is 5.}
-
-\item{tolerance}{Simplification tolerance for 2D polygons. Higher values
-produce simpler shapes with fewer vertices. Passed to \code{\link[sf:geos_unary]{sf::st_simplify()}}.
-If not specified, uses \code{options("ggsegExtra.tolerance")} or the
-\code{GGSEGEXTRA_TOLERANCE} environment variable. Default is 0 (no simplification).}
 
 \item{cleanup}{Remove intermediate files after atlas creation. If not
 specified, uses \code{options("ggsegExtra.cleanup")} or the \code{GGSEGEXTRA_CLEANUP}

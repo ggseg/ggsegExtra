@@ -486,8 +486,8 @@ clean_region_names <- function(
 #' @param type Type of atlas: "cortical", "subcortical", or "tract"
 #' @return Named list of directory paths
 #' @noRd
-setup_atlas_dirs <- function(output_dir, atlas_name, type = "cortical") {
-  base <- file.path(output_dir, atlas_name)
+setup_atlas_dirs <- function(output_dir, atlas_name = NULL, type = "cortical") {
+  base <- if (is.null(atlas_name)) output_dir else file.path(output_dir, atlas_name)
 
   dirs <- list(
     base = base,

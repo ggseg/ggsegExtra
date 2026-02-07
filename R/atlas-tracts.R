@@ -22,8 +22,12 @@
 #'   columns (x, y, z).
 #' @param input_aseg Path to a segmentation volume (`.mgz`, `.nii`) used to
 #'   draw cortex outlines in 2D views. Required when running step 2.
+#' @template atlas_name
+#' @param input_lut Path to a color lookup table (LUT) file, or a data.frame
+#'   with columns `label`, `region`, and colour columns (R, G, B or hex).
+#'   If provided, overrides tract_names and colours.
 #' @param tract_names Names for each tract. If NULL and `input_tracts` are
-#'   file paths, names are derived from filenames.
+#'   file paths, names are derived from filenames. Ignored if input_lut provided.
 #' @template colours
 #' @param tube_radius Controls the tube thickness. Either a single numeric
 #'   value for uniform radius, or `"density"` to scale radius by how many
@@ -31,28 +35,15 @@
 #' @param tube_segments Number of segments around the tube circumference.
 #'   Higher values make smoother tubes but larger meshes. Default 8 is a
 #'   good balance.
+#' @param n_points Number of points to resample the centerline to. All tracts
+#'   are resampled to this length for consistent tube generation.
 #' @param centerline_method How to extract the centerline from multiple
 #'   streamlines: `"mean"` averages coordinates point-by-point, `"medoid"`
 #'   selects the single most representative streamline.
-#' @param n_points Number of points to resample the centerline to. All tracts
-#'   are resampled to this length for consistent tube generation.
-#' @param density_radius_range When `tube_radius = "density"`, the minimum
-#'   and maximum radius values. Default `c(0.2, 1.0)`.
-#' @template verbose
-#' @param views A data.frame specifying projection views. See
-#'   [create_tract_geometry_volumetric()] for format details.
-#' @param cortex_slices A data.frame specifying cortex slice positions for
-#'   2D views. See [create_tract_geometry_volumetric()] for format details.
+#' @param views A data.frame specifying projection views. If NULL, uses
+#'   [default_tract_views()].
 #' @template output_dir
-#' @param tract_radius Dilation radius when rasterising tract coordinates
-#'   to voxels for 2D projection.
-#' @param cortex_labels Named list with `"left"` and `"right"` vectors of
-#'   label values identifying cortical voxels in the segmentation. If NULL,
-#'   auto-detects from aparc+aseg or aseg labels.
-#' @param coords_are_voxels If TRUE, streamline coordinates are already in
-#'   voxel space (0-indexed). If FALSE, coordinates are in RAS (world) space
-#'   and will be transformed. If NULL (default), auto-detects by checking
-#'   coordinate ranges.
+#' @template verbose
 #' @template smoothness
 #' @template tolerance
 #' @template cleanup
@@ -97,22 +88,19 @@
 create_tract_atlas <- function(
   input_tracts,
   input_aseg = NULL,
+  atlas_name = NULL,
+  input_lut = NULL,
   tract_names = NULL,
   colours = NULL,
   tube_radius = 5,
   tube_segments = 8,
-  centerline_method = c("mean", "medoid"),
   n_points = 50,
-  density_radius_range = c(0.2, 1.0),
-  verbose = NULL,
+  centerline_method = c("mean", "medoid"),
   views = NULL,
-  cortex_slices = NULL,
   output_dir = tempdir(),
-  tract_radius = 3,
-  cortex_labels = NULL,
-  coords_are_voxels = NULL,
-  smoothness = NULL,
+  verbose = NULL,
   tolerance = NULL,
+  smoothness = NULL,
   cleanup = NULL,
   skip_existing = NULL,
   steps = NULL
@@ -126,21 +114,25 @@ create_tract_atlas <- function(
   smoothness <- get_smoothness(smoothness)
 
   max_step <- 2L
+
   if (is.null(steps)) {
     steps <- 1L:max_step
   }
   steps <- as.integer(steps)
 
   centerline_method <- match.arg(centerline_method)
+  density_radius_range <- c(0.2, 1.0)
+  tract_radius <- 3
+  coords_are_voxels <- NULL
+  cortex_labels <- NULL
+  cortex_slices <- NULL
 
   output_dir <- normalizePath(output_dir, mustWork = FALSE)
-  atlas_name <- if (!is.null(tract_names) && length(tract_names) == 1) {
-    tract_names[1]
-  } else {
-    "tracts"
+  if (is.null(atlas_name)) {
+    atlas_name <- basename(output_dir)
   }
 
-  dirs <- setup_atlas_dirs(output_dir, atlas_name, type = "tract")
+  dirs <- setup_atlas_dirs(output_dir, type = "tract")
   cache_dir <- dirs$base
 
   if (verbose) {
@@ -148,6 +140,22 @@ create_tract_atlas <- function(
     cli::cli_alert_info("Tract files: {.path {input_tracts}}")
 
     cli::cli_alert_info("Anatomical reference: {.path {input_aseg}}")
+  }
+
+  if (!is.null(input_lut)) {
+    lut <- if (is.character(input_lut)) read_ctab(input_lut) else input_lut
+    if (is.null(tract_names)) {
+      tract_names <- lut$region
+    }
+    if (is.null(colours)) {
+      colours <- if ("hex" %in% names(lut)) {
+        lut$hex
+      } else if (all(c("R", "G", "B") %in% names(lut))) {
+        grDevices::rgb(lut$R, lut$G, lut$B, maxColorValue = 255)
+      } else {
+        NULL
+      }
+    }
   }
 
   streamlines_data <- NULL
@@ -256,8 +264,12 @@ create_tract_atlas <- function(
       .options = furrr_options(
         packages = "ggsegExtra",
         globals = c(
-          "centerline_method", "n_points", "tube_radius",
-          "density_radius_range", "tube_segments", "p"
+          "centerline_method",
+          "n_points",
+          "tube_radius",
+          "density_radius_range",
+          "tube_segments",
+          "p"
         )
       )
     )
@@ -1269,9 +1281,8 @@ create_tract_geometry_volumetric <- function(
   if (verbose) {
     cli::cli_alert_info("Setting output directory to {.path {output_dir}}")
   }
-  atlas_name <- atlas$atlas
 
-  dirs <- setup_atlas_dirs(output_dir, atlas_name, type = "tract")
+  dirs <- setup_atlas_dirs(output_dir, type = "tract")
   dirs$vols <- dirs$volumes
 
   meshes <- if (!is.null(atlas$data$meshes)) atlas$data$meshes else atlas$meshes
@@ -1316,7 +1327,13 @@ create_tract_geometry_volumetric <- function(
     },
     .options = furrr_options(
       packages = "ggsegExtra",
-      globals = c("streamlines", "aseg_file", "tract_radius", "coords_are_voxels", "p")
+      globals = c(
+        "streamlines",
+        "aseg_file",
+        "tract_radius",
+        "coords_are_voxels",
+        "p"
+      )
     )
   )
   names(tract_volumes) <- tract_labels
@@ -1506,7 +1523,10 @@ create_tract_geometry_volumetric <- function(
     geometry
   )
   sf_data <- sf::st_as_sf(sf_data)
-  sf_data <- dplyr::arrange(sf_data, dplyr::desc(grepl("cortex", label, ignore.case = TRUE)))
+  sf_data <- dplyr::arrange(
+    sf_data,
+    dplyr::desc(grepl("cortex", label, ignore.case = TRUE))
+  )
 
   if (cleanup) {
     unlink(dirs$base, recursive = TRUE)
