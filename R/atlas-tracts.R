@@ -91,7 +91,7 @@ create_tract_atlas <- function(
   n_points = 50,
   centerline_method = c("mean", "medoid"),
   views = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   verbose = NULL,
   tolerance = NULL,
   smoothness = NULL,
@@ -106,6 +106,7 @@ create_tract_atlas <- function(
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
 
   max_step <- 2L
 
@@ -1220,7 +1221,7 @@ create_tract_geometry_volumetric <- function(
   streamlines,
   views = NULL,
   cortex_slices = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   tract_radius = 3,
   coords_are_voxels = NULL,
   vertex_size_limits = NULL,
@@ -1236,6 +1237,7 @@ create_tract_geometry_volumetric <- function(
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
 
   if (atlas$type != "tract") {
     cli::cli_abort("Atlas must be of type 'tract'")

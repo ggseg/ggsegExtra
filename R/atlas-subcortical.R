@@ -90,7 +90,7 @@ create_subcortical_atlas <- function(
   input_lut = NULL,
   atlas_name = NULL,
   views = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   vertex_size_limits = NULL,
   dilate = NULL,
   tolerance = NULL,
@@ -107,6 +107,7 @@ create_subcortical_atlas <- function(
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
 
   max_step <- 9L
   if (is.null(steps)) {
@@ -830,7 +831,7 @@ create_subcortical_geometry_projection <- function(
   colortable,
   views = NULL,
   cortex_slices = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   vertex_size_limits = NULL,
   dilate = NULL,
   tolerance = NULL,
@@ -844,6 +845,7 @@ create_subcortical_geometry_projection <- function(
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
 
   output_dir <- normalizePath(output_dir, mustWork = FALSE)
 

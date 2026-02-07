@@ -81,7 +81,7 @@
 create_cortical_atlas <- function(
   input_annot,
   atlas_name = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   hemisphere = c("rh", "lh"),
   views = c("lateral", "medial", "superior", "inferior"),
   tolerance = NULL,
@@ -98,6 +98,7 @@ create_cortical_atlas <- function(
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
 
   max_step <- 8L
   if (is.null(steps)) {
@@ -432,7 +433,7 @@ create_atlas_from_labels <- function(
   label_files,
   atlas_name = NULL,
   input_lut = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   views = c("lateral", "medial"),
   tolerance = NULL,
   smoothness = NULL,
@@ -448,6 +449,7 @@ create_atlas_from_labels <- function(
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
 
   max_step <- 8L
   if (is.null(steps)) {

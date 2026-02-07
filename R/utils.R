@@ -340,6 +340,43 @@ get_numeric_option <- function(explicit, option_name, env_name, default) {
   default
 }
 
+#' Helper to get string option with fallback
+#' @noRd
+get_string_option <- function(explicit, option_name, env_name, default) {
+  if (!is.null(explicit)) {
+    return(as.character(explicit))
+  }
+
+  opt <- getOption(option_name)
+  if (!is.null(opt)) {
+    return(as.character(opt))
+  }
+
+  env <- Sys.getenv(env_name, unset = NA)
+  if (!is.na(env) && nzchar(env)) {
+    return(env)
+  }
+
+  default
+}
+
+#' Get output_dir setting
+#'
+#' Returns the output directory from options or environment variable.
+#' Used as default output directory for atlas creation pipelines.
+#'
+#' @param output_dir Optional explicit value. If NULL, reads from options/env.
+#' @return Character path to output directory
+#' @noRd
+get_output_dir <- function(output_dir = NULL) {
+  get_string_option(
+    output_dir,
+    "ggsegExtra.output_dir",
+    "GGSEGEXTRA_OUTPUT_DIR",
+    tempdir()
+  )
+}
+
 
 # Hemisphere utilities ----
 
