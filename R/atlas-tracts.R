@@ -125,7 +125,7 @@ create_tract_atlas <- function(
     atlas_name <- basename(output_dir)
   }
 
-  dirs <- setup_atlas_dirs(output_dir, type = "tract")
+  dirs <- setup_atlas_dirs(output_dir, atlas_name, type = "tract")
   cache_dir <- dirs$base
 
   if (verbose) {
@@ -405,7 +405,7 @@ create_tract_atlas <- function(
       streamlines = streamlines_data,
       views = views,
       cortex_slices = cortex_slices,
-      output_dir = output_dir,
+      output_dir = dirs$base,
       tract_radius = tract_radius,
       coords_are_voxels = coords_are_voxels,
       smoothness = smoothness,
@@ -1271,8 +1271,11 @@ create_tract_geometry_volumetric <- function(
   dirs <- setup_atlas_dirs(output_dir, type = "tract")
   dirs$vols <- dirs$volumes
 
-  meshes <- if (!is.null(atlas$data$meshes)) atlas$data$meshes else atlas$meshes
-  tract_labels <- meshes$label
+  centerlines <- atlas$data$centerlines
+  if (is.null(centerlines)) {
+    cli::cli_abort("Atlas must have centerlines data for volumetric geometry")
+  }
+  tract_labels <- centerlines$label
 
   missing_labels <- setdiff(tract_labels, names(streamlines))
   if (length(missing_labels) > 0) {
