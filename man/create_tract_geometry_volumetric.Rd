@@ -12,7 +12,6 @@ create_tract_geometry_volumetric(
   cortex_slices = NULL,
   output_dir = tempdir(),
   tract_radius = 3,
-  cortex_labels = NULL,
   coords_are_voxels = NULL,
   vertex_size_limits = NULL,
   dilate = NULL,
@@ -46,11 +45,6 @@ central slices for each view.}
 contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
 \item{tract_radius}{Dilation radius when rasterising tract coordinates.}
-
-\item{cortex_labels}{Named list with \code{"left"} and \code{"right"} vectors of
-label values identifying cortical voxels. Default uses aseg labels
-(3 = left, 42 = right). For aparc+aseg, use
-\code{list(left = 1000:1999, right = 2000:2999)}.}
 
 \item{coords_are_voxels}{If TRUE, streamline coordinates are in voxel
 space (0-indexed). If FALSE, coordinates are in RAS space. If NULL

@@ -124,7 +124,6 @@ create_tract_atlas <- function(
   density_radius_range <- c(0.2, 1.0)
   tract_radius <- 3
   coords_are_voxels <- NULL
-  cortex_labels <- NULL
   cortex_slices <- NULL
 
   output_dir <- normalizePath(output_dir, mustWork = FALSE)
@@ -415,7 +414,6 @@ create_tract_atlas <- function(
       cortex_slices = cortex_slices,
       output_dir = output_dir,
       tract_radius = tract_radius,
-      cortex_labels = cortex_labels,
       coords_are_voxels = coords_are_voxels,
       smoothness = smoothness,
       tolerance = tolerance,
@@ -1205,10 +1203,6 @@ detect_coords_are_voxels <- function(streamlines, dims = NULL) {
 #'   central slices for each view.
 #' @template output_dir
 #' @param tract_radius Dilation radius when rasterising tract coordinates.
-#' @param cortex_labels Named list with `"left"` and `"right"` vectors of
-#'   label values identifying cortical voxels. Default uses aseg labels
-#'   (3 = left, 42 = right). For aparc+aseg, use
-#'   `list(left = 1000:1999, right = 2000:2999)`.
 #' @param coords_are_voxels If TRUE, streamline coordinates are in voxel
 #'   space (0-indexed). If FALSE, coordinates are in RAS space. If NULL
 #'   (default), auto-detects by checking coordinate ranges.
@@ -1235,7 +1229,6 @@ create_tract_geometry_volumetric <- function(
   cortex_slices = NULL,
   output_dir = tempdir(),
   tract_radius = 3,
-  cortex_labels = NULL,
   coords_are_voxels = NULL,
   vertex_size_limits = NULL,
   dilate = NULL,
@@ -1345,9 +1338,7 @@ create_tract_geometry_volumetric <- function(
   aseg_vol <- read_volume(aseg_file)
   dims <- dim(aseg_vol)
 
-  if (is.null(cortex_labels)) {
-    cortex_labels <- detect_cortex_labels(aseg_vol)
-  }
+  cortex_labels <- detect_cortex_labels(aseg_vol)
 
   cortex_vol <- array(0L, dim = dims)
   for (lbl in c(cortex_labels$left, cortex_labels$right)) {

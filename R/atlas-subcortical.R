@@ -886,16 +886,7 @@ create_subcortical_geometry_projection <- function(
     )
   }
 
-  vol_labels <- unique(as.vector(vol))
-  has_aparc <- any(vol_labels >= 1000 & vol_labels < 3000)
-  if (has_aparc) {
-    cortex_labels <- list(
-      left = intersect(1000:1999, vol_labels),
-      right = intersect(2000:2999, vol_labels)
-    )
-  } else {
-    cortex_labels <- list(left = 3, right = 42)
-  }
+  cortex_labels <- detect_cortex_labels(vol)
 
   if (verbose) {
     cli::cli_alert_info(
