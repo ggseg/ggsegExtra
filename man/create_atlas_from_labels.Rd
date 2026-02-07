@@ -7,8 +7,7 @@
 create_atlas_from_labels(
   label_files,
   atlas_name = NULL,
-  region_names = NULL,
-  colours = NULL,
+  input_lut = NULL,
   output_dir = tempdir(),
   views = c("lateral", "medial"),
   tolerance = NULL,
@@ -26,11 +25,10 @@ FreeSurfer naming: \verb{\{hemi\}.\{regionname\}.label} (e.g., \code{lh.motor.la
 \item{atlas_name}{Name for the atlas. If NULL, derived from the input
 filename.}
 
-\item{region_names}{Names for each region. If NULL, extracted from filenames
-by removing the hemisphere prefix and \code{.label} extension.}
-
-\item{colours}{Colours for each region/structure. If NULL, assigns colours
-from a rainbow palette.}
+\item{input_lut}{Path to a color lookup table (LUT) file, or a data.frame
+with columns \code{label}, \code{region}, and colour columns (R, G, B or hex).
+Use this to provide region names and colours. If NULL, names are derived
+from filenames and colours are auto-generated.}
 
 \item{output_dir}{Directory to store intermediate files (screenshots, masks,
 contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
@@ -95,8 +93,7 @@ saved as labels, or when you want to combine regions from different sources
 into a custom atlas.
 
 The function detects hemisphere from filename prefixes (\code{lh.} or \code{rh.}) and
-derives region names from the rest of the filename. You can override these
-with explicit \code{region_names}.
+derives region names from the rest of the filename.
 }
 \examples{
 \dontrun{

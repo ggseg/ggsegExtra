@@ -9,8 +9,6 @@ create_tract_atlas(
   input_aseg = NULL,
   atlas_name = NULL,
   input_lut = NULL,
-  tract_names = NULL,
-  colours = NULL,
   tube_radius = 5,
   tube_segments = 8,
   n_points = 50,
@@ -38,13 +36,8 @@ filename.}
 
 \item{input_lut}{Path to a color lookup table (LUT) file, or a data.frame
 with columns \code{label}, \code{region}, and colour columns (R, G, B or hex).
-If provided, overrides tract_names and colours.}
-
-\item{tract_names}{Names for each tract. If NULL and \code{input_tracts} are
-file paths, names are derived from filenames. Ignored if input_lut provided.}
-
-\item{colours}{Colours for each region/structure. If NULL, assigns colours
-from a rainbow palette.}
+Use this to provide tract names and colours. If NULL, names are derived
+from filenames or list names, and colours are auto-generated.}
 
 \item{tube_radius}{Controls the tube thickness. Either a single numeric
 value for uniform radius, or \code{"density"} to scale radius by how many
@@ -126,18 +119,16 @@ the tube thicker where more streamlines pass through.
 }
 \examples{
 \dontrun{
-# From TRK files
+# From TRK files (names derived from filenames)
 atlas <- create_tract_atlas(
-  input_tracts = c("cst_left.trk", "cst_right.trk"),
-  tract_names = c("CST left", "CST right")
+  input_tracts = c("cst_left.trk", "cst_right.trk")
 )
 
-# From coordinate matrices
-centerlines <- list(
-  cst_left = matrix(rnorm(150), ncol = 3),
-  cst_right = matrix(rnorm(150), ncol = 3)
+# With custom names and colours via LUT
+atlas <- create_tract_atlas(
+  input_tracts = c("cst_left.trk", "cst_right.trk"),
+  input_lut = "tract_colors.txt"
 )
-atlas <- create_tract_atlas(input_tracts = centerlines)
 
 # View with ggseg3d
 ggseg3d(atlas = atlas)

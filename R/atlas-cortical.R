@@ -375,15 +375,15 @@ create_cortical_atlas <- function(
 #' into a custom atlas.
 #'
 #' The function detects hemisphere from filename prefixes (`lh.` or `rh.`) and
-#' derives region names from the rest of the filename. You can override these
-#' with explicit `region_names`.
+#' derives region names from the rest of the filename.
 #'
 #' @param label_files Paths to `.label` files. Each file should follow
 #'   FreeSurfer naming: `{hemi}.{regionname}.label` (e.g., `lh.motor.label`).
 #' @template atlas_name
-#' @param region_names Names for each region. If NULL, extracted from filenames
-#'   by removing the hemisphere prefix and `.label` extension.
-#' @template colours
+#' @param input_lut Path to a color lookup table (LUT) file, or a data.frame
+#'   with columns `label`, `region`, and colour columns (R, G, B or hex).
+#'   Use this to provide region names and colours. If NULL, names are derived
+#'   from filenames and colours are auto-generated.
 #' @template output_dir
 #' @param views Which views to include: "lateral", "medial", "superior", "inferior".
 #' @template tolerance
@@ -431,8 +431,7 @@ create_cortical_atlas <- function(
 create_atlas_from_labels <- function(
   label_files,
   atlas_name = NULL,
-  region_names = NULL,
-  colours = NULL,
+  input_lut = NULL,
   output_dir = tempdir(),
   views = c("lateral", "medial"),
   tolerance = NULL,
@@ -482,6 +481,21 @@ create_atlas_from_labels <- function(
     cli::cli_h1("Creating brain atlas {.val {atlas_name}}")
     cli::cli_alert_info("Input files: {.path {label_files}}")
     cli::cli_alert_info("Setting output directory to {.path {output_dir}}")
+  }
+
+  region_names <- NULL
+  colours <- NULL
+
+  if (!is.null(input_lut)) {
+    lut <- if (is.character(input_lut)) read_ctab(input_lut) else input_lut
+    region_names <- lut$region
+    colours <- if ("hex" %in% names(lut)) {
+      lut$hex
+    } else if (all(c("R", "G", "B") %in% names(lut))) {
+      grDevices::rgb(lut$R, lut$G, lut$B, maxColorValue = 255)
+    } else {
+      NULL
+    }
   }
 
   step1_files <- c(
