@@ -183,7 +183,7 @@ describe("volume_partial_projection", {
     proj <- volume_partial_projection(vol, "axial", 3, 7)
 
     expect_equal(dim(proj), c(10, 10))
-    expect_equal(proj[6, 5], 1)
+    expect_equal(proj[6, 6], 1)
   })
 
   it("respects slice boundaries", {

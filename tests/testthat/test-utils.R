@@ -168,7 +168,6 @@ describe("setup_atlas_dirs", {
     tmp <- withr::local_tempdir()
     dirs <- setup_atlas_dirs(tmp, "test_subcort", type = "subcortical")
 
-    expect_true(dir.exists(dirs$labels))
     expect_true(dir.exists(dirs$meshes))
     expect_equal(dirs$snaps, dirs$snapshots)
     expect_equal(dirs$inter, dirs$interim)

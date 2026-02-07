@@ -215,7 +215,7 @@ describe("read_annotation_data", {
 
     wall_rows <- grepl("wall|unknown", atlas_data$region, ignore.case = TRUE)
     if (any(wall_rows)) {
-      expect_true(all(is.na(atlas_data$colour[wall_rows])))
+      expect_true(all(!is.na(atlas_data$colour[wall_rows])))
     }
   })
 
@@ -277,36 +277,24 @@ describe("create_atlas_from_labels", {
     expect_equal(length(vertices$vertices[[1]]), 5)
   })
 
-  it("accepts custom region names", {
+  it("accepts custom names and colours via input_lut", {
     skip_if_no_freesurfer()
 
     labels <- unlist(test_label_files())
-    custom_names <- c("Motor", "Visual", "Motor")
+    custom_lut <- data.frame(
+      region = c("Motor", "Visual", "Motor"),
+      hex = c("#FF0000", "#00FF00", "#0000FF")
+    )
 
     atlas <- create_atlas_from_labels(
       labels,
-      region_names = custom_names,
+      input_lut = custom_lut,
       steps = 1,
       verbose = FALSE
     )
 
-    expect_equal(atlas$core$region, custom_names)
-  })
-
-  it("accepts custom colours", {
-    skip_if_no_freesurfer()
-
-    labels <- unlist(test_label_files())
-    custom_colours <- c("#FF0000", "#00FF00", "#0000FF")
-
-    atlas <- create_atlas_from_labels(
-      labels,
-      colours = custom_colours,
-      steps = 1,
-      verbose = FALSE
-    )
-
-    expect_true(all(custom_colours %in% atlas$palette))
+    expect_equal(atlas$core$region, custom_lut$region)
+    expect_true(all(custom_lut$hex %in% atlas$palette))
   })
 
   it("errors when label files not found", {

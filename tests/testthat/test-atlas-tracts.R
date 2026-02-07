@@ -182,8 +182,8 @@ describe("create_tract_atlas", {
 
     expect_s3_class(atlas, "brain_atlas")
     expect_equal(atlas$type, "tract")
-    expect_false(is.null(atlas$data$meshes))
-    expect_equal(nrow(atlas$data$meshes), 2)
+    expect_false(is.null(atlas$data$centerlines))
+    expect_equal(nrow(atlas$data$centerlines), 2)
   })
 
   it("assigns correct labels", {
@@ -202,41 +202,31 @@ describe("create_tract_atlas", {
     expect_true("cst_right" %in% atlas$core$label)
   })
 
-  it("accepts custom tract names", {
+  it("accepts custom names and colours via input_lut", {
     tracts <- list(
       matrix(c(1:20, rep(0, 40)), ncol = 3),
       matrix(c(1:20, rep(1, 40)), ncol = 3)
     )
 
+    custom_lut <- data.frame(
+      region = c("Tract A", "Tract B"),
+      hex = c("#FF0000", "#00FF00")
+    )
+
     atlas <- create_tract_atlas(
       input_tracts = tracts,
-      tract_names = c("Tract A", "Tract B"),
+      input_lut = custom_lut,
       steps = 1,
       verbose = FALSE
     )
 
     expect_true("Tract A" %in% atlas$core$label)
     expect_true("Tract B" %in% atlas$core$label)
-  })
-
-  it("accepts custom colours", {
-    tracts <- list(
-      cst_left = matrix(c(1:20, rep(0, 40)), ncol = 3),
-      cst_right = matrix(c(1:20, rep(1, 40)), ncol = 3)
-    )
-
-    atlas <- create_tract_atlas(
-      input_tracts = tracts,
-      colours = c("#FF0000", "#00FF00"),
-      steps = 1,
-      verbose = FALSE
-    )
-
     expect_true("#FF0000" %in% atlas$palette)
     expect_true("#00FF00" %in% atlas$palette)
   })
 
-  it("creates valid mesh structure for each tract", {
+  it("creates valid centerline structure for each tract", {
     tracts <- list(
       tract1 = matrix(c(1:20, rep(0, 40)), ncol = 3)
     )
@@ -247,36 +237,26 @@ describe("create_tract_atlas", {
       verbose = FALSE
     )
 
-    mesh <- atlas$data$meshes$mesh[[1]]
-    expect_true(all(c("vertices", "faces") %in% names(mesh)))
-    expect_true(all(c("x", "y", "z") %in% names(mesh$vertices)))
-    expect_true(all(c("i", "j", "k") %in% names(mesh$faces)))
+    expect_true(all(c("label", "points") %in% names(atlas$data$centerlines)))
+    points <- atlas$data$centerlines$points[[1]]
+    expect_true(all(c("x", "y", "z") %in% colnames(points)))
   })
 
-  it("respects tube parameters", {
+  it("stores tube parameters", {
     tract <- list(
       tract1 = matrix(c(1:10, rep(0, 20)), ncol = 3)
     )
 
-    atlas_thin <- create_tract_atlas(
+    atlas <- create_tract_atlas(
       tract,
-      tube_radius = 0.1,
-      steps = 1,
-      verbose = FALSE
-    )
-    atlas_thick <- create_tract_atlas(
-      tract,
-      tube_radius = 1.0,
+      tube_radius = 3.5,
+      tube_segments = 12,
       steps = 1,
       verbose = FALSE
     )
 
-    thin_range <- max(atlas_thin$data$meshes$mesh[[1]]$vertices$y) -
-      min(atlas_thin$data$meshes$mesh[[1]]$vertices$y)
-    thick_range <- max(atlas_thick$data$meshes$mesh[[1]]$vertices$y) -
-      min(atlas_thick$data$meshes$mesh[[1]]$vertices$y)
-
-    expect_true(thick_range > thin_range * 5)
+    expect_equal(atlas$data$tube_radius, 3.5)
+    expect_equal(atlas$data$tube_segments, 12L)
   })
 
   it("can render with ggseg3d", {
