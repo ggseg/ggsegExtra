@@ -59,7 +59,7 @@ preview_atlas <- function(atlas) {
         gp <- ggplot2::ggplot() +
           ggseg::geom_brain(
             atlas = atlas,
-            position = ggseg::position_brain(ncol = 4),
+            position = ggseg::position_brain(nrow = 4),
             show.legend = FALSE,
             alpha = .7,
             ggplot2::aes(fill = label)
@@ -89,8 +89,8 @@ preview_atlas <- function(atlas) {
 #'
 #' Verbosity levels:
 #' - 0: Silent (no output)
-#' - 1: Normal (progress messages, FreeSurfer verbose = FALSE)
-#' - 2: High (detailed output, FreeSurfer verbose = TRUE)
+#' - 1: Normal (progress messages, FreeSurfer verbose = get_verbose())
+#' - 2: High (detailed output, FreeSurfer verbose = get_verbose())
 #'
 #' @param verbose Optional explicit value. If NULL, reads from options/env.
 #'   Can be logical (TRUE = 1, FALSE = 0) or numeric (0, 1, 2).
@@ -100,7 +100,7 @@ preview_atlas <- function(atlas) {
 #' get_verbosity()
 #' get_verbosity(TRUE)
 #' get_verbosity(2)
-get_verbosity <- function(verbose = NULL) {
+get_verbosity <- function(verbose = get_verbose()) {
   if (!is.null(verbose)) {
     if (is.logical(verbose)) {
       return(as.integer(verbose))
@@ -135,7 +135,7 @@ get_verbosity <- function(verbose = NULL) {
 #' @examples
 #' is_verbose()
 #' is_verbose(FALSE)
-is_verbose <- function(verbose = NULL) {
+is_verbose <- function(verbose = get_verbose()) {
   get_verbosity(verbose) >= 1L
 }
 
@@ -143,7 +143,7 @@ is_verbose <- function(verbose = NULL) {
 #' @param verbose Optional explicit value
 #' @return Logical
 #' @noRd
-is_very_verbose <- function(verbose = NULL) {
+is_very_verbose <- function(verbose = get_verbose()) {
   get_verbosity(verbose) >= 2L
 }
 
@@ -204,7 +204,7 @@ load_or_run_step <- function(
 #' @param verbose Optional explicit value
 #' @return Logical for FreeSurfer verbose parameter
 #' @noRd
-fs_verbose <- function(verbose = NULL) {
+fs_verbose <- function(verbose = get_verbose()) {
   is_very_verbose(verbose)
 }
 
@@ -276,7 +276,7 @@ get_tolerance <- function(tolerance = NULL) {
     tolerance,
     "ggsegExtra.tolerance",
     "GGSEGEXTRA_TOLERANCE",
-    0
+    1
   )
 }
 
@@ -373,7 +373,7 @@ get_output_dir <- function(output_dir = NULL) {
     output_dir,
     "ggsegExtra.output_dir",
     "GGSEGEXTRA_OUTPUT_DIR",
-    tempdir()
+    tempdir(check = TRUE)
   )
 }
 
@@ -524,15 +524,18 @@ clean_region_names <- function(
 #' @return Named list of directory paths
 #' @noRd
 setup_atlas_dirs <- function(output_dir, atlas_name = NULL, type = "cortical") {
-  base <- if (is.null(atlas_name)) output_dir else file.path(output_dir, atlas_name)
+  base <- if (is.null(atlas_name)) {
+    output_dir
+  } else {
+    file.path(output_dir, atlas_name)
+  }
 
   dirs <- list(
     base = base,
     snapshots = file.path(base, "snapshots"),
-    interim = file.path(base, "interim"),
+    processed = file.path(base, "processed"),
     masks = file.path(base, "masks"),
-    snaps = file.path(base, "snapshots"),
-    inter = file.path(base, "interim")
+    snaps = file.path(base, "snapshots")
   )
 
   if (type == "subcortical") {
@@ -543,9 +546,10 @@ setup_atlas_dirs <- function(output_dir, atlas_name = NULL, type = "cortical") {
     dirs$volumes <- file.path(base, "volumes")
   }
 
-  for (d in dirs) {
-    mkdir(d)
-  }
+  invisible(
+    lapply(dirs, mkdir)
+  )
+
   dirs
 }
 
@@ -628,7 +632,7 @@ process_snapshot_image <- function(
   dilate = NULL,
   transparent_color = "black",
   fuzz = 10,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   if (skip_existing && file.exists(output_file)) {
     return(invisible(output_file))
@@ -654,7 +658,11 @@ process_snapshot_image <- function(
 
 #' Extract alpha channel from image using ImageMagick
 #' @noRd
-extract_alpha_mask <- function(input_file, output_file, skip_existing = TRUE) {
+extract_alpha_mask <- function(
+  input_file,
+  output_file,
+  skip_existing = get_skip_existing()
+) {
   if (skip_existing && file.exists(output_file)) {
     return(invisible(output_file))
   }
@@ -762,7 +770,7 @@ magick_version <- function() {
 # Command execution ----
 
 #' @noRd
-run_cmd <- function(cmd, verbose = FALSE, no_ui = FALSE) {
+run_cmd <- function(cmd, verbose = get_verbose(), no_ui = FALSE) {
   if (no_ui) {
     if (Sys.info()["sysname"] == "Darwin") {
       fv_args <- sub("^freeview[[:space:]]*", "", cmd)
@@ -792,7 +800,7 @@ get_contours <- function(
   raster_object,
   max_val = 255,
   vertex_size_limits = c(3 * 10^6, 3 * 10^7),
-  verbose = TRUE
+  verbose = get_verbose()
 ) {
   mx <- global(raster_object, fun = "max", na.rm = TRUE)[1, 1]
 
@@ -829,7 +837,7 @@ isolate_region <- function(
   input_file,
   output_file,
   interim_file = tempfile(),
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   if (skip_existing && file.exists(output_file)) {
     return(invisible(output_file))
@@ -905,9 +913,9 @@ create_cortex_slices <- function(views, dims, cortex_x = NULL) {
 
     if (v$type == "sagittal") {
       if (grepl("left", v$name, ignore.case = TRUE)) {
-        x_pos <- round(dims[1] * 0.65)
+        x_pos <- round(dims[1] * 0.55)
       } else if (grepl("right", v$name, ignore.case = TRUE)) {
-        x_pos <- round(dims[1] * 0.35)
+        x_pos <- round(dims[1] * 0.45)
       } else {
         x_pos <- cortex_x
       }

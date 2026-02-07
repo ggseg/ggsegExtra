@@ -611,8 +611,8 @@ describe("create_cortex_slices", {
 
     result <- create_cortex_slices(views, dims)
 
-    expect_equal(result$x[1], round(256 * 0.65))
-    expect_equal(result$x[2], round(256 * 0.35))
+    expect_equal(result$x[1], round(256 * 0.55))
+    expect_equal(result$x[2], round(256 * 0.45))
   })
 })
 
