@@ -38,10 +38,10 @@ describe("{GGSEG} 3D rendering support", {
     vertices <- {GGSEG}$data$vertices
     expect_type(vertices, "list")
 
-    non_na_vertices <- vertices[!sapply(vertices, is.null)]
+    non_na_vertices <- vertices[!vapply(vertices, is.null, logical(1))]
     if (length(non_na_vertices) > 0) {
-      expect_true(all(sapply(non_na_vertices, is.integer) |
-                      sapply(non_na_vertices, is.numeric)))
+      expect_true(all(vapply(non_na_vertices, is.integer, logical(1)) |
+                      vapply(non_na_vertices, is.numeric, logical(1))))
     }
   })
 })
@@ -106,10 +106,10 @@ describe("{GGSEG} data quality", {
 
     if (length(non_na_colours) > 0) {
       # Check hex format or valid R colour names
-      is_valid <- sapply(non_na_colours, function(col) {
+      is_valid <- vapply(non_na_colours, function(col) {
         grepl("^#[0-9A-Fa-f]{6}$|^#[0-9A-Fa-f]{8}$", col) ||
         col %in% grDevices::colours()
-      })
+      }, logical(1))
       expect_true(all(is_valid))
     }
   })

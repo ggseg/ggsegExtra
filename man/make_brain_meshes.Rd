@@ -25,9 +25,4 @@ Creates brain surface mesh data for all combinations of hemispheres
 and surface types. This data should be stored in ggseg3d for shared
 use across all atlases.
 }
-\examples{
-\dontrun{
-brain_meshes <- make_brain_meshes()
-names(brain_meshes)
-}
-}
+\keyword{internal}

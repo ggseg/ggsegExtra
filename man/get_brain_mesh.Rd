@@ -28,9 +28,4 @@ Extracts the full brain surface mesh for a given subject and surface type.
 This mesh can be used for 3D rendering where vertex colors are applied
 based on atlas vertex indices.
 }
-\examples{
-\dontrun{
-mesh <- get_brain_mesh(hemisphere = "lh", surface = "inflated")
-str(mesh)
-}
-}
+\keyword{internal}

@@ -1,0 +1,207 @@
+# Coordinate transformation functions for atlas geometry ----
+
+
+#' @importFrom dplyr mutate
+#' @importFrom sf st_geometry st_bbox st_transform
+correct_coords_sf <- function(data, by) {
+  geom <- st_geometry(data)
+
+  bbox <- st_bbox(geom)
+  ymin <- bbox["ymin"]
+
+  transformed_geom <- geom + c(by, 0) - c(0, ymin)
+
+  tmp <- mutate(
+    data,
+    geometry = transformed_geom
+  )
+  return(tmp)
+}
+
+
+#' @importFrom dplyr group_by group_split group_keys ungroup
+#' @importFrom sf st_bbox
+adjust_coords_sf <- function(atlas_df) {
+  atlas_grouped <- group_by(atlas_df, hemi, view)
+  keys <- group_keys(atlas_grouped)
+  splits <- group_split(atlas_grouped)
+
+  find_group <- function(h_vals, s) {
+    idx <- which(keys$hemi %in% h_vals & keys$view == s)
+    if (length(idx) == 1) splits[[idx]] else NULL
+  }
+
+  view_order <- c(
+    "left inferior", "left lateral", "left medial", "left superior",
+    "right inferior", "right lateral", "right medial", "right superior"
+  )
+
+  atlas_list <- lapply(view_order, function(v) {
+    parts <- strsplit(v, " ")[[1]]
+    hemi <- parts[1]
+    vw <- parts[2]
+    find_group(c(hemi, substr(hemi, 1, 1)), vw)
+  })
+  names(atlas_list) <- view_order
+
+  present <- !vapply(atlas_list, is.null, logical(1))
+  atlas_list <- atlas_list[present]
+
+  if (length(atlas_list) == 0) {
+    cli::cli_abort("No valid hemi/view combinations found")
+  }
+
+  widths <- vapply(atlas_list, function(df) {
+    bbox <- st_bbox(df$geometry)
+    unname(bbox["xmax"] - bbox["xmin"])
+  }, numeric(1))
+
+  gap <- max(widths) * 0.05
+  offsets <- cumsum(c(0, widths[-length(widths)] + gap))
+
+  atlas_list <- lapply(seq_along(atlas_list), function(i) {
+    correct_coords_sf(atlas_list[[i]], offsets[i])
+  })
+
+  atlas_df_r <- do.call(rbind, atlas_list)
+  return(ungroup(atlas_df_r))
+}
+
+
+#' @importFrom dplyr group_by group_split
+adjust_coords_sf2 <- function(atlas_df) {
+  atlas <- group_by(atlas_df, view)
+  atlas <- group_split(atlas)
+
+  atlas <- lapply(atlas, gather_geometry)
+
+  atlas2 <- restack(atlas)
+
+  return(atlas2$df)
+}
+
+
+#' @importFrom sf st_coordinates
+count_vertices <- function(x) {
+  vapply(x$geometry, function(i) nrow(st_coordinates(i)), integer(1))
+}
+
+
+#' @importFrom dplyr as_tibble group_by mutate row_number ungroup
+#' @importFrom sf st_combine st_coordinates
+to_coords <- function(x, n) {
+  if (nrow(x) != 0) {
+    k <- st_combine(st_geometry(x))
+    k <- st_coordinates(k)
+    k <- as_tibble(k)
+    k$L2 <- n * 10000 + k$L2
+
+    k <- group_by(k, L2)
+    k <- mutate(k, .order = row_number())
+    k <- ungroup(k)
+  } else {
+    k <- data.frame(matrix(nrow = 0, ncol = 6))
+  }
+  names(k) <- c(".long", ".lat", ".subid", ".id", ".poly", ".order")
+  k
+}
+
+
+#' @importFrom dplyr group_by group_split
+#' @importFrom sf st_polygon st_sfc st_sf st_zm st_cast st_crs
+coords2sf <- function(x, vertex_size_limits = NULL) {
+  dt <- group_by(x, .subid, .id)
+  dt_split <- group_split(dt)
+
+  if (!is.null(vertex_size_limits)) {
+    if (!is.na(vertex_size_limits[1])) {
+      dt_split <- dt_split[vapply(
+        dt_split,
+        function(d) nrow(d) > vertex_size_limits[1],
+        logical(1)
+      )]
+    }
+
+    if (!is.na(vertex_size_limits[2])) {
+      dt_split <- dt_split[vapply(
+        dt_split,
+        function(d) nrow(d) < vertex_size_limits[2],
+        logical(1)
+      )]
+    }
+  }
+
+  polygon_list <- lapply(dt_split, function(d) {
+    coords_matrix <- as.matrix(d[, c(".long", ".lat")])
+    if (!identical(coords_matrix[1, ], utils::tail(coords_matrix, 1)[1, ])) {
+      coords_matrix <- rbind(coords_matrix, coords_matrix[1, ])
+    }
+    st_polygon(list(coords_matrix))
+  })
+
+  if (length(polygon_list) > 0) {
+    dt_sf <- st_sfc(polygon_list)
+    dt_sf <- st_sf(geometry = dt_sf)
+    dt_sf <- st_zm(dt_sf)
+    dt_sf <- st_cast(dt_sf, "MULTIPOLYGON")
+    return(dt_sf)
+  }
+  return(
+    st_sf(geometry = st_sfc(crs = st_crs(NA)))
+  )
+}
+
+
+#' @importFrom sf st_bbox
+gather_geometry <- function(df) {
+  cent <- center_coord(df)
+  df$geometry <- df$geometry - cent[1:2]
+  df
+}
+
+
+center_coord <- function(x) {
+  cent <- range_coord(x)
+  cent <- apply(cent, 2, mean)
+  cent
+}
+
+
+#' @importFrom sf st_coordinates
+range_coord <- function(x) {
+  cent <- st_coordinates(x)
+  cent <- apply(cent, 2, range)
+  cent[, 1:2]
+}
+
+
+#' @importFrom sf st_bbox
+#' @importFrom stats sd
+restack <- function(df) {
+  rr <- lapply(df, range_coord)
+
+  max_extent <- max(vapply(rr, function(r) max(abs(r[, 2])), numeric(1)))
+  widths <- vapply(rr, function(r) diff(r[, 1]), numeric(1))
+  half_widths <- vapply(rr, function(r) max(abs(r[, 1])), numeric(1))
+  gap <- max(widths) * 0.15
+
+  df2 <- list()
+  x_pos <- 0
+
+  for (k in seq_along(df)) {
+    x_offset <- x_pos + half_widths[k]
+    df2[[k]] <- df[[k]]
+    df2[[k]]$geometry <- df2[[k]]$geometry + c(x_offset, max_extent)
+    x_pos <- x_pos + widths[k] + gap
+  }
+
+  bx <- do.call(rbind, lapply(df2, function(x) st_bbox(x$geometry)))
+  bx <- apply(bx, 2, min)
+
+  return(
+    list(
+      df = do.call(rbind, df2),
+      box = bx
+    )
+  )
+}

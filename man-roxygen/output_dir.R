@@ -1,1 +1,2 @@
-#' @param output_dir output directory path
+#' @param output_dir Directory to store intermediate files (screenshots, masks,
+#'   contours). Defaults to [tempdir()].

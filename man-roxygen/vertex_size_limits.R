@@ -1,1 +1,3 @@
-#' @param vertex_size_limits numeric vector of two, setting the minimum and maximum vector size of polygons. Defaults to NULL, which sets no limits.
+#' @param vertex_size_limits Numeric vector of length 2 setting minimum and
+#'   maximum vertex count for polygons. Polygons outside this range are
+#'   filtered out. Default NULL applies no limits.

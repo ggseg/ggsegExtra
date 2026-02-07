@@ -18,90 +18,171 @@ knitr::opts_chunk$set(
 library(ggsegExtra)
 ```
 
-ggsegExtra does not contain any atlases it self, but rather retains a record of all confirmed extra atlases compatible with ggseg or ggseg3d.
-If you have a working atlas, either having made it your self or following one of our other tutorials, and want it featured as a confirmed atlas in ggsegExtra, there are some steps to follow.
+ggseg atlases live in their own R packages, distributed through the [ggseg r-universe](https://ggseg.r-universe.dev).
+This provides a single place for all ggseg-compatible packages, whether hosted on GitHub, GitLab, or elsewhere.
 
-1) the data must work well with either ggseg or ggseg3d.
-2) the data must be in its own R-package.
-3) the R-package must be hosted online in a version control repository.
-    - like GitHub, GitLab, BitBucket etc.
-4) Let us know about the atlas so we can check it out.
-    - either through [github-issues](https://github.com/ggseg/ggsegExtra/issues) with information on the online repository it is in.
-    - or by doing a pull request after adding atlas information in the [atlas list](https://github.com/ggseg/ggsegExtra/blob/master/R/extra-atlases.R)
-5) once everything is in order, we will add it to the list of confirmed atlases.
+If you have a working atlas and want it available through r-universe, follow these steps.
 
+## Requirements
 
-## Help setting up the package repository
+1. The data must work with ggseg, ggseg3d, or both.
+2. The data must be in its own R package.
+3. The R package must be hosted in a public version control repository (GitHub, GitLab, etc.).
+4. The package must pass `R CMD check` without errors.
 
-Since setting up a package for the first time, particularly a data package, we set up a function to help you get started.
-It contains tests, and some general set-up we would expect from a ggseg-atlas package.
-If you already are comfortable making R-packages, skip this step.
-If not, it is intended to help you set up a skeleton for the package.
+## Setting up the package repository
 
-To create a ggseg repo, use the RStudio New Project creation GUI, and look for the ggseg icon.
+Since setting up a data package can be tricky, we provide a function to get you started.
+It includes tests and the general structure we expect from a ggseg-atlas package.
+If you already make R packages comfortably, skip this step.
 
-### Change DESCRIPTION
-The DESCRIPTION file is a text-file with important information regarding the contents of the package.
-This file is necessary to edit for several reasons:
+To create a ggseg repo, use the RStudio New Project creation GUI and look for the ggseg icon.
 
-- You (and whoever assisted you) should be listed as authors and maintainers of the package, remove Athanasia and Didac and add your own names in stead (ORCID is optional, delete if you don't have one).
-- The `Description:` section should be altered to reflect the contents of the package.
-- `URL:` and `BugReports` must be altered to point to the remote repository it will be stored in.
-    - if it does not have a feature like github issues, BugReports may be deleted as a whole.
+### Edit DESCRIPTION
+
+The DESCRIPTION file contains important metadata about your package.
+You need to edit it for several reasons:
+
+- List yourself (and collaborators) as authors and maintainers.
+  Remove the template authors and add your own names.
+  ORCID is optional.
+- Update the `Description:` section to reflect your package contents.
+- Change `URL:` and `BugReports` to point to your remote repository.
+  If your host doesn't support issues, delete `BugReports` entirely.
 
 ### Add data
-You will need to place your atlas files, as `.rda` files in the `data/` folder.
-The atlas data-objects must have the same name as the file.
-In this case `cc200.rda` should load the object `cc200` into an R-environment using `load("data/cc200.rda")`, and contain a ggseg-atlas (use `is_ggseg_atlas()` and `as_ggseg_atlas` to check).
-Likewise, `cc200_3d.rda`should load the object `cc200_3d` into an R-environment using `load("data/cc200_3d.rda")`, and should contains a ggseg3d-atlas (use `is_ggseg3d_atlas()` and `as_ggseg3d_atlas` to check).
-And then adapt the atlas information in the `R/cc200.R` to match the atlas you are adding.
-Take particular care with the reference to the atlas with the original paper first introducing the parcellation.
 
+Place your atlas files as `.rda` files in the `data/` folder.
+The data object must have the same name as the file.
+
+For example, `cc200.rda` should load an object called `cc200` using `load("data/cc200.rda")`.
+The object should be a valid ggseg-atlas (check with `is_ggseg_atlas()` and `as_ggseg_atlas()`).
+Likewise, `cc200_3d.rda` should load `cc200_3d` and contain a valid ggseg3d-atlas.
+
+Adapt the atlas documentation in `R/cc200.R` to match your atlas.
+Take particular care with the reference to the original paper introducing the parcellation.
 
 ### Getting tests to pass
-Once data is added, and references fixed, try to run the tests.
+
+Once data is added and references fixed, run the tests:
 
 ```{r}
 #| label: run-tests
 devtools::test()
 ```
 
-There will likely be some failures, try to resolve them by looking at the error messages.
+There will likely be failures.
+Try to resolve them by reading the error messages.
 
 **Common things to check:**
 
-- if you only have 3d or a 2d (ggplot) atlas, comment out sections in the tests that refer to the atlas type you are _not_ including.
-- if you have a ggseg-atlas, the tests automatically check for a palette matching the `atlas$region` column.
-    - if you have not made such a palette, please do so, look into `data-raw/palettes.R` for setting it up.
-    - palettes are stores as a list in the `brain_pal` object, where each list contains a named string vector, the names should match `atlas$region` and the strings should be hexidecimal colour codes.
-
+- If you only have a 2D or 3D atlas, comment out test sections that refer to the atlas type you're not including.
+- If you have a ggseg-atlas, the tests check for a palette matching `atlas$region`.
+  If you haven't created a palette, look at `data-raw/palettes.R` for how to set one up.
+  Palettes are stored in the `brain_pal` object as named string vectors.
+  Names should match `atlas$region` and values should be hexadecimal colour codes.
 
 Let us know if you struggle.
-We would love to improve this tutorial with the issues you might encounter.
+We would love to improve this tutorial with the issues you encounter.
 
-### Getting package tests to pass
-Once all tests are passed, try running package checks with:
+### Getting package checks to pass
+
+Once all tests pass, run package checks:
 
 ```{r}
 #| label: run-check
 devtools::check()
 ```
 
-which will attempt to build you package and see how it goes.
+This attempts to build your package and verify everything works.
 
-Look at the error messages and try to resolve them by reading the carefully.
+Read error messages carefully and try to resolve them.
 
 **Common things to check:**
 
-- if you have only included a single atlas of either ggseg or ggseg3d:
-    - remove the unneeded atlas in the `data/atlas.rda` file, it contains information
-    to both atlases and will fail if only one of them are present in `data/`.
-- you have not added a license: try using `usethis::use_mit_license("Your Name Here")`
+- If you only included one atlas type (ggseg or ggseg3d), remove the unneeded atlas from `data/atlas.rda`.
+  That file contains information for both atlas types and will fail if only one is present.
+- If you haven't added a license, try `usethis::use_mit_license("Your Name Here")`.
 
-There will likely be some failures, try to resolve them.
-Let us know if you struggle.
-We would love to improve this tutorial with the issues you might encounter.
+If everything passes, push to your remote repository.
 
-If everything goes well, push it all to your remote repository and let us know about it.
-We will double check and add it if it all checks out!
+## Adding your package to r-universe
 
+Once your package is ready and hosted publicly, submit it to the ggseg r-universe.
+
+### 1. Fork the r-universe repository
+
+Go to [github.com/ggseg/universe](https://github.com/ggseg/universe) and fork the repository.
+
+### 2. Edit packages.json
+
+The `packages.json` file lists all packages in the ggseg r-universe.
+Add an entry for your package:
+
+```json
+[
+  {
+    "package": "ggsegYeo2011",
+    "url": "https://github.com/ggseg/ggsegYeo2011"
+  },
+  {
+    "package": "yourpackage",
+    "url": "https://github.com/yourusername/yourpackage"
+  }
+]
+```
+
+Each entry needs:
+
+- `package`: The exact package name (must match your DESCRIPTION file).
+- `url`: The URL to your repository.
+
+For packages not on GitHub, you can also specify a `branch` or use other URL schemes:
+
+```json
+{
+  "package": "yourpackage",
+  "url": "https://gitlab.com/yourusername/yourpackage",
+  "branch": "main"
+}
+```
+
+### 3. Submit a pull request
+
+Commit your changes and open a pull request to the ggseg/universe repository.
+Include a brief description of your atlas and a link to any relevant publication.
+
+### 4. Wait for review
+
+We will check that:
+
+- The package installs correctly
+- It passes `R CMD check`
+- The atlas works with ggseg and/or ggseg3d
+
+Once merged, r-universe automatically builds your package.
+It typically appears within an hour at [ggseg.r-universe.dev](https://ggseg.r-universe.dev).
+
+## Installing from r-universe
+
+Users can then install your atlas with:
+
+```{r}
+#| label: install-example
+install.packages("yourpackage", repos = "https://ggseg.r-universe.dev")
+```
+
+Or use the ggsegExtra helper:
+
+```{r}
+#| label: install-helper
+ggseg_atlas_repos("yourpackage")
+install_ggseg_atlas("yourpackage")
+```
+
+## Updating your package
+
+When you push updates to your repository, r-universe automatically rebuilds the package.
+No action needed on your part after the initial setup.
+
+If you move the repository to a different URL, submit a pull request to update `packages.json`.

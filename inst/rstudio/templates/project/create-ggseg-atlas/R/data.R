@@ -2,7 +2,7 @@
 #'
 #' A brain atlas for the {GGSEG} parcellation scheme.
 #'
-#' This atlas contains both 2D polygon geometry for plotting with [ggseg::ggseg()]
+#' This atlas contains 2D polygon geometry for [ggseg::ggseg()]
 #' and vertex indices for 3D rendering with [ggseg3d::ggseg3d()].
 #'
 #' @format A [ggseg.formats::brain_atlas] object with columns:

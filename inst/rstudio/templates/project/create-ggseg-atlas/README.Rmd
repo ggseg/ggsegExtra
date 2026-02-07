@@ -64,11 +64,17 @@ remotes::install_github("ggseg/{REPO}")
 
 ```{r plot-2d}
 library(ggseg)
-library({REPO})
+library({
+  REPO
+})
 
-ggseg(atlas = {GGSEG}) +
-  theme(legend.position = "bottom",
-        legend.text = element_text(size = 7)) +
+ggseg(atlas = {
+  GGSEG
+}) +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 7)
+  ) +
   guides(fill = guide_legend(ncol = 4))
 ```
 
@@ -77,7 +83,9 @@ ggseg(atlas = {GGSEG}) +
 ```{r plot-3d-code, eval = FALSE}
 library(ggseg3d)
 
-ggseg3d(atlas = {GGSEG}) |>
+ggseg3d(atlas = {
+  GGSEG
+}) |>
   add_glassbrain() |>
   pan_camera("right lateral")
 ```
@@ -85,15 +93,20 @@ ggseg3d(atlas = {GGSEG}) |>
 ```{r plot-3d-render, echo = FALSE, eval = FALSE}
 # This chunk generates the 3D screenshot (run manually)
 library(ggseg3d)
-p <- ggseg3d(atlas = {GGSEG}) |>
+p <- ggseg3d(atlas = {
+  GGSEG
+}) |>
   add_glassbrain(hemisphere = "left") |>
   pan_camera("right lateral")
 # Save screenshot
 htmlwidgets::saveWidget(p, "man/figures/README-3d-plot.html")
-webshot2::webshot("man/figures/README-3d-plot.html", "man/figures/README-3d-plot.png")
+webshot2::webshot(
+  "man/figures/README-3d-plot.html",
+  "man/figures/README-3d-plot.png"
+)
 ```
 
-```{r show-3d, echo = FALSE, out.width = "50%", eval = file.exists("man/figures/README-3d-plot.png")}
+```{r show-3d, echo=FALSE, out.width="50%", eval=file.exists("man/figures/README-3d-plot.png")}
 knitr::include_graphics("man/figures/README-3d-plot.png")
 ```
 
@@ -112,7 +125,9 @@ knitr::include_graphics("man/figures/README-3d-plot.png")
 ## Region Names
 
 ```{r regions, echo = FALSE}
-regions <- unique({GGSEG}$data$region)
+regions <- unique({
+  GGSEG
+}$data$region)
 regions <- regions[!is.na(regions)]
 cat(paste("-", sort(regions)), sep = "\n")
 ```

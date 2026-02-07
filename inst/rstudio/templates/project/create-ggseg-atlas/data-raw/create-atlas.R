@@ -1,5 +1,5 @@
 # Create {GGSEG} atlas for the ggseg ecosystem
-# This script creates a brain_atlas object that works with both ggseg and ggseg3d
+# Creates a brain_atlas for ggseg and ggseg3d
 
 library(ggsegExtra)
 library(dplyr)
@@ -11,15 +11,15 @@ library(dplyr)
 
 # METHOD A: From FreeSurfer annotation file (most common)
 # --------------------------------------------------------
-# Place your annotation files in data-raw/ with naming: lh.{GGSEG}.annot, rh.{GGSEG}.annot
-# Or use a standard FreeSurfer annotation like "aparc", "aparc.DKTatlas", etc.
+# Place annotation files in data-raw/ named: lh.{GGSEG}.annot, rh.{GGSEG}.annot
+# Or use standard FreeSurfer annotations: "aparc", "aparc.DKTatlas", etc.
 
 annot_name <- "{GGSEG}"
 
 # If your annotation is in a custom location:
 # annot_dir <- here::here("data-raw")
 
-# If you need to convert from fsaverage to fsaverage5 (recommended for smaller file size):
+# Convert from fsaverage to fsaverage5 (smaller file size):
 # lapply(c("lh", "rh"), function(hemi) {
 #   ggsegExtra::mri_surf2surf_rereg(
 #     subject = "fsaverage",
@@ -32,7 +32,9 @@ annot_name <- "{GGSEG}"
 # METHOD B: From label files
 # --------------------------
 # Place your .label files in data-raw/
-# label_files <- list.files(here::here("data-raw"), pattern = "\\.label$", full.names = TRUE)
+# label_files <- list.files(
+#   here::here("data-raw"), pattern = "\\.label$", full.names = TRUE
+# )
 
 
 # =============================================================================
@@ -40,7 +42,7 @@ annot_name <- "{GGSEG}"
 # =============================================================================
 
 # METHOD A: From annotation (includes 2D geometry)
-{GGSEG} <- ggsegExtra::make_brain_atlas(
+{GGSEG} <- ggsegExtra::create_cortical_atlas(
   annot = annot_name,
   subject = "fsaverage5",
   include_geometry = TRUE,
@@ -48,7 +50,7 @@ annot_name <- "{GGSEG}"
 )
 
 # METHOD B: From label files (3D only, faster)
-# {GGSEG} <- ggsegExtra::make_atlas_from_labels(
+# {GGSEG} <- ggsegExtra::create_atlas_from_labels(
 #   label_files = label_files,
 #   atlas_name = "{GGSEG}",
 #   type = "cortical",
@@ -59,13 +61,11 @@ annot_name <- "{GGSEG}"
 # =============================================================================
 # STEP 3: Clean up region names (if needed)
 # =============================================================================
-# Modify region names to be consistent and readable
+# Modify region names in the core metadata
 
-{GGSEG}$data <- {GGSEG}$data |>
+{GGSEG}$core <- {GGSEG}$core |>
   mutate(
-    # Remove hemisphere suffixes if present
     region = gsub("_L$|_R$|_lh$|_rh$", "", region),
-    # Set unknown/wall regions to NA
     region = if_else(
       grepl("unknown|wall|\\?|corpus.callosum", region, ignore.case = TRUE),
       NA_character_,

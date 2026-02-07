@@ -20,8 +20,7 @@ License: MIT + file LICENSE
 URL: https://github.com/ggseg/ggsegExtra
 BugReports: https://github.com/ggseg/ggsegExtra/issues
 Depends:
-    ggseg.formats,
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 Imports:
     chromote,
     cli,
@@ -29,6 +28,7 @@ Imports:
     freesurfer,
     furrr,
     geomorph,
+    ggseg.formats,
     ggseg3d (>= 1.6.0),
     grDevices,
     jsonlite,
@@ -57,7 +57,6 @@ Suggests:
     oro.nifti,
     rmarkdown,
     rstudioapi,
-    Rvcg,
     spelling,
     testthat (>= 3.0.0),
     withr
@@ -69,7 +68,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 SystemRequirements: Freesurfer, ImageMagick
 Remotes:
-    ggseg/ggseg.formats,
     ggseg/ggsegDKT
 LazyData: true
 Config/testthat/edition: 3

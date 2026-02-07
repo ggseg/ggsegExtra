@@ -1,0 +1,139 @@
+---
+title: "Converting legacy atlases"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Converting legacy atlases}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+If you have atlases from older versions of ggseg or ggseg3d, this vignette explains how to convert them to the current `brain_atlas` format.
+
+```{r}
+#| label: load-libraries
+library(ggsegExtra)
+library(ggseg3d)
+```
+
+## The old system
+
+Previous versions used separate objects for 2D and 3D rendering:
+
+- `ggseg_atlas` objects for 2D plots with ggseg
+- `ggseg3d_atlas` objects for 3D plots with ggseg3d
+
+Atlas packages exported pairs like `dk` and `dk_3d`, or `yeo7` and `yeo7_3d`.
+You had to remember which object to use with which package.
+
+## The current system
+
+The current system uses a single `brain_atlas` object that works with both packages.
+One atlas, both renderers.
+
+## Converting old atlases
+
+Use `unify_legacy_atlases()` to convert old atlas objects:
+
+### From a ggseg3d_atlas only
+
+```{r}
+#| label: convert-3d
+unified <- unify_legacy_atlases(atlas_3d = old_atlas_3d)
+
+ggseg3d(atlas = unified)
+```
+
+### From both 2D and 3D objects
+
+```{r}
+#| label: convert-both
+unified <- unify_legacy_atlases(
+  atlas_2d = old_atlas,
+  atlas_3d = old_atlas_3d
+)
+
+plot(unified)
+
+ggseg3d(atlas = unified)
+```
+
+### From a ggseg_atlas only
+
+```{r}
+#| label: convert-2d
+unified <- unify_legacy_atlases(atlas_2d = old_atlas)
+
+plot(unified)
+```
+
+This atlas works with ggseg but not ggseg3d (no 3D vertex data).
+
+## Computing vertex indices
+
+Legacy ggseg3d atlases stored full mesh coordinates for each region.
+The new format stores vertex indices instead, which render faster.
+
+To compute vertex indices during conversion:
+
+```{r}
+#| label: compute-vertices
+unified <- unify_legacy_atlases(
+  atlas_3d = old_atlas_3d,
+  compute_vertices = TRUE,
+  surface = "inflated",
+  subject = "fsaverage5"
+)
+```
+
+This requires FreeSurfer.
+The `surface` parameter must match the surface used to create the original 3D atlas.
+
+## Specifying atlas type
+
+The function auto-detects atlas type from the structure.
+Override if needed:
+
+```{r}
+#| label: override-type
+unified <- unify_legacy_atlases(
+  atlas_2d = old_atlas,
+  atlas_3d = old_atlas_3d,
+  atlas_name = "my_atlas",
+  type = "cortical"
+)
+```
+
+Valid types: "cortical", "subcortical", "tract".
+
+## Troubleshooting
+
+**No vertices matched**: The mesh coordinates don't align with the brain surface.
+Check that `surface` matches what was used to create the 3D atlas.
+Try increasing `tolerance` if coordinates are close but not exact.
+
+**Wrong hemisphere assignment**: The function infers hemisphere from the `hemi` column.
+If this is missing or wrong, set it manually after conversion.
+
+**Type detection fails**: Set `type` explicitly.
+
+## When to recreate instead
+
+Converting works, but recreating from source data produces better results.
+Use the creation functions if you have access to the original neuroimaging files:
+
+- `create_cortical_atlas()` - from FreeSurfer annotation files
+- `create_subcortical_atlas()` - from volumetric segmentation
+- `create_tract_atlas()` - from tractography files
+- `create_atlas_from_labels()` - from individual label files
+
+See the [cortical](cortical-atlas.html), [subcortical](subcortical-atlas.html), [tract](tract-atlas.html), and [label-based](label-atlas.html) atlas tutorials.

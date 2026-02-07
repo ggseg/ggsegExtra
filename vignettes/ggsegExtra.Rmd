@@ -15,11 +15,9 @@ knitr::opts_chunk$set(
   out.width = "100%",
   fig.width = 10
 )
-has_dkt <- requireNamespace("ggsegDKT", quietly = TRUE)
 ```
 
-Using the ggseExtra package requires the two main ggseg-packages, containing the functions needed to plot the data.
-ggsegExtra is a meta-repository of data-sets that fit with the functions in those main packages, with functions to help you create your own custom atlases.
+ggsegExtra does two things: it helps you find and install brain atlases that work with ggseg and ggseg3d, and it provides the tools to create your own atlases from neuroimaging data.
 
 ```{r}
 #| label: load-pkg
@@ -27,52 +25,39 @@ library(ggsegExtra)
 ```
 
 ## Installing atlases
-Atlases are stored in their own online repositories.
-The list of repositories is periodically updated based on when we have confirmed a new atlas that works with the packages.
-These data-sets can be in our own github account (ggseg), and we are happy to add new repositories contributed by others here. To see all confirmed atlases:
+
+Atlases live in their own packages, distributed through the [ggseg r-universe](https://ggseg.r-universe.dev).
 
 ```{r}
 #| label: list-repos
 ggseg_atlas_repos()
+```
 
-# Search for repos with pattern
+Search for specific atlases by name:
+
+```{r}
+#| label: search-repos
 ggseg_atlas_repos("Yeo")
 
-# Search is case-sensitive
-ggseg_atlas_repos("yeo")
-
-# Search is case-sensitive, but this can be fixed
 ggseg_atlas_repos("yeo", ignore.case = TRUE)
 ```
 
-Installing atlases from the repos, we have convenience function, using the r-universe for [all the ggseg packages](https://ggseg.r-universe.dev/#builds)
+Install atlases from the ggseg r-universe:
 
 ```{r}
 #| label: install-atlas
-#| message: false
 #| eval: false
 ggseg_atlas_repos("dkt", ignore.case = TRUE)
 install_ggseg_atlas("ggsegDKT")
 ```
 
-```{r}
-#| label: plot-dkt
-#| eval: !expr has_dkt
-library(ggplot2)
-library(ggseg)
+## Plotting with ggseg (2D)
 
-ggplot() +
-  geom_brain(atlas = ggsegDKT::dkt)
-```
-
-
-## 2d atlases with ggseg
-
-You should be able to easily switch the atlases, after loading ggsegExtra, so rather plot one of the ggsegExtra atlases directly to the function.
+Once installed, atlases work directly with ggseg:
 
 ```{r}
 #| label: ggseg
-#| eval: !expr has_dkt
+#| eval: false
 library(ggplot2)
 library(ggseg)
 library(ggsegDKT)
@@ -81,35 +66,84 @@ ggplot() +
   geom_brain(atlas = dkt)
 ```
 
-If you want to make sure it looks properly like the atlas you are after, or you want to plot an example of the original plot.
-Most of the datasets also have corresponding palettes from the papers they were introduced from.
-These colour-scales can be applied through the `scale_X_brain` functions, and you must also specify which package the palette comes from.
-
+Most atlases include colour palettes from their original publications:
 
 ```{r}
 #| label: ggseg-scale
-#| eval: !expr has_dkt
+#| eval: false
 ggplot() +
   geom_brain(atlas = dkt) +
   scale_fill_brain("dkt", package = "ggsegDKT")
 ```
 
-## 3d plots with ggseg3d
+## Plotting with ggseg3d (3D)
 
-The same goes for ggseg3d, the new atlases, now available through the ggsegExtra package, can be plotted with the ggseg3d function and its helpers.
+The same atlas works with ggseg3d for interactive 3D visualisation:
 
 ```{r}
 #| label: ggseg3d-example
 #| eval: false
 library(ggseg3d)
 
-ggseg3d(atlas = dkt_3d) |>
+ggseg3d(atlas = dkt) |>
   pan_camera("right lateral")
 ```
 
+One atlas, both packages.
+
+## Creating your own atlases
+
+ggsegExtra provides four functions to create brain atlases from different input types:
+
+| Function | Input | Use case |
+|----------|-------|----------|
+| `create_cortical_atlas()` | FreeSurfer annotation files | Cortical parcellations (DKT, aparc, Yeo networks) |
+| `create_subcortical_atlas()` | Volumetric segmentation (aseg.mgz) | Subcortical structures (thalamus, amygdala, etc.) |
+| `create_tract_atlas()` | Tractography files (TRK, TCK) | White matter tracts |
+| `create_atlas_from_labels()` | Individual label files | Custom region combinations |
+
+See the dedicated tutorials for each atlas type:
+
+- [Cortical atlases](cortical-atlas.html) - from annotation files
+- [Subcortical atlases](subcortical-atlas.html) - from volumetric segmentation
+- [Tract atlases](tract-atlas.html) - from tractography
+- [Label-based atlases](label-atlas.html) - from individual label files
+
+All functions produce a `brain_atlas` object that works with both ggseg and ggseg3d.
+The atlas contains:
+
+- **Core metadata**: region names, hemisphere, labels
+- **Colour palette**: from your input files or auto-generated
+- **3D data**: vertex indices (cortical) or meshes (subcortical/tract)
+- **2D geometry** (optional): polygon outlines for flat brain plots
+
+## Quick or detailed atlases
+
+Each creation function has an `include_geometry` parameter:
+
 ```{r}
-#| label: ggseg3d-include
-#| echo: false
-knitr::include_graphics("figures/vignette-dkt-3d-plot.png")
+#| label: include-geometry
+#| eval: false
+atlas_3d_only <- create_cortical_atlas(
+  annot = "aparc",
+  include_geometry = FALSE
+)
+
+atlas_full <- create_cortical_atlas(
+  annot = "aparc",
+  include_geometry = TRUE
+)
 ```
 
+Set `include_geometry = FALSE` when you only need 3D rendering.
+This skips the screenshot pipeline and returns almost instantly.
+Set it to `TRUE` when you also need 2D polygon plots, which requires FreeSurfer and takes longer.
+
+## System requirements
+
+Creating atlases (as opposed to using pre-built ones) requires:
+
+- [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) for reading neuroimaging formats
+- [ImageMagick](https://imagemagick.org/) for 2D geometry extraction
+
+See `vignette("system_setup")` for installation details and optional parallel processing setup.

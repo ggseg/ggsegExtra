@@ -10,7 +10,9 @@ load(here::here("data/{GGSEG}.rda"))
 
 # Create the brain plot for the logo
 p <- ggseg(
-  atlas = {GGSEG},
+  atlas = {
+    GGSEG
+  },
   hemi = "left",
   view = "lateral",
   show.legend = FALSE,
@@ -51,17 +53,7 @@ for (ext in c("png", "svg")) {
     h_size = 1.2,
     # White background
     white_around_sticker = TRUE
- )
+  )
 }
 
 message("Hex logo created at man/figures/logo.png and man/figures/logo.svg")
-
-# Generate favicons for pkgdown site (optional)
-if (requireNamespace("pkgdown", quietly = TRUE)) {
-  tryCatch({
-    pkgdown::build_favicons(here::here(), overwrite = TRUE)
-    message("Favicons generated for pkgdown site")
-  }, error = function(e) {
-    message("Note: Could not generate favicons. Run pkgdown::build_favicons() manually if needed.")
-  })
-}

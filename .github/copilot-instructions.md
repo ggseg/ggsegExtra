@@ -54,11 +54,9 @@
 ### Files to read first when editing or creating features
 
 - `DESCRIPTION` — package dependencies & SystemRequirements
-- `R/create-ggseg-atlas.R` and `R/create-ggseg3d-atlas.R` — main
-  atlas-building logic and step-based conventions
 - `inst/surfaces/` and `data-raw/` — examples and raw assets used by
   pipelines
-- `_pkgdown.yml`, `vignettes/`, `docs/` — examples and tutorials to
+- `_pkgdown.yml`, `vignettes/`, — examples and tutorials to
   mirror for usage patterns and function signatures
 - `.github/workflows/*.yaml` — CI setup; useful for reproducing
   environment & install order
@@ -68,7 +66,7 @@
 - Many real runs require external tools not available on Linux CI by
   default — CI forks install them via Homebrew on macOS. Running the
   pipeline on other OS may fail unless those tools are present.
-- Code uses `reticulate`, `terra`, and `sf` — watch for platform
+- Code uses `terra`, and `sf` — watch for platform
   specific binary issues and prefer high-level R APIs when possible.
 - Intermediate files have expected directory layout (e.g.
   `output_dir/<atlas>/{img,regions,masks}`). If you change file
@@ -93,12 +91,6 @@
 - Any large refactor of atlas-building pipelines that changes
   function signatures or the atlas object structure.
 
-### Where to find more context
-
-- Vignettes: `vignettes/createaseg.Rmd`, `vignettes/createdkt.Rmd`,
-  `vignettes/customatlas.Rmd`
-- Key pipeline code: `R/create-ggseg-atlas.R`, `R/create-ggseg3d-atlas.R`
-- CI workflows: `.github/workflows/*.yaml`
 
 ### Updating NEWS.md
 

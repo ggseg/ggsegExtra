@@ -1,0 +1,232 @@
+---
+title: "Pipeline Configuration"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pipeline Configuration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+ggsegExtra atlas creation functions share common parameters that control
+pipeline behavior. These parameters can be set explicitly in each function call,
+globally via R options, or through environment variables.
+
+## Parameter Hierarchy
+
+Parameters are resolved in this order:
+
+1. **Explicit argument** - Value passed directly to the function
+2. **R option** - Value from `options()`
+3. **Environment variable** - Value from `Sys.getenv()`
+4. **Default** - Built-in default value
+
+This allows you to set project-wide defaults while still overriding them for
+specific calls.
+
+## Available Options
+
+| Parameter | R Option | Environment Variable | Default |
+|-----------|----------|---------------------|---------|
+| `verbose` | `ggsegExtra.verbosity` | `GGSEGEXTRA_VERBOSITY` | `1` |
+| `cleanup` | `ggsegExtra.cleanup` | `GGSEGEXTRA_CLEANUP` | `TRUE` |
+| `skip_existing` | `ggsegExtra.skip_existing` | `GGSEGEXTRA_SKIP_EXISTING` | `TRUE` |
+| `tolerance` | `ggsegExtra.tolerance` | `GGSEGEXTRA_TOLERANCE` | `0` |
+| `smoothness` | `ggsegExtra.smoothness` | `GGSEGEXTRA_SMOOTHNESS` | `5` |
+
+## Setting Options in R
+
+Use `options()` to set defaults for your R session:
+```{r}
+library(ggsegExtra)
+
+# Set defaults for atlas creation
+options(
+  ggsegExtra.tolerance = 0.5,
+
+  ggsegExtra.smoothness = 10,
+  ggsegExtra.cleanup = FALSE
+)
+
+# Now all atlas creation functions will use these defaults
+atlas <- create_cortical_atlas(
+ input_annot = c("lh.myatlas.annot", "rh.myatlas.annot")
+)
+```
+
+### Verbosity Control
+
+The `verbose` parameter controls how much output is printed during pipeline
+execution:
+
+- `0` (or `FALSE`): Silent mode, no output
+- `1` (or `TRUE`): Normal mode, progress messages (default)
+- `2`: High verbosity, includes FreeSurfer command output
+
+```{r}
+# Set high verbosity for debugging
+options(ggsegExtra.verbosity = 2)
+
+# Or use the convenience function
+set_verbosity(2)
+
+# Check current verbosity
+get_verbosity()
+```
+
+### Cleanup Control
+
+The `cleanup` parameter controls whether intermediate files are removed after
+pipeline completion:
+
+```{r}
+# Keep intermediate files for debugging
+options(ggsegExtra.cleanup = FALSE)
+
+# Now intermediate files will be preserved in output_dir
+atlas <- create_subcortical_atlas(
+  input_volume = "aseg.mgz",
+  output_dir = "my_atlas_files"
+)
+
+# Intermediate files are in my_atlas_files/aseg/
+```
+
+### Skip Existing Files
+
+The `skip_existing` parameter allows resuming interrupted pipeline runs by
+reusing existing intermediate files:
+
+```{r}
+# Force regeneration of all files
+options(ggsegExtra.skip_existing = FALSE)
+
+# Or keep the default to resume from where you left off
+options(ggsegExtra.skip_existing = TRUE)
+```
+
+### Geometry Parameters
+
+The `tolerance` and `smoothness` parameters control the quality of 2D polygon
+geometry:
+```{r}
+# Higher tolerance = fewer vertices (smaller file size, less detail)
+options(ggsegExtra.tolerance = 1.0)
+
+# Higher smoothness = smoother region boundaries
+options(ggsegExtra.smoothness = 15)
+```
+
+## Setting Options via Environment Variables
+
+Environment variables are useful for CI/CD pipelines, Docker containers, or
+when you want settings to persist across R sessions.
+
+### In .Renviron
+
+Add to your `~/.Renviron` file:
+
+```
+GGSEGEXTRA_VERBOSITY=0
+GGSEGEXTRA_CLEANUP=true
+GGSEGEXTRA_SKIP_EXISTING=true
+GGSEGEXTRA_TOLERANCE=0.5
+GGSEGEXTRA_SMOOTHNESS=10
+```
+
+### In Shell
+
+```bash
+export GGSEGEXTRA_VERBOSITY=0
+export GGSEGEXTRA_TOLERANCE=0.5
+R -e "ggsegExtra::create_cortical_atlas(...)"
+```
+
+### In Docker
+
+```dockerfile
+ENV GGSEGEXTRA_VERBOSITY=0
+ENV GGSEGEXTRA_CLEANUP=true
+```
+
+## Overriding Defaults
+
+You can always override the defaults by passing explicit values:
+
+```{r}
+# Global default is cleanup = TRUE
+options(ggsegExtra.cleanup = TRUE)
+
+# But for this specific call, keep intermediate files
+atlas <- create_cortical_atlas(
+  input_annot = c("lh.debug.annot", "rh.debug.annot"),
+  cleanup = FALSE
+)
+```
+
+## Best Practices
+
+### For Development/Debugging
+
+```{r}
+options(
+  ggsegExtra.verbosity = 2,
+  ggsegExtra.cleanup = FALSE,
+  ggsegExtra.skip_existing = FALSE
+)
+```
+
+### For Production/CI
+
+```{r}
+options(
+  ggsegExtra.verbosity = 0,
+  ggsegExtra.cleanup = TRUE,
+  ggsegExtra.skip_existing = TRUE
+)
+```
+
+### For Iterating on Geometry Parameters
+
+When fine-tuning `tolerance` and `smoothness`, disable cleanup and use
+step-based execution:
+
+```{r}
+options(ggsegExtra.cleanup = FALSE)
+
+# First run: generate all intermediate files
+atlas <- create_cortical_atlas(
+  input_annot = c("lh.myatlas.annot", "rh.myatlas.annot"),
+  output_dir = "atlas_workdir"
+)
+
+# Iterate on smoothing/simplification without regenerating snapshots
+atlas <- create_cortical_atlas(
+  input_annot = c("lh.myatlas.annot", "rh.myatlas.annot"),
+  output_dir = "atlas_workdir",
+  steps = 6:8,
+  smoothness = 8,
+  tolerance = 0.3
+)
+```
+
+## Checking Current Settings
+
+```{r}
+# Check verbosity
+get_verbosity()
+is_verbose()
+
+# Check other settings
+getOption("ggsegExtra.cleanup")
+getOption("ggsegExtra.skip_existing")
+getOption("ggsegExtra.tolerance")
+getOption("ggsegExtra.smoothness")
+```

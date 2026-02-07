@@ -56,7 +56,7 @@ pak::pak("drmowinckels/freesurfer@refactor")
 
 We have tutorials on how to make atlases available in the `Articles` of
 the [package documentation page](https://ggseg.github.io/ggsegExtra/).
-Currently, the pipeline for making 3d atlases needs FreeSufer to be
+Currently, the pipeline for making 3d atlases needs FreeSurfer to be
 installed on your system and a ready `.annot` file to use for the
 conversions. Improvements to the pipeline in creating cortical atlases
 both for ggseg and ggseg3d is still being developed. Pipelines for
@@ -328,7 +328,7 @@ plot using functions from those two packages.
 status](https://github.com/LCBC-UiO/ggsegYeo2011/workflows/R-CMD-check/badge.svg)](https://github.com/LCBC-UiO/ggsegYeo2011/actions)
 [![DOI](https://zenodo.org/badge/250192046.svg)](https://zenodo.org/badge/latestdoi/250192046)
 
-Yeo 2011 Datasets for the ‘ggseg’-Package This is a support package for
+Yeo 2011 Datasets for the ‘ggseg'-Package This is a support package for
 the ggseg, and ggseg3d packages. It contains the Yeo 2011 atlases to
 plot using functions from those two packages.
 
@@ -341,7 +341,7 @@ By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests
 
-Don’t hesitate to ask for support using [github
+Don't hesitate to ask for support using [github
 issues](https://github.com/ggseg/ggsegExtra/issues), or requesting new
 atlases. While we would love getting help in creating new atlases, you
 may also request atlases through the issues, and we will try to get to
@@ -351,8 +351,8 @@ it.
 
 This work is funded by **EU Horizon 2020 Grant** *‘Healthy minds 0-100
 years: Optimizing the use of European brain imaging cohorts
-(Lifebrain)’*, with grant agreement `732592`. The project has also
-received funding from the **European Research Council**’s *Starting
+(Lifebrain)'*, with grant agreement `732592`. The project has also
+received funding from the **European Research Council**'s *Starting
 grant* (grant agreements `283634`, to Anders Martin Fjell and `313440`
 to Kristine Beate Walhovd) and *Consolidator Grant* (grant agreement
 `771355` to Kristine Beate Walhovd and `725025` to Anders Martin Fjell).

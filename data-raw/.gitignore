@@ -1,1 +1,4 @@
-*.annot
+*aseg*
+*yeo7*
+*tracula*
+*.rds

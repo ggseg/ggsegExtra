@@ -11,3 +11,5 @@ README.html
 docs/
 pkgdown/
 *.pdf
+/doc/
+/Meta/
