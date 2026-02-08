@@ -4,16 +4,26 @@
 \alias{read_volume}
 \title{Read neuroimaging volume file}
 \usage{
-read_volume(file)
+read_volume(file, reorient = TRUE)
 }
 \arguments{
 \item{file}{Path to volume file (.mgz, .nii, .nii.gz)}
+
+\item{reorient}{If TRUE (default), reorient the volume to RAS+ and
+return a plain array. If FALSE, return an RNifti niftiImage in the
+file's native orientation (preserves header for downstream use).}
 }
 \value{
-3D array of volume data
+3D array (reorient=TRUE) or niftiImage (reorient=FALSE)
 }
 \description{
 Reads volume data from common neuroimaging formats including
-FreeSurfer MGZ and NIfTI.
+FreeSurfer MGZ and NIfTI. By default, reorients to RAS+ so that
+dim1 = Left-to-Right, dim2 = Posterior-to-Anterior,
+dim3 = Inferior-to-Superior.
+}
+\details{
+When \code{reorient = FALSE}, returns an RNifti niftiImage preserving the
+file's native orientation and header metadata.
 }
 \keyword{internal}

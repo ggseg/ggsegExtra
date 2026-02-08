@@ -9,7 +9,8 @@
 #' `brain_atlas` format. This is a bridge function for working with existing
 #' atlases during the transition period.
 #'
-#' For new atlases, use [create_cortical_atlas()] or [create_subcortical_atlas()]
+#' For new atlases, use [create_cortical_atlas()] or
+#' [create_subcortical_atlas()]
 #' instead - they produce better results with proper vertex indices.
 #'
 #' The function handles three scenarios:
@@ -165,7 +166,7 @@ unify_legacy_atlases <- function(
       vertices_df <- make_empty_vertices_df(core$label)
     }
   } else if (has_2d && !is.null(atlas_2d$data$vertices) &&
-    "vertices" %in% names(atlas_2d$data$vertices)) {
+               "vertices" %in% names(atlas_2d$data$vertices)) {
     vertices_df <- atlas_2d$data$vertices
     cli::cli_inform(c("i" = "Using existing vertex data from 2D atlas."))
   } else {
@@ -238,7 +239,7 @@ flatten_ggseg3d_atlas <- function(atlas_3d, surface = "inflated") {
   atlas_filtered <- atlas_3d[atlas_3d$surf == surface, ]
 
   if (nrow(atlas_filtered) == 0) {
-    available <- unique(atlas_3d$surf)
+    available <- unique(atlas_3d$surf) # nolint: object_usage_linter
     cli::cli_abort(c(
       "No data found for surface {.val {surface}}.",
       "i" = "Available surfaces: {.val {available}}"
@@ -309,7 +310,8 @@ compute_vertex_indices <- function(
   }
 
   if (total_vertices > 0 && total_matched == 0) {
-    atlas_surf <- unique(atlas_3d_flat$surf)[1]
+    atlas_surf <- # nolint: object_usage_linter
+      unique(atlas_3d_flat$surf)[1]
     cli::cli_warn(c(
       "No vertices matched between atlas and brain mesh.",
       "i" = "Atlas surface: {.val {atlas_surf}}, target: {.val {surface}}.",
@@ -317,7 +319,8 @@ compute_vertex_indices <- function(
       "i" = "Try increasing {.arg tolerance} if coordinates are similar."
     ))
   } else if (total_matched < total_vertices * 0.5) {
-    pct <- round(total_matched / total_vertices * 100)
+    pct <- # nolint: object_usage_linter
+      round(total_matched / total_vertices * 100)
     cli::cli_warn("Only {pct}% of vertices matched.")
   }
 

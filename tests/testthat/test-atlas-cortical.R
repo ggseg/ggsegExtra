@@ -31,16 +31,21 @@ describe("create_cortical_atlas", {
   it("creates 3D-only atlas from annotation", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas <- create_cortical_atlas(
-      input_annot = annot_files,
-      steps = 1,
-      verbose = FALSE
+    atlas <- expect_warnings(
+      create_cortical_atlas(
+        input_annot = annot_files,
+        steps = 1,
+        verbose = FALSE
+      ),
+      "version"
     )
 
     expect_s3_class(atlas, "brain_atlas")
@@ -51,16 +56,21 @@ describe("create_cortical_atlas", {
   it("includes vertices for 3D rendering", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas <- create_cortical_atlas(
-      input_annot = annot_files,
-      steps = 1,
-      verbose = FALSE
+    atlas <- expect_warnings(
+      create_cortical_atlas(
+        input_annot = annot_files,
+        steps = 1,
+        verbose = FALSE
+      ),
+      "version"
     )
 
     vertices <- ggseg.formats::atlas_vertices(atlas)
@@ -71,16 +81,21 @@ describe("create_cortical_atlas", {
   it("works with different annotations", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     aparc_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_aparc <- create_cortical_atlas(
-      input_annot = aparc_files,
-      steps = 1,
-      verbose = FALSE
+    atlas_aparc <- expect_warnings(
+      create_cortical_atlas(
+        input_annot = aparc_files,
+        steps = 1,
+        verbose = FALSE
+      ),
+      "version"
     )
 
     expect_true(nrow(atlas_aparc$core) > 0)
@@ -92,29 +107,39 @@ describe("create_cortical_atlas", {
     has_a2009s <- all(file.exists(a2009s_files))
 
     if (has_a2009s) {
-      atlas_a2009s <- create_cortical_atlas(
-        input_annot = a2009s_files,
-        steps = 1,
-        verbose = FALSE
+      atlas_a2009s <- expect_warnings(
+        create_cortical_atlas(
+          input_annot = a2009s_files,
+          steps = 1,
+          verbose = FALSE
+        ),
+        "version"
       )
       expect_true(nrow(atlas_a2009s$core) > 0)
-      expect_false(identical(atlas_aparc$core$region, atlas_a2009s$core$region))
+      expect_false(
+        identical(atlas_aparc$core$region, atlas_a2009s$core$region)
+      )
     }
   })
 
   it("can render with ggseg3d", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas <- create_cortical_atlas(
-      input_annot = annot_files,
-      steps = 1,
-      verbose = FALSE
+    atlas <- expect_warnings(
+      create_cortical_atlas(
+        input_annot = annot_files,
+        steps = 1,
+        verbose = FALSE
+      ),
+      "version"
     )
 
     expect_no_error({
@@ -124,30 +149,446 @@ describe("create_cortical_atlas", {
 })
 
 
+describe("cortical_brain_snapshots", {
+  it("dispatches snapshot_brain for each hemi x view combination", {
+    captured <- list()
+    local_mocked_bindings(
+      snapshot_brain = function(atlas, hemisphere, view, ...) {
+        captured[[length(captured) + 1]] <<- list(
+          hemisphere = hemisphere, view = view
+        )
+      },
+      progressor = function(...) function(...) NULL
+    )
+
+    atlas_3d <- structure(list(), class = "brain_atlas")
+    dirs <- list(base = tempdir())
+
+    cortical_brain_snapshots(
+      atlas_3d,
+      hemisphere = c("lh", "rh"),
+      views = c("lateral", "medial"),
+      dirs = dirs,
+      skip_existing = FALSE
+    )
+
+    expect_equal(length(captured), 4)
+    hemis <- vapply(captured, `[[`, character(1), "hemisphere")
+    expect_true(all(c("lh", "rh") %in% hemis))
+  })
+})
+
+
+describe("cortical_region_snapshots", {
+  it("filters grid to matching hemi-label pairs", {
+    captured <- list()
+    local_mocked_bindings(
+      snapshot_region = function(atlas, region_label, hemisphere, view, ...) {
+        captured[[length(captured) + 1]] <<- list(
+          region_label = region_label, hemisphere = hemisphere
+        )
+      },
+      progressor = function(...) function(...) NULL
+    )
+
+    components <- list(
+      core = data.frame(
+        label = c("lh_frontal", "rh_frontal"),
+        stringsAsFactors = FALSE
+      )
+    )
+    atlas_3d <- structure(list(), class = "brain_atlas")
+    dirs <- list(snapshots = tempdir())
+
+    cortical_region_snapshots(
+      atlas_3d, components,
+      hemisphere = c("lh", "rh"),
+      views = c("lateral"),
+      dirs = dirs,
+      skip_existing = FALSE
+    )
+
+    labels <- vapply(captured, `[[`, character(1), "region_label")
+    hemis <- vapply(captured, `[[`, character(1), "hemisphere")
+    expect_true(all(hemis[labels == "lh_frontal"] == "lh"))
+    expect_true(all(hemis[labels == "rh_frontal"] == "rh"))
+  })
+})
+
+
+describe("cortical_isolate_regions", {
+  it("calls isolate_region for each file in snapshots dir", {
+    snap_dir <- withr::local_tempdir("snap_")
+    file.create(file.path(snap_dir, "region1.png"))
+    file.create(file.path(snap_dir, "region2.png"))
+
+    captured <- list()
+    local_mocked_bindings(
+      isolate_region = function(input_file, output_file, ...) {
+        captured[[length(captured) + 1]] <<- basename(input_file)
+      },
+      progressor = function(...) function(...) NULL
+    )
+
+    dirs <- list(
+      snapshots = snap_dir,
+      masks = withr::local_tempdir("masks_"),
+      processed = withr::local_tempdir("proc_")
+    )
+
+    cortical_isolate_regions(dirs, skip_existing = FALSE)
+
+    expect_equal(sort(unlist(captured)), c("region1.png", "region2.png"))
+  })
+})
+
+
+describe("cortical_build_sf", {
+  it("produces sf with label and view columns", {
+    local_mocked_bindings(
+      load_reduced_contours = function(base_dir) {
+        sf::st_sf(
+          hemi = c("left", "right"),
+          view = c("lateral", "lateral"),
+          label = c("lh_frontal", "rh_frontal"),
+          geometry = sf::st_sfc(
+            sf::st_polygon(list(matrix(
+              c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+            ))),
+            sf::st_polygon(list(matrix(
+              c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+            )))
+          )
+        )
+      },
+      layout_cortical_views = function(df) df
+    )
+
+    dirs <- list(base = tempdir())
+    result <- cortical_build_sf(dirs)
+
+    expect_s3_class(result, "sf")
+    expect_true(all(c("label", "view") %in% names(result)))
+  })
+})
+
+
+describe("labels_read_files", {
+  it("reads label files and builds atlas data tibble", {
+    labels <- unlist(test_label_files())
+    default_colours <- rep(NA_character_, length(labels))
+
+    result <- labels_read_files(labels, NULL, NULL, default_colours)
+
+    expect_s3_class(result, "tbl_df")
+    expect_equal(nrow(result), 3)
+    expect_true(all(
+      c("hemi", "region", "label", "colour", "vertices") %in%
+        names(result)
+    ))
+    expect_true("left" %in% result$hemi)
+    expect_true("right" %in% result$hemi)
+  })
+
+  it("uses custom region_names when provided", {
+    labels <- unlist(test_label_files())
+    default_colours <- rep(NA_character_, length(labels))
+    custom_names <- c("Motor", "Visual", "Motor")
+
+    result <- labels_read_files(labels, custom_names, NULL, default_colours)
+
+    expect_equal(result$region, custom_names)
+  })
+})
+
+
+describe("labels_region_snapshots", {
+  it("also takes NA region snapshots", {
+    region_captured <- list()
+    na_captured <- list()
+    local_mocked_bindings(
+      snapshot_region = function(...) {
+        region_captured[[length(region_captured) + 1]] <<- TRUE
+      },
+      snapshot_na_regions = function(...) {
+        na_captured[[length(na_captured) + 1]] <<- TRUE
+      },
+      progressor = function(...) function(...) NULL
+    )
+
+    components <- list(
+      core = data.frame(
+        label = c("lh_motor", "rh_motor"),
+        region = c("motor", "motor"),
+        stringsAsFactors = FALSE
+      )
+    )
+    atlas_3d <- structure(list(), class = "brain_atlas")
+    dirs <- list(snapshots = tempdir())
+
+    labels_region_snapshots(
+      atlas_3d, components,
+      hemi_short = c("lh", "rh"),
+      views = c("lateral"),
+      dirs = dirs,
+      skip_existing = FALSE
+    )
+
+    expect_true(length(region_captured) > 0)
+    expect_true(length(na_captured) > 0)
+  })
+})
+
+
+describe("cortical_pipeline", {
+  it("dispatches region_snapshot_fn for step 3", {
+    snapshot_fn_called <- FALSE
+    local_mocked_bindings(
+      cortical_brain_snapshots = function(...) NULL,
+      cortical_isolate_regions = function(...) NULL,
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      cortical_build_sf = function(...) {
+        sf::st_sf(
+          label = "test", view = "lateral",
+          geometry = sf::st_sfc(sf::st_polygon(list(matrix(
+            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          ))))
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) NULL,
+      preview_atlas = function(...) NULL
+    )
+
+    custom_fn <- function(...) {
+      snapshot_fn_called <<- TRUE
+    }
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "frontal", label = "lh_frontal",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_frontal = "#FF0000"),
+      vertices_df = data.frame(
+        label = "lh_frontal", vertices = I(list(1:10))
+      )
+    )
+
+    cortical_pipeline(
+      atlas_3d = structure(list(), class = "brain_atlas"),
+      components = components,
+      atlas_name = "test",
+      hemisphere = c("lh", "rh"),
+      views = c("lateral"),
+      region_snapshot_fn = custom_fn,
+      dirs = list(
+        base = withr::local_tempdir(),
+        snapshots = withr::local_tempdir(),
+        processed = withr::local_tempdir(),
+        masks = withr::local_tempdir()
+      ),
+      steps = 2:8,
+      skip_existing = FALSE,
+      tolerance = 1,
+      smoothness = 5,
+      cleanup = FALSE,
+      verbose = FALSE,
+      start_time = Sys.time()
+    )
+
+    expect_true(snapshot_fn_called)
+  })
+
+  it("skips steps not in steps vector", {
+    step2_called <- FALSE
+    step4_called <- FALSE
+    local_mocked_bindings(
+      cortical_brain_snapshots = function(...) {
+        step2_called <<- TRUE
+      },
+      cortical_isolate_regions = function(...) {
+        step4_called <<- TRUE
+      },
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      cortical_build_sf = function(...) {
+        sf::st_sf(
+          label = "test", view = "lateral",
+          geometry = sf::st_sfc(sf::st_polygon(list(matrix(
+            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          ))))
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) NULL,
+      preview_atlas = function(...) NULL
+    )
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "r", label = "lh_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+
+    cortical_pipeline(
+      atlas_3d = structure(list(), class = "brain_atlas"),
+      components = components,
+      atlas_name = "test",
+      hemisphere = "lh",
+      views = "lateral",
+      region_snapshot_fn = function(...) NULL,
+      dirs = list(
+        base = withr::local_tempdir(),
+        snapshots = withr::local_tempdir(),
+        processed = withr::local_tempdir(),
+        masks = withr::local_tempdir()
+      ),
+      steps = 5:8,
+      skip_existing = FALSE,
+      tolerance = 1,
+      smoothness = 5,
+      cleanup = FALSE,
+      verbose = FALSE,
+      start_time = Sys.time()
+    )
+
+    expect_false(step2_called)
+    expect_false(step4_called)
+  })
+})
+
+
+describe("create_cortical_atlas pipeline flow", {
+  it("step 1 passes input_annot to read_annotation_data", {
+    captured <- list()
+    local_mocked_bindings(
+      read_annotation_data = function(annot_files) {
+        captured$annot <<- annot_files
+        dplyr::tibble(
+          hemi = "left", region = "frontal", label = "lh_frontal",
+          colour = "#FF0000", vertices = list(1:10)
+        )
+      },
+      build_atlas_components = function(data) {
+        list(
+          core = data.frame(
+            hemi = "left", region = "frontal", label = "lh_frontal",
+            stringsAsFactors = FALSE
+          ),
+          palette = c(lh_frontal = "#FF0000"),
+          vertices_df = data.frame(
+            label = "lh_frontal", vertices = I(list(1:10))
+          )
+        )
+      },
+      brain_atlas = function(...) {
+        structure(list(...), class = "brain_atlas")
+      },
+      cortical_data = function(...) list(...)
+    )
+
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    result <- create_cortical_atlas(
+      input_annot = c("lh.test.annot"),
+      steps = 1,
+      verbose = FALSE
+    )
+
+    expect_equal(captured$annot, c("lh.test.annot"))
+    expect_s3_class(result, "brain_atlas")
+  })
+
+  it("returns early for steps = 1 without calling step 2", {
+    step2_called <- FALSE
+    local_mocked_bindings(
+      read_annotation_data = function(annot_files) {
+        dplyr::tibble(
+          hemi = "left", region = "frontal", label = "lh_frontal",
+          colour = "#FF0000", vertices = list(1:10)
+        )
+      },
+      build_atlas_components = function(data) {
+        list(
+          core = data.frame(
+            hemi = "left", region = "frontal", label = "lh_frontal",
+            stringsAsFactors = FALSE
+          ),
+          palette = c(lh_frontal = "#FF0000"),
+          vertices_df = data.frame(
+            label = "lh_frontal", vertices = I(list(1:10))
+          )
+        )
+      },
+      brain_atlas = function(...) {
+        structure(list(...), class = "brain_atlas")
+      },
+      cortical_data = function(...) list(...),
+      cortical_brain_snapshots = function(...) {
+        step2_called <<- TRUE
+      }
+    )
+
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    create_cortical_atlas(
+      input_annot = c("lh.test.annot"),
+      steps = 1,
+      verbose = FALSE
+    )
+
+    expect_false(step2_called)
+  })
+})
+
+
 describe("read_annotation_data", {
   it("reads annotation data from files", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- read_annotation_data(annot_files)
+    atlas_data <- expect_warnings(
+      read_annotation_data(annot_files),
+      "version"
+    )
 
     expect_s3_class(atlas_data, "tbl_df")
     expect_true(all(
-      c("hemi", "region", "label", "colour", "vertices") %in% names(atlas_data)
+      c("hemi", "region", "label", "colour", "vertices") %in%
+        names(atlas_data)
     ))
     expect_true(nrow(atlas_data) > 0)
   })
 
   it("reads annotation from custom files", {
     annot_files <- test_annot_files()
-    skip_if(!file.exists(annot_files$lh), "Test annotation files not found")
+    skip_if(
+      !file.exists(annot_files$lh),
+      "Test annotation files not found"
+    )
 
-    atlas_data <- read_annotation_data(c(annot_files$lh, annot_files$rh))
+    atlas_data <- expect_warnings(
+      read_annotation_data(
+        c(annot_files$lh, annot_files$rh)
+      ),
+      "version"
+    )
 
     expect_s3_class(atlas_data, "tbl_df")
     expect_true(nrow(atlas_data) > 0)
@@ -156,13 +597,18 @@ describe("read_annotation_data", {
   it("returns data for both hemispheres", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- read_annotation_data(annot_files)
+    atlas_data <- expect_warnings(
+      read_annotation_data(annot_files),
+      "version"
+    )
 
     expect_true("left" %in% atlas_data$hemi)
     expect_true("right" %in% atlas_data$hemi)
@@ -171,13 +617,18 @@ describe("read_annotation_data", {
   it("creates proper labels with hemisphere prefix", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- read_annotation_data(annot_files)
+    atlas_data <- expect_warnings(
+      read_annotation_data(annot_files),
+      "version"
+    )
 
     lh_labels <- atlas_data$label[atlas_data$hemi == "left"]
     rh_labels <- atlas_data$label[atlas_data$hemi == "right"]
@@ -189,31 +640,51 @@ describe("read_annotation_data", {
   it("includes vertex indices as list column", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- read_annotation_data(annot_files)
+    atlas_data <- expect_warnings(
+      read_annotation_data(annot_files),
+      "version"
+    )
 
     expect_type(atlas_data$vertices, "list")
-    expect_true(all(vapply(atlas_data$vertices, is.integer, logical(1))))
-    expect_true(all(vapply(atlas_data$vertices, function(x) length(x) > 0, logical(1))))
+    expect_true(all(
+      vapply(atlas_data$vertices, is.integer, logical(1))
+    ))
+    expect_true(all(
+      vapply(
+        atlas_data$vertices,
+        function(x) length(x) > 0,
+        logical(1)
+      )
+    ))
   })
 
   it("sets NA colour for medial wall/unknown regions", {
     skip_if_no_freesurfer()
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
+    annot_dir <- file.path(
+      freesurfer::fs_subj_dir(), "fsaverage5", "label"
+    )
     annot_files <- c(
       file.path(annot_dir, "lh.aparc.annot"),
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- read_annotation_data(annot_files)
+    atlas_data <- expect_warnings(
+      read_annotation_data(annot_files),
+      "version"
+    )
 
-    wall_rows <- grepl("wall|unknown", atlas_data$region, ignore.case = TRUE)
+    wall_rows <- grepl(
+      "wall|unknown", atlas_data$region, ignore.case = TRUE
+    )
     if (any(wall_rows)) {
       expect_true(all(!is.na(atlas_data$colour[wall_rows])))
     }

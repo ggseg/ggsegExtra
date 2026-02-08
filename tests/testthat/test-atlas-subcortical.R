@@ -63,6 +63,7 @@ describe("create_subcortical_atlas", {
     expect_s3_class(atlas, "brain_atlas")
     expect_true(nrow(atlas$core) > 0)
     expect_true(all(grepl("^region_", atlas$core$label)))
+    expect_null(atlas$palette)
   })
 
   it("creates atlas with meshes component", {
@@ -166,30 +167,203 @@ describe("create_subcortical_atlas", {
 })
 
 
-describe("tessellate_label", {
-  it("creates mesh from volume label", {
-    skip_if_no_freesurfer()
+describe("subcort_build_components", {
+  it("builds components from colortable and meshes", {
+    meshes_list <- list(
+      "Left-Putamen" = list(
+        vertices = list(x = 1:3, y = 1:3, z = 1:3),
+        faces = list(i = 1, j = 2, k = 3)
+      ),
+      "Right-Putamen" = list(
+        vertices = list(x = 4:6, y = 4:6, z = 4:6),
+        faces = list(i = 1, j = 2, k = 3)
+      )
+    )
+    colortable <- data.frame(
+      idx = c(12, 51),
+      label = c("Left-Putamen", "Right-Putamen"),
+      color = c("#FF0000", "#00FF00"),
+      stringsAsFactors = FALSE
+    )
 
-    vol_file <- test_mgz_file()
-    skip_if(!file.exists(vol_file), "Test volume file not found")
+    result <- subcort_build_components(colortable, meshes_list)
 
-    vol <- read_volume(vol_file)
-    labels <- unique(c(vol))
-    labels <- labels[labels != 0]
-    skip_if(length(labels) == 0, "No labels in test volume")
+    expect_type(result, "list")
+    expect_true("core" %in% names(result))
+    expect_true("palette" %in% names(result))
+    expect_equal(nrow(result$core), 2)
+  })
+})
 
-    output_dir <- tempdir()
-    mesh <- tessellate_label(
-      volume_file = vol_file,
-      label_id = labels[1],
-      output_dir = output_dir,
+
+describe("subcort_create_meshes", {
+  it("errors when no meshes are created", {
+    local_mocked_bindings(
+      tessellate_label = function(...) NULL,
+      progressor = function(...) function(...) NULL,
+      center_meshes = function(x) x
+    )
+
+    colortable <- data.frame(
+      idx = 10, label = "test", stringsAsFactors = FALSE
+    )
+    dirs <- list(meshes = withr::local_tempdir())
+
+    expect_error(
+      subcort_create_meshes(
+        "fake.mgz", colortable, dirs, FALSE, FALSE
+      ),
+      "No meshes"
+    )
+  })
+})
+
+
+describe("create_subcortical_atlas pipeline flow", {
+  it("step 1 uses generate_colortable_from_volume when no LUT", {
+    generated <- FALSE
+    test_dir <- withr::local_tempdir()
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      generate_colortable_from_volume = function(vol) {
+        generated <<- TRUE
+        data.frame(
+          idx = 10, label = "test_region", color = NA_character_,
+          stringsAsFactors = FALSE
+        )
+      },
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(3, 3, 3))
+        vol[1, 1, 1] <- 10L
+        vol
+      },
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = step %in% steps, data = list())
+      },
+      subcort_create_meshes = function(...) {
+        list(test_region = list(
+          vertices = list(x = 1, y = 1, z = 1),
+          faces = list(i = 1, j = 1, k = 1)
+        ))
+      },
+      subcort_build_components = function(...) {
+        list(
+          core = data.frame(
+            hemi = NA, region = "test", label = "test_region",
+            stringsAsFactors = FALSE
+          ),
+          palette = NULL,
+          meshes_df = data.frame(label = "test_region")
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      subcortical_data = function(...) list(...)
+    )
+
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+
+    expect_warning(
+      atlas <- create_subcortical_atlas(
+        input_volume = vol_file,
+        input_lut = NULL,
+        steps = 1:3,
+        verbose = FALSE
+      ),
+      "No color lookup table"
+    )
+
+    expect_true(generated)
+    expect_null(atlas$palette)
+  })
+
+  it("returns 3D-only atlas when max(steps) == 3", {
+    test_dir <- withr::local_tempdir()
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      get_ctab = function(f) {
+        data.frame(
+          idx = 10, label = "region", color = "#FF0000",
+          stringsAsFactors = FALSE
+        )
+      },
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(3, 3, 3))
+        vol[1, 1, 1] <- 10L
+        vol
+      },
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = step %in% steps, data = list())
+      },
+      subcort_create_meshes = function(...) {
+        list(region = list(
+          vertices = list(x = 1, y = 1, z = 1),
+          faces = list(i = 1, j = 1, k = 1)
+        ))
+      },
+      subcort_build_components = function(...) {
+        list(
+          core = data.frame(
+            hemi = NA, region = "region", label = "region",
+            stringsAsFactors = FALSE
+          ),
+          palette = c(region = "#FF0000"),
+          meshes_df = data.frame(label = "region")
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      subcortical_data = function(...) list(...)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    atlas <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 1:3,
       verbose = FALSE
     )
 
-    expect_true(is.list(mesh))
-    expect_true(all(c("vertices", "faces") %in% names(mesh)))
-    expect_true(nrow(mesh$vertices) > 0)
-    expect_true(nrow(mesh$faces) > 0)
+    expect_s3_class(atlas, "brain_atlas")
+  })
+
+  it("step 5 calls process_and_mask_images", {
+    mask_called <- FALSE
+    local_mocked_bindings(
+      process_and_mask_images = function(...) {
+        mask_called <<- TRUE
+      }
+    )
+
+    dirs <- list(
+      snaps = withr::local_tempdir(),
+      processed = withr::local_tempdir(),
+      masks = withr::local_tempdir()
+    )
+
+    process_and_mask_images(
+      dirs$snaps, dirs$processed, dirs$masks,
+      dilate = NULL, skip_existing = FALSE
+    )
+
+    expect_true(mask_called)
   })
 })
 

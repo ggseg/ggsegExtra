@@ -116,7 +116,9 @@ describe("unify_legacy_atlases", {
       .package = "lifecycle"
     )
 
-    result <- unify_legacy_atlases(atlas_2d = mock_2d, atlas_name = "custom_name")
+    result <- unify_legacy_atlases(
+      atlas_2d = mock_2d, atlas_name = "custom_name"
+    )
 
     expect_equal(result$atlas, "custom_name")
   })
@@ -205,8 +207,13 @@ describe("flatten_ggseg3d_atlas", {
 
 describe("match_vertices", {
   it("matches exact coordinates", {
-    region_coords <- matrix(c(0, 0, 0, 1, 1, 1, 2, 2, 2), ncol = 3, byrow = TRUE)
-    brain_coords <- matrix(c(0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3), ncol = 3, byrow = TRUE)
+    region_coords <- matrix(
+      c(0, 0, 0, 1, 1, 1, 2, 2, 2), ncol = 3, byrow = TRUE
+    )
+    brain_coords <- matrix(
+      c(0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3),
+      ncol = 3, byrow = TRUE
+    )
 
     result <- match_vertices(region_coords, brain_coords, tolerance = 1e-4)
 
@@ -219,8 +226,12 @@ describe("match_vertices", {
     region_coords <- matrix(c(0, 0, 0), ncol = 3, byrow = TRUE)
     brain_coords <- matrix(c(0.1, 0.1, 0.1), ncol = 3, byrow = TRUE)
 
-    result_strict <- match_vertices(region_coords, brain_coords, tolerance = 0.01)
-    result_loose <- match_vertices(region_coords, brain_coords, tolerance = 0.5)
+    result_strict <- match_vertices(
+      region_coords, brain_coords, tolerance = 0.01
+    )
+    result_loose <- match_vertices(
+      region_coords, brain_coords, tolerance = 0.5
+    )
 
     expect_length(result_strict, 0)
     expect_length(result_loose, 1)

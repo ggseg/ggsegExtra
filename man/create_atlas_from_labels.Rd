@@ -8,12 +8,12 @@ create_atlas_from_labels(
   label_files,
   atlas_name = NULL,
   input_lut = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   views = c("lateral", "medial"),
   tolerance = NULL,
   smoothness = NULL,
   cleanup = NULL,
-  verbose = NULL,
+  verbose = get_verbose(),
   skip_existing = NULL,
   steps = NULL
 )
@@ -26,14 +26,15 @@ FreeSurfer naming: \verb{\{hemi\}.\{regionname\}.label} (e.g., \code{lh.motor.la
 filename.}
 
 \item{input_lut}{Path to a color lookup table (LUT) file, or a data.frame
-with columns \code{label}, \code{region}, and colour columns (R, G, B or hex).
+with columns \code{region} and colour columns (R, G, B or hex).
 Use this to provide region names and colours. If NULL, names are derived
-from filenames and colours are auto-generated.}
+from filenames and the atlas will have no palette.}
 
 \item{output_dir}{Directory to store intermediate files (screenshots, masks,
 contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
-\item{views}{Which views to include: "lateral", "medial", "superior", "inferior".}
+\item{views}{Which views to include: "lateral", "medial",
+"superior", "inferior".}
 
 \item{tolerance}{Simplification tolerance for 2D polygons. Higher values
 produce simpler shapes with fewer vertices. Passed to \code{\link[sf:geos_unary]{sf::st_simplify()}}.
@@ -49,15 +50,10 @@ specified, uses \code{options("ggsegExtra.smoothness")} or the
 specified, uses \code{options("ggsegExtra.cleanup")} or the \code{GGSEGEXTRA_CLEANUP}
 environment variable. Default is TRUE.}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 
 \item{skip_existing}{Skip generating output files that already exist,
 allowing interrupted atlas creation to resume. If not specified, uses

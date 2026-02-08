@@ -11,7 +11,7 @@
 extract_contours <- function(
   input_dir,
   output_dir,
-  verbose = is_verbose(),
+  verbose = get_verbose(), # nolint: object_usage_linter
   step = "",
   vertex_size_limits = NULL
 ) {
@@ -23,7 +23,7 @@ extract_contours <- function(
   region_names <- file_path_sans_ext(basename(regions))
 
   maks <- 0
-  for (f in regions[1:min(10, length(regions))]) {
+  for (f in regions[seq_len(min(10, length(regions)))]) {
     r <- rast(f)
     m <- global(r, fun = "max", na.rm = TRUE)[1, 1]
     if (m > maks) {
@@ -47,7 +47,7 @@ extract_contours <- function(
         r,
         max_val = maks,
         vertex_size_limits = vertex_size_limits,
-        verbose = FALSE
+        verbose = get_verbose() # nolint: object_usage_linter
       )
       p()
       result
@@ -80,7 +80,10 @@ extract_contours <- function(
 
 #' @noRd
 #' @importFrom smoothr smooth
-smooth_contours <- function(dir, smoothness, step, verbose = is_verbose()) {
+smooth_contours <- function(
+  dir, smoothness, step,
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   load(file.path(dir, "contours.rda"))
 
   if (verbose) {
@@ -108,7 +111,10 @@ smooth_contours <- function(dir, smoothness, step, verbose = is_verbose()) {
 
 #' @noRd
 #' @importFrom sf st_simplify
-reduce_vertex <- function(dir, tolerance, step = "", verbose = is_verbose()) {
+reduce_vertex <- function(
+  dir, tolerance, step = "",
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   if (verbose) {
     cli::cli_progress_step(
       "{step} Reducing vertices (tolerance = {.val {tolerance}})"
@@ -187,6 +193,73 @@ filter_valid_geometries <- function(sf_obj) {
 }
 
 
+#' Build sf geometry from volumetric contours
+#'
+#' Shared by subcortical and tract pipelines. Loads reduced contours,
+#' assigns view names, flips y-axis, adjusts coordinates, and extracts
+#' labels from filenames.
+#'
+#' @param contours_file Path to `contours_reduced.rda`
+#' @param views data.frame with `name` column of view names
+#' @param cortex_slices Optional data.frame with `name` column for cortex
+#'   slice view names (appended to `views$name`)
+#' @return sf data.frame with `label`, `view`, `geometry` columns, sorted
+#'   with cortex rows first
+#' @noRd
+#' @importFrom dplyr select arrange desc
+#' @importFrom sf st_as_sf
+build_contour_sf <- function(contours_file, views, cortex_slices = NULL) {
+  conts <- make_multipolygon(contours_file)
+
+  filenm_base <- sub("\\.png$", "", conts$filenm)
+
+  all_view_names <- if (!is.null(cortex_slices)) {
+    c(views$name, cortex_slices$name)
+  } else {
+    views$name
+  }
+
+  conts$view <- vapply(
+    filenm_base,
+    function(fn) {
+      for (vn in all_view_names) {
+        if (startsWith(fn, paste0(vn, "_"))) {
+          return(vn)
+        }
+      }
+      NA_character_
+    },
+    character(1)
+  )
+
+  conts$geometry <- conts$geometry * matrix(c(1, 0, 0, -1), 2, 2)
+
+  conts <- layout_volumetric_views(conts) # nolint: object_usage_linter.
+
+  conts$label <- vapply(
+    seq_along(filenm_base),
+    function(i) {
+      fn <- filenm_base[i]
+      vn <- conts$view[i]
+      if (is.na(vn)) {
+        return(fn)
+      }
+      sub(paste0("^", vn, "_"), "", fn)
+    },
+    character(1)
+  )
+
+  sf_data <- dplyr::select(conts, label, view, geometry)
+  sf_data <- sf::st_as_sf(sf_data)
+  sf_data <- dplyr::arrange(
+    sf_data,
+    dplyr::desc(grepl("cortex", label, ignore.case = TRUE))
+  )
+
+  sf_data
+}
+
+
 #' @noRd
 #' @importFrom dplyr group_by summarise ungroup as_tibble
 #' @importFrom sf st_combine st_coordinates st_geometry
@@ -222,5 +295,5 @@ make_multipolygon <- function(contourfile) {
 
   attr(sf::st_geometry(contours), "bbox") <- new_bb
 
-  return(contours)
+  contours
 }

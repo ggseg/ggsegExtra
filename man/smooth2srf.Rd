@@ -11,15 +11,10 @@ smooth2srf(input_file, output_file, verbose)
 
 \item{output_file}{path to output file}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 }
 \description{
 Turn smooth file to ascii

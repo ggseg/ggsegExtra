@@ -15,13 +15,13 @@ correct_coords_sf <- function(data, by) {
     data,
     geometry = transformed_geom
   )
-  return(tmp)
+  tmp
 }
 
 
 #' @importFrom dplyr group_by group_split group_keys ungroup
 #' @importFrom sf st_bbox
-adjust_coords_sf <- function(atlas_df) {
+layout_cortical_views <- function(atlas_df) {
   atlas_grouped <- group_by(atlas_df, hemi, view)
   keys <- group_keys(atlas_grouped)
   splits <- group_split(atlas_grouped)
@@ -64,12 +64,12 @@ adjust_coords_sf <- function(atlas_df) {
   })
 
   atlas_df_r <- do.call(rbind, atlas_list)
-  return(ungroup(atlas_df_r))
+  ungroup(atlas_df_r)
 }
 
 
 #' @importFrom dplyr group_by group_split
-adjust_coords_sf2 <- function(atlas_df) {
+layout_volumetric_views <- function(atlas_df) {
   atlas <- group_by(atlas_df, view)
   atlas <- group_split(atlas)
 
@@ -77,7 +77,7 @@ adjust_coords_sf2 <- function(atlas_df) {
 
   atlas2 <- restack(atlas)
 
-  return(atlas2$df)
+  atlas2$df
 }
 
 
@@ -198,10 +198,8 @@ restack <- function(df) {
   bx <- do.call(rbind, lapply(df2, function(x) st_bbox(x$geometry)))
   bx <- apply(bx, 2, min)
 
-  return(
-    list(
-      df = do.call(rbind, df2),
-      box = bx
-    )
+  list(
+    df = do.call(rbind, df2),
+    box = bx
   )
 }

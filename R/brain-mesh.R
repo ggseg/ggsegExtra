@@ -11,7 +11,8 @@
 #' @param surface Surface type: "inflated", "white", "pial"
 #' @param subjects_dir FreeSurfer subjects directory
 #'
-#' @return list with vertices (data.frame with x, y, z) and faces (data.frame with i, j, k)
+#' @return list with vertices (data.frame with x, y, z) and
+#'   faces (data.frame with i, j, k)
 #' @keywords internal
 #' @importFrom freesurfer fs_subj_dir
 get_brain_mesh <- function(
@@ -47,7 +48,7 @@ get_brain_mesh <- function(
   freesurfer::mris_convert(
     infile = surf_file,
     outfile = tmp_asc,
-    verbose = FALSE
+    verbose = get_verbose() # nolint: object_usage_linter
   )
 
   # Read ascii file

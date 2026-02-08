@@ -18,15 +18,8 @@ is flipped horizontally so left and right face each other when plotted.}
 Transformed 2D matrix
 }
 \description{
-Applies view-specific transformations so the slice displays correctly
-with image(). Uses neurological convention (left on left).
-}
-\details{
-Orientations:
-\itemize{
-\item Axial: anterior at top, left on left
-\item Coronal: superior at top, left on left
-\item Sagittal: superior at top, left hemisphere flipped for visual distinction
-}
+With RAS+ input, \code{image()} already displays axial and coronal correctly.
+Only left-hemisphere sagittal needs a horizontal flip so hemispheres
+face each other when plotted side-by-side.
 }
 \keyword{internal}

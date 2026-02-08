@@ -15,6 +15,7 @@ Fjell
 Flechsig
 FreeSurfer
 FreeSurfer's
+Freesurfer
 Frenet
 GH
 GitLab
@@ -36,8 +37,10 @@ Piñeiro
 Plotly
 RAS
 RGBA
+RNifti
 ROIs
 RStudio
+Renviron
 Rodrigues
 Rvcg
 Schaefer
@@ -64,7 +67,6 @@ bibentry
 binormals
 blocky
 brodmann
-caudate
 centerline
 centerlines
 centred
@@ -73,6 +75,7 @@ colours
 dev
 dk
 economo
+env
 freesurfer
 freeview
 fsaverage
@@ -101,7 +104,6 @@ ggsegPower
 ggsegSchaefer
 ggsegTracula
 ggsegYeo
-ggseg'
 github
 gordon
 gz
@@ -121,6 +123,7 @@ mri
 mris
 mrview
 neuroimaging
+niftiImage
 nii
 parcellation
 parcellations
@@ -131,14 +134,13 @@ pre
 progressbar
 progressr
 purrr
-quadric
 ras
 rasterising
-recognisable
 renderers
 reticulate
 rgdal
 rh
+roi
 sagittal
 segmentations
 subcortical
@@ -155,4 +157,3 @@ visualising
 vox
 webshot
 xyz
-yeo

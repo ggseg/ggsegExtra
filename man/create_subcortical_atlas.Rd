@@ -9,12 +9,12 @@ create_subcortical_atlas(
   input_lut = NULL,
   atlas_name = NULL,
   views = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   vertex_size_limits = NULL,
   dilate = NULL,
   tolerance = NULL,
   smoothness = NULL,
-  verbose = NULL,
+  verbose = get_verbose(),
   cleanup = NULL,
   skip_existing = NULL,
   steps = NULL
@@ -27,9 +27,9 @@ segmentation in the same space.}
 
 \item{input_lut}{Path to a FreeSurfer-style colour lookup table that maps
 label IDs to region names and colours (e.g., \code{FreeSurferColorLUT.txt}
-or \code{ASegStatsLUT.txt}). If NULL, generates a colour table from the
-volume labels using rainbow colours. Region names will be generic
-(e.g., "region_0010").}
+or \code{ASegStatsLUT.txt}), or a data.frame with columns \code{region} and colour
+columns (R, G, B or hex). If NULL, region names will be generic
+(e.g., "region_0010") and the atlas will have no palette.}
 
 \item{atlas_name}{Name for the atlas. If NULL, derived from the input
 filename.}
@@ -60,15 +60,10 @@ smoother region boundaries. Passed to \code{\link[smoothr:smooth]{smoothr::smoot
 specified, uses \code{options("ggsegExtra.smoothness")} or the
 \code{GGSEGEXTRA_SMOOTHNESS} environment variable. Default is 5.}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 
 \item{cleanup}{Remove intermediate files after atlas creation. If not
 specified, uses \code{options("ggsegExtra.cleanup")} or the \code{GGSEGEXTRA_CLEANUP}

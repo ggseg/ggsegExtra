@@ -61,6 +61,27 @@ test_annot_name <- function() {
   "yeo7"
 }
 
+expect_warnings <- function(expr, regexp) {
+  warnings_caught <- character()
+  result <- withCallingHandlers(
+    expr,
+    warning = function(w) {
+      if (grepl(regexp, conditionMessage(w))) {
+        warnings_caught[[length(warnings_caught) + 1L]] <<-
+          conditionMessage(w)
+        invokeRestart("muffleWarning")
+      }
+    }
+  )
+  testthat::expect_true(
+    length(warnings_caught) > 0,
+    label = paste0(
+      "Expected at least one warning matching '", regexp, "'"
+    )
+  )
+  invisible(result)
+}
+
 # Helper to skip tests requiring internet
 skip_if_offline <- function() {
   tryCatch(

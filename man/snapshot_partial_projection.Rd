@@ -16,7 +16,7 @@ snapshot_partial_projection(
   hemi = NULL,
   width = 400,
   height = 400,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 )
 }
 \arguments{

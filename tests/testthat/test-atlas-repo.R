@@ -85,15 +85,8 @@ describe("create_atlas_repo", {
 
 
 describe("create_atlas_repo template files", {
-  tmp <- NULL
-
-  setup({
-    tmp <<- withr::local_tempdir(
-      "atlas_template_test_",
-      .local_envir = parent.frame()
-    )
-    create_atlas_repo(tmp, "testatlas", open = FALSE)
-  })
+  tmp <- withr::local_tempdir("atlas_template_test_")
+  create_atlas_repo(tmp, "testatlas", open = FALSE)
 
   it("creates all required directories", {
     expect_true(dir.exists(file.path(tmp, "R")))

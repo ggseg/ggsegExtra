@@ -60,8 +60,6 @@ fs_nofixcurvatures <- function() {
 }
 
 
-
-
 # FreeSurfer check ----
 
 #' Check if FS can be run
@@ -75,7 +73,8 @@ check_fs <- function(msg = NULL, abort = FALSE) {
 
   if (!x) {
     msg <- paste0(
-      "System does not have Freesurfer or Freesurfer has not been setup correctly.\n",
+      "System does not have Freesurfer or ",
+      "Freesurfer has not been setup correctly.\n",
       "Aborting.\n"
     )
     if (abort) {
@@ -100,12 +99,13 @@ check_fs <- function(msg = NULL, abort = FALSE) {
 #' @importFrom freesurfer get_fs
 #' @noRd
 mri_vol2surf <- function(
-    input_file,
-    output_file,
-    hemisphere,
-    projfrac = .5,
-    opts = NULL,
-    verbose = TRUE) {
+  input_file,
+  output_file,
+  hemisphere,
+  projfrac = .5,
+  opts = NULL,
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   check_fs(abort = TRUE)
 
   fs_cmd <- "mri_vol2surf"
@@ -116,11 +116,15 @@ mri_vol2surf <- function(
 
   cmd <- paste(
     fs_cmd,
-    "--mov", input_file,
-    "--o", output_file,
+    "--mov",
+    input_file,
+    "--o",
+    output_file,
     "--mni152reg",
-    "--hemi", hemisphere,
-    "--projfrac", projfrac
+    "--hemi",
+    hemisphere,
+    "--projfrac",
+    projfrac
   )
 
   suppressWarnings(
@@ -158,15 +162,16 @@ mri_vol2surf <- function(
 #' @importFrom stringr str_pad
 #' @keywords internal
 mri_vol2label <- function(
-    input_file,
-    label_id,
-    hemisphere = "rh",
-    output_dir,
-    surface = NULL,
-    subject = "fsaverage5",
-    subjects_dir = fs_subj_dir(),
-    opts = NULL,
-    verbose = TRUE) {
+  input_file,
+  label_id,
+  hemisphere = "rh",
+  output_dir,
+  surface = NULL,
+  subject = "fsaverage5",
+  subjects_dir = fs_subj_dir(),
+  opts = NULL,
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   check_fs(abort = TRUE)
 
   hemisphere <- match.arg(hemisphere, c("lh", "rh"))
@@ -190,10 +195,14 @@ mri_vol2label <- function(
 
   cmd <- paste(
     fs_cmd,
-    "--c", input_file,
-    "--id", label_id,
-    "--sd", subjects_dir,
-    "--l", output_file
+    "--c",
+    input_file,
+    "--id",
+    label_id,
+    "--sd",
+    subjects_dir,
+    "--l",
+    output_file
   )
 
   if (!is.null(surface)) {
@@ -216,11 +225,12 @@ mri_vol2label <- function(
 #' @importFrom freesurfer get_fs
 #' @noRd
 mri_pretess <- function(
-    template,
-    label,
-    output_file,
-    verbose = TRUE,
-    opts = NULL) {
+  template,
+  label,
+  output_file,
+  verbose = get_verbose(), # nolint: object_usage_linter
+  opts = NULL
+) {
   check_fs(abort = TRUE)
 
   fscmd <- "mri_pretess"
@@ -231,7 +241,7 @@ mri_pretess <- function(
 
   cmd <- paste(fscmd, template, label, template, output_file)
 
-  k <- run_cmd(cmd, verbose = verbose)
+  k <- run_cmd(cmd, verbose = verbose) # nolint: object_usage_linter
 }
 
 
@@ -245,11 +255,12 @@ mri_pretess <- function(
 #' @importFrom freesurfer get_fs
 #' @noRd
 mri_tessellate <- function(
-    input_file,
-    label,
-    output_file,
-    verbose,
-    opts = NULL) {
+  input_file,
+  label,
+  output_file,
+  verbose,
+  opts = NULL
+) {
   check_fs(abort = TRUE)
 
   fscmd <- "mri_tessellate"
@@ -260,7 +271,7 @@ mri_tessellate <- function(
 
   cmd <- paste(fscmd, input_file, label, output_file)
 
-  k <- run_cmd(cmd, verbose = verbose)
+  k <- run_cmd(cmd, verbose = verbose) # nolint: object_usage_linter
 }
 
 
@@ -304,7 +315,8 @@ mri_smooth <- function(input_file, output_file, verbose, opts = NULL) {
 #' @param subject subject the original annotation file is registered to
 #' @param annot annotation file name (as found in subjects_dir)
 #' @param hemi hemisphere (one of "lh" or "rh")
-#' @param target_subject subject to re-register the annotation (default fsaverage5)
+#' @param target_subject subject to re-register the annotation
+#'   (default fsaverage5)
 #' @template output_dir
 #' @template verbose
 #' @importFrom freesurfer get_fs
@@ -322,12 +334,13 @@ mri_smooth <- function(input_file, output_file, verbose, opts = NULL) {
 #' )
 #' }
 mri_surf2surf_rereg <- function(
-    subject,
-    annot,
-    hemi = c("lh", "rh"),
-    target_subject = "fsaverage5",
-    output_dir = file.path(fs_subj_dir(), subject, "label"),
-    verbose = TRUE) {
+  subject,
+  annot,
+  hemi = c("lh", "rh"),
+  target_subject = "fsaverage5",
+  output_dir = file.path(fs_subj_dir(), subject, "label"),
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   check_fs(abort = TRUE)
 
   hemi <- match.arg(hemi, c("lh", "rh"))
@@ -338,14 +351,18 @@ mri_surf2surf_rereg <- function(
 
   cmd <- paste(
     fscmd,
-    "--srcsubject", subject,
-    "--sval-annot", annot,
+    "--srcsubject",
+    subject,
+    "--sval-annot",
+    annot,
     "--trgsubject fsaverage5",
-    "--tval", file.path(output_dir, paste(hemi, annot, sep = ".")),
-    "--hemi", hemi
+    "--tval",
+    file.path(output_dir, paste(hemi, annot, sep = ".")),
+    "--hemi",
+    hemi
   )
 
-  k <- run_cmd(cmd, verbose = verbose)
+  k <- run_cmd(cmd, verbose = verbose) # nolint: object_usage_linter
 }
 
 
@@ -359,7 +376,7 @@ mri_surf2surf_rereg <- function(
 #' @importFrom freesurfer get_fs
 #' @return ascii data
 #' @noRd
-surf2asc <- function(input_file, output_file, verbose = TRUE) {
+surf2asc <- function(input_file, output_file, verbose = get_verbose()) { # nolint: object_usage_linter
   check_fs(abort = TRUE)
 
   k <- strsplit(output_file, "\\.")[[1]]
@@ -387,7 +404,7 @@ surf2asc <- function(input_file, output_file, verbose = TRUE) {
     verbose = verbose
   )
 
-  j <- file.rename(gsub("\\.dpv", "\\.asc", output_file), output_file)
+  j <- file.rename(gsub("\\.dpv", "\\.asc", output_file), output_file) # nolint: object_usage_linter
 
   read_dpv(output_file)
 }
@@ -402,7 +419,7 @@ surf2asc <- function(input_file, output_file, verbose = TRUE) {
 #' @importFrom freesurfer get_fs
 #' @return ascii data
 #' @noRd
-curv2asc <- function(input_file, white, output_file, verbose = TRUE) {
+curv2asc <- function(input_file, white, output_file, verbose = get_verbose()) { # nolint: object_usage_linter
   check_fs(abort = TRUE)
 
   k <- strsplit(output_file, "\\.")[[1]]
@@ -421,12 +438,12 @@ curv2asc <- function(input_file, white, output_file, verbose = TRUE) {
   fscmd <- "mris_convert -c"
 
   cmd <- paste(fscmd, input_file, white, gsub("\\.dpv", "\\.asc", output_file))
-  j <- run_cmd(cmd, verbose = verbose)
+  j <- run_cmd(cmd, verbose = verbose) # nolint: object_usage_linter
 
   if (verbose) {
     cat(paste("Saving", output_file, "\n"))
   }
-  j <- file.rename(gsub("\\.dpv", "\\.asc", output_file), output_file)
+  j <- file.rename(gsub("\\.dpv", "\\.asc", output_file), output_file) # nolint: object_usage_linter
 
   read_dpv(output_file)
 }
@@ -442,8 +459,9 @@ curv2asc <- function(input_file, white, output_file, verbose = TRUE) {
 #' @return mesh object with vertices and faces
 #' @noRd
 asc2ply <- function(
-    input_file,
-    output_file = gsub("\\.dpv", ".ply", input_file)) {
+  input_file,
+  output_file = gsub("\\.dpv", ".ply", input_file)
+) {
   srf_file <- readLines(input_file)
 
   nfo <- as.numeric(strsplit(srf_file[2], " ")[[1]])
@@ -492,12 +510,13 @@ asc2ply <- function(
 #' @return mesh object with vertices and faces
 #' @keywords internal
 surf2ply <- function(
-    input_file,
-    output_file = paste(input_file, ".ply"),
-    verbose = TRUE) {
+  input_file,
+  output_file = paste(input_file, ".ply"),
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   basefile <- gsub("\\.ply", "", output_file)
 
-  srf <- surf2asc(input_file, paste0(basefile, ".asc"), FALSE)
+  srf <- surf2asc(input_file, paste0(basefile, ".asc"), FALSE) # nolint: object_usage_linter
   ply <- asc2ply(paste0(basefile, ".asc"), output_file)
 
   return(ply)
@@ -516,12 +535,13 @@ surf2ply <- function(
 #' @return mesh object with vertices and faces
 #' @keywords internal
 curv2ply <- function(
-    input_file,
-    output_file = paste(input_file, ".ply"),
-    verbose = TRUE) {
+  input_file,
+  output_file = paste(input_file, ".ply"),
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   basefile <- gsub("\\.ply", "", output_file)
 
-  srf <- curv2asc(input_file, paste0(basefile, ".asc"), FALSE)
+  srf <- curv2asc(input_file, paste0(basefile, ".asc"), FALSE) # nolint: object_usage_linter
   ply <- asc2ply(paste0(basefile, ".asc"), output_file)
 
   return(ply)
@@ -569,17 +589,18 @@ smooth2srf <- function(input_file, output_file, verbose) {
 #' @importFrom freesurfer fs_subj_dir mri_surf2surf
 #' @keywords internal
 lcbc_surf2surf <- function(
-    input_volume,
-    source_subject = "fsaverage",
-    target_subject = "fsaverage5",
-    hemisphere = "rh",
-    subjects_dir = fs_subj_dir(),
-    output_dir = file.path(subjects_dir, target_subject, "surf"),
-    cortex = TRUE,
-    verbose = TRUE) {
+  input_volume,
+  source_subject = "fsaverage",
+  target_subject = "fsaverage5",
+  hemisphere = "rh",
+  subjects_dir = fs_subj_dir(),
+  output_dir = file.path(subjects_dir, target_subject, "surf"),
+  cortex = TRUE,
+  verbose = get_verbose() # nolint: object_usage_linter
+) {
   check_fs(abort = TRUE)
 
-  j <- mri_surf2surf(
+  j <- mri_surf2surf( # nolint: object_usage_linter
     sval = input_volume,
     subject = source_subject,
     target_subject = target_subject,
@@ -593,5 +614,12 @@ lcbc_surf2surf <- function(
 
 ## quiets concerns of R CMD check
 if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c("idx", "key", "view", "val", "vars", paste0("V", 1:3)))
+  utils::globalVariables(c(
+    "idx",
+    "key",
+    "view",
+    "val",
+    "vars",
+    paste0("V", 1:3)
+  ))
 }

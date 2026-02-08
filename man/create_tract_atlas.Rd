@@ -14,12 +14,14 @@ create_tract_atlas(
   n_points = 50,
   centerline_method = c("mean", "medoid"),
   views = NULL,
-  output_dir = tempdir(),
-  verbose = NULL,
+  output_dir = NULL,
+  verbose = get_verbose(),
   tolerance = NULL,
   smoothness = NULL,
   cleanup = NULL,
   skip_existing = NULL,
+  dilate = NULL,
+  vertex_size_limits = NULL,
   steps = NULL
 )
 }
@@ -29,15 +31,15 @@ named list of coordinate matrices where each matrix has N rows and 3
 columns (x, y, z).}
 
 \item{input_aseg}{Path to a segmentation volume (\code{.mgz}, \code{.nii}) used to
-draw cortex outlines in 2D views. Required when running step 2.}
+draw cortex outlines in 2D views. Required for steps 2+.}
 
 \item{atlas_name}{Name for the atlas. If NULL, derived from the input
 filename.}
 
 \item{input_lut}{Path to a color lookup table (LUT) file, or a data.frame
-with columns \code{label}, \code{region}, and colour columns (R, G, B or hex).
+with columns \code{region} and colour columns (R, G, B or hex).
 Use this to provide tract names and colours. If NULL, names are derived
-from filenames or list names, and colours are auto-generated.}
+from filenames or list names, and the atlas will have no palette.}
 
 \item{tube_radius}{Controls the tube thickness. Either a single numeric
 value for uniform radius, or \code{"density"} to scale radius by how many
@@ -60,15 +62,10 @@ selects the single most representative streamline.}
 \item{output_dir}{Directory to store intermediate files (screenshots, masks,
 contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 
 \item{tolerance}{Simplification tolerance for 2D polygons. Higher values
 produce simpler shapes with fewer vertices. Passed to \code{\link[sf:geos_unary]{sf::st_simplify()}}.
@@ -89,13 +86,26 @@ allowing interrupted atlas creation to resume. If not specified, uses
 \code{options("ggsegExtra.skip_existing")} or the \code{GGSEGEXTRA_SKIP_EXISTING}
 environment variable. Default is TRUE.}
 
+\item{dilate}{Dilation iterations for 2D polygons. Useful for filling small
+gaps between structures.}
+
+\item{vertex_size_limits}{Numeric vector of length 2 setting minimum and
+maximum vertex count for polygons. Polygons outside this range are
+filtered out. Default NULL applies no limits.}
+
 \item{steps}{Which pipeline steps to run. Default NULL runs all steps.
 Steps are:
 \itemize{
 \item 1: Read tractography and create tube meshes
-\item 2: Create 2D projection geometry
+\item 2: Create projection snapshots
+\item 3: Process images
+\item 4: Extract contours
+\item 5: Smooth contours
+\item 6: Reduce vertices
+\item 7: Build atlas
 }
-Use \code{steps = 1} for 3D-only atlas.}
+Use \code{steps = 1} for 3D-only atlas. Use \code{steps = 5:7} to iterate on
+smoothing and vertex reduction.}
 }
 \value{
 A \code{brain_atlas} object with type \code{"tract"}, containing region

@@ -7,13 +7,13 @@
 create_cortical_atlas(
   input_annot,
   atlas_name = NULL,
-  output_dir = tempdir(),
+  output_dir = NULL,
   hemisphere = c("rh", "lh"),
   views = c("lateral", "medial", "superior", "inferior"),
   tolerance = NULL,
   smoothness = NULL,
   cleanup = NULL,
-  verbose = NULL,
+  verbose = get_verbose(),
   skip_existing = NULL,
   steps = NULL
 )
@@ -31,7 +31,8 @@ contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
 \item{hemisphere}{Which hemispheres to include: "lh", "rh", or both.}
 
-\item{views}{Which views to include: "lateral", "medial", "superior", "inferior".}
+\item{views}{Which views to include: "lateral", "medial",
+"superior", "inferior".}
 
 \item{tolerance}{Simplification tolerance for 2D polygons. Higher values
 produce simpler shapes with fewer vertices. Passed to \code{\link[sf:geos_unary]{sf::st_simplify()}}.
@@ -47,15 +48,10 @@ specified, uses \code{options("ggsegExtra.smoothness")} or the
 specified, uses \code{options("ggsegExtra.cleanup")} or the \code{GGSEGEXTRA_CLEANUP}
 environment variable. Default is TRUE.}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 
 \item{skip_existing}{Skip generating output files that already exist,
 allowing interrupted atlas creation to resume. If not specified, uses

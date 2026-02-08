@@ -47,9 +47,10 @@ extract_slice_2d <- function(vol, view, pos, hemi = NULL) {
 }
 
 
-#' Extract 2D projection from 3D volume
+#' Create maximum intensity projection of volume
 #'
-#' Creates a maximum intensity projection with correct orientation.
+#' Projects a 3D volume onto a 2D plane by taking the maximum value along
+#' each ray. Optionally restricts to a subset of slices.
 #'
 #' @param vol 3D array in RAS orientation
 #' @param view "axial", "coronal", or "sagittal"
@@ -59,12 +60,25 @@ extract_slice_2d <- function(vol, view, pos, hemi = NULL) {
 #'
 #' @return 2D matrix ready for image() display
 #' @keywords internal
-extract_projection_2d <- function(vol, view, start = NULL, end = NULL, hemi = NULL) {
+volume_projection <- function(
+  vol,
+  view,
+  start = NULL,
+  end = NULL,
+  hemi = NULL
+) {
   dims <- dim(vol)
 
-  if (is.null(start)) start <- 1
+  if (is.null(start)) {
+    start <- 1
+  }
   if (is.null(end)) {
-    end <- switch(view, "axial" = dims[3], "coronal" = dims[2], "sagittal" = dims[1])
+    end <- switch(
+      view,
+      "axial" = dims[3],
+      "coronal" = dims[2],
+      "sagittal" = dims[1]
+    )
   }
 
   sub_vol <- switch(
@@ -87,13 +101,9 @@ extract_projection_2d <- function(vol, view, start = NULL, end = NULL, hemi = NU
 
 #' Orient 2D slice for display
 #'
-#' Applies view-specific transformations so the slice displays correctly
-#' with image(). Uses neurological convention (left on left).
-#'
-#' Orientations:
-#' - Axial: anterior at top, left on left
-#' - Coronal: superior at top, left on left
-#' - Sagittal: superior at top, left hemisphere flipped for visual distinction
+#' With RAS+ input, `image()` already displays axial and coronal correctly.
+#' Only left-hemisphere sagittal needs a horizontal flip so hemispheres
+#' face each other when plotted side-by-side.
 #'
 #' @param slice 2D matrix
 #' @param view "axial", "coronal", or "sagittal"
@@ -103,18 +113,10 @@ extract_projection_2d <- function(vol, view, start = NULL, end = NULL, hemi = NU
 #' @return Transformed 2D matrix
 #' @keywords internal
 orient_slice_2d <- function(slice, view, hemi = NULL) {
-  result <- switch(
-    view,
-    "axial" = slice[rev(seq_len(nrow(slice))), rev(seq_len(ncol(slice)))],
-    "coronal" = slice[rev(seq_len(nrow(slice))), ],
-    "sagittal" = t(slice)[rev(seq_len(ncol(slice))), rev(seq_len(nrow(slice)))]
-  )
-
   if (view == "sagittal" && identical(hemi, "left")) {
-    result <- result[rev(seq_len(nrow(result))), ]
+    return(slice[rev(seq_len(nrow(slice))), ])
   }
-
-  result
+  slice
 }
 
 
@@ -145,7 +147,7 @@ snapshot_slice <- function(
   view,
   label_file = NULL,
   output_dir,
-  skip_existing = TRUE,
+  skip_existing = get_skip_existing(),
   width = 400,
   height = 400
 ) {
@@ -215,7 +217,8 @@ snapshot_slice <- function(
 #' @param na_colour Colour for NA regions
 #' @param skip_existing Skip if file exists
 #' @noRd
-#' @importFrom ggseg3d ggseg3d pan_camera set_flat_shading set_legend set_orthographic snapshot_brain
+#' @importFrom ggseg3d ggseg3d pan_camera set_flat_shading
+#'   set_legend set_orthographic snapshot_brain
 snapshot_brain_helper <- function(
   atlas,
   hemisphere,
@@ -225,7 +228,7 @@ snapshot_brain_helper <- function(
   .data = NULL,
   colour = "colour",
   na_colour = "#CCCCCC",
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   if (skip_existing && file.exists(outfile)) {
     return(invisible(NULL))
@@ -258,7 +261,7 @@ snapshot_brain <- function(
   view,
   surface,
   output_dir,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   outfile <- file.path(output_dir, sprintf("full_%s_%s.png", hemisphere, view))
 
@@ -283,7 +286,7 @@ snapshot_region <- function(
   view,
   surface,
   output_dir,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   outfile <- file.path(
     output_dir,
@@ -318,9 +321,12 @@ snapshot_na_regions <- function(
   view,
   surface,
   output_dir,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
-  outfile <- file.path(output_dir, sprintf("%s____nolabel____%s_%s.png", hemisphere, hemisphere, view))
+  outfile <- file.path(
+    output_dir,
+    sprintf("%s____nolabel____%s_%s.png", hemisphere, hemisphere, view)
+  )
 
   white_data <- data.frame(
     label = atlas$core$label,
@@ -368,7 +374,7 @@ snapshot_cortex_slice <- function(
   output_dir,
   width = 400,
   height = 400,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   output_dir <- path.expand(output_dir)
 
@@ -437,7 +443,7 @@ snapshot_volume_slice <- function(
   colour = "red",
   width = 400,
   height = 400,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   output_dir <- path.expand(output_dir)
   coords <- sprintf(c(x, y, z), fmt = "%03d")
@@ -482,38 +488,6 @@ snapshot_volume_slice <- function(
 }
 
 
-#' Create maximum intensity projection of volume
-#'
-#' Projects a 3D volume onto a 2D plane by taking the maximum value along
-#' each ray. This shows the full extent of structures from a given view.
-#'
-#' @param vol 3D array
-#' @param view "axial", "sagittal", or "coronal"
-#'
-#' @return 2D matrix (projection)
-#' @keywords internal
-volume_projection <- function(vol, view) {
-  extract_projection_2d(vol, view)
-}
-
-
-#' Create partial projection of volume
-#'
-#' Projects a subset of slices from a 3D volume onto a 2D plane.
-#'
-#' @param vol 3D array
-#' @param view "axial", "coronal", or "sagittal"
-#' @param start First slice index to include
-#' @param end Last slice index to include
-#' @param hemi Hemisphere for sagittal views: "left" or "right"
-#'
-#' @return 2D matrix (projection)
-#' @keywords internal
-volume_partial_projection <- function(vol, view, start, end, hemi = NULL) {
-  extract_projection_2d(vol, view, start, end, hemi = hemi)
-}
-
-
 #' Snapshot a partial volume projection
 #'
 #' Creates a PNG image showing maximum intensity projection of a volume subset.
@@ -544,7 +518,7 @@ snapshot_partial_projection <- function(
   hemi = NULL,
   width = 400,
   height = 400,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 ) {
   output_dir <- path.expand(output_dir)
 
@@ -555,65 +529,7 @@ snapshot_partial_projection <- function(
     return(invisible(outfile))
   }
 
-  proj <- volume_partial_projection(vol, view, start, end, hemi = hemi)
-  proj[proj == 0] <- NA
-
-  if (!any(is.finite(proj))) {
-    return(invisible(NULL))
-  }
-
-  png(outfile, width = width, height = height, bg = "black")
-  par(mar = c(0, 0, 0, 0))
-
-  image(
-    proj,
-    col = colour,
-    useRaster = TRUE,
-    axes = FALSE,
-    asp = 1
-  )
-
-  dev.off()
-
-  invisible(outfile)
-}
-
-
-#' Snapshot a volume projection
-#'
-#' Creates a PNG image showing maximum intensity projection of a volume.
-#'
-#' @param vol 3D array with voxel values
-#' @param view "axial", "sagittal", or "coronal"
-#' @param label Label for filename
-#' @param output_dir Output directory
-#' @param colour Colour for non-zero voxels
-#' @param width,height Image dimensions
-#' @param skip_existing If TRUE, skip if output file already exists
-#'
-#' @return Invisible path to output file, or NULL if no voxels
-#' @keywords internal
-snapshot_volume_projection <- function(
-  vol,
-  view,
-  label,
-  output_dir,
-  colour = "red",
-  width = 400,
-  height = 400,
-  skip_existing = TRUE
-) {
-  output_dir <- path.expand(output_dir)
-  vv <- paste0(strsplit(view, "")[[1]][1:5], collapse = "")
-
-  filenm <- paste0(vv, "_", label, ".png")
-  outfile <- file.path(output_dir, filenm)
-
-  if (skip_existing && file.exists(outfile)) {
-    return(invisible(outfile))
-  }
-
-  proj <- volume_projection(vol, view)
+  proj <- volume_projection(vol, view, start, end, hemi = hemi)
   proj[proj == 0] <- NA
 
   if (!any(is.finite(proj))) {

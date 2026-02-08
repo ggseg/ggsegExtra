@@ -63,5 +63,3 @@ describe("make_brain_meshes", {
     expect_true("rh_inflated" %in% names(meshes))
   })
 })
-
-

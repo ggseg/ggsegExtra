@@ -12,7 +12,8 @@ read_ply_mesh(ply, ...)
 \item{...}{arguments to \code{\link[geomorph:read.ply]{geomorph::read.ply()}}}
 }
 \value{
-list with vertices (data.frame with x, y, z) and faces (data.frame with i, j, k)
+list with vertices (data.frame with x, y, z) and
+faces (data.frame with i, j, k)
 }
 \description{
 PLY files contain mesh information including vertices and faces.

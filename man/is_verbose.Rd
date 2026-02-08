@@ -7,10 +7,11 @@
 is_verbose(verbose = NULL)
 }
 \arguments{
-\item{verbose}{Optional explicit value. If NULL, reads from options/env.}
+\item{verbose}{Optional explicit value. If NULL, reads from
+option/env via \code{\link[=get_verbose]{get_verbose()}}.}
 }
 \value{
-Logical TRUE if verbosity >= 1
+Logical
 }
 \description{
 Check if verbose output is enabled

@@ -57,28 +57,24 @@ options(
 
 # Now all atlas creation functions will use these defaults
 atlas <- create_cortical_atlas(
- input_annot = c("lh.myatlas.annot", "rh.myatlas.annot")
+  input_annot = c("lh.myatlas.annot", "rh.myatlas.annot")
 )
 ```
 
 ### Verbosity Control
 
-The `verbose` parameter controls how much output is printed during pipeline
-execution:
-
-- `0` (or `FALSE`): Silent mode, no output
-- `1` (or `TRUE`): Normal mode, progress messages (default)
-- `2`: High verbosity, includes FreeSurfer command output
+The `verbose` parameter controls whether progress messages are printed during
+pipeline execution. It defaults to `TRUE`.
 
 ```{r}
-# Set high verbosity for debugging
-options(ggsegExtra.verbosity = 2)
+# Suppress all output
+options(ggsegExtra.verbose = FALSE)
 
-# Or use the convenience function
-set_verbosity(2)
+# Or via environment variable
+Sys.setenv(GGSEGEXTRA_VERBOSE = "false")
 
-# Check current verbosity
-get_verbosity()
+# Check current setting
+get_verbose()
 ```
 
 ### Cleanup Control
@@ -134,7 +130,7 @@ when you want settings to persist across R sessions.
 Add to your `~/.Renviron` file:
 
 ```
-GGSEGEXTRA_VERBOSITY=0
+GGSEGEXTRA_VERBOSE=false
 GGSEGEXTRA_CLEANUP=true
 GGSEGEXTRA_SKIP_EXISTING=true
 GGSEGEXTRA_TOLERANCE=0.5
@@ -144,7 +140,7 @@ GGSEGEXTRA_SMOOTHNESS=10
 ### In Shell
 
 ```bash
-export GGSEGEXTRA_VERBOSITY=0
+export GGSEGEXTRA_VERBOSE=false
 export GGSEGEXTRA_TOLERANCE=0.5
 R -e "ggsegExtra::create_cortical_atlas(...)"
 ```
@@ -152,7 +148,7 @@ R -e "ggsegExtra::create_cortical_atlas(...)"
 ### In Docker
 
 ```dockerfile
-ENV GGSEGEXTRA_VERBOSITY=0
+ENV GGSEGEXTRA_VERBOSE=false
 ENV GGSEGEXTRA_CLEANUP=true
 ```
 
@@ -177,7 +173,7 @@ atlas <- create_cortical_atlas(
 
 ```{r}
 options(
-  ggsegExtra.verbosity = 2,
+  ggsegExtra.verbose = TRUE,
   ggsegExtra.cleanup = FALSE,
   ggsegExtra.skip_existing = FALSE
 )
@@ -187,7 +183,7 @@ options(
 
 ```{r}
 options(
-  ggsegExtra.verbosity = 0,
+  ggsegExtra.verbose = FALSE,
   ggsegExtra.cleanup = TRUE,
   ggsegExtra.skip_existing = TRUE
 )
@@ -220,8 +216,8 @@ atlas <- create_cortical_atlas(
 ## Checking Current Settings
 
 ```{r}
-# Check verbosity
-get_verbosity()
+# Check verbose
+get_verbose()
 is_verbose()
 
 # Check other settings

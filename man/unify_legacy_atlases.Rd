@@ -48,7 +48,8 @@ Convert old-style ggseg (2D) and ggseg3d (3D) atlases into the new
 \code{brain_atlas} format. This is a bridge function for working with existing
 atlases during the transition period.
 
-For new atlases, use \code{\link[=create_cortical_atlas]{create_cortical_atlas()}} or \code{\link[=create_subcortical_atlas]{create_subcortical_atlas()}}
+For new atlases, use \code{\link[=create_cortical_atlas]{create_cortical_atlas()}} or
+\code{\link[=create_subcortical_atlas]{create_subcortical_atlas()}}
 instead - they produce better results with proper vertex indices.
 
 The function handles three scenarios:

@@ -153,9 +153,14 @@ create_atlas_from_template <- function(path, atlas_name) {
   write_github_workflows(path)
 
   # Replace template placeholders
-  all_files <- list.files(path, full.names = TRUE, recursive = TRUE, all.files = TRUE)
+  all_files <- list.files(
+    path, full.names = TRUE, recursive = TRUE, all.files = TRUE
+  )
   # Skip binary files
-  all_files <- all_files[!grepl("\\.(png|jpg|jpeg|gif|ico|rda|RData|rds)$", all_files, ignore.case = TRUE)]
+  all_files <- all_files[!grepl(
+    "\\.(png|jpg|jpeg|gif|ico|rda|RData|rds)$",
+    all_files, ignore.case = TRUE
+  )]
 
   for (f in all_files) {
     if (file.exists(f) && !dir.exists(f)) {
@@ -305,8 +310,14 @@ write_github_workflows <- function(path) {
 
   # R-CMD-check workflow
   check_workflow <- c(
-    "# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples",
-    "# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help",
+    paste0(
+      "# Workflow derived from ",
+      "https://github.com/r-lib/actions/tree/v2/examples"
+    ),
+    paste0(
+      "# Need help debugging build failures? ",
+      "Start at https://github.com/r-lib/actions#where-to-find-help"
+    ),
     "",
     "on:",
     "  push:",
@@ -356,12 +367,21 @@ write_github_workflows <- function(path) {
     "        with:",
     "          upload-snapshots: true"
   )
-  writeLines(check_workflow, file.path(path, ".github", "workflows", "R-CMD-check.yaml"))
+  writeLines(
+    check_workflow,
+    file.path(path, ".github", "workflows", "R-CMD-check.yaml")
+  )
 
   # pkgdown workflow
   pkgdown_workflow <- c(
-    "# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples",
-    "# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help",
+    paste0(
+      "# Workflow derived from ",
+      "https://github.com/r-lib/actions/tree/v2/examples"
+    ),
+    paste0(
+      "# Need help debugging build failures? ",
+      "Start at https://github.com/r-lib/actions#where-to-find-help"
+    ),
     "",
     "on:",
     "  push:",
@@ -379,7 +399,10 @@ write_github_workflows <- function(path) {
     "    runs-on: ubuntu-latest",
     "    # Only restrict concurrency for non-PR jobs",
     "    concurrency:",
-    "      group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}",
+    paste0(
+      "      group: pkgdown-${{ github.event_name",
+      " != 'pull_request' || github.run_id }}"
+    ),
     "    env:",
     "      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}",
     "    permissions:",
@@ -399,7 +422,10 @@ write_github_workflows <- function(path) {
     "          needs: website",
     "",
     "      - name: Build site",
-    "        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)",
+    paste0(
+      "        run: pkgdown::build_site_github_pages",
+      "(new_process = FALSE, install = FALSE)"
+    ),
     "        shell: Rscript {0}",
     "",
     "      - name: Deploy to GitHub pages",
@@ -410,7 +436,10 @@ write_github_workflows <- function(path) {
     "          branch: gh-pages",
     "          folder: docs"
   )
-  writeLines(pkgdown_workflow, file.path(path, ".github", "workflows", "pkgdown.yaml"))
+  writeLines(
+    pkgdown_workflow,
+    file.path(path, ".github", "workflows", "pkgdown.yaml")
+  )
 }
 
 

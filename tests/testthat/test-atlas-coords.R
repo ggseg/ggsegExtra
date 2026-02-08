@@ -3,14 +3,20 @@ describe("to_coords", {
     sf_obj <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
     result <- to_coords(sf_obj, 1)
 
     expect_s3_class(result, "data.frame")
-    expect_true(all(c(".long", ".lat", ".subid", ".id", ".poly", ".order") %in% names(result)))
+    expect_true(all(
+      c(".long", ".lat", ".subid", ".id", ".poly", ".order") %in%
+        names(result)
+    ))
     expect_true(nrow(result) > 0)
   })
 
@@ -81,7 +87,10 @@ describe("center_coord", {
     sf_obj <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
@@ -98,7 +107,10 @@ describe("range_coord", {
     sf_obj <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
@@ -117,7 +129,10 @@ describe("gather_geometry", {
     df <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(10, 10, 20, 10, 20, 20, 10, 20, 10, 10), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(10, 10, 20, 10, 20, 20, 10, 20, 10, 10),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
@@ -135,13 +150,19 @@ describe("restack", {
     df1 <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
     df2 <- sf::st_sf(
       id = "b",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
@@ -163,7 +184,10 @@ describe("correct_coords_sf", {
     df <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
@@ -177,7 +201,10 @@ describe("correct_coords_sf", {
     df <- sf::st_sf(
       id = "a",
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 10, 1, 10, 1, 11, 0, 11, 0, 10), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 10, 1, 10, 1, 11, 0, 11, 0, 10),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 
@@ -194,8 +221,14 @@ describe("count_vertices", {
     sf_obj <- sf::st_sf(
       id = c("a", "b"),
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE))),
-        sf::st_polygon(list(matrix(c(0, 0, 2, 0, 2, 2, 0, 2, 0, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        ))),
+        sf::st_polygon(list(matrix(
+          c(0, 0, 2, 0, 2, 2, 0, 2, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 

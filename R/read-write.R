@@ -12,12 +12,20 @@ is_volume_file <- function(file) {
 #' Read neuroimaging volume file
 #'
 #' Reads volume data from common neuroimaging formats including
-#' FreeSurfer MGZ and NIfTI.
+#' FreeSurfer MGZ and NIfTI. By default, reorients to RAS+ so that
+#' dim1 = Left-to-Right, dim2 = Posterior-to-Anterior,
+#' dim3 = Inferior-to-Superior.
+#'
+#' When `reorient = FALSE`, returns an RNifti niftiImage preserving the
+#' file's native orientation and header metadata.
 #'
 #' @param file Path to volume file (.mgz, .nii, .nii.gz)
-#' @return 3D array of volume data
+#' @param reorient If TRUE (default), reorient the volume to RAS+ and
+#'   return a plain array. If FALSE, return an RNifti niftiImage in the
+#'   file's native orientation (preserves header for downstream use).
+#' @return 3D array (reorient=TRUE) or niftiImage (reorient=FALSE)
 #' @keywords internal
-read_volume <- function(file) {
+read_volume <- function(file, reorient = TRUE) {
   if (!file.exists(file)) {
     cli::cli_abort("Volume file not found: {.path {file}}")
   }
@@ -27,23 +35,26 @@ read_volume <- function(file) {
     ext <- tools::file_ext(sub("\\.gz$", "", file))
   }
 
-  switch(
+  vol <- switch(
     ext,
     "mgz" = freesurfer::read_mgz(file),
-    "nii" = {
-      if (!requireNamespace("RNifti", quietly = TRUE)) {
-        cli::cli_abort(c(
-          "Package {.pkg RNifti} required for NIfTI files",
-          "i" = "Install with: {.code install.packages('RNifti')}"
-        ))
-      }
-      RNifti::readNifti(file)
-    },
+    "nii" = RNifti::readNifti(file),
     cli::cli_abort(c(
       "Unsupported volume format: {.file {basename(file)}}",
       "i" = "Supported formats: .mgz, .nii, .nii.gz"
     ))
   )
+
+  nii <- RNifti::asNifti(vol)
+
+  if (reorient) {
+    if (RNifti::orientation(nii) != "RAS") {
+      RNifti::orientation(nii) <- "RAS"
+    }
+    return(as.array(nii))
+  }
+
+  nii
 }
 
 #' Read mesh data from PLY file
@@ -55,7 +66,8 @@ read_volume <- function(file) {
 #' @param ply path to ply-file
 #' @param ... arguments to [geomorph::read.ply()]
 #'
-#' @return list with vertices (data.frame with x, y, z) and faces (data.frame with i, j, k)
+#' @return list with vertices (data.frame with x, y, z) and
+#'   faces (data.frame with i, j, k)
 #' @keywords internal
 #' @importFrom geomorph read.ply
 read_ply_mesh <- function(ply, ...) {
@@ -108,7 +120,7 @@ read_ply_mesh <- function(ply, ...) {
 #' }
 read_annotation_data <- function(annot_files) {
   if (!all(file.exists(annot_files))) {
-    missing <- annot_files[!file.exists(annot_files)]
+    missing <- annot_files[!file.exists(annot_files)] # nolint: object_usage_linter
     cli::cli_abort("Annotation file{?s} not found: {.path {missing}}")
   }
 
@@ -128,9 +140,9 @@ read_annotation_data <- function(annot_files) {
     }
     hemi <- if (hemi_short == "lh") "left" else "right"
 
-    ant <- freesurfer::read_annotation(annot_file, verbose = FALSE)
+    ant <- freesurfer::read_annotation(annot_file, verbose = get_verbose()) # nolint: object_usage_linter
     colortable <- ant$colortable[!is.na(ant$colortable$R), ]
-    colortable_codes <- colortable$code
+    colortable_codes <- colortable$code # nolint: object_usage_linter
 
     labeled_vertices <- integer(0)
 
@@ -224,7 +236,7 @@ write_dpv <- function(path, vertices, faces) {
   vertices <- cbind(vertices, r = rep(0, nrow(vertices)))
   faces <- cbind(faces, r = rep(0, nrow(faces)))
 
-  vertices <- within(vertices, l <- sprintf(paste("%f %f %f %g"), x, y, z, r))
+  vertices <- within(vertices, l <- sprintf(paste("%f %f %f %g"), x, y, z, r)) # nolint: object_usage_linter
   faces <- within(faces, l <- sprintf(paste("%g %g %g %g"), i, j, k, r))
 
   file_content <- c(
@@ -356,7 +368,7 @@ get_ctab <- function(color_lut) {
 
 
 #' @noRd
-ctab_line <- function(idx, name, R, G, B, A) {
+ctab_line <- function(idx, name, R, G, B, A) { # nolint: object_name_linter
   if (nchar(name) > 29) {
     name <- substr(name, 1, 29)
   }

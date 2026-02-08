@@ -13,7 +13,7 @@ mri_vol2label(
   subject = "fsaverage5",
   subjects_dir = fs_subj_dir(),
   opts = NULL,
-  verbose = TRUE
+  verbose = get_verbose()
 )
 }
 \arguments{
@@ -35,15 +35,10 @@ specified or set in the environment with $SUBJECTS_DIR}
 
 \item{opts}{other arguments to freesurfer command}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 }
 \value{
 returns nothing. Writes a label file.

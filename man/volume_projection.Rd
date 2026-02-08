@@ -4,18 +4,24 @@
 \alias{volume_projection}
 \title{Create maximum intensity projection of volume}
 \usage{
-volume_projection(vol, view)
+volume_projection(vol, view, start = NULL, end = NULL, hemi = NULL)
 }
 \arguments{
-\item{vol}{3D array}
+\item{vol}{3D array in RAS orientation}
 
-\item{view}{"axial", "sagittal", or "coronal"}
+\item{view}{"axial", "coronal", or "sagittal"}
+
+\item{start}{First slice index (NULL for full projection)}
+
+\item{end}{Last slice index (NULL for full projection)}
+
+\item{hemi}{Hemisphere for sagittal views: "left" or "right"}
 }
 \value{
-2D matrix (projection)
+2D matrix ready for image() display
 }
 \description{
 Projects a 3D volume onto a 2D plane by taking the maximum value along
-each ray. This shows the full extent of structures from a given view.
+each ray. Optionally restricts to a subset of slices.
 }
 \keyword{internal}

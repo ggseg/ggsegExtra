@@ -116,7 +116,9 @@ summarize_sitrep <- function(results, detail = "simple") {
   } else {
     cli::cli_alert_danger("Missing requirements for atlas creation")
     if (detail == "simple") {
-      cli::cli_bullets(c("i" = "Run {.code setup_sitrep(\"full\")} for details"))
+      cli::cli_bullets(c(
+        "i" = "Run {.code setup_sitrep(\"full\")} for details"
+      ))
     }
   }
 }

@@ -12,7 +12,7 @@ lcbc_surf2surf(
   subjects_dir = fs_subj_dir(),
   output_dir = file.path(subjects_dir, target_subject, "surf"),
   cortex = TRUE,
-  verbose = TRUE
+  verbose = get_verbose()
 )
 }
 \arguments{
@@ -31,15 +31,10 @@ contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
 \item{cortex}{toggle "--cortex" (TRUE) or "--no-cortex" (FALSE)}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 }
 \description{
 Convert LCBC surface file to other subjects

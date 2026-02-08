@@ -1,3 +1,119 @@
+describe("build_contour_sf", {
+  it("produces sf with label and view columns", {
+    contours_file <- withr::local_tempfile(fileext = ".rda")
+
+    contours <- sf::st_sf(
+      filenm = c("axial_1_regionA", "coronal_1_regionB"),
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+        ))),
+        sf::st_polygon(list(matrix(
+          c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+        )))
+      )
+    )
+    save(contours, file = contours_file)
+
+    views <- data.frame(
+      name = c("axial_1", "coronal_1"),
+      type = c("axial", "coronal"),
+      start = c(85, 110),
+      end = c(95, 120),
+      stringsAsFactors = FALSE
+    )
+
+    local_mocked_bindings(
+      make_multipolygon = function(f) {
+        env <- new.env()
+        load(f, envir = env)
+        env$contours
+      },
+      layout_volumetric_views = function(df) df
+    )
+
+    result <- build_contour_sf(contours_file, views)
+
+    expect_s3_class(result, "sf")
+    expect_true(all(c("label", "view") %in% names(result)))
+    expect_equal(nrow(result), 2)
+  })
+
+  it("assigns views from filename prefix", {
+    contours_file <- withr::local_tempfile(fileext = ".rda")
+
+    contours <- sf::st_sf(
+      filenm = c("axial_1_regionA", "axial_1_regionB", "coronal_1_regionC"),
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+        ))),
+        sf::st_polygon(list(matrix(
+          c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+        ))),
+        sf::st_polygon(list(matrix(
+          c(4, 0, 5, 0, 5, 1, 4, 0), ncol = 2, byrow = TRUE
+        )))
+      )
+    )
+    save(contours, file = contours_file)
+
+    views <- data.frame(
+      name = c("axial_1", "coronal_1"),
+      type = c("axial", "coronal"),
+      start = c(85, 110),
+      end = c(95, 120),
+      stringsAsFactors = FALSE
+    )
+
+    local_mocked_bindings(
+      make_multipolygon = function(f) {
+        env <- new.env()
+        load(f, envir = env)
+        env$contours
+      },
+      layout_volumetric_views = function(df) df
+    )
+
+    result <- build_contour_sf(contours_file, views)
+
+    expect_equal(sort(unique(result$view)), c("axial_1", "coronal_1"))
+  })
+
+  it("strips view prefix from label", {
+    contours_file <- withr::local_tempfile(fileext = ".rda")
+
+    contours <- sf::st_sf(
+      filenm = c("axial_1_Left-Putamen"),
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+        )))
+      )
+    )
+    save(contours, file = contours_file)
+
+    views <- data.frame(
+      name = "axial_1", type = "axial", start = 85, end = 95,
+      stringsAsFactors = FALSE
+    )
+
+    local_mocked_bindings(
+      make_multipolygon = function(f) {
+        env <- new.env()
+        load(f, envir = env)
+        env$contours
+      },
+      layout_volumetric_views = function(df) df
+    )
+
+    result <- build_contour_sf(contours_file, views)
+
+    expect_equal(result$label, "Left-Putamen")
+  })
+})
+
+
 describe("extract_contours", {
   it("extracts contours from mask directory", {
     skip_if_no_imagemagick()
@@ -11,7 +127,10 @@ describe("filter_valid_geometries", {
     sf_obj <- sf::st_sf(
       id = c("a", "b"),
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE))),
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        ))),
         sf::st_polygon()
       )
     )
@@ -48,8 +167,14 @@ describe("filter_valid_geometries", {
     sf_obj <- sf::st_sf(
       id = c("a", "b"),
       geometry = sf::st_sfc(
-        sf::st_polygon(list(matrix(c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE))),
-        sf::st_polygon(list(matrix(c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE)))
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        ))),
+        sf::st_polygon(list(matrix(
+          c(2, 0, 3, 0, 3, 1, 2, 0),
+          ncol = 2, byrow = TRUE
+        )))
       )
     )
 

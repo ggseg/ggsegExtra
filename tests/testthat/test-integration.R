@@ -23,12 +23,18 @@ describe("integration tests", {
 
     annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
     annot_files <- file.path(annot_dir, c("lh.aparc.annot", "rh.aparc.annot"))
-    skip_if(!all(file.exists(annot_files)), "fsaverage5 aparc annotation not found")
+    skip_if(
+      !all(file.exists(annot_files)),
+      "fsaverage5 aparc annotation not found"
+    )
 
-    atlas <- create_cortical_atlas(
-      input_annot = annot_files,
-      steps = 1,
-      verbose = FALSE
+    atlas <- expect_warnings(
+      create_cortical_atlas(
+        input_annot = annot_files,
+        steps = 1,
+        verbose = FALSE
+      ),
+      "version"
     )
 
     expect_s3_class(atlas, "brain_atlas")

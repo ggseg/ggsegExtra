@@ -21,7 +21,8 @@ get_brain_mesh(
 \item{subjects_dir}{FreeSurfer subjects directory}
 }
 \value{
-list with vertices (data.frame with x, y, z) and faces (data.frame with i, j, k)
+list with vertices (data.frame with x, y, z) and
+faces (data.frame with i, j, k)
 }
 \description{
 Extracts the full brain surface mesh for a given subject and surface type.

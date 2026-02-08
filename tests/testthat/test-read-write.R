@@ -293,7 +293,10 @@ describe("read_label_vertices", {
     tmp <- withr::local_tempfile(fileext = ".label")
     writeLines("", tmp)
 
-    result <- read_label_vertices(tmp)
+    expect_warning(
+      result <- read_label_vertices(tmp),
+      "Empty or malformed"
+    )
 
     expect_type(result, "integer")
     expect_length(result, 0)

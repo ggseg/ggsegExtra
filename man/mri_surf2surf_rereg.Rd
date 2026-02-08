@@ -10,7 +10,7 @@ mri_surf2surf_rereg(
   hemi = c("lh", "rh"),
   target_subject = "fsaverage5",
   output_dir = file.path(fs_subj_dir(), subject, "label"),
-  verbose = TRUE
+  verbose = get_verbose()
 )
 }
 \arguments{
@@ -20,20 +20,16 @@ mri_surf2surf_rereg(
 
 \item{hemi}{hemisphere (one of "lh" or "rh")}
 
-\item{target_subject}{subject to re-register the annotation (default fsaverage5)}
+\item{target_subject}{subject to re-register the annotation
+(default fsaverage5)}
 
 \item{output_dir}{Directory to store intermediate files (screenshots, masks,
 contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 
-\item{verbose}{Control verbosity. If not specified, uses the value from
-\code{options("ggsegExtra.verbosity")} or the \code{GGSEGEXTRA_VERBOSITY}
-environment variable. Can be:
-\itemize{
-\item \code{TRUE} or \code{1}: Normal verbosity (default)
-\item \code{FALSE} or \code{0}: Silent
-\item \code{2}: High verbosity (includes FreeSurfer verbose output)
-Use \code{\link[=set_verbosity]{set_verbosity()}} to change the default globally.
-}}
+\item{verbose}{Logical. If not specified, uses the value from
+\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+environment variable. Defaults to \code{TRUE}.
+Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
 }
 \value{
 nothing

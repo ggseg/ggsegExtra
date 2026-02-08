@@ -65,7 +65,10 @@ describe("install_ggseg_atlas_all", {
 
     local_mocked_bindings(
       ggseg_atlas_repos = function(...) {
-        data.frame(Package = c("pkg1", "pkg2", "pkg3"), stringsAsFactors = FALSE)
+        data.frame(
+          Package = c("pkg1", "pkg2", "pkg3"),
+          stringsAsFactors = FALSE
+        )
       },
       install.packages = function(pkgs, repos, ...) {
         install_calls <<- list(pkgs = pkgs, repos = repos)

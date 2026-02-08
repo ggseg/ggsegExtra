@@ -15,7 +15,7 @@ snapshot_volume_slice(
   colour = "red",
   width = 400,
   height = 400,
-  skip_existing = TRUE
+  skip_existing = get_skip_existing()
 )
 }
 \arguments{
