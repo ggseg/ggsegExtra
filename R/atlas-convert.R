@@ -87,6 +87,8 @@ unify_legacy_atlases <- function(
     cli::cli_abort("{.arg atlas_3d} must have a {.field ggseg_3d} column.")
   }
 
+  original_palette <- if (has_2d) atlas_2d$palette else NULL
+
   if (has_2d && is.null(atlas_2d$core)) {
     atlas_2d <- ggseg.formats::convert_legacy_brain_atlas(atlas_2d)
   }
@@ -158,23 +160,43 @@ unify_legacy_atlases <- function(
         }
       })
     } else if (type == "cortical") {
-      cli::cli_warn(c(
-        "Legacy 3D atlas does not contain vertex indices.",
-        "i" = "Set {.code compute_vertices = TRUE} to compute indices.",
-        "i" = "For best results, recreate with {.fn create_cortical_atlas}."
-      ))
-      vertices_df <- make_empty_vertices_df(core$label)
+      vertices_list <- infer_vertices_from_meshes(atlas_3d, surface = surface)
+      if (!is.null(vertices_list)) {
+        vertices_df <- data.frame(
+          label = names(vertices_list), stringsAsFactors = FALSE
+        )
+        vertices_df$vertices <- unname(vertices_list)
+        cli::cli_inform(c(
+          "i" = "Inferred vertex indices from mesh coordinates."
+        ))
+      } else {
+        cli::cli_warn(c(
+          "Could not infer vertex indices from mesh data.",
+          "i" = "Set {.code compute_vertices = TRUE} to compute from FreeSurfer.",
+          "i" = "For best results, recreate with {.fn create_cortical_atlas}."
+        ))
+        if (is.null(sf_data)) {
+          cli::cli_abort(c(
+            "Cannot create cortical atlas without vertex indices or 2D geometry.",
+            "i" = "Provide a 2D atlas or set {.code compute_vertices = TRUE}."
+          ))
+        }
+      }
     }
   } else if (has_2d && !is.null(atlas_2d$data$vertices) &&
                "vertices" %in% names(atlas_2d$data$vertices)) {
     vertices_df <- atlas_2d$data$vertices
     cli::cli_inform(c("i" = "Using existing vertex data from 2D atlas."))
   } else {
-    vertices_df <- make_empty_vertices_df(core$label)
+    vertices_df <- NULL
     cli::cli_inform(c(
       "i" = "Created atlas from 2D only.",
       "i" = "3D rendering will not be available without vertex data."
     ))
+  }
+
+  if (is.null(palette) || !any(names(palette) %in% core$label)) {
+    palette <- remap_palette_to_labels(original_palette, core)
   }
 
   data <- switch(
@@ -224,12 +246,19 @@ has_vertex_data <- function(dt) {
 }
 
 
-#' Create empty vertices data frame
+#' Remap region-keyed palette to label-keyed palette
 #' @noRd
-make_empty_vertices_df <- function(labels) {
-  df <- data.frame(label = labels, stringsAsFactors = FALSE)
-  df$vertices <- lapply(seq_len(nrow(df)), function(x) integer(0))
-  df
+remap_palette_to_labels <- function(palette, core) {
+  if (is.null(palette)) return(NULL)
+
+  new_palette <- character(0)
+  for (region_name in names(palette)) {
+    labels <- core$label[!is.na(core$region) & core$region == region_name]
+    for (lbl in labels) {
+      new_palette[lbl] <- unname(palette[region_name])
+    }
+  }
+  if (length(new_palette) == 0) NULL else new_palette
 }
 
 
@@ -352,20 +381,77 @@ match_vertices <- function(region_coords, brain_coords, tolerance = 1e-4) {
 }
 
 
-## quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c(
-    "roi",
-    ".subid",
-    "color",
-    ".lat",
-    ".long",
-    ".id",
-    "mesh",
-    "filenm",
-    "colour",
-    "tmp_dt",
-    "ggseg",
-    "ggseg_3d"
-  ))
+#' Infer vertex indices by matching mesh coordinates to brain surface
+#'
+#' @description
+#' Hash-based O(n+m) matching that rounds coordinates to 4 decimal places
+#' and uses named vector lookup. Interpolated triangulation vertices that
+#' don't match exactly are silently skipped.
+#'
+#' @param atlas_3d A `ggseg3d_atlas` with mesh data.
+#' @param surface Which surface to match against (default `"inflated"`).
+#' @param brain_meshes Brain mesh data to match against. If NULL, attempts
+#'   to load from ggseg3d package.
+#' @return Named list of integer vertex indices (0-based) keyed by label,
+#'   or NULL if brain_meshes unavailable.
+#' @keywords internal
+infer_vertices_from_meshes <- function(atlas_3d, surface = "inflated",
+                                       brain_meshes = NULL) {
+  if (is.null(brain_meshes)) {
+    brain_meshes <- tryCatch(
+      get("brain_meshes", envir = asNamespace("ggseg3d")),
+      error = function(e) NULL
+    )
+  }
+  if (is.null(brain_meshes)) return(NULL)
+
+  hemi_map <- c("left" = "lh", "right" = "rh")
+  vertices_list <- list()
+
+  for (hemi in c("left", "right")) {
+    hemi_short <- hemi_map[hemi]
+    mesh_name <- paste0(hemi_short, "_", surface)
+    brain_mesh <- brain_meshes[[mesh_name]]
+    if (is.null(brain_mesh)) next
+
+    brain_coords <- as.matrix(brain_mesh$vertices)
+    brain_keys <- paste(
+      round(brain_coords[, 1], 4),
+      round(brain_coords[, 2], 4),
+      round(brain_coords[, 3], 4)
+    )
+    brain_index <- stats::setNames(seq_len(nrow(brain_coords)) - 1L, brain_keys)
+
+    row_idx <- which(atlas_3d$hemi == hemi & atlas_3d$surf == surface)
+    if (length(row_idx) == 0) next
+
+    ggseg <- atlas_3d$ggseg_3d[[row_idx]]
+    if (!"mesh" %in% names(ggseg)) next
+
+    for (i in seq_len(nrow(ggseg))) {
+      m <- ggseg$mesh[[i]]
+      if (is.null(m)) next
+
+      if ("vb" %in% names(m)) {
+        region_coords <- cbind(m$vb[1, ], m$vb[2, ], m$vb[3, ])
+      } else if ("vertices" %in% names(m) && !is.null(m$vertices)) {
+        region_coords <- as.matrix(m$vertices)
+      } else {
+        next
+      }
+
+      region_keys <- paste(
+        round(region_coords[, 1], 4),
+        round(region_coords[, 2], 4),
+        round(region_coords[, 3], 4)
+      )
+      matched <- brain_index[region_keys]
+      matched <- unique(unname(matched[!is.na(matched)]))
+      if (length(matched) > 0) {
+        vertices_list[[ggseg$label[i]]] <- as.integer(matched)
+      }
+    }
+  }
+
+  if (length(vertices_list) == 0) NULL else vertices_list
 }

@@ -7,6 +7,9 @@ mkdir <- function(path, ...) {
 
 # Interactive preview ----
 
+is_interactive <- function() interactive()
+prompt_user <- function(msg) readline(msg)
+
 #' Preview atlas plots interactively
 #'
 #' Shows ggseg (2D) and ggseg3d (3D) plots of the atlas one at a time,
@@ -16,7 +19,7 @@ mkdir <- function(path, ...) {
 #' @return Invisible atlas
 #' @noRd
 preview_atlas <- function(atlas) {
-  if (!interactive()) {
+  if (!is_interactive()) {
     return(invisible(atlas))
   }
 
@@ -40,13 +43,13 @@ preview_atlas <- function(atlas) {
               ggseg3d::pan_camera(paste(hemi, "lateral")) |>
               ggseg3d::set_legend(show = FALSE)
             print(p3d)
-            readline(sprintf("3D %s hemisphere. Press Enter for next", hemi))
+            prompt_user(sprintf("3D %s hemisphere. Press Enter for next", hemi))
           }
         } else {
           p3d <- ggseg3d::ggseg3d(atlas = atlas) |>
             ggseg3d::set_legend(show = FALSE)
           print(p3d)
-          readline("Press Enter to continue")
+          prompt_user("3D preview. Press Enter to continue")
         }
       },
       error = function(e) NULL
@@ -54,9 +57,9 @@ preview_atlas <- function(atlas) {
   }
 
   if (has_sf) {
-    tryCatch(
+    gp <- tryCatch(
       {
-        gp <- ggplot2::ggplot() +
+        p <- ggplot2::ggplot() +
           ggseg::geom_brain(
             atlas = atlas,
             position = ggseg::position_brain(nrow = 4),
@@ -65,15 +68,20 @@ preview_atlas <- function(atlas) {
             ggplot2::aes(fill = label)
           )
         if (!is.null(atlas$palette)) {
-          gp <- gp +
+          p <- p +
             ggplot2::scale_fill_manual(values = atlas$palette)
         }
+        p
       },
       error = function(e) {
-        gp <- plot(atlas$data$sf) # nolint: object_usage_linter
+        plot(atlas$data$sf)
+        NULL
       }
     )
-    print(gp)
+    if (!is.null(gp)) {
+      print(gp)
+      prompt_user("2D preview. Press Enter to continue")
+    }
   }
   invisible(atlas)
 }

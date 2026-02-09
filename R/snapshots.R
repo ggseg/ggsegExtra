@@ -553,10 +553,3 @@ snapshot_partial_projection <- function(
 }
 
 
-## quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c(
-    "view",
-    "view_type"
-  ))
-}

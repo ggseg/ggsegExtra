@@ -551,16 +551,3 @@ default_subcortical_views <- function(dims) {
 }
 
 
-## quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c(
-    "lab",
-    "data",
-    "file",
-    "roi",
-    "mni_x",
-    "mni_y",
-    "mni_z",
-    "view_type"
-  ))
-}

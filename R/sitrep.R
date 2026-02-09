@@ -21,6 +21,7 @@ setup_sitrep <- function(detail = c("simple", "full")) {
   results$freesurfer <- check_freesurfer(detail)
   results$system <- check_other_system_deps(detail)
   results$fsaverage <- check_fsaverage(detail)
+  results$options <- check_pipeline_options(detail)
 
   cli::cli_text("")
   summarize_sitrep(results, detail)
@@ -100,6 +101,41 @@ check_fsaverage <- function(detail = "simple") {
   }
 
   results
+}
+
+
+check_pipeline_options <- function(detail = "simple") {
+  opts <- list(
+    verbose = get_verbose(),
+    cleanup = get_cleanup(),
+    skip_existing = get_skip_existing(),
+    tolerance = get_tolerance(),
+    smoothness = get_smoothness(),
+    output_dir = get_output_dir()
+  )
+
+  cli::cli_h3("Pipeline options")
+  cli::cli_dl(c(
+    verbose = "{opts$verbose}",
+    cleanup = "{opts$cleanup}",
+    skip_existing = "{opts$skip_existing}",
+    tolerance = "{opts$tolerance}",
+    smoothness = "{opts$smoothness}",
+    output_dir = "{.path {opts$output_dir}}"
+  ))
+
+  if (detail == "full") {
+    cli::cli_text("")
+    cli::cli_bullets(c(
+      "i" = paste(
+        "Set via {.code options(ggsegExtra.<name> = value)} or",
+        "environment variables {.envvar GGSEGEXTRA_<NAME>}"
+      ),
+      "i" = "See {.code vignette(\"pipeline-configuration\")} for details"
+    ))
+  }
+
+  opts
 }
 
 

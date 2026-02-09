@@ -574,7 +574,7 @@ create_atlas_from_labels <- function(
     read_fn = function() {
       labels_read_files(label_files, region_names, colours, default_colours)
     },
-    step_label = "1/8 Reading {length(label_files)} label files",
+    step_label = paste("1/8 Reading", length(label_files), "label files"),
     cache_label = "Step 1 (Read labels)"
   )
 
@@ -739,10 +739,3 @@ labels_region_snapshots <- function(
 }
 
 
-## quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c(
-    "vertices",
-    "filenm"
-  ))
-}
