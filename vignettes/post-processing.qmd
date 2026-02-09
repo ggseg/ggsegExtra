@@ -1,0 +1,222 @@
+---
+title: "Post-processing atlases"
+format: html
+vignette: >
+  %\VignetteIndexEntry{Post-processing atlases}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggsegExtra)
+```
+
+Raw atlases come with everything: white matter, ventricles, unknown labels, cortex outlines, and views that may not show your structures well.
+The `atlas_region_*` and `atlas_view_*` families from ggseg.formats let you curate an atlas without rebuilding from scratch.
+
+This vignette walks through the post-processing toolkit.
+
+## Inspecting an atlas
+
+Before changing anything, understand what you have:
+
+```{r}
+#| label: inspect
+#| eval: false
+library(ggseg.formats)
+
+brain_labels(atlas)
+
+brain_regions(atlas)
+
+brain_views(atlas)
+
+atlas_sf(atlas)
+
+atlas_meshes(atlas)
+```
+
+`brain_labels()` returns the annotation-level identifiers.
+`brain_regions()` returns the display names stored in `$core`.
+`brain_views()` lists the available 2D views.
+
+## Removing regions
+
+The most common post-processing step is removing structures you don't need.
+`atlas_region_remove()` matches against labels by default:
+
+```{r}
+#| label: remove
+#| eval: false
+atlas <- atlas |>
+  atlas_region_remove("White-Matter") |>
+  atlas_region_remove("WM-hypointensities") |>
+  atlas_region_remove("-Ventricle") |>
+  atlas_region_remove("-Vent$") |>
+  atlas_region_remove("CSF")
+```
+
+Patterns are regular expressions, so `-Vent$` matches "3rd-Vent" and "4th-Vent" but not "Ventral-DC".
+
+This removes the region from `$core`, `$palette`, and all geometry data.
+
+## Keeping regions
+
+The inverse operation --- keep only regions that match:
+
+```{r}
+#| label: keep
+#| eval: false
+atlas <- atlas |>
+  atlas_region_keep("Thalamus|Caudate|Putamen|Pallidum")
+```
+
+Everything that doesn't match gets dropped.
+
+## Context regions
+
+Some regions work better as background outlines than as filled areas.
+The cerebral cortex in a subcortical atlas is the classic example --- you want to see where it is for spatial reference, but you don't want it competing with the subcortical structures for colour.
+
+`atlas_region_contextual()` keeps the geometry in `$data$sf` but removes the region from `$core`.
+The region renders as an outline, not a filled polygon:
+
+```{r}
+#| label: contextual
+#| eval: false
+atlas <- atlas |>
+  atlas_region_contextual("cortex", match_on = "label") |>
+  atlas_region_contextual("unknown", match_on = "label") |>
+  atlas_region_contextual("corpuscallosum", match_on = "label")
+```
+
+The `match_on` parameter controls whether patterns match against `label` (annotation identifiers) or `region` (display names).
+
+## Renaming regions
+
+Clean up technical labels for publication-ready plots:
+
+```{r}
+#| label: rename
+#| eval: false
+atlas <- atlas |>
+  atlas_region_rename("Left-", "", match_on = "region") |>
+  atlas_region_rename("Right-", "", match_on = "region") |>
+  atlas_region_rename("-", " ", match_on = "region")
+```
+
+## Adding metadata columns
+
+Join external data to the atlas core:
+
+```{r}
+#| label: core-add
+#| eval: false
+metadata <- data.frame(
+  region = c("thalamus", "caudate", "putamen"),
+  structure = c("diencephalon", "basal ganglia", "basal ganglia")
+)
+
+atlas <- atlas |>
+  atlas_core_add(metadata, by = "region")
+```
+
+This merges new columns into `$core` via a left join.
+
+## View management
+
+### Keeping specific views
+
+```{r}
+#| label: view-keep
+#| eval: false
+atlas <- atlas |>
+  atlas_view_keep("axial_3|axial_5|coronal_2|sagittal")
+```
+
+### Removing views
+
+```{r}
+#| label: view-remove
+#| eval: false
+atlas <- atlas |>
+  atlas_view_remove("axial_1|axial_2")
+```
+
+### Reordering views
+
+```{r}
+#| label: view-reorder
+#| eval: false
+atlas <- atlas |>
+  atlas_view_reorder(c("sagittal_left", "sagittal_right", "coronal_3", "axial_4"))
+```
+
+## Removing small regions from views
+
+After filtering views, some regions may appear as tiny slivers that add clutter without information.
+Remove them by minimum area:
+
+```{r}
+#| label: remove-small
+#| eval: false
+atlas <- atlas |>
+  atlas_view_remove_region_small(min_area = 500, views = c("axial", "coronal")) |>
+  atlas_view_remove_region_small(min_area = 50)
+```
+
+The first call targets specific view types with a higher threshold.
+The second call applies a lower threshold across all views.
+
+## Gathering views
+
+Raw atlas views often have large gaps between panels.
+`atlas_view_gather()` repositions views into a compact layout:
+
+```{r}
+#| label: gather
+#| eval: false
+atlas <- atlas |>
+  atlas_view_gather()
+```
+
+This is typically the last step before saving.
+
+## Rebuilding the atlas
+
+After modifying components directly (e.g., editing `$core` by hand), reconstruct the atlas to ensure consistency:
+
+```{r}
+#| label: rebuild
+#| eval: false
+atlas <- brain_atlas(
+  atlas = atlas$atlas,
+  type = atlas$type,
+  palette = atlas$palette,
+  core = modified_core,
+  data = atlas$data
+)
+```
+
+The constructor validates that core, palette, and geometry data are consistent.
+
+## Putting it together
+
+A typical post-processing pipeline for a subcortical atlas:
+
+```{r}
+#| label: full-pipeline
+#| eval: false
+atlas <- atlas_raw |>
+  atlas_region_remove("White-Matter", match_on = "label") |>
+  atlas_region_remove("-Ventricle", match_on = "label") |>
+  atlas_region_remove("CSF", match_on = "label") |>
+  atlas_region_contextual("Cortex", match_on = "label") |>
+  atlas_view_keep("axial_3|axial_5|coronal_3|sagittal") |>
+  atlas_view_remove_region_small(min_area = 100) |>
+  atlas_view_gather()
+```
+
+Each step is a pure transformation --- pipe them together, inspect the result, adjust as needed.

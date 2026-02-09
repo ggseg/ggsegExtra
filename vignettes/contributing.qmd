@@ -1,20 +1,15 @@
 ---
-title: "Contributing: prepare a repository for the atlas"
-output: rmarkdown::html_vignette
+title: "Contributing an atlas package"
+format: html
 vignette: >
-  %\VignetteIndexEntry{Contributing: prepare a repository for the atlas}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Contributing an atlas package}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
-)
 library(ggsegExtra)
 ```
 
@@ -56,8 +51,7 @@ Place your atlas files as `.rda` files in the `data/` folder.
 The data object must have the same name as the file.
 
 For example, `cc200.rda` should load an object called `cc200` using `load("data/cc200.rda")`.
-The object should be a valid ggseg-atlas (check with `is_ggseg_atlas()` and `as_ggseg_atlas()`).
-Likewise, `cc200_3d.rda` should load `cc200_3d` and contain a valid ggseg3d-atlas.
+The object should be a valid `brain_atlas` (check with `is_brain_atlas()`).
 
 Adapt the atlas documentation in `R/cc200.R` to match your atlas.
 Take particular care with the reference to the original paper introducing the parcellation.
@@ -68,13 +62,14 @@ Once data is added and references fixed, run the tests:
 
 ```{r}
 #| label: run-tests
+#| eval: false
 devtools::test()
 ```
 
 There will likely be failures.
 Try to resolve them by reading the error messages.
 
-**Common things to check:**
+Common things to check:
 
 - If you only have a 2D or 3D atlas, comment out test sections that refer to the atlas type you're not including.
 - If you have a ggseg-atlas, the tests check for a palette matching `atlas$region`.
@@ -91,6 +86,7 @@ Once all tests pass, run package checks:
 
 ```{r}
 #| label: run-check
+#| eval: false
 devtools::check()
 ```
 
@@ -98,10 +94,8 @@ This attempts to build your package and verify everything works.
 
 Read error messages carefully and try to resolve them.
 
-**Common things to check:**
+Common things to check:
 
-- If you only included one atlas type (ggseg or ggseg3d), remove the unneeded atlas from `data/atlas.rda`.
-  That file contains information for both atlas types and will fail if only one is present.
 - If you haven't added a license, try `usethis::use_mit_license("Your Name Here")`.
 
 If everything passes, push to your remote repository.
@@ -169,6 +163,7 @@ Users can then install your atlas with:
 
 ```{r}
 #| label: install-example
+#| eval: false
 install.packages("yourpackage", repos = "https://ggseg.r-universe.dev")
 ```
 
@@ -176,6 +171,7 @@ Or use the ggsegExtra helper:
 
 ```{r}
 #| label: install-helper
+#| eval: false
 ggseg_atlas_repos("yourpackage")
 install_ggseg_atlas("yourpackage")
 ```

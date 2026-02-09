@@ -1,0 +1,221 @@
+---
+title: "Tutorial: Creating a cortical atlas"
+format: html
+---
+
+```{r}
+#| label: setup
+#| include: false
+can_run <- set_tutorial_options()
+```
+
+Cortical parcellations divide the brain surface into labelled regions.
+They come from FreeSurfer annotation files, where each vertex on the cortical mesh is assigned to a region like "superior frontal gyrus" or "precuneus."
+
+This tutorial walks through the full pipeline for turning an annotation into a `brain_atlas` you can plot with ggseg and ggseg3d.
+We'll use the Yeo 7-network parcellation as a working example --- it has only 7 regions per hemisphere, so the pipeline runs quickly.
+
+## What you need
+
+- FreeSurfer installed with the `fsaverage5` subject
+- ImageMagick for 2D geometry extraction
+- Chrome/Chromium for 3D screenshots
+
+```{r}
+#| label: load-libraries
+#| eval: !expr can_run
+library(ggsegExtra)
+library(ggseg.formats)
+library(dplyr)
+```
+
+## Locating annotation files
+
+FreeSurfer stores annotation files alongside the subject's surface data.
+You need the full paths to the `lh.` and `rh.` annotation files:
+
+```{r}
+#| label: setup-paths
+#| eval: !expr can_run
+fs_dir <- freesurfer::fs_dir()
+subjects_dir <- file.path(fs_dir, "subjects")
+
+annot_files <- file.path(
+  subjects_dir, "fsaverage5", "label",
+  c("lh.Yeo2011_7Networks_N1000.annot",
+    "rh.Yeo2011_7Networks_N1000.annot")
+)
+
+all(file.exists(annot_files))
+```
+
+## Step 1: 3D-only atlas for fast iteration
+
+Before committing to the full 2D extraction pipeline, verify your annotation looks right with a 3D-only atlas.
+This reads the annotation file, extracts vertex assignments, and returns in seconds:
+
+```{r}
+#| label: 3d-only
+#| eval: !expr can_run
+yeo7_3d <- create_cortical_atlas(
+  input_annot = annot_files,
+  atlas_name = "yeo7",
+  steps = 1
+)
+
+yeo7_3d
+```
+
+`steps = 1` tells the pipeline to stop after reading annotation data.
+The result works with ggseg3d but has no 2D geometry yet.
+
+## Step 2: Full pipeline with 2D geometry
+
+The full pipeline takes screenshots of each region from multiple view angles, extracts contours, and converts them to sf polygons.
+This is the slow part --- it needs FreeSurfer, Chrome, and ImageMagick:
+
+```{r}
+#| label: full-pipeline
+#| eval: !expr can_run
+output_dir <- file.path(tempdir(), "yeo7_tutorial")
+
+yeo7_raw <- create_cortical_atlas(
+  input_annot = annot_files,
+  atlas_name = "yeo7",
+  output_dir = output_dir,
+  tolerance = 1,
+  smoothness = 2,
+  skip_existing = TRUE,
+  cleanup = FALSE,
+  verbose = TRUE
+)
+
+yeo7_raw
+```
+
+A few things to note about the parameters:
+
+- **`tolerance`** controls vertex reduction in the output polygons. Higher values mean simpler polygons with fewer vertices.
+- **`smoothness`** controls contour smoothing. Higher values produce rounder edges.
+- **`cleanup = FALSE`** keeps intermediate files (screenshots, contour images) so you can re-run later steps without redoing the slow screenshot capture.
+- **`skip_existing = TRUE`** reuses existing intermediate files when resuming an interrupted run.
+
+## Step 3: Post-processing
+
+The raw atlas contains every region from the annotation, including labels like "unknown" and "corpuscallosum" that you typically want as background outlines rather than filled regions.
+
+`atlas_region_contextual()` keeps the geometry for spatial reference but removes the region from `$core`, so it renders as an outline:
+
+```{r}
+#| label: post-process
+#| eval: !expr can_run
+yeo7_raw <- yeo7_raw |>
+  atlas_region_contextual("cortex", match_on = "label") |>
+  atlas_region_contextual("unknown", match_on = "label") |>
+  atlas_region_contextual("corpuscallosum", match_on = "label") |>
+  atlas_region_contextual("FreeSurfer_Defined_Medial_Wall", match_on = "label")
+```
+
+Gather views into a compact layout:
+
+```{r}
+#| label: gather-views
+#| eval: !expr can_run
+yeo7_raw <- yeo7_raw |>
+  atlas_view_gather()
+```
+
+## Step 4: Adding metadata
+
+The raw atlas has region names derived from the annotation file.
+For the Yeo atlas, the annotation labels are numeric network IDs.
+We can map them to descriptive network names:
+
+```{r}
+#| label: metadata
+#| eval: !expr can_run
+yeo7_metadata <- data.frame(
+  label = c(
+    "7Networks_1", "7Networks_2", "7Networks_3", "7Networks_4",
+    "7Networks_5", "7Networks_6", "7Networks_7"
+  ),
+  region_pretty = c(
+    "visual", "somatomotor", "dorsal attention",
+    "ventral attention", "limbic", "frontoparietal", "default"
+  )
+)
+
+core_with_meta <- yeo7_raw$core |>
+  left_join(yeo7_metadata, by = "label") |>
+  mutate(region = coalesce(region_pretty, region)) |>
+  select(hemi, region, label)
+```
+
+## Step 5: Rebuilding the atlas
+
+Construct the final atlas from the modified core:
+
+```{r}
+#| label: rebuild
+#| eval: !expr can_run
+yeo7 <- brain_atlas(
+  atlas = yeo7_raw$atlas,
+  type = yeo7_raw$type,
+  palette = yeo7_raw$palette,
+  core = core_with_meta,
+  data = yeo7_raw$data
+)
+
+yeo7
+```
+
+```{r}
+#| label: inspect
+#| eval: !expr can_run
+brain_regions(yeo7) |> sort()
+```
+
+## Applying the same pattern to larger atlases
+
+The Yeo 7-network atlas runs in minutes because it has few regions.
+Larger atlases like aparc (34 regions/hemisphere) or aparc.a2009s (75 regions/hemisphere) take longer but follow the same pattern.
+Enable parallel processing before running:
+
+```{r}
+#| label: parallel
+#| eval: false
+library(future)
+plan(multisession, workers = 4)
+
+library(progressr)
+handlers("cli")
+handlers(global = TRUE)
+
+dk_annots <- file.path(
+  subjects_dir, "fsaverage5", "label",
+  c("lh.aparc.annot", "rh.aparc.annot")
+)
+
+dk <- create_cortical_atlas(
+  input_annot = dk_annots,
+  atlas_name = "dk",
+  output_dir = "data-raw"
+)
+
+plan(sequential)
+```
+
+The screenshot and contour extraction steps parallelize across regions, so more workers means faster completion --- up to a point.
+Four workers is a reasonable default for most machines.
+
+## Saving
+
+Once you're satisfied with the atlas, save it as package data:
+
+```{r}
+#| label: save
+#| eval: false
+usethis::use_data(yeo7, overwrite = TRUE, compress = "xz")
+```
+
+The `compress = "xz"` flag gives the best compression for sf geometry data.

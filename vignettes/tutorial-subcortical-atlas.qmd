@@ -1,0 +1,672 @@
+---
+title: "Tutorial: Creating a subcortical atlas"
+format: html
+---
+
+
+
+Subcortical atlases represent the structures beneath the cortical surface: thalamus, hippocampus, amygdala, caudate, putamen, and others.
+They come from volumetric segmentations like FreeSurfer's `aseg.mgz`, where each voxel is assigned a label.
+
+The pipeline tessellates labelled voxel regions into 3D meshes and (optionally) creates 2D projection views that collapse a slab of the volume onto a single plane.
+
+This tutorial recreates the aseg atlas --- the same pipeline behind `data-raw/make_aseg_atlas.R` in ggseg.formats.
+
+## What you need
+
+- FreeSurfer installed with the `fsaverage5` subject
+- ImageMagick for 2D geometry extraction
+- Chrome/Chromium for 3D screenshots
+
+
+``` r
+library(ggsegExtra)
+library(ggseg.formats)
+library(dplyr)
+```
+
+
+``` r
+fs_dir <- freesurfer::fs_dir()
+subjects_dir <- file.path(fs_dir, "subjects")
+
+aseg_volume <- file.path(subjects_dir, "fsaverage5", "mri", "aseg.mgz")
+color_lut <- file.path(fs_dir, "ASegStatsLUT.txt")
+
+if (!file.exists(color_lut)) {
+  color_lut <- file.path(fs_dir, "FreeSurferColorLUT.txt")
+}
+```
+
+## Creating the atlas
+
+`create_subcortical_atlas()` takes a segmentation volume and a colour lookup table.
+The pipeline tessellates each labelled region into a 3D mesh, then creates 2D projection views:
+
+
+``` r
+aseg_raw <- create_subcortical_atlas(
+  input_volume = aseg_volume,
+  input_lut = color_lut,
+  atlas_name = "aseg"
+)
+#> 
+#> ── Creating subcortical atlas "aseg" ───────────────────────────────────────────
+#> ℹ Volume: '/Applications/freesurfer/7.4.1/subjects/fsaverage5/mri/aseg.mgz'
+#> ℹ Color LUT: '/Applications/freesurfer/7.4.1/ASegStatsLUT.txt'
+#> ℹ Setting output directory to '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7'
+#> ℹ 1/9 Extracting labels from volume
+#> ✔ Found 43 subcortical structures
+#> ℹ 1/9 Extracting labels from volume✔ 1/9 Extracting labels from volume [3.4s]
+#> 
+#> ℹ 2/9 Creating meshes for each structure
+#> → Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0002_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0002_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0002_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0003_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0003_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0003_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0004_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0004_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0004_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0005_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0005_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0005_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0007_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0007_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0007_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0008_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0008_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0008_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0010_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0010_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0010_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0011_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0011_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0011_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0012_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0012_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0012_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0013_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0013_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0013_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0014_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0014_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0014_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0015_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0015_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0015_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0016_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0016_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0016_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0017_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0017_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0017_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0018_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0018_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0018_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0024_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0024_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0024_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0026_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0026_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0026_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0028_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0028_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0028_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0030_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0030_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0030_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0031_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0031_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0031_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0041_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0041_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0041_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0042_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0042_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0042_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0043_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0043_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0043_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0044_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0044_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0044_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0046_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0046_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0046_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0047_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0047_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0047_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0049_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0049_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0049_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0050_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0050_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0050_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0051_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0051_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0051_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0052_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0052_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0052_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0053_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0053_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0053_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0054_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0054_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0054_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0058_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0058_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0058_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0060_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0060_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0060_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0062_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0062_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0062_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0063_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0063_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0063_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0077_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0077_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0077_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0085_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0085_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0085_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0251_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0251_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0251_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0252_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0252_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0252_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0253_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0253_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0253_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0254_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0254_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0254_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure→ Saving '/private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0255_smooth.dpv'
+#> ℹ 2/9 Creating meshes for each structuresource '/Applications/freesurfer/7.4.1/FreeSurferEnv.sh' || true ; mris_convert  /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0255_smooth /private/var/folders/y5/zlbbcqn56gx1tcg6xfb425100000gp/T/RtmpuOHgz7/aseg/meshes/0255_smooth.asc
+#> ℹ 2/9 Creating meshes for each structure✔ Created 43 meshes
+#> ℹ 2/9 Creating meshes for each structure✔ 2/9 Creating meshes for each structure [2m 33.1s]
+#> 
+#> ℹ 3/9 Building atlas data
+#> ✔ 3/9 Building atlas data [2.8s]
+#> 
+#> ℹ 4/9 Creating projection snapshots
+#> ✔ 4/9 Creating projection snapshots [57.8s]
+#> 
+#> ℹ 5/9 Processing images
+#> ✔ 5/9 Processing images [10.4s]
+#> 
+#> ℹ 6/9 Extracting contours
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> Warning: [rast] unknown extent
+#> ✔ 6/9 Extracting contours [6.9s]
+#> 
+#> ℹ 7/9 Smoothing contours (smoothness = 5)
+#> ✔ 7/9 Smoothing contours (smoothness = 5) [2.8s]
+#> 
+#> ℹ 8/9 Reducing vertices (tolerance = 1)
+#> ✔ 8/9 Reducing vertices (tolerance = 1) [565ms]
+#> 
+#> ℹ 9/9 Building final atlas
+#> ✔ 9/9 Building final atlas [1s]
+#> 
+#> ✔ Temporary files removed
+#> ✔ Subcortical atlas created with 43 structures
+#> ℹ Pipeline completed in 4 minutes
+#> Warning: Atlas has 11049 vertices (threshold: 10000)
+#> ℹ Large atlases may be slow to plot and increase package size
+#> ℹ Re-run with higher `tolerance` to reduce vertices
+
+aseg_raw
+#> 
+#> ── aseg ggseg atlas ────────────────────────────────────────────────────────────
+#> Type: subcortical
+#> Regions: 27
+#> Hemispheres: left, NA, right
+#> Views: axial_1, axial_2, axial_3, axial_4, axial_5, axial_6, axial_7,
+#> coronal_1, coronal_2, coronal_3, coronal_4, coronal_5, sagittal
+#> Palette: ✔
+#> Rendering: ✔ ggseg
+#> ✔ ggseg3d (meshes)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> # A tibble: 43 × 3
+#>    hemi  region                  label                       
+#>    <chr> <chr>                   <chr>                       
+#>  1 left  cerebral white matter   Left-Cerebral-White-Matter  
+#>  2 left  cerebral cortex         Left-Cerebral-Cortex        
+#>  3 left  lateral ventricle       Left-Lateral-Ventricle      
+#>  4 left  inf lat vent            Left-Inf-Lat-Vent           
+#>  5 left  cerebellum white matter Left-Cerebellum-White-Matter
+#>  6 left  cerebellum cortex       Left-Cerebellum-Cortex      
+#>  7 left  thalamus                Left-Thalamus               
+#>  8 left  caudate                 Left-Caudate                
+#>  9 left  putamen                 Left-Putamen                
+#> 10 left  pallidum                Left-Pallidum               
+#> # ℹ 33 more rows
+```
+
+The default pipeline creates six projection views focused on the subcortical range:
+axial inferior, axial superior, coronal posterior, coronal anterior, sagittal left, and sagittal right.
+Each view collapses a slab of the volume onto a single plane, giving you spatial context without the complexity of individual slices.
+
+## Removing unwanted regions
+
+The aseg segmentation contains everything --- cortex, white matter, ventricles, CSF.
+For a subcortical atlas, most of these are noise.
+Remove them:
+
+
+``` r
+aseg_raw <- aseg_raw |>
+  atlas_region_remove("White-Matter", match_on = "label") |>
+  atlas_region_remove("WM-hypointensities", match_on = "label") |>
+  atlas_region_remove("-Ventricle", match_on = "label") |>
+  atlas_region_remove("-Vent$", match_on = "label") |>
+  atlas_region_remove("CSF", match_on = "label") |>
+  atlas_region_remove("Cerebral-Cortex", match_on = "label")
+```
+
+Patterns are regular expressions, so `-Vent$` matches "3rd-Vent" and "4th-Vent" without catching "Ventral-DC."
+
+## Setting context regions
+
+The cortex works well as a background outline --- it shows where subcortical structures sit relative to the brain surface without competing for colour:
+
+
+``` r
+aseg_raw <- aseg_raw |>
+  atlas_region_contextual("Cortex", match_on = "label")
+```
+
+## Selecting views
+
+Not all projection views are equally useful.
+Keep the ones that show your structures best:
+
+
+``` r
+aseg_raw <- aseg_raw |>
+  atlas_view_keep("axial_3|axial_5|coronal_2|coronal_3|coronal_4|sagittal")
+```
+
+## Cleaning up the layout
+
+Gather views into a compact arrangement:
+
+
+``` r
+aseg_raw <- aseg_raw |>
+  atlas_view_gather()
+```
+
+## Adding metadata
+
+The raw labels are technical identifiers like "Left-Thalamus-Proper."
+Join human-readable names and structural groupings:
+
+
+``` r
+normalize_region <- function(x) {
+  ifelse(
+    is.na(x),
+    NA_character_,
+    x |>
+      tolower() |>
+      gsub("-", " ", x = _) |>
+      gsub("_", " ", x = _) |>
+      gsub("left |right ", "", x = _) |>
+      trimws()
+  )
+}
+
+aseg_metadata <- data.frame(
+  region = c(
+    "Thalamus-Proper", "Caudate", "Putamen", "Pallidum",
+    "Hippocampus", "Amygdala", "Accumbens-area", "VentralDC",
+    "Brain-Stem"
+  ),
+  label_pretty = c(
+    "thalamus", "caudate", "putamen", "pallidum",
+    "hippocampus", "amygdala", "nucleus accumbens", "ventral DC",
+    "brain stem"
+  ),
+  structure = c(
+    "diencephalon", "basal ganglia", "basal ganglia", "basal ganglia",
+    "limbic", "limbic", "basal ganglia", "diencephalon",
+    "brainstem"
+  )
+)
+
+core_with_meta <- aseg_raw$core |>
+  mutate(region_key = normalize_region(region)) |>
+  left_join(
+    aseg_metadata |>
+      mutate(region_key = normalize_region(region)) |>
+      select(region_key, label_pretty, structure),
+    by = "region_key"
+  ) |>
+  mutate(region = coalesce(label_pretty, region)) |>
+  select(hemi, region, label, structure)
+```
+
+## Rebuilding and saving
+
+Construct the final atlas from modified components:
+
+
+``` r
+aseg <- brain_atlas(
+  atlas = aseg_raw$atlas,
+  type = aseg_raw$type,
+  palette = aseg_raw$palette,
+  core = core_with_meta,
+  data = aseg_raw$data
+)
+
+aseg
+#> 
+#> ── aseg ggseg atlas ────────────────────────────────────────────────────────────
+#> Type: subcortical
+#> Regions: 17
+#> Hemispheres: left, NA, right
+#> Views: axial_3, axial_5, coronal_2, coronal_3, coronal_4, sagittal
+#> Palette: ✔
+#> Rendering: ✔ ggseg
+#> ✔ ggseg3d (meshes)
+#> ────────────────────────────────────────────────────────────────────────────────
+#> # A tibble: 27 × 4
+#>    hemi  region            label               structure    
+#>    <chr> <chr>             <chr>               <chr>        
+#>  1 left  thalamus          Left-Thalamus       <NA>         
+#>  2 left  caudate           Left-Caudate        basal ganglia
+#>  3 left  putamen           Left-Putamen        basal ganglia
+#>  4 left  pallidum          Left-Pallidum       basal ganglia
+#>  5 <NA>  brain stem        Brain-Stem          brainstem    
+#>  6 left  hippocampus       Left-Hippocampus    limbic       
+#>  7 left  amygdala          Left-Amygdala       limbic       
+#>  8 left  nucleus accumbens Left-Accumbens-area basal ganglia
+#>  9 left  ventral DC        Left-VentralDC      diencephalon 
+#> 10 left  vessel            Left-vessel         <NA>         
+#> # ℹ 17 more rows
+```
+
+
+``` r
+brain_labels(aseg)
+#>  [1] "Brain-Stem"           "CC_Anterior"          "CC_Central"          
+#>  [4] "CC_Mid_Anterior"      "CC_Mid_Posterior"     "CC_Posterior"        
+#>  [7] "Left-Accumbens-area"  "Left-Amygdala"        "Left-Caudate"        
+#> [10] "Left-choroid-plexus"  "Left-Hippocampus"     "Left-Pallidum"       
+#> [13] "Left-Putamen"         "Left-Thalamus"        "Left-VentralDC"      
+#> [16] "Left-vessel"          "Optic-Chiasm"         "Right-Accumbens-area"
+#> [19] "Right-Amygdala"       "Right-Caudate"        "Right-choroid-plexus"
+#> [22] "Right-Hippocampus"    "Right-Pallidum"       "Right-Putamen"       
+#> [25] "Right-Thalamus"       "Right-VentralDC"      "Right-vessel"
+
+table(aseg$core$structure)
+#> 
+#> basal ganglia     brainstem  diencephalon        limbic 
+#>             8             1             2             4
+```
+
+
+``` r
+usethis::use_data(aseg, overwrite = TRUE, compress = "xz")
+```

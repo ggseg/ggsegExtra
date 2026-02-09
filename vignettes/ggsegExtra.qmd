@@ -1,0 +1,156 @@
+---
+title: "Getting started with ggsegExtra"
+format: html
+vignette: >
+  %\VignetteIndexEntry{Getting started with ggsegExtra}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(ggsegExtra)
+```
+
+ggsegExtra does two things: it helps you find and install brain atlases that work with ggseg and ggseg3d, and it provides the tools to create your own from neuroimaging data.
+
+## Finding and installing atlases
+
+Atlases live in their own packages, distributed through the [ggseg r-universe](https://ggseg.r-universe.dev).
+Browse what's available:
+
+```{r}
+#| label: list-repos
+ggseg_atlas_repos()
+```
+
+Search by name:
+
+```{r}
+#| label: search-repos
+ggseg_atlas_repos("yeo", ignore.case = TRUE)
+```
+
+Install directly from r-universe:
+
+```{r}
+#| label: install-atlas
+#| eval: false
+install_ggseg_atlas("ggsegDKT")
+```
+
+## Plotting with ggseg (2D)
+
+Once installed, atlases work directly with ggseg:
+
+```{r}
+#| label: ggseg-example
+#| eval: false
+library(ggplot2)
+library(ggseg)
+library(ggsegDKT)
+
+ggplot() +
+  geom_brain(atlas = dkt)
+```
+
+Most atlases include colour palettes from their original publications:
+
+```{r}
+#| label: ggseg-scale
+#| eval: false
+ggplot() +
+  geom_brain(atlas = dkt) +
+  scale_fill_brain("dkt", package = "ggsegDKT")
+```
+
+## Plotting with ggseg3d (3D)
+
+The same atlas works with ggseg3d for interactive 3D visualisation:
+
+```{r}
+#| label: ggseg3d-example
+#| eval: false
+library(ggseg3d)
+
+ggseg3d(atlas = dkt) |>
+  pan_camera("right lateral")
+```
+
+One atlas, both packages.
+
+## Creating your own atlases
+
+ggsegExtra provides four functions to create brain atlases from different neuroimaging inputs:
+
+| Function | Input | Use case |
+|----------|-------|----------|
+| `create_cortical_atlas()` | FreeSurfer annotation files | Cortical parcellations (DK, DKT, Yeo networks) |
+| `create_subcortical_atlas()` | Volumetric segmentation | Subcortical structures (thalamus, amygdala) |
+| `create_tract_atlas()` | Tractography files (TRK, TCK) | White matter tracts |
+| `create_atlas_from_labels()` | Individual label files | Custom region combinations |
+
+All four produce a `brain_atlas` object that works with both ggseg and ggseg3d.
+
+### What's inside a brain_atlas
+
+Every atlas contains:
+
+- **Core metadata** --- region names, hemisphere labels, and the mapping between region names and annotation labels.
+- **Colour palette** --- extracted from your input files or auto-generated.
+- **3D data** --- vertex indices for cortical atlases, or meshes for subcortical and tract atlases.
+- **2D geometry** (optional) --- sf polygon outlines for flat brain plots.
+
+### Fast iteration vs. full pipeline
+
+Each creation function uses a `steps` parameter to control how much of the pipeline runs.
+For cortical atlases, `steps = 1` reads the annotation and returns 3D vertex data in seconds.
+The full pipeline (`steps = 1:8`) adds 2D polygon extraction, which requires FreeSurfer and Chrome and takes longer.
+
+```{r}
+#| label: steps-example
+#| eval: false
+annot_files <- file.path(
+  freesurfer::fs_dir(), "subjects", "fsaverage5", "label",
+  c("lh.aparc.annot", "rh.aparc.annot")
+)
+
+atlas_3d_only <- create_cortical_atlas(
+  input_annot = annot_files,
+  steps = 1
+)
+
+atlas_full <- create_cortical_atlas(
+  input_annot = annot_files,
+  output_dir = "my_atlas",
+  steps = 1:8
+)
+```
+
+Start with 3D-only to verify your inputs look right, then run the full pipeline when you're ready for 2D geometry.
+
+### Post-processing
+
+Raw atlases often contain regions you don't need (white matter, ventricles, unknown labels) and views that don't show your structures well.
+The `atlas_region_*` and `atlas_view_*` helpers from ggseg.formats handle cleanup without rebuilding from scratch.
+See `vignette("post-processing")` for the full toolkit.
+
+## System requirements
+
+Creating atlases (as opposed to using pre-built ones) requires:
+
+- [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) for reading neuroimaging formats
+- [ImageMagick](https://imagemagick.org/) for 2D geometry extraction
+- Chrome or Chromium for 3D screenshots
+
+See `vignette("system-setup")` for installation details and parallel processing setup.
+
+## Tutorials
+
+The package includes step-by-step tutorials that walk through complete atlas creation pipelines:
+
+- [Cortical atlas](tutorial-cortical-atlas.html) --- from FreeSurfer annotation files
+- [Subcortical atlas](tutorial-subcortical-atlas.html) --- from volumetric segmentation
+- [Tract atlas](tutorial-tract-atlas.html) --- from tractography data
+- [Label-based atlas](tutorial-label-atlas.html) --- from individual label files
