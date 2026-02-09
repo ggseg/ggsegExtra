@@ -94,20 +94,12 @@ create_cortical_atlas <- function(
 ) {
   start_time <- Sys.time()
 
-  verbose <- is_verbose(verbose)
-  cleanup <- get_cleanup(cleanup)
-  skip_existing <- get_skip_existing(skip_existing)
-  tolerance <- get_tolerance(tolerance)
-  smoothness <- get_smoothness(smoothness)
-  output_dir <- get_output_dir(output_dir)
+  config <- validate_cortical_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, steps
+  )
 
-  max_step <- 8L
-  if (is.null(steps)) {
-    steps <- 1L:max_step
-  }
-  steps <- as.integer(steps)
-
-  if (any(steps > 1L)) {
+  if (any(config$steps > 1L)) {
     check_fs(abort = TRUE)
     check_magick()
   }
@@ -120,33 +112,26 @@ create_cortical_atlas <- function(
       gsub("\\.", "_", x = _)
   }
 
-  dirs <- setup_atlas_dirs(output_dir, atlas_name, type = "cortical")
+  dirs <- setup_atlas_dirs(config$output_dir, atlas_name, type = "cortical")
 
-  if (verbose) {
+  if (config$verbose) {
     cli::cli_h1("Creating brain atlas {.val {atlas_name}}")
     cli::cli_alert_info("Input files: {.path {input_annot}}")
-    cli::cli_alert_info("Setting output directory to {.path {output_dir}}")
+    cli::cli_alert_info(
+      "Setting output directory to {.path {config$output_dir}}"
+    )
   }
 
-  step1 <- cortical_step1(
-    dirs = dirs,
-    atlas_name = atlas_name,
-    steps = steps,
-    skip_existing = skip_existing,
-    verbose = verbose,
+  step1 <- cortical_resolve_step1(
+    config, dirs, atlas_name,
     read_fn = function() read_annotation_data(input_annot),
     step_label = "1/8 Reading annotation files",
     cache_label = "Step 1 (Read annotations)"
   )
 
-  if (max(steps) == 1L) {
-    return(cortical_early_return(
-      step1$atlas_3d,
-      step1$components,
-      dirs,
-      cleanup,
-      verbose,
-      start_time
+  if (max(config$steps) == 1L) {
+    return(cortical_finalize(
+      step1$atlas_3d, config, dirs, start_time
     ))
   }
 
@@ -157,337 +142,215 @@ create_cortical_atlas <- function(
     hemisphere = hemisphere,
     views = views,
     region_snapshot_fn = cortical_region_snapshots,
+    config = config,
     dirs = dirs,
-    steps = steps,
-    skip_existing = skip_existing,
-    tolerance = tolerance,
-    smoothness = smoothness,
-    cleanup = cleanup,
-    verbose = verbose,
     start_time = start_time
   )
 }
 
 
-# Cortical orchestrator ----
+# Cortical pipeline helpers ----
 
 #' @noRd
-cortical_step1 <- function(
-  dirs,
-  atlas_name,
-  steps,
-  skip_existing,
-  verbose,
-  read_fn,
-  step_label,
-  cache_label
+validate_cortical_config <- function(
+  output_dir, verbose, cleanup, skip_existing,
+  tolerance, smoothness, steps
 ) {
-  step1_files <- c(
+  verbose <- is_verbose(verbose)
+  cleanup <- get_cleanup(cleanup)
+  skip_existing <- get_skip_existing(skip_existing)
+  tolerance <- get_tolerance(tolerance)
+  smoothness <- get_smoothness(smoothness)
+  output_dir <- get_output_dir(output_dir)
+
+  if (is.null(steps)) steps <- 1L:8L
+  steps <- as.integer(steps)
+
+  list(
+    output_dir = output_dir,
+    verbose = verbose,
+    cleanup = cleanup,
+    skip_existing = skip_existing,
+    tolerance = tolerance,
+    smoothness = smoothness,
+    steps = steps
+  )
+}
+
+
+#' @noRd
+cortical_resolve_step1 <- function(
+  config, dirs, atlas_name, read_fn, step_label, cache_label
+) {
+  files <- c(
     file.path(dirs$base, "atlas_3d.rds"),
     file.path(dirs$base, "components.rds")
   )
-  step1 <- load_or_run_step(
-    1L,
-    steps,
-    step1_files,
-    skip_existing,
-    cache_label
+  cached <- load_or_run_step(
+    1L, config$steps, files, config$skip_existing, cache_label
   )
 
-  if (step1$run) {
-    if (verbose) {
-      cli::cli_progress_step(step_label)
-    }
-
-    atlas_data <- read_fn()
-
-    if (nrow(atlas_data) == 0) {
-      cli::cli_abort("No regions found in input files")
-    }
-
-    components <- build_atlas_components(atlas_data)
-
-    atlas_3d <- ggseg_atlas(
-      atlas = atlas_name,
-      type = "cortical",
-      palette = components$palette,
-      core = components$core,
-      data = ggseg_data_cortical(sf = NULL, vertices = components$vertices_df)
-    )
-
-    saveRDS(atlas_3d, file.path(dirs$base, "atlas_3d.rds"))
-    saveRDS(components, file.path(dirs$base, "components.rds"))
-    cli::cli_progress_done()
-  } else {
-    atlas_3d <- step1$data[["atlas_3d.rds"]]
-    components <- step1$data[["components.rds"]]
-    if (verbose) cli::cli_alert_success("1/8 Loaded existing atlas data")
+  if (!cached$run) {
+    if (config$verbose) cli::cli_alert_success("1/8 Loaded existing atlas data")
+    return(list(
+      atlas_3d = cached$data[["atlas_3d.rds"]],
+      components = cached$data[["components.rds"]]
+    ))
   }
+
+  if (config$verbose) cli::cli_progress_step(step_label)
+
+  atlas_data <- read_fn()
+  if (nrow(atlas_data) == 0) {
+    cli::cli_abort("No regions found in input files")
+  }
+
+  components <- build_atlas_components(atlas_data)
+  atlas_3d <- ggseg_atlas(
+    atlas = atlas_name,
+    type = "cortical",
+    palette = components$palette,
+    core = components$core,
+    data = ggseg_data_cortical(sf = NULL, vertices = components$vertices_df)
+  )
+
+  saveRDS(atlas_3d, file.path(dirs$base, "atlas_3d.rds"))
+  saveRDS(components, file.path(dirs$base, "components.rds"))
+  cli::cli_progress_done()
 
   list(atlas_3d = atlas_3d, components = components)
 }
 
 
 #' @noRd
-cortical_early_return <- function(
-  atlas_3d,
-  components,
-  dirs,
-  cleanup,
-  verbose,
-  start_time
+cortical_pipeline <- function(
+  atlas_3d, components, atlas_name, hemisphere, views,
+  region_snapshot_fn, config, dirs, start_time
 ) {
-  if (cleanup) {
-    unlink(dirs$base, recursive = TRUE)
+  cortical_run_snapshot_steps(
+    atlas_3d, components, hemisphere, views,
+    region_snapshot_fn, config, dirs
+  )
+
+  cortical_run_contour_steps(config, dirs)
+
+  if (8L %in% config$steps) {
+    if (config$verbose) cli::cli_progress_step("8/8 Building final atlas")
+    atlas <- cortical_assemble_full(atlas_name, components, dirs)
+    if (config$verbose) cli::cli_progress_done()
+    return(cortical_finalize(atlas, config, dirs, start_time))
   }
 
-  if (verbose) {
-    cli::cli_alert_success(
-      "3D atlas created with {nrow(components$core)} regions"
-    )
-    log_elapsed(start_time) # nolint: object_usage_linter.
-  }
-
-  atlas_3d
+  cortical_finalize(atlas_3d, config, dirs, start_time, partial = TRUE)
 }
 
 
 #' @noRd
-cortical_pipeline <- function(
-  atlas_3d,
-  components,
-  atlas_name,
-  hemisphere,
-  views,
-  region_snapshot_fn,
-  dirs,
-  steps,
-  skip_existing,
-  tolerance,
-  smoothness,
-  cleanup,
-  verbose,
-  start_time
+cortical_run_snapshot_steps <- function(
+  atlas_3d, components, hemisphere, views,
+  region_snapshot_fn, config, dirs
 ) {
-  if (2L %in% steps) {
-    if (verbose) {
+  if (2L %in% config$steps) {
+    if (config$verbose) {
       cli::cli_progress_step("2/8 Taking full brain snapshots")
     }
     cortical_brain_snapshots(
-      atlas_3d,
-      hemisphere,
-      views,
-      dirs,
-      skip_existing
+      atlas_3d, hemisphere, views, dirs, config$skip_existing
     )
-    if (verbose) cli::cli_progress_done()
+    if (config$verbose) cli::cli_progress_done()
   }
 
-  if (3L %in% steps) {
-    if (verbose) {
+  if (3L %in% config$steps) {
+    if (config$verbose) {
       cli::cli_progress_step("3/8 Taking region snapshots")
     }
     region_snapshot_fn(
-      atlas_3d,
-      components,
-      hemisphere,
-      views,
-      dirs,
-      skip_existing
+      atlas_3d, components, hemisphere, views, dirs, config$skip_existing
     )
-    if (verbose) cli::cli_progress_done()
+    if (config$verbose) cli::cli_progress_done()
   }
 
-  if (4L %in% steps) {
-    if (verbose) {
+  if (4L %in% config$steps) {
+    if (config$verbose) {
       cli::cli_progress_step("4/8 Isolating regions")
     }
-    cortical_isolate_regions(dirs, skip_existing)
-    if (verbose) cli::cli_progress_done()
+    cortical_isolate_regions(dirs, config$skip_existing)
+    if (config$verbose) cli::cli_progress_done()
   }
+}
 
-  if (5L %in% steps) {
-    extract_contours(dirs$masks, dirs$base, step = "5/8", verbose = verbose)
-  }
 
-  if (6L %in% steps) {
-    smooth_contours(dirs$base, smoothness, step = "6/8", verbose = verbose)
-  }
-
-  if (7L %in% steps) {
-    reduce_vertex(dirs$base, tolerance, step = "7/8", verbose = verbose)
-  }
-
-  if (8L %in% steps) {
-    if (verbose) {
-      cli::cli_progress_step("8/8 Building atlas data")
-    }
-
-    sf_data <- cortical_build_sf(dirs)
-
-    atlas <- ggseg_atlas(
-      atlas = atlas_name,
-      type = "cortical",
-      palette = components$palette,
-      core = components$core,
-      data = ggseg_data_cortical(
-        sf = sf_data,
-        vertices = components$vertices_df
-      )
+#' @noRd
+cortical_run_contour_steps <- function(config, dirs) {
+  if (5L %in% config$steps) {
+    extract_contours(
+      dirs$masks, dirs$base, step = "5/8", verbose = config$verbose
     )
+  }
+  if (6L %in% config$steps) {
+    smooth_contours(
+      dirs$base, config$smoothness,
+      step = "6/8", verbose = config$verbose
+    )
+  }
+  if (7L %in% config$steps) {
+    reduce_vertex(
+      dirs$base, config$tolerance,
+      step = "7/8", verbose = config$verbose
+    )
+  }
+}
 
-    cli::cli_progress_done()
-    if (cleanup) {
-      unlink(dirs$base, recursive = TRUE)
-      if (verbose) cli::cli_alert_success("Temporary files removed")
-    }
 
-    if (verbose) {
-      cli::cli_alert_success(
-        "Brain atlas created with {nrow(components$core)} regions"
-      )
-      log_elapsed(start_time) # nolint: object_usage_linter.
-    }
+#' @noRd
+cortical_assemble_full <- function(atlas_name, components, dirs) {
+  sf_data <- cortical_build_sf(dirs)
+  ggseg_atlas(
+    atlas = atlas_name,
+    type = "cortical",
+    palette = components$palette,
+    core = components$core,
+    data = ggseg_data_cortical(
+      sf = sf_data,
+      vertices = components$vertices_df
+    )
+  )
+}
 
-    warn_if_large_atlas(atlas)
-    preview_atlas(atlas)
-    return(atlas)
+
+#' @noRd
+cortical_finalize <- function(
+  atlas, config, dirs, start_time, partial = FALSE
+) {
+  if (config$cleanup && !partial) {
+    unlink(dirs$base, recursive = TRUE)
+    if (config$verbose) cli::cli_alert_success("Temporary files removed")
   }
 
-  if (verbose) {
-    cli::cli_alert_success("Completed steps {.val {steps}}")
+  if (config$verbose) {
+    if (partial) {
+      cli::cli_alert_success("Completed steps {.val {config$steps}}")
+    } else if (max(config$steps) == 1L) {
+      cli::cli_alert_success(
+        "3D atlas created with {nrow(atlas$core)} regions"
+      )
+    } else {
+      cli::cli_alert_success(
+        "Brain atlas created with {nrow(atlas$core)} regions"
+      )
+    }
     log_elapsed(start_time) # nolint: object_usage_linter.
   }
 
-  preview_atlas(atlas_3d)
-  invisible(atlas_3d)
+  if (!partial) {
+    warn_if_large_atlas(atlas)
+  }
+  preview_atlas(atlas)
+  if (partial) invisible(atlas) else atlas
 }
 
 
-# Cortical step functions ----
-
-#' @noRd
-cortical_brain_snapshots <- function(
-  atlas_3d,
-  hemisphere,
-  views,
-  dirs,
-  skip_existing
-) {
-  snapshot_grid <- expand.grid(
-    hemisphere = hemisphere,
-    view = views,
-    stringsAsFactors = FALSE
-  )
-
-  p <- progressor(steps = nrow(snapshot_grid))
-  invisible(future_pmap(
-    snapshot_grid,
-    function(hemisphere, view) {
-      snapshot_brain(
-        atlas = atlas_3d,
-        hemisphere = hemisphere,
-        view = view,
-        surface = "inflated",
-        output_dir = dirs$base,
-        skip_existing = skip_existing
-      )
-      p()
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "p")
-    )
-  ))
-}
-
-
-#' @noRd
-cortical_region_snapshots <- function(
-  atlas_3d,
-  components,
-  hemisphere,
-  views,
-  dirs,
-  skip_existing
-) {
-  region_labels <- unique(components$core$label[
-    !is.na(components$core$label)
-  ])
-
-  region_grid <- expand.grid(
-    region_label = region_labels,
-    hemisphere = hemisphere,
-    view = views,
-    stringsAsFactors = FALSE
-  )
-
-  region_grid <- region_grid[
-    (grepl("^lh_", region_grid$region_label) &
-       region_grid$hemisphere == "lh") |
-      (grepl("^rh_", region_grid$region_label) &
-         region_grid$hemisphere == "rh"),
-  ]
-
-  p <- progressor(steps = nrow(region_grid))
-  invisible(future_pmap(
-    region_grid,
-    function(region_label, hemisphere, view) {
-      snapshot_region(
-        atlas = atlas_3d,
-        region_label = region_label,
-        hemisphere = hemisphere,
-        view = view,
-        surface = "inflated",
-        output_dir = dirs$snapshots,
-        skip_existing = skip_existing
-      )
-      p()
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "p")
-    )
-  ))
-}
-
-
-#' @noRd
-cortical_isolate_regions <- function(dirs, skip_existing) {
-  ffs <- list.files(dirs$snapshots, full.names = TRUE)
-  file_grid <- data.frame(
-    input_file = ffs,
-    output_file = file.path(dirs$masks, basename(ffs)),
-    interim_file = file.path(dirs$processed, basename(ffs))
-  )
-
-  p <- progressor(steps = nrow(file_grid))
-  invisible(future_pmap(
-    file_grid,
-    function(input_file, output_file, interim_file) {
-      isolate_region(
-        input_file = input_file,
-        output_file = output_file,
-        interim_file = interim_file,
-        skip_existing = skip_existing
-      )
-      p()
-    }
-  ))
-}
-
-
-#' @noRd
-cortical_build_sf <- function(dirs) {
-  load_reduced_contours(dirs$base) |>
-    layout_cortical_views() |> # nolint: object_usage_linter.
-    group_by(view, label) |>
-    mutate(geometry = st_combine(geometry)) |>
-    ungroup() |>
-    select(label, view, geometry) |>
-    sf::st_as_sf()
-}
-
+# Label atlas creation ----
 
 #' Create brain atlas from label files
 #'
@@ -569,20 +432,12 @@ create_atlas_from_labels <- function(
 ) {
   start_time <- Sys.time()
 
-  verbose <- is_verbose(verbose)
-  cleanup <- get_cleanup(cleanup)
-  skip_existing <- get_skip_existing(skip_existing)
-  tolerance <- get_tolerance(tolerance)
-  smoothness <- get_smoothness(smoothness)
-  output_dir <- get_output_dir(output_dir)
+  config <- validate_cortical_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, steps
+  )
 
-  max_step <- 8L
-  if (is.null(steps)) {
-    steps <- 1L:max_step
-  }
-  steps <- as.integer(steps)
-
-  if (any(steps > 1L)) {
+  if (any(config$steps > 1L)) {
     check_fs(abort = TRUE)
     check_magick()
   }
@@ -601,52 +456,34 @@ create_atlas_from_labels <- function(
       gsub("\\.", "_", x = _)
   }
 
-  dirs <- setup_atlas_dirs(output_dir, atlas_name, type = "cortical")
+  dirs <- setup_atlas_dirs(config$output_dir, atlas_name, type = "cortical")
 
-  if (verbose) {
+  if (config$verbose) {
     cli::cli_h1("Creating brain atlas {.val {atlas_name}}")
     cli::cli_alert_info("Input files: {.path {label_files}}")
-    cli::cli_alert_info("Setting output directory to {.path {output_dir}}")
+    cli::cli_alert_info(
+      "Setting output directory to {.path {config$output_dir}}"
+    )
   }
 
-  region_names <- NULL
-  colours <- NULL
-
-  if (!is.null(input_lut)) {
-    lut <- if (is.character(input_lut)) read_ctab(input_lut) else input_lut
-    region_names <- lut$region
-    colours <- if ("hex" %in% names(lut)) {
-      lut$hex
-    } else if (all(c("R", "G", "B") %in% names(lut))) {
-      grDevices::rgb(lut$R, lut$G, lut$B, maxColorValue = 255)
-    } else {
-      NULL
-    }
-  }
-
+  lut_result <- parse_lut_colours(input_lut)
   default_colours <- rep(NA_character_, length(label_files))
 
-  step1 <- cortical_step1(
-    dirs = dirs,
-    atlas_name = atlas_name,
-    steps = steps,
-    skip_existing = skip_existing,
-    verbose = verbose,
+  step1 <- cortical_resolve_step1(
+    config, dirs, atlas_name,
     read_fn = function() {
-      labels_read_files(label_files, region_names, colours, default_colours)
+      labels_read_files(
+        label_files, lut_result$region_names,
+        lut_result$colours, default_colours
+      )
     },
     step_label = paste("1/8 Reading", length(label_files), "label files"),
     cache_label = "Step 1 (Read labels)"
   )
 
-  if (max(steps) == 1L) {
-    return(cortical_early_return(
-      step1$atlas_3d,
-      step1$components,
-      dirs,
-      cleanup,
-      verbose,
-      start_time
+  if (max(config$steps) == 1L) {
+    return(cortical_finalize(
+      step1$atlas_3d, config, dirs, start_time
     ))
   }
 
@@ -669,144 +506,28 @@ create_atlas_from_labels <- function(
     hemisphere = hemi_short,
     views = views,
     region_snapshot_fn = labels_region_snapshots,
+    config = config,
     dirs = dirs,
-    steps = steps,
-    skip_existing = skip_existing,
-    tolerance = tolerance,
-    smoothness = smoothness,
-    cleanup = cleanup,
-    verbose = verbose,
     start_time = start_time
   )
 }
 
 
 #' @noRd
-labels_read_files <- function(
-  label_files,
-  region_names,
-  colours,
-  default_colours
-) {
-  p <- progressor(steps = length(label_files))
+parse_lut_colours <- function(input_lut) {
+  if (is.null(input_lut)) {
+    return(list(region_names = NULL, colours = NULL))
+  }
 
-  all_data <- future_pmap(
-    list(
-      label_file = label_files,
-      i = seq_along(label_files)
-    ),
-    function(label_file, i) {
-      filename <- basename(label_file)
+  lut <- if (is.character(input_lut)) read_ctab(input_lut) else input_lut
+  region_names <- lut$region
+  colours <- if ("hex" %in% names(lut)) {
+    lut$hex
+  } else if (all(c("R", "G", "B") %in% names(lut))) {
+    grDevices::rgb(lut$R, lut$G, lut$B, maxColorValue = 255)
+  } else {
+    NULL
+  }
 
-      hemi_short <- if (grepl("^lh\\.", filename)) {
-        "lh"
-      } else if (grepl("^rh\\.", filename)) {
-        "rh"
-      } else {
-        NA
-      }
-      hemi <- if (!is.na(hemi_short)) hemi_to_long(hemi_short) else NA
-
-      region <- if (is.null(region_names)) {
-        gsub("^[lr]h\\.", "", file_path_sans_ext(filename))
-      } else {
-        region_names[i]
-      }
-
-      label <- if (!is.na(hemi_short)) {
-        paste(hemi_short, region, sep = "_")
-      } else {
-        region
-      }
-      colour <- if (is.null(colours)) default_colours[i] else colours[i]
-
-      p()
-      tibble(
-        hemi = hemi,
-        region = region,
-        label = label,
-        colour = colour,
-        vertices = list(read_label_vertices(label_file))
-      )
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("region_names", "colours", "default_colours", "p")
-    )
-  )
-
-  bind_rows(all_data)
-}
-
-
-#' @noRd
-labels_region_snapshots <- function(
-  atlas_3d,
-  components,
-  hemi_short,
-  views,
-  dirs,
-  skip_existing
-) {
-  region_labels <- unique(
-    components$core$label[!is.na(components$core$region)]
-  )
-  region_grid <- expand.grid(
-    region_label = region_labels,
-    hemisphere = hemi_short,
-    view = views,
-    stringsAsFactors = FALSE
-  )
-
-  region_grid <- region_grid[
-    (grepl("^lh_", region_grid$region_label) &
-       region_grid$hemisphere == "lh") |
-      (grepl("^rh_", region_grid$region_label) &
-         region_grid$hemisphere == "rh") |
-      (!grepl("^[lr]h_", region_grid$region_label)),
-  ]
-
-  p <- progressor(steps = nrow(region_grid))
-  invisible(future_pmap(
-    region_grid,
-    function(region_label, hemisphere, view) {
-      snapshot_region(
-        atlas = atlas_3d,
-        region_label = region_label,
-        hemisphere = hemisphere,
-        view = view,
-        surface = "inflated",
-        output_dir = dirs$snapshots,
-        skip_existing = skip_existing
-      )
-      p()
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "p")
-    )
-  ))
-
-  na_grid <- expand.grid(
-    hemisphere = hemi_short,
-    view = views,
-    stringsAsFactors = FALSE
-  )
-  invisible(future_pmap(
-    na_grid,
-    function(hemisphere, view) {
-      snapshot_na_regions(
-        atlas = atlas_3d,
-        hemisphere = hemisphere,
-        view = view,
-        surface = "inflated",
-        output_dir = dirs$snapshots,
-        skip_existing = skip_existing
-      )
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing")
-    )
-  ))
+  list(region_names = region_names, colours = colours)
 }
