@@ -1,6 +1,6 @@
 ---
 title: "Tutorial: Creating a tract atlas"
-format: html
+output: rmarkdown::html_vignette
 ---
 
 

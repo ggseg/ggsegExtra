@@ -1,9 +1,9 @@
 ---
 title: "System setup"
-format: html
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{System setup}
-  %\VignetteEngine{quarto::html}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 

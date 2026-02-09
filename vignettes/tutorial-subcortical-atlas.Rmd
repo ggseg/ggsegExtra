@@ -1,6 +1,6 @@
 ---
 title: "Tutorial: Creating a subcortical atlas"
-format: html
+output: rmarkdown::html_vignette
 ---
 
 

@@ -1,6 +1,6 @@
 ---
 title: "Tutorial: Creating an atlas from label files"
-format: html
+output: rmarkdown::html_vignette
 ---
 
 

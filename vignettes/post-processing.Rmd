@@ -1,9 +1,9 @@
 ---
 title: "Post-processing atlases"
-format: html
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Post-processing atlases}
-  %\VignetteEngine{quarto::html}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -151,7 +151,9 @@ atlas <- atlas |>
 #| label: view-reorder
 #| eval: false
 atlas <- atlas |>
-  atlas_view_reorder(c("sagittal_left", "sagittal_right", "coronal_3", "axial_4"))
+  atlas_view_reorder(
+    c("sagittal_left", "sagittal_right", "coronal_3", "axial_4")
+  )
 ```
 
 ## Removing small regions from views
@@ -163,7 +165,9 @@ Remove them by minimum area:
 #| label: remove-small
 #| eval: false
 atlas <- atlas |>
-  atlas_view_remove_region_small(min_area = 500, views = c("axial", "coronal")) |>
+  atlas_view_remove_region_small(
+    min_area = 500, views = c("axial", "coronal")
+  ) |>
   atlas_view_remove_region_small(min_area = 50)
 ```
 
