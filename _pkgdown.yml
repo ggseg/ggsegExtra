@@ -14,24 +14,26 @@ articles:
     navbar: ~
     contents:
       - ggsegExtra
-      - system_setup
+      - system-setup
 
-  - title: Creating Atlases
-    desc: Step-by-step guides for creating custom brain atlases
+  - title: How-To
+    desc: Understanding package functionality
     contents:
-      - cortical-atlas
-      - subcortical-atlas
-      - tract-atlas
-      - label-atlas
+      - pipeline-configuration
+      - post-processing
 
-  - title: Legacy Migration
-    desc: Converting old atlases to the current format
+  - title: "Tutorials: Creating Atlases"
+    desc: Step-by-step atlas creation with full pipelines
+    contents:
+      - tutorial-cortical-atlas
+      - tutorial-subcortical-atlas
+      - tutorial-tract-atlas
+      - tutorial-label-atlas
+
+  - title: Legacy & Contributing
     contents:
       - legacy-conversion
-
-  - title: Contributing
-    contents:
-      - ggsegrepo
+      - contributing
 
 reference:
   - title: Create Brain Atlases

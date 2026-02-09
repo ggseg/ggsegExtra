@@ -1,22 +1,21 @@
-# Workflow to render README.Rmd weekly and on push
 on:
   push:
     branches: [main, master]
-    paths:
-      - README.Rmd
-  schedule:
-    - cron: "0 0 * * 0"
-  workflow_dispatch:
+    paths: ["README.qmd"]
+  pull_request:
+    paths: ["README.qmd"]
 
-name: render-readme
+name: render-readme.yaml
+
+permissions: read-all
 
 jobs:
   render-readme:
     runs-on: ubuntu-latest
+
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    permissions:
-      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -26,30 +25,19 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install Linux system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgdal-dev libproj-dev libgeos-dev libudunits2-dev
-          sudo apt-get install -y libmagick++-dev libglpk-dev
-          sudo apt-get install -y libharfbuzz-dev libfribidi-dev
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: |
-            any::rmarkdown, 
-            any::httr, 
-            github::drmowinckels/freesurfer@refactor,
-            local::.
-          needs: build
+          extra-packages: local::.
+
+      - uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Render README
-        run: rmarkdown::render("README.Rmd", output_format = "github_document")
-        shell: Rscript {0}
+        run: quarto render README.qmd
 
-      - name: Commit results
+      - name: Commit and push
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add README.md
-          git commit -m 'Re-render README.Rmd' || echo "No changes to commit"
-          git push origin || echo "No changes to push"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md man/figures/README-*
+          git diff --staged --quiet || git commit -m "Re-render README.qmd" && git push

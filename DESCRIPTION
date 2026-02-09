@@ -55,13 +55,14 @@ Suggests:
     hexSticker,
     knitr,
     oro.nifti,
+    quarto,
     rmarkdown,
     rstudioapi,
     spelling,
     testthat (>= 3.0.0),
     withr
-VignetteBuilder: 
-    knitr
+VignetteBuilder:
+    quarto
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
