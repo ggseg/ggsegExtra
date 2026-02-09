@@ -17,6 +17,7 @@ create_subcortical_atlas(
   verbose = get_verbose(),
   cleanup = NULL,
   skip_existing = NULL,
+  decimate = 0.5,
   steps = NULL
 )
 }
@@ -73,6 +74,11 @@ environment variable. Default is TRUE.}
 allowing interrupted atlas creation to resume. If not specified, uses
 \code{options("ggsegExtra.skip_existing")} or the \code{GGSEGEXTRA_SKIP_EXISTING}
 environment variable. Default is TRUE.}
+
+\item{decimate}{Mesh decimation factor between 0 and 1. Reduces the number
+of faces in 3D meshes using quadric edge decimation (via
+\code{\link[Rvcg:vcgQEdecim]{Rvcg::vcgQEdecim()}}). A value of 0.5 reduces faces by 50\%. Set to NULL
+to skip decimation. Requires the Rvcg package. Default is 0.5.}
 
 \item{steps}{Which pipeline steps to run. Default NULL runs all steps.
 Steps are:

@@ -68,7 +68,6 @@
 #' @export
 #' @importFrom dplyr tibble bind_rows distinct
 #' @importFrom furrr future_map2 furrr_options
-#' @importFrom ggseg.formats brain_atlas tract_data
 #' @importFrom grDevices rgb
 #' @importFrom progressr progressor
 #' @importFrom tools file_path_sans_ext file_ext
@@ -232,7 +231,7 @@ create_tract_atlas <- function(
         type = "tract",
         palette = palette,
         core = core,
-        data = tract_data(
+        data = brain_data_tract(
           centerlines = centerlines_df,
           tube_radius = if (is.numeric(tube_radius)) tube_radius else 5,
           tube_segments = tube_segments
@@ -352,7 +351,7 @@ create_tract_atlas <- function(
       type = "tract",
       palette = palette,
       core = core,
-      data = tract_data(
+      data = brain_data_tract(
         sf = sf_data,
         centerlines = centerlines_df,
         tube_radius = if (is.numeric(tube_radius)) tube_radius else 5,

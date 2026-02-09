@@ -52,7 +52,6 @@
 #'   bind_rows distinct
 #' @importFrom freesurfer read_annotation have_fs
 #' @importFrom furrr future_pmap furrr_options
-#' @importFrom ggseg.formats brain_atlas cortical_data
 #' @importFrom grDevices rgb
 #' @importFrom progressr progressor
 #' @importFrom sf st_as_sf st_combine
@@ -197,7 +196,7 @@ cortical_step1 <- function(
       type = "cortical",
       palette = components$palette,
       core = components$core,
-      data = cortical_data(sf = NULL, vertices = components$vertices_df)
+      data = brain_data_cortical(sf = NULL, vertices = components$vertices_df)
     )
 
     saveRDS(atlas_3d, file.path(dirs$base, "atlas_3d.rds"))
@@ -280,7 +279,7 @@ cortical_pipeline <- function(
       type = "cortical",
       palette = components$palette,
       core = components$core,
-      data = cortical_data(sf = sf_data, vertices = components$vertices_df)
+      data = brain_data_cortical(sf = sf_data, vertices = components$vertices_df)
     )
 
     cli::cli_progress_done()
@@ -475,7 +474,6 @@ cortical_build_sf <- function(dirs) {
 #'   colours, and optionally sf geometry for 2D plots.
 #' @export
 #' @importFrom dplyr tibble bind_rows distinct
-#' @importFrom ggseg.formats brain_atlas
 #' @importFrom grDevices rgb
 #' @importFrom tools file_path_sans_ext
 #' @importFrom utils read.table

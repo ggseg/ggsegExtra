@@ -41,8 +41,7 @@ set_tutorial_options <- function() {
   with(
     future::plan(
       future::multisession(workers = future::availableCores() / 2)
-    ),
-    local = TRUE
+    )
   )
 
   check_fs(abort = FALSE) && has_magick()

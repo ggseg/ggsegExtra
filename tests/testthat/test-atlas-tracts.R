@@ -241,7 +241,7 @@ describe("create_tract_atlas pipeline flow", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      tract_data = function(...) list(...),
+      brain_data_tract = function(...) list(...),
       preview_atlas = function(...) invisible(NULL),
       setup_atlas_dirs = function(...) {
         list(
@@ -441,7 +441,7 @@ describe("create_tract_atlas pipeline flow", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      tract_data = function(...) list(...),
+      brain_data_tract = function(...) list(...),
       preview_atlas = function(...) invisible(NULL),
       setup_atlas_dirs = function(...) {
         list(
@@ -499,7 +499,7 @@ describe("create_tract_atlas pipeline flow", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      tract_data = function(...) list(...),
+      brain_data_tract = function(...) list(...),
       preview_atlas = function(...) invisible(NULL),
       setup_atlas_dirs = function(...) {
         list(
@@ -698,7 +698,7 @@ describe("create_tract_atlas pipeline flow", {
           class = "brain_atlas"
         )
       },
-      tract_data = function(...) list(...),
+      brain_data_tract = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -767,7 +767,7 @@ describe("create_tract_atlas pipeline flow", {
           class = "brain_atlas"
         )
       },
-      tract_data = function(...) list(...),
+      brain_data_tract = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -941,9 +941,7 @@ describe("tract_create_meshes", {
     call_count <- 0L
     local_mocked_bindings(
       progressor = function(...) function(...) NULL,
-      future_map2 = function(.x, .y, .f, ...) {
-        mapply(.f, .x, .y, SIMPLIFY = FALSE)
-      },
+      future_map2 = mock_future_map2,
       furrr_options = function(...) list(),
       extract_centerline = function(streamlines, ...) {
         matrix(1:9, ncol = 3, dimnames = list(NULL, c("x", "y", "z")))
@@ -980,9 +978,7 @@ describe("tract_create_meshes", {
   it("skips tracts with NULL or too-short centerlines", {
     local_mocked_bindings(
       progressor = function(...) function(...) NULL,
-      future_map2 = function(.x, .y, .f, ...) {
-        mapply(.f, .x, .y, SIMPLIFY = FALSE)
-      },
+      future_map2 = mock_future_map2,
       furrr_options = function(...) list(),
       extract_centerline = function(streamlines, ...) NULL,
       center_meshes = function(x) x
@@ -1001,9 +997,7 @@ describe("tract_create_meshes", {
   it("errors when all meshes fail", {
     local_mocked_bindings(
       progressor = function(...) function(...) NULL,
-      future_map2 = function(.x, .y, .f, ...) {
-        mapply(.f, .x, .y, SIMPLIFY = FALSE)
-      },
+      future_map2 = mock_future_map2,
       furrr_options = function(...) list(),
       extract_centerline = function(streamlines, ...) {
         matrix(1:6, ncol = 3, dimnames = list(NULL, c("x", "y", "z")))
@@ -1055,7 +1049,7 @@ describe("tract_create_snapshots", {
       },
       streamlines_to_volume = function(...) array(1L, dim = c(10, 10, 10)),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) {
         snapshot_calls <<- snapshot_calls + 1L
@@ -1104,7 +1098,7 @@ describe("tract_create_snapshots", {
       },
       streamlines_to_volume = function(...) array(0L, dim = c(10, 10, 10)),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL)
@@ -1145,7 +1139,7 @@ describe("tract_create_snapshots", {
       },
       streamlines_to_volume = function(...) array(0L, dim = c(10, 10, 10)),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL)

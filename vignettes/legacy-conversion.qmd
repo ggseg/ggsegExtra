@@ -78,27 +78,6 @@ plot(unified)
 
 This atlas works with ggseg but not ggseg3d (no 3D vertex data).
 
-## Computing vertex indices
-
-Legacy ggseg3d atlases stored full mesh coordinates for each region.
-The new format stores vertex indices instead, which render faster.
-
-To compute vertex indices during conversion:
-
-```{r}
-#| label: compute-vertices
-#| eval: false
-unified <- unify_legacy_atlases(
-  atlas_3d = old_atlas_3d,
-  compute_vertices = TRUE,
-  surface = "inflated",
-  subject = "fsaverage5"
-)
-```
-
-This requires FreeSurfer.
-The `surface` parameter must match the surface used to create the original 3D atlas.
-
 ## Specifying atlas type
 
 The function auto-detects atlas type from the structure.
@@ -119,9 +98,8 @@ Valid types: "cortical", "subcortical", "tract".
 
 ## Troubleshooting
 
-**No vertices matched**: The mesh coordinates don't align with the brain surface.
+**No vertices inferred**: The mesh coordinates don't align with the brain surface.
 Check that `surface` matches what was used to create the 3D atlas.
-Try increasing `tolerance` if coordinates are close but not exact.
 
 **Wrong hemisphere assignment**: The function infers hemisphere from the `hemi` column.
 If this is missing or wrong, set it manually after conversion.

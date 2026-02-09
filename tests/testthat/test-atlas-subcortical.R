@@ -1,3 +1,67 @@
+describe("create_subcortical_atlas decimate validation", {
+  it("errors for values outside (0, 1)", {
+    local_mocked_bindings(check_fs = function(...) TRUE)
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+
+    for (val in list(-0.5, 0, 1, 1.5, 2)) {
+      expect_error(
+        create_subcortical_atlas(vol_file, decimate = val, verbose = FALSE),
+        "decimate.*must be a single number between 0 and 1"
+      )
+    }
+  })
+
+  it("errors for non-numeric values", {
+    local_mocked_bindings(check_fs = function(...) TRUE)
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+
+    expect_error(
+      create_subcortical_atlas(vol_file, decimate = "half", verbose = FALSE),
+      "decimate.*must be a single number"
+    )
+  })
+
+  it("errors for vectors of length > 1", {
+    local_mocked_bindings(check_fs = function(...) TRUE)
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+
+    expect_error(
+      create_subcortical_atlas(
+        vol_file, decimate = c(0.3, 0.5), verbose = FALSE
+      ),
+      "decimate.*must be a single number"
+    )
+  })
+
+  it("accepts NULL to skip decimation", {
+    local_mocked_bindings(check_fs = function(...) TRUE)
+
+    expect_error(
+      create_subcortical_atlas(
+        "/nonexistent/volume.mgz", decimate = NULL, verbose = FALSE
+      ),
+      "not found"
+    )
+  })
+
+  it("accepts valid values in (0, 1)", {
+    local_mocked_bindings(check_fs = function(...) TRUE)
+
+    for (val in c(0.1, 0.25, 0.5, 0.75, 0.99)) {
+      expect_error(
+        create_subcortical_atlas(
+          "/nonexistent/volume.mgz", decimate = val, verbose = FALSE
+        ),
+        "not found"
+      )
+    }
+  })
+})
+
+
 describe("create_subcortical_atlas", {
   it("requires FreeSurfer to be available", {
     local_mocked_bindings(
@@ -221,9 +285,7 @@ describe("subcort_create_meshes", {
     local_mocked_bindings(
       tessellate_label = function(...) stop("mesh error"),
       progressor = function(...) function(...) NULL,
-      future_map2 = function(.x, .y, .f, ...) {
-        mapply(.f, .x, .y, SIMPLIFY = FALSE)
-      },
+      future_map2 = mock_future_map2,
       furrr_options = function(...) list(),
       center_meshes = function(x) x
     )
@@ -237,7 +299,10 @@ describe("subcort_create_meshes", {
 
     expect_error(
       expect_warning(
-        subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, TRUE),
+        expect_warning(
+          subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, TRUE),
+          "Failed to create mesh"
+        ),
         "Failed to create mesh"
       ),
       "No meshes"
@@ -252,9 +317,7 @@ describe("subcort_create_meshes", {
     local_mocked_bindings(
       tessellate_label = function(...) mock_mesh,
       progressor = function(...) function(...) NULL,
-      future_map2 = function(.x, .y, .f, ...) {
-        mapply(.f, .x, .y, SIMPLIFY = FALSE)
-      },
+      future_map2 = mock_future_map2,
       furrr_options = function(...) list(),
       center_meshes = function(x) x
     )
@@ -264,7 +327,9 @@ describe("subcort_create_meshes", {
     )
     dirs <- list(meshes = withr::local_tempdir())
 
-    result <- subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, TRUE)
+    result <- subcort_create_meshes(
+      "fake.mgz", colortable, dirs, FALSE, TRUE, decimate = NULL
+    )
 
     expect_equal(length(result), 1)
     expect_equal(names(result), "Left-Putamen")
@@ -282,9 +347,7 @@ describe("subcort_create_meshes", {
         if (call_count == 1L) stop("fail") else mock_mesh
       },
       progressor = function(...) function(...) NULL,
-      future_map2 = function(.x, .y, .f, ...) {
-        mapply(.f, .x, .y, SIMPLIFY = FALSE)
-      },
+      future_map2 = mock_future_map2,
       furrr_options = function(...) list(),
       center_meshes = function(x) x
     )
@@ -296,7 +359,9 @@ describe("subcort_create_meshes", {
     )
     dirs <- list(meshes = withr::local_tempdir())
 
-    result <- subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, FALSE)
+    result <- subcort_create_meshes(
+      "fake.mgz", colortable, dirs, FALSE, FALSE, decimate = NULL
+    )
 
     expect_equal(length(result), 1)
     expect_equal(names(result), "Right-Putamen")
@@ -333,9 +398,7 @@ describe("subcort_create_snapshots", {
       },
       extract_hemi_from_view = function(...) "left",
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) {
-        purrr::pmap(.l, .f)
-      },
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) {
         snapshot_calls <<- snapshot_calls + 1L
@@ -385,7 +448,7 @@ describe("subcort_create_snapshots", {
       detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
       extract_hemi_from_view = function(...) "left",
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL)
@@ -427,7 +490,7 @@ describe("subcort_create_snapshots", {
       detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
       extract_hemi_from_view = function(...) "left",
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) {
         snapshot_calls <<- snapshot_calls + 1L
@@ -494,7 +557,7 @@ describe("create_subcortical_atlas pipeline flow", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      subcortical_data = function(...) list(...)
+      brain_data_subcortical = function(...) list(...)
     )
 
     withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
@@ -556,7 +619,7 @@ describe("create_subcortical_atlas pipeline flow", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      subcortical_data = function(...) list(...)
+      brain_data_subcortical = function(...) list(...)
     )
 
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -647,7 +710,7 @@ describe("create_subcortical_atlas pipeline flow", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      subcortical_data = function(...) list(...)
+      brain_data_subcortical = function(...) list(...)
     )
 
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -755,7 +818,7 @@ describe("create_subcortical_atlas pipeline flow", {
       },
       subcort_build_components = function(...) cached_components,
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      subcortical_data = function(...) list(...)
+      brain_data_subcortical = function(...) list(...)
     )
 
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -1046,7 +1109,7 @@ describe("create_subcortical_atlas pipeline flow", {
           class = "brain_atlas"
         )
       },
-      subcortical_data = function(...) list(...),
+      brain_data_subcortical = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -1111,7 +1174,7 @@ describe("create_subcortical_atlas pipeline flow", {
           class = "brain_atlas"
         )
       },
-      subcortical_data = function(...) list(...),
+      brain_data_subcortical = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )

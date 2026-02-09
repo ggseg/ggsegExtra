@@ -1,10 +1,11 @@
 # Brain surface mesh functions ----
 
-#' Extract brain surface mesh
+#' Read FreeSurfer surface mesh file
 #'
-#' Extracts the full brain surface mesh for a given subject and surface type.
-#' This mesh can be used for 3D rendering where vertex colors are applied
-#' based on atlas vertex indices.
+#' Reads a FreeSurfer surface file and returns vertex/face data. This is a
+#' low-level I/O function for extracting meshes from FreeSurfer subjects.
+#' For retrieving pre-built brain meshes, use [ggseg.formats::get_brain_mesh()]
+#' instead.
 #'
 #' @param subject FreeSurfer subject (default "fsaverage5")
 #' @param hemisphere "lh" or "rh"
@@ -15,7 +16,7 @@
 #'   faces (data.frame with i, j, k)
 #' @keywords internal
 #' @importFrom freesurfer fs_subj_dir
-get_brain_mesh <- function(
+read_fs_mesh <- function(
   subject = "fsaverage5",
   hemisphere = c("lh", "rh"),
   surface = c("inflated", "white", "pial"),
@@ -123,7 +124,7 @@ make_brain_meshes <- function(
       name <- paste(hemi, surf, sep = "_")
       cli::cli_alert_info("Extracting {name}")
 
-      meshes[[name]] <- get_brain_mesh(
+      meshes[[name]] <- read_fs_mesh(
         subject = subject,
         hemisphere = hemi,
         surface = surf,

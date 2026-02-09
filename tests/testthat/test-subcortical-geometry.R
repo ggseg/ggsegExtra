@@ -26,6 +26,77 @@ describe("tessellate_label", {
 })
 
 
+describe("decimate_mesh", {
+  it("reduces face count by specified percent", {
+    mesh <- list(
+      vertices = data.frame(
+        x = c(0, 1, 0, 0, 1, 1, 0, 1),
+        y = c(0, 0, 1, 0, 1, 0, 1, 1),
+        z = c(0, 0, 0, 1, 0, 1, 1, 1)
+      ),
+      faces = data.frame(
+        i = c(1, 1, 1, 2, 2, 3, 3, 5, 4, 4, 6, 7),
+        j = c(2, 3, 4, 5, 6, 5, 7, 7, 6, 7, 8, 8),
+        k = c(3, 4, 2, 3, 4, 7, 4, 8, 8, 8, 5, 6)
+      )
+    )
+
+    result <- decimate_mesh(mesh, percent = 0.5)
+
+    expect_true(nrow(result$faces) <= nrow(mesh$faces))
+    expect_true(nrow(result$vertices) <= nrow(mesh$vertices))
+  })
+
+  it("returns correct data.frame structure", {
+    mesh <- list(
+      vertices = data.frame(
+        x = c(0, 1, 0, 0, 1, 1, 0, 1),
+        y = c(0, 0, 1, 0, 1, 0, 1, 1),
+        z = c(0, 0, 0, 1, 0, 1, 1, 1)
+      ),
+      faces = data.frame(
+        i = c(1, 1, 1, 2, 2, 3, 3, 5, 4, 4, 6, 7),
+        j = c(2, 3, 4, 5, 6, 5, 7, 7, 6, 7, 8, 8),
+        k = c(3, 4, 2, 3, 4, 7, 4, 8, 8, 8, 5, 6)
+      )
+    )
+
+    result <- decimate_mesh(mesh, percent = 0.75)
+
+    expect_named(result$vertices, c("x", "y", "z"))
+    expect_named(result$faces, c("i", "j", "k"))
+    expect_true(all(result$faces$i >= 1))
+    expect_true(all(result$faces$j >= 1))
+    expect_true(all(result$faces$k >= 1))
+    expect_true(max(result$faces$i) <= nrow(result$vertices))
+    expect_true(max(result$faces$j) <= nrow(result$vertices))
+    expect_true(max(result$faces$k) <= nrow(result$vertices))
+  })
+
+  it("works on real aseg meshes", {
+    skip_if_not_installed("Rvcg")
+
+    atlas_file <- system.file(
+      package = "ggseg.formats", "extdata", "aseg.rda"
+    )
+    if (!file.exists(atlas_file)) {
+      atlas_file <- file.path(
+        "/Users/athanasm/workspace/ggseg/ggseg.formats/data/aseg.rda"
+      )
+    }
+    skip_if(!file.exists(atlas_file), "aseg atlas not available")
+
+    load(atlas_file)
+    mesh <- aseg$data$meshes$mesh[[1]]
+
+    result <- decimate_mesh(mesh, percent = 0.5)
+
+    expect_true(nrow(result$faces) < nrow(mesh$faces))
+    expect_true(nrow(result$vertices) < nrow(mesh$vertices))
+  })
+})
+
+
 describe("generate_colortable_from_volume", {
   it("creates color table with correct structure", {
     skip_if_no_freesurfer()
@@ -277,9 +348,7 @@ describe("create_subcortical_geometry_projection", {
       read_volume = function(f, ...) fake_vol,
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) {
-        purrr::pmap(.l, .f)
-      },
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL),
@@ -350,7 +419,7 @@ describe("create_subcortical_geometry_projection", {
       read_volume = function(f, ...) fake_vol,
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL),
@@ -406,7 +475,7 @@ describe("create_subcortical_geometry_projection", {
       read_volume = function(f, ...) fake_vol,
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL),
@@ -457,7 +526,7 @@ describe("create_subcortical_geometry_projection", {
       read_volume = function(f, ...) fake_vol,
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) invisible(NULL),
       snapshot_cortex_slice = function(...) invisible(NULL),
@@ -523,7 +592,7 @@ describe("create_subcortical_geometry_projection", {
       read_volume = function(f, ...) fake_vol,
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       progressor = function(...) function(...) NULL,
-      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      future_pmap = mock_future_pmap,
       furrr_options = function(...) list(),
       snapshot_partial_projection = function(...) {
         snap_called <<- snap_called + 1L

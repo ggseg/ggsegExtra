@@ -75,6 +75,48 @@ tessellate_label <- function(
 }
 
 
+#' Decimate a mesh using quadric edge decimation
+#'
+#' Reduces the number of faces in a triangular mesh while preserving
+#' topology and shape. Requires the Rvcg package.
+#'
+#' @param mesh list with `vertices` (data.frame x,y,z) and `faces`
+#'   (data.frame i,j,k, 1-indexed)
+#' @param percent Target face count as proportion of original (0-1)
+#'
+#' @return Decimated mesh in the same format
+#' @keywords internal
+decimate_mesh <- function(mesh, percent = 0.5) {
+  rlang::check_installed("Rvcg", reason = "for mesh decimation")
+
+  m3d <- rgl::tmesh3d(
+    vertices = t(as.matrix(mesh$vertices)),
+    indices = t(as.matrix(mesh$faces)),
+    homogeneous = FALSE
+  )
+
+  decimated <- Rvcg::vcgQEdecim(
+    m3d,
+    percent = percent,
+    topo = TRUE,
+    silent = TRUE
+  )
+
+  list(
+    vertices = data.frame(
+      x = decimated$vb[1, ],
+      y = decimated$vb[2, ],
+      z = decimated$vb[3, ]
+    ),
+    faces = data.frame(
+      i = decimated$it[1, ],
+      j = decimated$it[2, ],
+      k = decimated$it[3, ]
+    )
+  )
+}
+
+
 #' Read FreeSurfer surface file
 #'
 #' Reads FreeSurfer surface files including QUAD format from mri_tessellate.

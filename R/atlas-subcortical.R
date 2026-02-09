@@ -36,6 +36,7 @@
 #' @template verbose
 #' @template cleanup
 #' @template skip_existing
+#' @template decimate
 #' @param steps Which pipeline steps to run. Default NULL runs all steps.
 #'   Steps are:
 #'   \itemize{
@@ -58,7 +59,6 @@
 #' @importFrom dplyr tibble bind_rows left_join filter distinct
 #' @importFrom freesurfer have_fs fs_dir fs_subj_dir
 #' @importFrom furrr future_pmap furrr_options
-#' @importFrom ggseg.formats brain_atlas subcortical_data
 #' @importFrom progressr progressor
 #' @importFrom tools file_path_sans_ext
 #'
@@ -98,6 +98,7 @@ create_subcortical_atlas <- function(
   verbose = get_verbose(), # nolint: object_usage_linter
   cleanup = NULL,
   skip_existing = NULL,
+  decimate = 0.5,
   steps = NULL
 ) {
   start_time <- Sys.time()
@@ -108,6 +109,17 @@ create_subcortical_atlas <- function(
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
   output_dir <- get_output_dir(output_dir)
+
+  if (!is.null(decimate)) {
+    if (!is.numeric(decimate) || length(decimate) != 1 ||
+        decimate <= 0 || decimate >= 1) {
+      cli::cli_abort(c(
+        "{.arg decimate} must be a single number between 0 and 1 (exclusive)",
+        "x" = "Got {.val {decimate}}",
+        "i" = "Use {.code NULL} to skip mesh decimation"
+      ))
+    }
+  }
 
   max_step <- 9L
   if (is.null(steps)) {
@@ -210,7 +222,8 @@ create_subcortical_atlas <- function(
       cli::cli_progress_step("2/9 Creating meshes for each structure")
     }
     meshes_list <- subcort_create_meshes(
-      input_volume, colortable, dirs, skip_existing, verbose
+      input_volume, colortable, dirs, skip_existing, verbose,
+      decimate = decimate
     )
     if (verbose) cli::cli_progress_done()
     saveRDS(meshes_list, file.path(dirs$base, "meshes_list.rds"))
@@ -235,7 +248,7 @@ create_subcortical_atlas <- function(
         type = "subcortical",
         palette = components$palette,
         core = components$core,
-        data = subcortical_data(sf = NULL, meshes = components$meshes_df)
+        data = brain_data_subcortical(sf = NULL, meshes = components$meshes_df)
       )
 
       cli::cli_progress_done()
@@ -331,7 +344,7 @@ create_subcortical_atlas <- function(
       type = "subcortical",
       palette = components$palette,
       core = components$core,
-      data = subcortical_data(sf = sf_data, meshes = components$meshes_df)
+      data = brain_data_subcortical(sf = sf_data, meshes = components$meshes_df)
     )
     if (verbose) cli::cli_progress_done()
 
@@ -365,7 +378,8 @@ create_subcortical_atlas <- function(
 
 #' @noRd
 subcort_create_meshes <- function(
-  input_volume, colortable, dirs, skip_existing, verbose
+  input_volume, colortable, dirs, skip_existing, verbose,
+  decimate = 0.5
 ) {
   p <- progressor(steps = nrow(colortable))
 
@@ -406,6 +420,26 @@ subcort_create_meshes <- function(
   }
 
   meshes_list <- center_meshes(meshes_list)
+
+  if (!is.null(decimate) && decimate < 1) {
+    if (verbose) {
+      orig_faces <- sum(vapply(
+        meshes_list, function(m) nrow(m$faces), integer(1)
+      ))
+      cli::cli_alert_info(
+        "Decimating meshes to {decimate * 100}% of original faces"
+      )
+    }
+    meshes_list <- lapply(meshes_list, decimate_mesh, percent = decimate)
+    if (verbose) {
+      new_faces <- sum(vapply(
+        meshes_list, function(m) nrow(m$faces), integer(1)
+      ))
+      cli::cli_alert_success(
+        "Reduced from {orig_faces} to {new_faces} faces ({round(new_faces/orig_faces * 100)}%)"
+      )
+    }
+  }
 
   if (verbose) {
     cli::cli_alert_success("Created {length(meshes_list)} meshes")

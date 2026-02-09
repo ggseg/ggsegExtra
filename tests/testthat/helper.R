@@ -61,6 +61,14 @@ test_annot_name <- function() {
   "yeo7"
 }
 
+mock_future_pmap <- function(.l, .f, ...) {
+  do.call(Map, c(list(f = .f), .l))
+}
+
+mock_future_map2 <- function(.x, .y, .f, ...) {
+  mapply(.f, .x, .y, SIMPLIFY = FALSE)
+}
+
 expect_warnings <- function(expr, regexp) {
   warnings_caught <- character()
   result <- withCallingHandlers(

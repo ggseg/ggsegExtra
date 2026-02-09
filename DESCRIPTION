@@ -26,6 +26,7 @@ Imports:
     cli,
     dplyr,
     freesurfer,
+    future,
     furrr,
     geomorph,
     ggseg.formats,
@@ -47,22 +48,20 @@ Imports:
     tools,
     utils
 Suggests:
-    covr,
     freesurferformats,
     ggplot2,
+    rgl,
+    Rvcg,
     ggseg,
     ggsegDKT,
     hexSticker,
     knitr,
-    oro.nifti,
-    quarto,
-    rmarkdown,
     rstudioapi,
     spelling,
     testthat (>= 3.0.0),
     withr
 VignetteBuilder:
-    quarto
+    knitr
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)

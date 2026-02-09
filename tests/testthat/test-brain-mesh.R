@@ -1,14 +1,14 @@
-describe("get_brain_mesh", {
+describe("read_fs_mesh", {
   it("requires FreeSurfer", {
     skip_if(freesurfer::have_fs(), "FreeSurfer installed - testing skip")
-    expect_error(get_brain_mesh(), "Freesurfer")
+    expect_error(ggsegExtra:::read_fs_mesh(), "Freesurfer")
   })
 
   it("validates hemisphere argument", {
     skip_if_no_freesurfer()
 
     expect_error(
-      get_brain_mesh(hemisphere = "invalid"),
+      ggsegExtra:::read_fs_mesh(hemisphere = "invalid"),
       "arg"
     )
   })
@@ -17,7 +17,7 @@ describe("get_brain_mesh", {
     skip_if_no_freesurfer()
 
     expect_error(
-      get_brain_mesh(surface = "invalid"),
+      ggsegExtra:::read_fs_mesh(surface = "invalid"),
       "arg"
     )
   })
@@ -25,7 +25,7 @@ describe("get_brain_mesh", {
   it("returns mesh structure", {
     skip_if_no_freesurfer()
 
-    mesh <- get_brain_mesh(hemisphere = "lh", surface = "inflated")
+    mesh <- ggsegExtra:::read_fs_mesh(hemisphere = "lh", surface = "inflated")
 
     expect_type(mesh, "list")
     expect_true(all(c("vertices", "faces") %in% names(mesh)))
@@ -38,7 +38,7 @@ describe("get_brain_mesh", {
   it("includes metadata", {
     skip_if_no_freesurfer()
 
-    mesh <- get_brain_mesh(hemisphere = "rh", surface = "white")
+    mesh <- ggsegExtra:::read_fs_mesh(hemisphere = "rh", surface = "white")
 
     expect_equal(mesh$hemisphere, "rh")
     expect_equal(mesh$surface, "white")
@@ -50,13 +50,13 @@ describe("get_brain_mesh", {
 describe("make_brain_meshes", {
   it("requires FreeSurfer", {
     skip_if(freesurfer::have_fs(), "FreeSurfer installed - testing skip")
-    expect_error(make_brain_meshes(), "Freesurfer")
+    expect_error(ggsegExtra:::make_brain_meshes(), "Freesurfer")
   })
 
   it("creates meshes for all hemisphere/surface combos", {
     skip_if_no_freesurfer()
 
-    meshes <- make_brain_meshes(surfaces = "inflated")
+    meshes <- ggsegExtra:::make_brain_meshes(surfaces = "inflated")
 
     expect_s3_class(meshes, "brain_meshes")
     expect_true("lh_inflated" %in% names(meshes))
@@ -65,7 +65,7 @@ describe("make_brain_meshes", {
 })
 
 
-describe("get_brain_mesh surface file not found", {
+describe("read_fs_mesh surface file not found", {
   it("errors when surface file does not exist", {
     local_mocked_bindings(
       check_fs = function(...) TRUE
@@ -75,7 +75,7 @@ describe("get_brain_mesh surface file not found", {
     dir.create(file.path(fake_dir, "fsaverage5", "surf"), recursive = TRUE)
 
     expect_error(
-      ggsegExtra:::get_brain_mesh(
+      ggsegExtra:::read_fs_mesh(
         subject = "fsaverage5",
         hemisphere = "lh",
         surface = "inflated",

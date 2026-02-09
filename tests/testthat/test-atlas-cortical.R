@@ -358,7 +358,7 @@ describe("cortical_pipeline", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       warn_if_large_atlas = function(...) NULL,
       preview_atlas = function(...) NULL
     )
@@ -425,7 +425,7 @@ describe("cortical_pipeline", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       warn_if_large_atlas = function(...) NULL,
       preview_atlas = function(...) NULL
     )
@@ -493,7 +493,7 @@ describe("create_cortical_atlas pipeline flow", {
       brain_atlas = function(...) {
         structure(list(...), class = "brain_atlas")
       },
-      cortical_data = function(...) list(...)
+      brain_data_cortical = function(...) list(...)
     )
 
     withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
@@ -532,7 +532,7 @@ describe("create_cortical_atlas pipeline flow", {
       brain_atlas = function(...) {
         structure(list(...), class = "brain_atlas")
       },
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       cortical_brain_snapshots = function(...) {
         step2_called <<- TRUE
       }
@@ -915,7 +915,7 @@ describe("cortical_pipeline verbose and cleanup paths", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       warn_if_large_atlas = function(...) NULL,
       preview_atlas = function(...) NULL,
       log_elapsed = function(...) NULL
@@ -977,7 +977,7 @@ describe("cortical_pipeline verbose and cleanup paths", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       warn_if_large_atlas = function(...) NULL,
       preview_atlas = function(...) NULL,
       log_elapsed = function(...) NULL
@@ -1105,7 +1105,7 @@ describe("create_cortical_atlas verbose output", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       log_elapsed = function(...) NULL
     )
 
@@ -1152,7 +1152,7 @@ describe("create_cortical_atlas full pipeline path", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       cortical_pipeline = function(...) {
         pipeline_called <<- TRUE
         structure(list(), class = "brain_atlas")
@@ -1176,7 +1176,7 @@ describe("cortical_step1 verbose paths", {
   it("prints progress step when verbose is TRUE and step runs", {
     local_mocked_bindings(
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...)
+      brain_data_cortical = function(...) list(...)
     )
 
     tmp_dir <- withr::local_tempdir()
@@ -1275,7 +1275,7 @@ describe("cortical_pipeline cleanup verbose in step 8", {
         )
       },
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       warn_if_large_atlas = function(...) NULL,
       preview_atlas = function(...) NULL,
       log_elapsed = function(...) NULL
@@ -1375,7 +1375,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
   it("prints verbose output when verbose is TRUE", {
     local_mocked_bindings(
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       log_elapsed = function(...) NULL
     )
 
@@ -1417,7 +1417,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
           class = "brain_atlas"
         )
       },
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       log_elapsed = function(...) NULL
     )
 
@@ -1452,7 +1452,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
           class = "brain_atlas"
         )
       },
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       log_elapsed = function(...) NULL
     )
 
@@ -1473,7 +1473,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
       check_fs = function(abort = FALSE) invisible(TRUE),
       check_magick = function() invisible(TRUE),
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       cortical_pipeline = function(...) {
         pipeline_called <<- TRUE
         structure(list(), class = "brain_atlas")
@@ -1526,7 +1526,7 @@ describe("create_atlas_from_labels hemi fallback", {
       check_fs = function(abort = FALSE) invisible(TRUE),
       check_magick = function() invisible(TRUE),
       brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      cortical_data = function(...) list(...),
+      brain_data_cortical = function(...) list(...),
       cortical_pipeline = function(...) {
         args <- list(...)
         captured_hemisphere <<- args$hemisphere
