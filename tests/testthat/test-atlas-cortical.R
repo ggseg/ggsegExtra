@@ -824,3 +824,735 @@ describe("read_label_vertices", {
     expect_equal(length(vertices), 4)
   })
 })
+
+
+describe("cortical_step1", {
+  it("loads cached data when files exist and skip_existing is TRUE", {
+    tmp_dir <- withr::local_tempdir()
+    mock_atlas <- structure(list(atlas = "test"), class = "brain_atlas")
+    mock_components <- list(
+      core = data.frame(hemi = "left", region = "r", label = "lh_r"),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+    saveRDS(mock_atlas, file.path(tmp_dir, "atlas_3d.rds"))
+    saveRDS(mock_components, file.path(tmp_dir, "components.rds"))
+
+    result <- cortical_step1(
+      dirs = list(base = tmp_dir),
+      atlas_name = "test",
+      steps = 1L,
+      skip_existing = TRUE,
+      verbose = FALSE,
+      read_fn = function() stop("should not be called"),
+      step_label = "test",
+      cache_label = "test"
+    )
+
+    expect_s3_class(result$atlas_3d, "brain_atlas")
+    expect_equal(result$components$palette, mock_components$palette)
+  })
+})
+
+
+describe("cortical_early_return", {
+  it("returns atlas_3d and logs when verbose", {
+    local_mocked_bindings(
+      log_elapsed = function(...) NULL
+    )
+    mock_atlas <- structure(list(atlas = "test"), class = "brain_atlas")
+    components <- list(
+      core = data.frame(hemi = "left", region = "r", label = "lh_r")
+    )
+    dirs <- list(base = withr::local_tempdir())
+
+    msgs <- capture.output(
+      result <- cortical_early_return(
+        mock_atlas, components, dirs,
+        cleanup = FALSE, verbose = TRUE, start_time = Sys.time()
+      ),
+      type = "message"
+    )
+
+    expect_s3_class(result, "brain_atlas")
+    expect_true(any(grepl("1 regions", msgs)))
+  })
+
+  it("cleans up when cleanup is TRUE", {
+    local_mocked_bindings(log_elapsed = function(...) NULL)
+    mock_atlas <- structure(list(atlas = "test"), class = "brain_atlas")
+    components <- list(
+      core = data.frame(hemi = "left", region = "r", label = "lh_r")
+    )
+    base_dir <- withr::local_tempdir()
+    dir.create(file.path(base_dir, "subdir"))
+
+    cortical_early_return(
+      mock_atlas, components,
+      dirs = list(base = file.path(base_dir, "subdir")),
+      cleanup = TRUE, verbose = FALSE, start_time = Sys.time()
+    )
+
+    expect_false(dir.exists(file.path(base_dir, "subdir")))
+  })
+})
+
+
+describe("cortical_pipeline verbose and cleanup paths", {
+  it("logs verbose messages for each step", {
+    local_mocked_bindings(
+      cortical_brain_snapshots = function(...) NULL,
+      cortical_isolate_regions = function(...) NULL,
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      cortical_build_sf = function(...) {
+        sf::st_sf(
+          label = "test", view = "lateral",
+          geometry = sf::st_sfc(sf::st_polygon(list(matrix(
+            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          ))))
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) NULL,
+      preview_atlas = function(...) NULL,
+      log_elapsed = function(...) NULL
+    )
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "r", label = "lh_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+
+    msgs <- capture.output(
+      cortical_pipeline(
+        atlas_3d = structure(list(), class = "brain_atlas"),
+        components = components,
+        atlas_name = "test",
+        hemisphere = "lh",
+        views = "lateral",
+        region_snapshot_fn = function(...) NULL,
+        dirs = list(
+          base = withr::local_tempdir(),
+          snapshots = withr::local_tempdir(),
+          processed = withr::local_tempdir(),
+          masks = withr::local_tempdir()
+        ),
+        steps = 2:8,
+        skip_existing = FALSE,
+        tolerance = 1,
+        smoothness = 5,
+        cleanup = FALSE,
+        verbose = TRUE,
+        start_time = Sys.time()
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("2/8", msgs)))
+    expect_true(any(grepl("3/8", msgs)))
+    expect_true(any(grepl("4/8", msgs)))
+    expect_true(any(grepl("8/8", msgs)))
+  })
+
+  it("cleans up base directory when cleanup is TRUE in step 8", {
+    local_mocked_bindings(
+      cortical_brain_snapshots = function(...) NULL,
+      cortical_isolate_regions = function(...) NULL,
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      cortical_build_sf = function(...) {
+        sf::st_sf(
+          label = "test", view = "lateral",
+          geometry = sf::st_sfc(sf::st_polygon(list(matrix(
+            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          ))))
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) NULL,
+      preview_atlas = function(...) NULL,
+      log_elapsed = function(...) NULL
+    )
+
+    base_dir <- withr::local_tempdir()
+    actual_base <- file.path(base_dir, "atlas_work")
+    dir.create(actual_base)
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "r", label = "lh_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+
+    cortical_pipeline(
+      atlas_3d = structure(list(), class = "brain_atlas"),
+      components = components,
+      atlas_name = "test",
+      hemisphere = "lh",
+      views = "lateral",
+      region_snapshot_fn = function(...) NULL,
+      dirs = list(
+        base = actual_base, snapshots = tempdir(),
+        processed = tempdir(), masks = tempdir()
+      ),
+      steps = 8L,
+      skip_existing = FALSE,
+      tolerance = 1,
+      smoothness = 5,
+      cleanup = TRUE,
+      verbose = FALSE,
+      start_time = Sys.time()
+    )
+
+    expect_false(dir.exists(actual_base))
+  })
+
+  it("returns atlas_3d when step 8 not in steps", {
+    local_mocked_bindings(
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      preview_atlas = function(...) NULL,
+      log_elapsed = function(...) NULL
+    )
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "r", label = "lh_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+
+    mock_atlas <- structure(list(atlas = "test_3d"), class = "brain_atlas")
+
+    result <- cortical_pipeline(
+      atlas_3d = mock_atlas,
+      components = components,
+      atlas_name = "test",
+      hemisphere = "lh",
+      views = "lateral",
+      region_snapshot_fn = function(...) NULL,
+      dirs = list(
+        base = withr::local_tempdir(), snapshots = tempdir(),
+        processed = tempdir(), masks = tempdir()
+      ),
+      steps = 5:7,
+      skip_existing = FALSE,
+      tolerance = 1,
+      smoothness = 5,
+      cleanup = FALSE,
+      verbose = FALSE,
+      start_time = Sys.time()
+    )
+
+    expect_s3_class(result, "brain_atlas")
+  })
+})
+
+
+describe("create_cortical_atlas magick check", {
+  it("checks for ImageMagick when steps > 1", {
+    local_mocked_bindings(
+      check_fs = function(abort = FALSE) invisible(TRUE),
+      check_magick = function() cli::cli_abort("ImageMagick not found")
+    )
+
+    expect_error(
+      create_cortical_atlas(
+        input_annot = c("lh.test.annot"),
+        steps = 2:8,
+        verbose = FALSE
+      ),
+      "ImageMagick"
+    )
+  })
+})
+
+
+describe("create_cortical_atlas verbose output", {
+  it("prints atlas name and paths when verbose is TRUE", {
+    local_mocked_bindings(
+      read_annotation_data = function(annot_files) {
+        dplyr::tibble(
+          hemi = "left", region = "frontal", label = "lh_frontal",
+          colour = "#FF0000", vertices = list(1:10)
+        )
+      },
+      build_atlas_components = function(data) {
+        list(
+          core = data.frame(
+            hemi = "left", region = "frontal", label = "lh_frontal",
+            stringsAsFactors = FALSE
+          ),
+          palette = c(lh_frontal = "#FF0000"),
+          vertices_df = data.frame(
+            label = "lh_frontal", vertices = I(list(1:10))
+          )
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      log_elapsed = function(...) NULL
+    )
+
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    msgs <- capture.output(
+      create_cortical_atlas(
+        input_annot = c("lh.test.annot"),
+        steps = 1,
+        verbose = TRUE
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("Creating brain atlas", msgs)))
+    expect_true(any(grepl("lh.test.annot", msgs)))
+    expect_true(any(grepl("output directory", msgs)))
+  })
+})
+
+
+describe("create_cortical_atlas full pipeline path", {
+  it("calls cortical_pipeline when steps > 1", {
+    pipeline_called <- FALSE
+    local_mocked_bindings(
+      check_fs = function(abort = FALSE) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      read_annotation_data = function(annot_files) {
+        dplyr::tibble(
+          hemi = "left", region = "frontal", label = "lh_frontal",
+          colour = "#FF0000", vertices = list(1:10)
+        )
+      },
+      build_atlas_components = function(data) {
+        list(
+          core = data.frame(
+            hemi = "left", region = "frontal", label = "lh_frontal",
+            stringsAsFactors = FALSE
+          ),
+          palette = c(lh_frontal = "#FF0000"),
+          vertices_df = data.frame(
+            label = "lh_frontal", vertices = I(list(1:10))
+          )
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      cortical_pipeline = function(...) {
+        pipeline_called <<- TRUE
+        structure(list(), class = "brain_atlas")
+      }
+    )
+
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    create_cortical_atlas(
+      input_annot = c("lh.test.annot"),
+      steps = 1:8,
+      verbose = FALSE
+    )
+
+    expect_true(pipeline_called)
+  })
+})
+
+
+describe("cortical_step1 verbose paths", {
+  it("prints progress step when verbose is TRUE and step runs", {
+    local_mocked_bindings(
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...)
+    )
+
+    tmp_dir <- withr::local_tempdir()
+    read_fn <- function() {
+      dplyr::tibble(
+        hemi = "left", region = "frontal", label = "lh_frontal",
+        colour = "#FF0000", vertices = list(1:10)
+      )
+    }
+
+    msgs <- capture.output(
+      cortical_step1(
+        dirs = list(base = tmp_dir),
+        atlas_name = "test",
+        steps = 1L,
+        skip_existing = FALSE,
+        verbose = TRUE,
+        read_fn = read_fn,
+        step_label = "1/8 Reading annotation files",
+        cache_label = "Step 1 (Read annotations)"
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("1/8 Reading", msgs)))
+  })
+
+  it("aborts when read_fn returns zero rows", {
+    tmp_dir <- withr::local_tempdir()
+    read_fn <- function() {
+      dplyr::tibble(
+        hemi = character(), region = character(), label = character(),
+        colour = character(), vertices = list()
+      )
+    }
+
+    expect_error(
+      cortical_step1(
+        dirs = list(base = tmp_dir),
+        atlas_name = "test",
+        steps = 1L,
+        skip_existing = FALSE,
+        verbose = FALSE,
+        read_fn = read_fn,
+        step_label = "1/8 test",
+        cache_label = "test"
+      ),
+      "No regions found"
+    )
+  })
+
+  it("prints loaded existing data when verbose and skip_existing", {
+    tmp_dir <- withr::local_tempdir()
+    mock_atlas <- structure(list(atlas = "test"), class = "brain_atlas")
+    mock_components <- list(
+      core = data.frame(hemi = "left", region = "r", label = "lh_r"),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+    saveRDS(mock_atlas, file.path(tmp_dir, "atlas_3d.rds"))
+    saveRDS(mock_components, file.path(tmp_dir, "components.rds"))
+
+    msgs <- capture.output(
+      cortical_step1(
+        dirs = list(base = tmp_dir),
+        atlas_name = "test",
+        steps = 1L,
+        skip_existing = TRUE,
+        verbose = TRUE,
+        read_fn = function() stop("should not be called"),
+        step_label = "test",
+        cache_label = "test"
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("Loaded existing atlas data", msgs)))
+  })
+})
+
+
+describe("cortical_pipeline cleanup verbose in step 8", {
+  it("prints cleanup message when cleanup and verbose", {
+    local_mocked_bindings(
+      cortical_brain_snapshots = function(...) NULL,
+      cortical_isolate_regions = function(...) NULL,
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      cortical_build_sf = function(...) {
+        sf::st_sf(
+          label = "test", view = "lateral",
+          geometry = sf::st_sfc(sf::st_polygon(list(matrix(
+            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          ))))
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) NULL,
+      preview_atlas = function(...) NULL,
+      log_elapsed = function(...) NULL
+    )
+
+    base_dir <- withr::local_tempdir()
+    actual_base <- file.path(base_dir, "atlas_work")
+    dir.create(actual_base)
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "r", label = "lh_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+
+    msgs <- capture.output(
+      cortical_pipeline(
+        atlas_3d = structure(list(), class = "brain_atlas"),
+        components = components,
+        atlas_name = "test",
+        hemisphere = "lh",
+        views = "lateral",
+        region_snapshot_fn = function(...) NULL,
+        dirs = list(
+          base = actual_base, snapshots = tempdir(),
+          processed = tempdir(), masks = tempdir()
+        ),
+        steps = 8L,
+        skip_existing = FALSE,
+        tolerance = 1,
+        smoothness = 5,
+        cleanup = TRUE,
+        verbose = TRUE,
+        start_time = Sys.time()
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("Temporary files removed", msgs)))
+  })
+})
+
+
+describe("cortical_pipeline verbose for non-step-8 completion", {
+  it("prints completed steps message when step 8 not included", {
+    local_mocked_bindings(
+      extract_contours = function(...) NULL,
+      smooth_contours = function(...) NULL,
+      reduce_vertex = function(...) NULL,
+      preview_atlas = function(...) NULL,
+      log_elapsed = function(...) NULL
+    )
+
+    components <- list(
+      core = data.frame(
+        hemi = "left", region = "r", label = "lh_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(lh_r = "#FF0000"),
+      vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
+    )
+
+    mock_atlas <- structure(list(atlas = "test_3d"), class = "brain_atlas")
+
+    msgs <- capture.output(
+      cortical_pipeline(
+        atlas_3d = mock_atlas,
+        components = components,
+        atlas_name = "test",
+        hemisphere = "lh",
+        views = "lateral",
+        region_snapshot_fn = function(...) NULL,
+        dirs = list(
+          base = withr::local_tempdir(), snapshots = tempdir(),
+          processed = tempdir(), masks = tempdir()
+        ),
+        steps = 5:7,
+        skip_existing = FALSE,
+        tolerance = 1,
+        smoothness = 5,
+        cleanup = FALSE,
+        verbose = TRUE,
+        start_time = Sys.time()
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("Completed steps", msgs)))
+  })
+})
+
+
+describe("create_atlas_from_labels verbose and LUT paths", {
+  it("prints verbose output when verbose is TRUE", {
+    local_mocked_bindings(
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      log_elapsed = function(...) NULL
+    )
+
+    labels <- unlist(test_label_files())
+
+    msgs <- capture.output(
+      create_atlas_from_labels(
+        labels,
+        atlas_name = "test_atlas",
+        steps = 1,
+        verbose = TRUE
+      ),
+      type = "message"
+    )
+
+    expect_true(any(grepl("Creating brain atlas", msgs)))
+    expect_true(any(grepl("Input files", msgs)))
+    expect_true(any(grepl("output directory", msgs)))
+  })
+
+  it("extracts colours from RGB columns in LUT", {
+    labels <- unlist(test_label_files())
+    rgb_lut <- data.frame(
+      region = c("Motor", "Visual", "Motor"),
+      R = c(255, 0, 0),
+      G = c(0, 255, 0),
+      B = c(0, 0, 255)
+    )
+
+    local_mocked_bindings(
+      brain_atlas = function(...) {
+        args <- list(...)
+        structure(
+          list(
+            atlas = args$atlas, type = args$type,
+            palette = args$palette, core = args$core,
+            data = args$data
+          ),
+          class = "brain_atlas"
+        )
+      },
+      cortical_data = function(...) list(...),
+      log_elapsed = function(...) NULL
+    )
+
+    atlas <- create_atlas_from_labels(
+      labels,
+      input_lut = rgb_lut,
+      atlas_name = "test_atlas",
+      steps = 1,
+      verbose = FALSE
+    )
+
+    expect_true(!is.null(atlas$palette))
+    expect_true(any(grepl("^#", atlas$palette)))
+  })
+
+  it("sets NULL colour when LUT lacks hex and RGB columns", {
+    labels <- unlist(test_label_files())
+    bad_lut <- data.frame(
+      region = c("Motor", "Visual", "Motor"),
+      score = c(1, 2, 3)
+    )
+
+    local_mocked_bindings(
+      brain_atlas = function(...) {
+        args <- list(...)
+        structure(
+          list(
+            atlas = args$atlas, type = args$type,
+            palette = args$palette, core = args$core,
+            data = args$data
+          ),
+          class = "brain_atlas"
+        )
+      },
+      cortical_data = function(...) list(...),
+      log_elapsed = function(...) NULL
+    )
+
+    atlas <- create_atlas_from_labels(
+      labels,
+      input_lut = bad_lut,
+      atlas_name = "test_atlas",
+      steps = 1,
+      verbose = FALSE
+    )
+
+    expect_null(atlas$palette)
+  })
+
+  it("calls cortical_pipeline for steps > 1", {
+    pipeline_called <- FALSE
+    local_mocked_bindings(
+      check_fs = function(abort = FALSE) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      cortical_pipeline = function(...) {
+        pipeline_called <<- TRUE
+        structure(list(), class = "brain_atlas")
+      }
+    )
+
+    labels <- unlist(test_label_files())
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    create_atlas_from_labels(
+      labels,
+      atlas_name = "test_atlas",
+      steps = 1:8,
+      verbose = FALSE
+    )
+
+    expect_true(pipeline_called)
+  })
+})
+
+
+describe("labels_read_files hemisphere-less filenames", {
+  it("assigns region without hemi prefix for unknown hemisphere", {
+    tmp <- withr::local_tempdir()
+    nohemi_file <- file.path(tmp, "some_region.label")
+    writeLines(c(
+      "#!ascii label",
+      "3",
+      "100  0.0  0.0  0.0  0.0",
+      "101  1.0  1.0  1.0  0.0",
+      "102  2.0  2.0  2.0  0.0"
+    ), nohemi_file)
+
+    default_colours <- rep(NA_character_, 1)
+
+    result <- labels_read_files(
+      c(nohemi_file), NULL, NULL, default_colours
+    )
+
+    expect_equal(result$label[1], "some_region")
+    expect_true(is.na(result$hemi[1]))
+  })
+})
+
+
+describe("create_atlas_from_labels hemi fallback", {
+  it("defaults to both hemispheres when all hemi values are NA", {
+    captured_hemisphere <- NULL
+    local_mocked_bindings(
+      check_fs = function(abort = FALSE) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      cortical_data = function(...) list(...),
+      cortical_pipeline = function(...) {
+        args <- list(...)
+        captured_hemisphere <<- args$hemisphere
+        structure(list(), class = "brain_atlas")
+      }
+    )
+
+    tmp <- withr::local_tempdir()
+    nohemi_file <- file.path(tmp, "some_region.label")
+    writeLines(c(
+      "#!ascii label",
+      "3",
+      "100  0.0  0.0  0.0  0.0",
+      "101  1.0  1.0  1.0  0.0",
+      "102  2.0  2.0  2.0  0.0"
+    ), nohemi_file)
+
+    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+
+    create_atlas_from_labels(
+      c(nohemi_file),
+      atlas_name = "test_nohemi",
+      steps = 1:8,
+      verbose = FALSE
+    )
+
+    expect_equal(captured_hemisphere, c("lh", "rh"))
+  })
+})

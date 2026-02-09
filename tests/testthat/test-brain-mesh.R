@@ -63,3 +63,25 @@ describe("make_brain_meshes", {
     expect_true("rh_inflated" %in% names(meshes))
   })
 })
+
+
+describe("get_brain_mesh surface file not found", {
+  it("errors when surface file does not exist", {
+    local_mocked_bindings(
+      check_fs = function(...) TRUE
+    )
+
+    fake_dir <- withr::local_tempdir("fake_fs_")
+    dir.create(file.path(fake_dir, "fsaverage5", "surf"), recursive = TRUE)
+
+    expect_error(
+      ggsegExtra:::get_brain_mesh(
+        subject = "fsaverage5",
+        hemisphere = "lh",
+        surface = "inflated",
+        subjects_dir = fake_dir
+      ),
+      "Surface file not found"
+    )
+  })
+})

@@ -274,3 +274,96 @@ describe("coords2sf", {
     expect_true(nrow(result) > 0)
   })
 })
+
+
+describe("layout_cortical_views", {
+  it("arranges hemi/view combinations horizontally", {
+    make_view_df <- function(hemi_val, view_val, x_offset) {
+      sf::st_sf(
+        hemi = hemi_val,
+        view = view_val,
+        geometry = sf::st_sfc(
+          sf::st_polygon(list(matrix(
+            c(
+              x_offset, 0,
+              x_offset + 1, 0,
+              x_offset + 1, 1,
+              x_offset, 1,
+              x_offset, 0
+            ),
+            ncol = 2, byrow = TRUE
+          )))
+        )
+      )
+    }
+
+    atlas_df <- rbind(
+      make_view_df("left", "lateral", 0),
+      make_view_df("left", "medial", 0),
+      make_view_df("right", "lateral", 0),
+      make_view_df("right", "medial", 0)
+    )
+
+    result <- layout_cortical_views(atlas_df)
+
+    expect_s3_class(result, "data.frame")
+    expect_true(nrow(result) == 4)
+    expect_true("hemi" %in% names(result))
+    expect_true("view" %in% names(result))
+  })
+
+  it("errors when no valid combinations found", {
+    atlas_df <- sf::st_sf(
+      hemi = "unknown",
+      view = "unknown",
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+        )))
+      )
+    )
+
+    expect_error(layout_cortical_views(atlas_df), "No valid")
+  })
+})
+
+
+describe("layout_volumetric_views", {
+  it("arranges views horizontally", {
+    df <- sf::st_sf(
+      view = c("axial", "coronal"),
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+        ))),
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+        )))
+      )
+    )
+
+    result <- layout_volumetric_views(df)
+
+    expect_s3_class(result, "data.frame")
+    expect_equal(nrow(result), 2)
+  })
+})
+
+
+describe("coords2sf polygon closing", {
+  it("closes unclosed polygon by appending first point", {
+    coords <- data.frame(
+      .long = c(0, 1, 1, 0),
+      .lat = c(0, 0, 1, 1),
+      .subid = rep(1, 4),
+      .id = rep(1, 4),
+      .poly = rep(1, 4),
+      .order = 1:4
+    )
+
+    result <- coords2sf(coords)
+
+    expect_s3_class(result, "sf")
+    expect_true(nrow(result) > 0)
+  })
+})

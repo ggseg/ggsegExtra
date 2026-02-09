@@ -200,6 +200,166 @@ describe("create_atlas_repo .Rproj file", {
 })
 
 
+describe("create_atlas_repo lowercase ggseg prefix", {
+  it("derives atlas name from lowercase ggseg prefix path", {
+    parent <- withr::local_tempdir()
+    tmp <- file.path(parent, paste0("ggsegfoo", Sys.getpid()))
+
+    create_atlas_repo(tmp, open = FALSE)
+
+    desc <- readLines(file.path(tmp, "DESCRIPTION"))
+    pkg_line <- desc[grep("^Package:", desc)]
+
+    expect_match(pkg_line, "ggsegFoo")
+  })
+
+  it("calls open_rstudio_project when open and rstudio are TRUE", {
+    tmp <- withr::local_tempdir("atlas_open_test_")
+    opened <- FALSE
+
+    local_mocked_bindings(
+      open_rstudio_project = function(path) {
+        opened <<- TRUE
+        invisible(TRUE)
+      }
+    )
+
+    create_atlas_repo(tmp, "test", open = TRUE, rstudio = TRUE)
+
+    expect_true(opened)
+  })
+})
+
+
+describe("create_atlas_from_template", {
+  it("errors when template directory does not exist", {
+    local_mocked_bindings(
+      dir.exists = function(...) FALSE,
+      .package = "base"
+    )
+
+    expect_error(
+      create_atlas_from_template("/tmp/nonexistent", "test"),
+      "Template not found"
+    )
+  })
+})
+
+
+describe("open_rstudio_project", {
+  it("returns FALSE when rstudioapi not available", {
+    local_mocked_bindings(
+      rstudioapi_available = function() FALSE
+    )
+
+    result <- open_rstudio_project("/tmp/some_path")
+
+    expect_false(result)
+  })
+
+  it("returns FALSE when no .Rproj files found", {
+    tmp <- withr::local_tempdir("rproj_test_")
+
+    local_mocked_bindings(
+      rstudioapi_available = function() TRUE
+    )
+
+    result <- open_rstudio_project(tmp)
+
+    expect_false(result)
+  })
+
+  it("opens project when rstudioapi available and Rproj exists", {
+    tmp <- withr::local_tempdir("rproj_test_")
+    writeLines("Version: 1.0", file.path(tmp, "test.Rproj"))
+    opened_path <- NULL
+
+    local_mocked_bindings(
+      rstudioapi_available = function() TRUE
+    )
+    local_mocked_bindings(
+      isAvailable = function() TRUE,
+      openProject = function(path, ...) {
+        opened_path <<- path
+        invisible(NULL)
+      },
+      .package = "rstudioapi"
+    )
+
+    result <- open_rstudio_project(tmp)
+
+    expect_true(result)
+    expect_equal(opened_path, file.path(tmp, "test.Rproj"))
+  })
+})
+
+
+describe("rstudioapi_available", {
+  it("returns FALSE when rstudioapi is not installed", {
+    local_mocked_bindings(
+      requireNamespace = function(pkg, ...) FALSE,
+      .package = "base"
+    )
+
+    expect_false(rstudioapi_available())
+  })
+})
+
+
+describe("template_replace error handling", {
+  it("returns NULL for unreadable files", {
+    result <- suppressWarnings(
+      template_replace("/nonexistent/path/file.txt", "test")
+    )
+
+    expect_null(result)
+  })
+})
+
+
+describe("new_project_create_atlas_repo", {
+  it("delegates to create_atlas_repo with correct parameters", {
+    tmp <- withr::local_tempdir("wizard_test_")
+    called_args <- NULL
+
+    local_mocked_bindings(
+      create_atlas_repo = function(path, atlas_name, open, rstudio) {
+        called_args <<- list(
+          path = path,
+          atlas_name = atlas_name,
+          open = open,
+          rstudio = rstudio
+        )
+        invisible(path)
+      }
+    )
+
+    new_project_create_atlas_repo(tmp, atlas_name = "myatlas")
+
+    expect_equal(called_args$path, tmp)
+    expect_equal(called_args$atlas_name, "myatlas")
+    expect_false(called_args$open)
+    expect_true(called_args$rstudio)
+  })
+
+  it("passes NULL atlas_name when not provided", {
+    tmp <- withr::local_tempdir("wizard_null_test_")
+    called_args <- NULL
+
+    local_mocked_bindings(
+      create_atlas_repo = function(path, atlas_name, open, rstudio) {
+        called_args <<- list(atlas_name = atlas_name)
+        invisible(path)
+      }
+    )
+
+    new_project_create_atlas_repo(tmp)
+
+    expect_null(called_args$atlas_name)
+  })
+})
+
+
 describe("template_replace", {
   it("replaces both GGSEG and REPO placeholders", {
     tmp <- withr::local_tempfile(fileext = ".txt")

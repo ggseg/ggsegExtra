@@ -34,6 +34,62 @@ describe("extract_slice_2d", {
 })
 
 
+describe("extract_slice_2d edge cases", {
+  it("returns NULL for empty slice", {
+    vol <- array(0, dim = c(10, 10, 10))
+    result <- extract_slice_2d(vol, "axial", 1)
+    expect_true(is.matrix(result))
+  })
+
+  it("handles non-matrix slice from 1-thick dimension", {
+    vol <- array(1:10, dim = c(10, 1, 1))
+    result <- extract_slice_2d(vol, "axial", 1)
+    expect_true(is.matrix(result))
+    expect_equal(dim(result), c(10, 1))
+  })
+})
+
+
+describe("snapshot_slice with label file", {
+  it("filters volume by label ID", {
+    vol <- array(0L, dim = c(10, 10, 10))
+    vol[4:6, 4:6, 5] <- 42L
+    vol[7:8, 7:8, 5] <- 99L
+
+    local_mocked_bindings(
+      read_volume = function(f) vol
+    )
+
+    outdir <- withr::local_tempdir("snap_label_")
+
+    snapshot_slice(
+      lab = "lh_0042.label",
+      x = 5,
+      y = 5,
+      z = 5,
+      view = "axial",
+      label_file = "volume.mgz",
+      output_dir = outdir
+    )
+
+    files <- list.files(outdir, pattern = "\\.png$")
+    expect_true(length(files) > 0)
+  })
+
+  it("errors when label_file is NULL for .label input", {
+    expect_error(
+      snapshot_slice(
+        lab = "lh_0042.label",
+        x = 5, y = 5, z = 5,
+        view = "axial",
+        output_dir = tempdir()
+      ),
+      "label_file must be provided"
+    )
+  })
+})
+
+
 describe("orient_slice_2d", {
   it("flips left sagittal horizontally", {
     slice <- matrix(c(1, 2, 3, 4), nrow = 2)
@@ -232,6 +288,141 @@ describe("snapshot_volume_slice", {
 })
 
 
+describe("snapshot_cortex_slice", {
+  it("creates PNG for valid slice", {
+    vol <- array(0L, dim = c(10, 10, 10))
+    vol[4:6, 4:6, 5] <- 1L
+
+    outdir <- withr::local_tempdir("cortex_slice_")
+
+    result <- snapshot_cortex_slice(
+      vol = vol,
+      x = NA,
+      y = NA,
+      z = 5,
+      slice_view = "axial",
+      view_name = "axial_1",
+      hemi = "cortex",
+      output_dir = outdir,
+      skip_existing = FALSE
+    )
+
+    expect_true(file.exists(result))
+    expect_match(basename(result), "axial_1_cortex")
+  })
+
+  it("returns NULL when slice is empty", {
+    vol <- array(0L, dim = c(10, 10, 10))
+
+    outdir <- withr::local_tempdir("cortex_slice_")
+
+    result <- snapshot_cortex_slice(
+      vol = vol,
+      x = NA,
+      y = NA,
+      z = 5,
+      slice_view = "axial",
+      view_name = "axial_1",
+      hemi = "cortex",
+      output_dir = outdir,
+      skip_existing = FALSE
+    )
+
+    expect_null(result)
+  })
+
+  it("skips existing files", {
+    vol <- array(0L, dim = c(10, 10, 10))
+    vol[4:6, 4:6, 5] <- 1L
+
+    outdir <- withr::local_tempdir("cortex_slice_")
+    outfile <- file.path(outdir, "axial_1_cortex_left.png")
+    file.create(outfile)
+
+    result <- snapshot_cortex_slice(
+      vol = vol,
+      x = NA,
+      y = NA,
+      z = 5,
+      slice_view = "axial",
+      view_name = "axial_1",
+      hemi = "left",
+      output_dir = outdir,
+      skip_existing = TRUE
+    )
+
+    expect_equal(result, outfile)
+  })
+})
+
+
+describe("snapshot_volume_slice coronal/sagittal", {
+  it("creates PNG for coronal view", {
+    vol <- array(0, dim = c(32, 32, 32))
+    vol[10:20, 16, 10:20] <- 1
+
+    outdir <- withr::local_tempdir("snapshot_vol_")
+
+    result <- snapshot_volume_slice(
+      vol = vol,
+      x = 16,
+      y = 16,
+      z = 16,
+      view = "coronal",
+      label = "test",
+      output_dir = outdir
+    )
+
+    expect_true(file.exists(result))
+    expect_match(result, "coron.*test\\.png$")
+  })
+
+  it("creates PNG for sagittal view", {
+    vol <- array(0, dim = c(32, 32, 32))
+    vol[16, 10:20, 10:20] <- 1
+
+    outdir <- withr::local_tempdir("snapshot_vol_")
+
+    result <- snapshot_volume_slice(
+      vol = vol,
+      x = 16,
+      y = 16,
+      z = 16,
+      view = "sagittal",
+      label = "test",
+      output_dir = outdir
+    )
+
+    expect_true(file.exists(result))
+    expect_match(result, "sagit.*test\\.png$")
+  })
+
+  it("skips existing files", {
+    vol <- array(0, dim = c(32, 32, 32))
+    vol[10:20, 10:20, 16] <- 1
+
+    outdir <- withr::local_tempdir("snapshot_vol_")
+
+    result1 <- snapshot_volume_slice(
+      vol = vol, x = 16, y = 16, z = 16,
+      view = "axial", label = "test",
+      output_dir = outdir, skip_existing = FALSE
+    )
+
+    mtime1 <- file.mtime(result1)
+    Sys.sleep(0.1)
+
+    result2 <- snapshot_volume_slice(
+      vol = vol, x = 16, y = 16, z = 16,
+      view = "axial", label = "test",
+      output_dir = outdir, skip_existing = TRUE
+    )
+
+    expect_equal(file.mtime(result2), mtime1)
+  })
+})
+
+
 describe("volume_projection", {
   it("creates axial projection", {
     vol <- array(0, dim = c(10, 10, 10))
@@ -282,5 +473,203 @@ describe("volume_projection with start/end", {
     proj <- volume_projection(vol, "axial", start = 3, end = 7)
 
     expect_equal(max(proj), 0)
+  })
+})
+
+
+describe("snapshot_brain_helper", {
+  it("returns early when skip_existing and file exists", {
+    tmp <- withr::local_tempfile(fileext = ".png")
+    file.create(tmp)
+
+    result <- snapshot_brain_helper(
+      atlas = NULL, hemisphere = "lh", view = "lateral",
+      surface = "inflated", outfile = tmp,
+      skip_existing = TRUE
+    )
+    expect_null(result)
+  })
+
+  it("calls ggseg3d pipeline when file doesn't exist", {
+    called <- FALSE
+    local_mocked_bindings(
+      ggseg3d = function(...) list(),
+      pan_camera = function(x, ...) x,
+      set_flat_shading = function(x, ...) x,
+      set_orthographic = function(x, ...) x,
+      set_legend = function(x, ...) x,
+      snapshot_brain = function(x, file) { called <<- TRUE; file },
+      .package = "ggseg3d"
+    )
+
+    tmp <- withr::local_tempfile(fileext = ".png")
+    snapshot_brain_helper(
+      atlas = NULL, hemisphere = "lh", view = "lateral",
+      surface = "inflated", outfile = tmp
+    )
+    expect_true(called)
+  })
+})
+
+
+describe("snapshot_brain (full brain)", {
+  it("constructs correct output filename", {
+    captured_outfile <- NULL
+    local_mocked_bindings(
+      snapshot_brain_helper = function(atlas, hemisphere, view, surface,
+                                       outfile, ...) {
+        captured_outfile <<- outfile
+        invisible(outfile)
+      }
+    )
+
+    tmp_dir <- withr::local_tempdir()
+    ggsegExtra:::snapshot_brain(
+      atlas = NULL, hemisphere = "lh", view = "lateral",
+      surface = "inflated", output_dir = tmp_dir
+    )
+
+    expect_match(basename(captured_outfile), "full_lh_lateral\\.png")
+  })
+})
+
+
+describe("snapshot_region", {
+  it("constructs correct output filename and highlight data", {
+    captured <- list()
+    local_mocked_bindings(
+      snapshot_brain_helper = function(atlas, hemisphere, view, surface,
+                                       outfile, .data, colour,
+                                       na_colour, ...) {
+        captured$outfile <<- outfile
+        captured$.data <<- .data
+        captured$colour <<- colour
+        captured$na_colour <<- na_colour
+        invisible(outfile)
+      }
+    )
+
+    mock_atlas <- list(
+      core = data.frame(label = c("lh_frontal", "lh_parietal"))
+    )
+    tmp_dir <- withr::local_tempdir()
+
+    snapshot_region(
+      atlas = mock_atlas, region_label = "lh_frontal",
+      hemisphere = "lh", view = "lateral",
+      surface = "inflated", output_dir = tmp_dir
+    )
+
+    expect_match(basename(captured$outfile), "lh_frontal_lh_lateral\\.png")
+    expect_equal(captured$colour, "highlight")
+    expect_equal(captured$na_colour, "#FFFFFF")
+    expect_equal(
+      captured$.data$highlight[captured$.data$label == "lh_frontal"],
+      "#FF0000"
+    )
+    expect_equal(
+      captured$.data$highlight[captured$.data$label == "lh_parietal"],
+      "#FFFFFF"
+    )
+  })
+})
+
+
+describe("snapshot_na_regions", {
+  it("constructs correct filename and white highlight data", {
+    captured <- list()
+    local_mocked_bindings(
+      snapshot_brain_helper = function(atlas, hemisphere, view, surface,
+                                       outfile, .data, colour,
+                                       na_colour, ...) {
+        captured$outfile <<- outfile
+        captured$na_colour <<- na_colour
+        invisible(outfile)
+      }
+    )
+
+    mock_atlas <- list(
+      core = data.frame(label = c("lh_frontal"))
+    )
+    tmp_dir <- withr::local_tempdir()
+
+    snapshot_na_regions(
+      atlas = mock_atlas, hemisphere = "lh", view = "lateral",
+      surface = "inflated", output_dir = tmp_dir
+    )
+
+    expect_match(basename(captured$outfile), "nolabel")
+    expect_equal(captured$na_colour, "#FF0000")
+  })
+})
+
+
+describe("extract_slice_2d with invalid view", {
+  it("returns NULL for unrecognized view name", {
+    vol <- array(1, dim = c(10, 10, 10))
+    result <- extract_slice_2d(vol, "invalid_view", 5)
+    expect_null(result)
+  })
+})
+
+
+describe("snapshot_cortex_slice when extract_slice_2d returns NULL", {
+  it("returns NULL when slice extraction fails", {
+    local_mocked_bindings(
+      extract_slice_2d = function(...) NULL
+    )
+
+    outdir <- withr::local_tempdir("cortex_null_")
+
+    result <- snapshot_cortex_slice(
+      vol = array(1L, dim = c(10, 10, 10)),
+      x = NA, y = NA, z = 5,
+      slice_view = "axial",
+      view_name = "axial_1",
+      hemi = "left",
+      output_dir = outdir,
+      skip_existing = FALSE
+    )
+
+    expect_null(result)
+  })
+})
+
+
+describe("snapshot_partial_projection skip and zero paths", {
+  it("returns outfile when skip_existing is TRUE and file exists", {
+    outdir <- withr::local_tempdir("partial_skip_")
+    outfile <- file.path(outdir, "axial_1_test.png")
+    file.create(outfile)
+
+    result <- snapshot_partial_projection(
+      vol = array(1L, dim = c(10, 10, 10)),
+      view = "axial",
+      start = 1, end = 10,
+      view_name = "axial_1",
+      label = "test",
+      output_dir = outdir,
+      skip_existing = TRUE
+    )
+
+    expect_equal(result, outfile, ignore_attr = TRUE)
+  })
+
+  it("returns NULL when projection is all zeros", {
+    vol <- array(0L, dim = c(10, 10, 10))
+
+    outdir <- withr::local_tempdir("partial_zero_")
+
+    result <- snapshot_partial_projection(
+      vol = vol,
+      view = "axial",
+      start = 1, end = 10,
+      view_name = "axial_1",
+      label = "empty",
+      output_dir = outdir,
+      skip_existing = FALSE
+    )
+
+    expect_null(result)
   })
 })

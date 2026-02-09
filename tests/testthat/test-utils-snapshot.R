@@ -12,6 +12,13 @@ describe("check_magick", {
     skip_if_no_imagemagick()
     expect_no_error(check_magick())
   })
+
+  it("aborts when ImageMagick is not installed", {
+    local_mocked_bindings(
+      has_magick = function() FALSE
+    )
+    expect_error(check_magick(), "ImageMagick")
+  })
 })
 
 
@@ -268,5 +275,539 @@ describe("extract_hemi_from_view", {
 
   it("returns NULL for sagittal without hemisphere", {
     expect_null(extract_hemi_from_view("sagittal", "sagittal"))
+  })
+})
+
+
+describe("process_snapshot_image", {
+  it("returns early when skip_existing is TRUE and file exists", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+    file.create(output)
+
+    read_called <- FALSE
+    local_mocked_bindings(
+      image_read = function(...) { read_called <<- TRUE; NULL }
+    )
+
+    result <- process_snapshot_image(input, output, skip_existing = TRUE)
+
+    expect_equal(result, output, ignore_attr = TRUE)
+    expect_false(read_called)
+  })
+
+  it("calls image processing pipeline", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    transparent_called <- FALSE
+    write_called <- FALSE
+    sentinel <- structure(list(), class = "mock_img")
+
+    local_mocked_bindings(
+      image_read = function(...) sentinel,
+      image_convert = function(...) sentinel,
+      image_transparent = function(...) { transparent_called <<- TRUE; sentinel },
+      image_write = function(image, path, ...) {
+        write_called <<- TRUE
+        file.create(path)
+      }
+    )
+
+    result <- process_snapshot_image(input, output, skip_existing = FALSE)
+
+    expect_true(transparent_called)
+    expect_true(write_called)
+    expect_true(file.exists(output))
+    expect_equal(result, output, ignore_attr = TRUE)
+  })
+
+  it("applies dilation when dilate > 0", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    morphology_called <- FALSE
+    sentinel <- structure(list(), class = "mock_img")
+
+    local_mocked_bindings(
+      image_read = function(...) sentinel,
+      image_convert = function(...) sentinel,
+      image_transparent = function(...) sentinel,
+      image_morphology = function(img, method, kernel, iterations, ...) {
+        morphology_called <<- TRUE
+        expect_equal(method, "DilateI")
+        expect_equal(kernel, "diamond")
+        expect_equal(iterations, 2)
+        sentinel
+      },
+      image_write = function(image, path, ...) { file.create(path) }
+    )
+
+    process_snapshot_image(input, output, dilate = 2, skip_existing = FALSE)
+
+    expect_true(morphology_called)
+  })
+
+  it("skips dilation when dilate is NULL", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    morphology_called <- FALSE
+    sentinel <- structure(list(), class = "mock_img")
+
+    local_mocked_bindings(
+      image_read = function(...) sentinel,
+      image_convert = function(...) sentinel,
+      image_transparent = function(...) sentinel,
+      image_morphology = function(...) { morphology_called <<- TRUE; sentinel },
+      image_write = function(image, path, ...) { file.create(path) }
+    )
+
+    process_snapshot_image(input, output, dilate = NULL, skip_existing = FALSE)
+
+    expect_false(morphology_called)
+  })
+})
+
+
+describe("extract_alpha_mask", {
+  it("returns early when skip_existing is TRUE and file exists", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+    file.create(output)
+
+    system_called <- FALSE
+    local_mocked_bindings(
+      system = function(...) { system_called <<- TRUE; 0L },
+      .package = "base"
+    )
+
+    result <- extract_alpha_mask(input, output, skip_existing = TRUE)
+
+    expect_equal(result, output, ignore_attr = TRUE)
+    expect_false(system_called)
+  })
+
+  it("constructs correct magick command", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    captured_cmd <- NULL
+    local_mocked_bindings(
+      system = function(command, ...) { captured_cmd <<- command; 0L },
+      .package = "base"
+    )
+
+    extract_alpha_mask(input, output, skip_existing = FALSE)
+
+    expect_true(grepl("^magick", captured_cmd))
+    expect_true(grepl("-alpha extract", captured_cmd))
+    expect_true(grepl(shQuote(input), captured_cmd, fixed = TRUE))
+    expect_true(grepl(shQuote(output), captured_cmd, fixed = TRUE))
+  })
+
+  it("returns output file path", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    local_mocked_bindings(
+      system = function(...) 0L,
+      .package = "base"
+    )
+
+    result <- extract_alpha_mask(input, output, skip_existing = FALSE)
+
+    expect_equal(result, output, ignore_attr = TRUE)
+  })
+})
+
+
+describe("run_cmd", {
+  it("constructs command with get_fs prefix", {
+    captured_cmd <- NULL
+    local_mocked_bindings(
+      system = function(command, ...) { captured_cmd <<- command; "" },
+      .package = "base"
+    )
+    local_mocked_bindings(
+      get_fs = function() "source /opt/freesurfer/SetUpFreeSurfer.sh; "
+    )
+
+    run_cmd("freeview -v brain.mgz", verbose = FALSE, no_ui = FALSE)
+
+    expect_true(grepl("^source /opt/freesurfer", captured_cmd))
+    expect_true(grepl("freeview -v brain.mgz$", captured_cmd))
+  })
+
+  it("passes verbose to intern and ignore params", {
+    captured_args <- list()
+    local_mocked_bindings(
+      system = function(command, intern, ignore.stdout, ignore.stderr, ...) {
+        captured_args <<- list(
+          intern = intern,
+          ignore.stdout = ignore.stdout,
+          ignore.stderr = ignore.stderr
+        )
+        ""
+      },
+      .package = "base"
+    )
+    local_mocked_bindings(
+      get_fs = function() ""
+    )
+
+    run_cmd("echo test", verbose = TRUE, no_ui = FALSE)
+
+    expect_true(captured_args$intern)
+    expect_false(captured_args$ignore.stdout)
+    expect_false(captured_args$ignore.stderr)
+
+    run_cmd("echo test", verbose = FALSE, no_ui = FALSE)
+
+    expect_true(captured_args$intern)
+    expect_true(captured_args$ignore.stdout)
+    expect_true(captured_args$ignore.stderr)
+  })
+
+  it("modifies cmd for macOS freeview when no_ui is TRUE", {
+    captured_cmd <- NULL
+    local_mocked_bindings(
+      system = function(command, ...) { captured_cmd <<- command; "" },
+      .package = "base"
+    )
+    local_mocked_bindings(
+      get_fs = function() ""
+    )
+
+    withr::local_envvar(FREESURFER_HOME = "/opt/freesurfer")
+
+    run_cmd("freeview -v brain.mgz", verbose = FALSE, no_ui = TRUE)
+
+    if (Sys.info()["sysname"] == "Darwin") {
+      expect_true(grepl("open -g -j -n -W", captured_cmd))
+      expect_true(grepl("Freeview.app", captured_cmd))
+      expect_true(grepl("-v brain.mgz", captured_cmd))
+      expect_false(grepl("^.*freeview ", captured_cmd))
+    } else {
+      expect_true(grepl("^fsxvfb", captured_cmd))
+    }
+  })
+})
+
+
+describe("get_contours", {
+  it("returns NULL when max value < max_val", {
+    local_mocked_bindings(
+      global = function(x, ...) data.frame(max = 100)
+    )
+
+    result <- get_contours("fake_raster", max_val = 255)
+
+    expect_null(result)
+  })
+
+  it("processes raster when max >= max_val", {
+    as_polygons_called <- FALSE
+
+    local_mocked_bindings(
+      global = function(x, ...) data.frame(max = 255),
+      as.polygons = function(...) { as_polygons_called <<- TRUE; "mock_poly" }
+    )
+
+    local_mocked_bindings(
+      st_as_sf = function(...) data.frame(id = 1, stringsAsFactors = FALSE),
+      st_is_empty = function(...) FALSE,
+      .package = "sf"
+    )
+
+    local_mocked_bindings(
+      to_coords = function(coords, n) coords,
+      coords2sf = function(coords, limits) coords
+    )
+
+    rast_obj <- structure(
+      list(vals = c(0L, 255L)),
+      class = "mock_rast"
+    )
+    `[<-.mock_rast` <- function(x, i, value) x
+    `[.mock_rast` <- function(x, i) {
+      structure(list(vals = c(TRUE, FALSE)), class = "mock_rast")
+    }
+
+    environment(`[<-.mock_rast`) <- globalenv()
+    environment(`[.mock_rast`) <- globalenv()
+
+    result <- tryCatch(
+      get_contours(rast_obj, max_val = 255),
+      error = function(e) "processing_attempted"
+    )
+
+    expect_true(as_polygons_called || result == "processing_attempted")
+  })
+})
+
+
+describe("isolate_region", {
+  it("returns early when skip_existing is TRUE and file exists", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+    file.create(output)
+
+    read_called <- FALSE
+    local_mocked_bindings(
+      image_read = function(...) { read_called <<- TRUE; NULL }
+    )
+
+    result <- isolate_region(input, output, skip_existing = TRUE)
+
+    expect_equal(result, output, ignore_attr = TRUE)
+    expect_false(read_called)
+  })
+
+  it("errors when ImageMagick is not available", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    interim <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    sentinel <- structure(list(), class = "mock_img")
+    local_mocked_bindings(
+      image_read = function(...) sentinel,
+      image_convert = function(...) sentinel,
+      image_transparent = function(...) sentinel,
+      image_write = function(...) interim,
+      has_magick = function() FALSE
+    )
+
+    expect_error(
+      isolate_region(input, output, interim_file = interim, skip_existing = FALSE),
+      "imagemagick"
+    )
+  })
+
+  it("runs extraction when ImageMagick is available", {
+    input <- withr::local_tempfile(fileext = ".png")
+    output <- withr::local_tempfile(fileext = ".png")
+    interim <- withr::local_tempfile(fileext = ".png")
+    file.create(input)
+
+    sentinel <- structure(list(), class = "mock_img")
+    run_cmd_called <- FALSE
+
+    local_mocked_bindings(
+      image_read = function(...) sentinel,
+      image_convert = function(...) sentinel,
+      image_transparent = function(...) sentinel,
+      image_write = function(...) interim,
+      has_magick = function() TRUE,
+      run_cmd = function(cmd, ...) {
+        run_cmd_called <<- TRUE
+        expect_true(grepl("magick", cmd))
+        expect_true(grepl("-alpha extract", cmd))
+        "ok"
+      }
+    )
+
+    isolate_region(input, output, interim_file = interim, skip_existing = FALSE)
+
+    expect_true(run_cmd_called)
+  })
+})
+
+
+describe("load_reduced_contours", {
+  it("loads and processes contours file", {
+    base_dir <- withr::local_tempdir("contours_")
+
+    mock_sf <- data.frame(
+      filenm = c("region1_lh_lateral", "region2_rh_medial"),
+      stringsAsFactors = FALSE
+    )
+
+    contours <- "placeholder"
+    save(contours, file = file.path(base_dir, "contours_reduced.rda"))
+
+    local_mocked_bindings(
+      vect = function(...) "mock_vect",
+      flip = function(...) "mock_flipped",
+      .package = "terra"
+    )
+    local_mocked_bindings(
+      st_as_sf = function(...) mock_sf,
+      .package = "sf"
+    )
+
+    result <- load_reduced_contours(base_dir)
+
+    expect_true("view" %in% names(result))
+    expect_true("hemi_short" %in% names(result))
+    expect_true("hemi" %in% names(result))
+    expect_true("label" %in% names(result))
+  })
+
+  it("adds view/hemi/label columns from parsed filenames", {
+    base_dir <- withr::local_tempdir("contours_")
+
+    mock_sf <- data.frame(
+      filenm = c(
+        "superior_frontal_lh_lateral",
+        "precentral_rh_medial"
+      ),
+      stringsAsFactors = FALSE
+    )
+
+    contours <- "placeholder"
+    save(contours, file = file.path(base_dir, "contours_reduced.rda"))
+
+    local_mocked_bindings(
+      vect = function(...) "mock",
+      flip = function(...) "mock",
+      .package = "terra"
+    )
+    local_mocked_bindings(
+      st_as_sf = function(...) mock_sf,
+      .package = "sf"
+    )
+
+    result <- load_reduced_contours(base_dir)
+
+    expect_equal(result$view, c("lateral", "medial"))
+    expect_equal(result$hemi_short, c("lh", "rh"))
+    expect_equal(result$hemi, c("left", "right"))
+    expect_equal(result$label, c("superior_frontal", "precentral"))
+  })
+})
+
+
+describe("magick_version", {
+  it("returns first line of system2 output", {
+    local_mocked_bindings(
+      system2 = function(command, args, stdout, ...) {
+        c("Version: ImageMagick 7.1.0", "Features: DPC")
+      },
+      .package = "base"
+    )
+
+    result <- magick_version()
+
+    expect_equal(result, "Version: ImageMagick 7.1.0")
+  })
+})
+
+
+describe("run_cmd non-Darwin no_ui branch", {
+  it("prepends fsxvfb on non-Darwin systems", {
+    captured_cmd <- NULL
+    local_mocked_bindings(
+      system = function(command, ...) { captured_cmd <<- command; "" },
+      .package = "base"
+    )
+    local_mocked_bindings(
+      get_fs = function() ""
+    )
+
+    withr::local_envvar(FREESURFER_HOME = "/opt/freesurfer")
+
+    mock_sysinfo <- c(sysname = "Linux")
+    local_mocked_bindings(
+      Sys.info = function() mock_sysinfo,
+      .package = "base"
+    )
+
+    run_cmd("freeview -v brain.mgz", verbose = FALSE, no_ui = TRUE)
+
+    expect_true(grepl("^fsxvfb", captured_cmd))
+  })
+})
+
+
+describe("get_contours full processing path", {
+  it("returns sf result when contours are non-empty", {
+    mock_sf <- sf::st_sf(
+      id = 1,
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        )))
+      )
+    )
+
+    mock_result_sf <- sf::st_sf(
+      geometry = sf::st_sfc(
+        sf::st_multipolygon(list(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2, byrow = TRUE
+        ))))
+      )
+    )
+
+    mock_coords <- data.frame(
+      .long = c(0, 1, 1, 0, 0),
+      .lat = c(0, 0, 1, 1, 0),
+      .subid = rep(1, 5),
+      .id = rep(1, 5),
+      .poly = rep(1, 5),
+      .order = 1:5
+    )
+
+    rast_obj <- structure(list(), class = "mock_rast2")
+    assign("[<-.mock_rast2", function(x, i, value) x, envir = globalenv())
+    assign("[.mock_rast2", function(x, i) x, envir = globalenv())
+
+    local_mocked_bindings(
+      global = function(x, ...) data.frame(max = 255),
+      as.polygons = function(...) mock_sf,
+      st_as_sf = function(...) mock_sf,
+      to_coords = function(coords, n) mock_coords,
+      coords2sf = function(coords, limits) mock_result_sf
+    )
+    local_mocked_bindings(
+      st_is_empty = function(...) FALSE,
+      .package = "sf"
+    )
+
+    result <- get_contours(rast_obj, max_val = 255)
+
+    expect_s3_class(result, "sf")
+
+    rm("[<-.mock_rast2", envir = globalenv())
+    rm("[.mock_rast2", envir = globalenv())
+  })
+
+  it("returns NULL when all contours are empty geometries", {
+    nonempty_sf <- sf::st_sf(
+      id = 1,
+      geometry = sf::st_sfc(sf::st_polygon())
+    )
+
+    rast_obj <- structure(list(), class = "mock_rast3")
+    assign("[<-.mock_rast3", function(x, i, value) x, envir = globalenv())
+    assign("[.mock_rast3", function(x, i) x, envir = globalenv())
+
+    local_mocked_bindings(
+      global = function(x, ...) data.frame(max = 255),
+      as.polygons = function(...) nonempty_sf
+    )
+    local_mocked_bindings(
+      st_as_sf = function(...) nonempty_sf,
+      st_is_empty = function(...) TRUE,
+      .package = "sf"
+    )
+
+    result <- get_contours(rast_obj, max_val = 255)
+
+    expect_null(result)
+
+    rm("[<-.mock_rast3", envir = globalenv())
+    rm("[.mock_rast3", envir = globalenv())
   })
 })

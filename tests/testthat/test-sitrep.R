@@ -54,6 +54,57 @@ describe("check_fsaverage", {
 })
 
 
+describe("check_freesurfer", {
+  it("alerts danger when FreeSurfer not configured in simple mode", {
+    local_mocked_bindings(
+      have_fs = function() FALSE,
+      .package = "freesurfer"
+    )
+    msgs <- capture.output(check_freesurfer("simple"), type = "message")
+    expect_true(any(grepl("not configured", msgs)))
+  })
+})
+
+
+describe("check_other_system_deps", {
+  it("shows install URL when ImageMagick missing in full detail", {
+    local_mocked_bindings(
+      has_magick = function() FALSE
+    )
+    local_mocked_bindings(
+      find_chrome = function() "/usr/bin/chromium",
+      .package = "chromote"
+    )
+    msgs <- capture.output(check_other_system_deps("full"), type = "message")
+    expect_true(any(grepl("imagemagick.org", msgs)))
+  })
+
+  it("shows help text when Chrome missing in full detail", {
+    local_mocked_bindings(
+      has_magick = function() TRUE
+    )
+    local_mocked_bindings(
+      find_chrome = function() NULL,
+      .package = "chromote"
+    )
+    msgs <- capture.output(check_other_system_deps("full"), type = "message")
+    expect_true(any(grepl("Install Chrome", msgs)))
+  })
+})
+
+
+describe("check_fsaverage", {
+  it("alerts when fsaverage5 not found", {
+    local_mocked_bindings(
+      fs_subj_dir = function() "/nonexistent/path",
+      .package = "freesurfer"
+    )
+    msgs <- capture.output(check_fsaverage("simple"), type = "message")
+    expect_true(any(grepl("not found", msgs)))
+  })
+})
+
+
 describe("summarize_sitrep", {
   it("handles all-true results", {
     results <- list(

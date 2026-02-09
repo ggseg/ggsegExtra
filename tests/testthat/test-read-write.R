@@ -66,6 +66,42 @@ describe("read_volume", {
 })
 
 
+describe("read_volume with reorient FALSE", {
+  it("returns niftiImage when reorient is FALSE", {
+    skip_if_not_installed("RNifti")
+
+    tmp <- withr::local_tempfile(fileext = ".nii.gz")
+    vol <- array(1:27, dim = c(3, 3, 3))
+    RNifti::writeNifti(vol, tmp)
+
+    result <- read_volume(tmp, reorient = FALSE)
+
+    expect_true(inherits(result, "niftiImage"))
+  })
+})
+
+
+describe("read_ply_mesh from file path", {
+  it("reads PLY file when given a string path", {
+    mock_ply_result <- list(
+      vb = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 1, 1), nrow = 4, byrow = TRUE),
+      it = matrix(c(1, 2, 3), nrow = 3)
+    )
+
+    local_mocked_bindings(
+      read.ply = function(ply, ...) mock_ply_result
+    )
+
+    result <- read_ply_mesh("/fake/path.ply")
+
+    expect_type(result, "list")
+    expect_named(result, c("vertices", "faces"))
+    expect_equal(nrow(result$vertices), 3)
+    expect_equal(nrow(result$faces), 1)
+  })
+})
+
+
 describe("read_ply_mesh", {
   it("converts PLY object to mesh format", {
     mock_ply <- list(
@@ -374,5 +410,56 @@ describe("write_dpv and read_dpv", {
 
     expect_true(all(face_values[1:3] >= 0))
     expect_true(all(face_values[1:3] < 3))
+  })
+})
+
+
+describe("read_annotation_data", {
+  it("warns and skips files without hemisphere prefix", {
+    tmp <- withr::local_tempfile(fileext = ".annot")
+    writeLines("dummy", tmp)
+
+    local_mocked_bindings(
+      read_annotation = function(...) {
+        stop("should not be called")
+      },
+      .package = "freesurfer"
+    )
+
+    expect_warning(
+      result <- read_annotation_data(tmp),
+      "Cannot detect hemisphere"
+    )
+
+    expect_equal(nrow(result), 0)
+  })
+
+  it("skips regions with zero matching vertices", {
+    tmp_dir <- withr::local_tempdir()
+    tmp_lh <- file.path(tmp_dir, "lh.test.annot")
+    writeLines("dummy", tmp_lh)
+
+    mock_annotation <- list(
+      label = c(1L, 1L, 1L),
+      colortable = data.frame(
+        label = c("motor", "ghost_region"),
+        code = c(1L, 999L),
+        R = c(255L, 0L),
+        G = c(0L, 255L),
+        B = c(0L, 0L),
+        stringsAsFactors = FALSE
+      )
+    )
+
+    local_mocked_bindings(
+      read_annotation = function(...) mock_annotation,
+      .package = "freesurfer"
+    )
+
+    result <- read_annotation_data(tmp_lh)
+
+    region_names <- result$region
+    expect_true("motor" %in% region_names)
+    expect_false("ghost_region" %in% region_names)
   })
 })

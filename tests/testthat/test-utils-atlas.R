@@ -142,6 +142,18 @@ describe("setup_atlas_dirs", {
 })
 
 
+describe("setup_atlas_dirs with NULL atlas_name", {
+  it("uses output_dir directly as base when atlas_name is NULL", {
+    tmp <- withr::local_tempdir()
+    dirs <- setup_atlas_dirs(tmp, atlas_name = NULL)
+
+    expect_equal(dirs$base, tmp)
+    expect_true(dir.exists(dirs$snapshots))
+    expect_equal(dirs$snapshots, file.path(tmp, "snapshots"))
+  })
+})
+
+
 describe("build_atlas_components", {
   it("builds core, palette and vertices from atlas data", {
     atlas_data <- data.frame(

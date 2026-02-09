@@ -216,6 +216,237 @@ describe("subcort_create_meshes", {
       "No meshes"
     )
   })
+
+  it("warns and skips when tessellation fails with verbose", {
+    local_mocked_bindings(
+      tessellate_label = function(...) stop("mesh error"),
+      progressor = function(...) function(...) NULL,
+      future_map2 = function(.x, .y, .f, ...) {
+        mapply(.f, .x, .y, SIMPLIFY = FALSE)
+      },
+      furrr_options = function(...) list(),
+      center_meshes = function(x) x
+    )
+
+    colortable <- data.frame(
+      idx = c(10, 20),
+      label = c("Left-Putamen", "Right-Putamen"),
+      stringsAsFactors = FALSE
+    )
+    dirs <- list(meshes = withr::local_tempdir())
+
+    expect_error(
+      expect_warning(
+        subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, TRUE),
+        "Failed to create mesh"
+      ),
+      "No meshes"
+    )
+  })
+
+  it("returns meshes and logs success with verbose", {
+    mock_mesh <- list(
+      vertices = list(x = 1:3, y = 1:3, z = 1:3),
+      faces = list(i = 1, j = 2, k = 3)
+    )
+    local_mocked_bindings(
+      tessellate_label = function(...) mock_mesh,
+      progressor = function(...) function(...) NULL,
+      future_map2 = function(.x, .y, .f, ...) {
+        mapply(.f, .x, .y, SIMPLIFY = FALSE)
+      },
+      furrr_options = function(...) list(),
+      center_meshes = function(x) x
+    )
+
+    colortable <- data.frame(
+      idx = 10, label = "Left-Putamen", stringsAsFactors = FALSE
+    )
+    dirs <- list(meshes = withr::local_tempdir())
+
+    result <- subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, TRUE)
+
+    expect_equal(length(result), 1)
+    expect_equal(names(result), "Left-Putamen")
+  })
+
+  it("filters out NULL meshes from failed tessellations", {
+    call_count <- 0L
+    mock_mesh <- list(
+      vertices = list(x = 1:3, y = 1:3, z = 1:3),
+      faces = list(i = 1, j = 2, k = 3)
+    )
+    local_mocked_bindings(
+      tessellate_label = function(...) {
+        call_count <<- call_count + 1L
+        if (call_count == 1L) stop("fail") else mock_mesh
+      },
+      progressor = function(...) function(...) NULL,
+      future_map2 = function(.x, .y, .f, ...) {
+        mapply(.f, .x, .y, SIMPLIFY = FALSE)
+      },
+      furrr_options = function(...) list(),
+      center_meshes = function(x) x
+    )
+
+    colortable <- data.frame(
+      idx = c(10, 20),
+      label = c("Left-Putamen", "Right-Putamen"),
+      stringsAsFactors = FALSE
+    )
+    dirs <- list(meshes = withr::local_tempdir())
+
+    result <- subcort_create_meshes("fake.mgz", colortable, dirs, FALSE, FALSE)
+
+    expect_equal(length(result), 1)
+    expect_equal(names(result), "Right-Putamen")
+  })
+})
+
+
+describe("subcort_create_snapshots", {
+  it("creates snapshots for structures and cortex slices", {
+    snapshot_calls <- 0L
+    cortex_calls <- 0L
+
+    local_mocked_bindings(
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(10, 10, 10))
+        vol[2, 2, 2] <- 10L
+        vol[5, 5, 5] <- 3L
+        vol
+      },
+      default_subcortical_views = function(dims) {
+        data.frame(
+          name = "ax_1", type = "axial", start = 1, end = 10,
+          stringsAsFactors = FALSE
+        )
+      },
+      create_cortex_slices = function(views, dims) {
+        data.frame(
+          x = NA, y = NA, z = 5, view = "axial", name = "ax_1",
+          stringsAsFactors = FALSE
+        )
+      },
+      detect_cortex_labels = function(vol) {
+        list(left = 3L, right = integer(0))
+      },
+      extract_hemi_from_view = function(...) "left",
+      progressor = function(...) function(...) NULL,
+      future_pmap = function(.l, .f, ...) {
+        purrr::pmap(.l, .f)
+      },
+      furrr_options = function(...) list(),
+      snapshot_partial_projection = function(...) {
+        snapshot_calls <<- snapshot_calls + 1L
+        invisible(NULL)
+      },
+      snapshot_cortex_slice = function(...) {
+        cortex_calls <<- cortex_calls + 1L
+        invisible(NULL)
+      }
+    )
+
+    colortable <- data.frame(
+      idx = 10, label = "Left-Putamen",
+      stringsAsFactors = FALSE
+    )
+    dirs <- list(snaps = withr::local_tempdir())
+
+    result <- subcort_create_snapshots(
+      "fake.mgz", colortable, NULL, dirs, FALSE
+    )
+
+    expect_true(is.list(result))
+    expect_true("views" %in% names(result))
+    expect_true("cortex_slices" %in% names(result))
+    expect_true(snapshot_calls > 0)
+    expect_true(cortex_calls > 0)
+  })
+
+  it("uses provided views instead of defaults", {
+    custom_views <- data.frame(
+      name = "custom_view", type = "coronal", start = 50, end = 60,
+      stringsAsFactors = FALSE
+    )
+
+    local_mocked_bindings(
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(10, 10, 10))
+        vol[2, 2, 2] <- 10L
+        vol
+      },
+      create_cortex_slices = function(views, dims) {
+        data.frame(
+          x = NA, y = 5, z = NA, view = "coronal", name = "custom_view",
+          stringsAsFactors = FALSE
+        )
+      },
+      detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
+      extract_hemi_from_view = function(...) "left",
+      progressor = function(...) function(...) NULL,
+      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      furrr_options = function(...) list(),
+      snapshot_partial_projection = function(...) invisible(NULL),
+      snapshot_cortex_slice = function(...) invisible(NULL)
+    )
+
+    colortable <- data.frame(
+      idx = 10, label = "Left-Putamen", stringsAsFactors = FALSE
+    )
+    dirs <- list(snaps = withr::local_tempdir())
+
+    result <- subcort_create_snapshots(
+      "fake.mgz", colortable, custom_views, dirs, FALSE
+    )
+
+    expect_equal(result$views$name, "custom_view")
+    expect_equal(result$views$type, "coronal")
+  })
+
+  it("skips structures with zero voxels in volume", {
+    snapshot_calls <- 0L
+
+    local_mocked_bindings(
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(10, 10, 10))
+        vol
+      },
+      default_subcortical_views = function(dims) {
+        data.frame(
+          name = "ax_1", type = "axial", start = 1, end = 10,
+          stringsAsFactors = FALSE
+        )
+      },
+      create_cortex_slices = function(views, dims) {
+        data.frame(
+          x = NA, y = NA, z = 5, view = "axial", name = "ax_1",
+          stringsAsFactors = FALSE
+        )
+      },
+      detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
+      extract_hemi_from_view = function(...) "left",
+      progressor = function(...) function(...) NULL,
+      future_pmap = function(.l, .f, ...) purrr::pmap(.l, .f),
+      furrr_options = function(...) list(),
+      snapshot_partial_projection = function(...) {
+        snapshot_calls <<- snapshot_calls + 1L
+        invisible(NULL)
+      },
+      snapshot_cortex_slice = function(...) invisible(NULL)
+    )
+
+    colortable <- data.frame(
+      idx = 99, label = "Missing-Region", stringsAsFactors = FALSE
+    )
+    dirs <- list(snaps = withr::local_tempdir())
+
+    result <- subcort_create_snapshots(
+      "fake.mgz", colortable, NULL, dirs, FALSE
+    )
+
+    expect_equal(snapshot_calls, 0)
+  })
 })
 
 
@@ -364,6 +595,591 @@ describe("create_subcortical_atlas pipeline flow", {
     )
 
     expect_true(mask_called)
+  })
+
+  it("verbose step 1 logs structure count", {
+    test_dir <- withr::local_tempdir()
+    logged_msg <- NULL
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      get_ctab = function(f) {
+        data.frame(
+          idx = c(10, 20), label = c("region_a", "region_b"),
+          color = c("#FF0000", "#00FF00"), stringsAsFactors = FALSE
+        )
+      },
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(3, 3, 3))
+        vol[1, 1, 1] <- 10L
+        vol[2, 2, 2] <- 20L
+        vol
+      },
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = step %in% steps, data = list())
+      },
+      subcort_create_meshes = function(...) {
+        list(
+          region_a = list(
+            vertices = list(x = 1, y = 1, z = 1),
+            faces = list(i = 1, j = 1, k = 1)
+          ),
+          region_b = list(
+            vertices = list(x = 2, y = 2, z = 2),
+            faces = list(i = 1, j = 1, k = 1)
+          )
+        )
+      },
+      subcort_build_components = function(...) {
+        list(
+          core = data.frame(
+            hemi = NA, region = c("a", "b"),
+            label = c("region_a", "region_b"),
+            stringsAsFactors = FALSE
+          ),
+          palette = c(region_a = "#FF0000", region_b = "#00FF00"),
+          meshes_df = data.frame(label = c("region_a", "region_b"))
+        )
+      },
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      subcortical_data = function(...) list(...)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    atlas <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 1:3,
+      verbose = TRUE
+    )
+
+    expect_s3_class(atlas, "brain_atlas")
+    expect_equal(nrow(atlas$core), 2)
+  })
+
+  it("errors when no matching labels found", {
+    test_dir <- withr::local_tempdir()
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      get_ctab = function(f) {
+        data.frame(
+          idx = 999, label = "nonexistent",
+          color = "#FF0000", stringsAsFactors = FALSE
+        )
+      },
+      read_volume = function(f) {
+        vol <- array(0L, dim = c(3, 3, 3))
+        vol[1, 1, 1] <- 10L
+        vol
+      },
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = step %in% steps, data = list())
+      }
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    expect_error(
+      create_subcortical_atlas(
+        input_volume = vol_file,
+        input_lut = lut_file,
+        steps = 1,
+        verbose = FALSE
+      ),
+      "No matching labels"
+    )
+  })
+
+  it("loads cached step data when step not in steps", {
+    test_dir <- withr::local_tempdir()
+    cached_colortable <- data.frame(
+      idx = 10, label = "cached_region", color = "#AABBCC",
+      stringsAsFactors = FALSE
+    )
+    cached_meshes <- list(
+      cached_region = list(
+        vertices = list(x = 1, y = 1, z = 1),
+        faces = list(i = 1, j = 1, k = 1)
+      )
+    )
+    cached_components <- list(
+      core = data.frame(
+        hemi = NA, region = "cached", label = "cached_region",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(cached_region = "#AABBCC"),
+      meshes_df = data.frame(label = "cached_region")
+    )
+
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, files, ...) {
+        if (step == 1L && !(step %in% steps)) {
+          list(run = FALSE, data = list(
+            "colortable.rds" = cached_colortable,
+            "vol_labels.rds" = c(10)
+          ))
+        } else if (step == 2L && !(step %in% steps)) {
+          list(run = FALSE, data = list("meshes_list.rds" = cached_meshes))
+        } else if (step == 3L) {
+          list(run = TRUE, data = list())
+        } else {
+          list(run = step %in% steps, data = list())
+        }
+      },
+      subcort_build_components = function(...) cached_components,
+      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
+      subcortical_data = function(...) list(...)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    atlas <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 3,
+      verbose = FALSE
+    )
+
+    expect_s3_class(atlas, "brain_atlas")
+  })
+
+  it("step 9 errors when contours_reduced.rda missing", {
+    test_dir <- withr::local_tempdir()
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        if (step %in% steps) {
+          list(run = TRUE, data = list())
+        } else {
+          list(run = FALSE, data = list(
+            "colortable.rds" = data.frame(idx = 10, label = "r"),
+            "vol_labels.rds" = c(10),
+            "meshes_list.rds" = list(),
+            "components.rds" = list(
+              core = data.frame(hemi = NA, region = "r", label = "r"),
+              palette = c(r = "#FF0000"),
+              meshes_df = data.frame(label = "r")
+            ),
+            "views.rds" = data.frame(name = "ax_1", type = "axial",
+                                     start = 1, end = 10),
+            "cortex_slices.rds" = NULL
+          ))
+        }
+      },
+      subcort_create_snapshots = function(...) {
+        list(
+          views = data.frame(name = "ax_1", type = "axial",
+                             start = 1, end = 10),
+          cortex_slices = NULL
+        )
+      },
+      process_and_mask_images = function(...) invisible(NULL),
+      extract_contours = function(...) invisible(NULL),
+      smooth_contours = function(...) invisible(NULL),
+      reduce_vertex = function(...) invisible(NULL)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    expect_error(
+      create_subcortical_atlas(
+        input_volume = vol_file,
+        input_lut = lut_file,
+        steps = 9,
+        verbose = FALSE
+      ),
+      "contours_reduced"
+    )
+  })
+
+  it("loads cached data with verbose for steps 1-4", {
+    test_dir <- withr::local_tempdir()
+    cached_colortable <- data.frame(
+      idx = 10, label = "cached_r", color = "#AABBCC",
+      stringsAsFactors = FALSE
+    )
+    cached_meshes <- list(
+      cached_r = list(
+        vertices = list(x = 1, y = 1, z = 1),
+        faces = list(i = 1, j = 1, k = 1)
+      )
+    )
+    cached_components <- list(
+      core = data.frame(
+        hemi = NA, region = "cached", label = "cached_r",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(cached_r = "#AABBCC"),
+      meshes_df = data.frame(label = "cached_r")
+    )
+    cached_views <- data.frame(
+      name = "ax_1", type = "axial", start = 1, end = 10,
+      stringsAsFactors = FALSE
+    )
+
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        if (step == 1L) {
+          list(run = FALSE, data = list(
+            "colortable.rds" = cached_colortable,
+            "vol_labels.rds" = c(10)
+          ))
+        } else if (step == 2L) {
+          list(run = FALSE, data = list("meshes_list.rds" = cached_meshes))
+        } else if (step == 3L) {
+          list(run = FALSE, data = list("components.rds" = cached_components))
+        } else if (step == 4L) {
+          list(run = FALSE, data = list(
+            "views.rds" = cached_views,
+            "cortex_slices.rds" = data.frame(
+              x = 128, y = NA, z = NA, view = "axial", name = "ax_1"
+            )
+          ))
+        } else {
+          list(run = step %in% steps, data = list())
+        }
+      },
+      process_and_mask_images = function(...) invisible(NULL),
+      extract_contours = function(...) invisible(NULL),
+      smooth_contours = function(...) invisible(NULL),
+      reduce_vertex = function(...) invisible(NULL)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    result <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 5:8,
+      verbose = TRUE
+    )
+
+    expect_null(result)
+  })
+
+  it("runs steps 4-8 via the pipeline", {
+    test_dir <- withr::local_tempdir()
+    cached_colortable <- data.frame(
+      idx = 10, label = "region", color = "#FF0000",
+      stringsAsFactors = FALSE
+    )
+    step4_called <- FALSE
+    step5_called <- FALSE
+    step6_called <- FALSE
+    step7_called <- FALSE
+    step8_called <- FALSE
+
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        if (step %in% c(1L, 2L, 3L)) {
+          list(run = FALSE, data = list(
+            "colortable.rds" = cached_colortable,
+            "vol_labels.rds" = c(10),
+            "meshes_list.rds" = list(),
+            "components.rds" = list(
+              core = data.frame(hemi = NA, region = "r", label = "region"),
+              palette = c(region = "#FF0000"),
+              meshes_df = data.frame(label = "region")
+            )
+          ))
+        } else if (step == 4L) {
+          list(run = TRUE, data = list())
+        } else {
+          list(run = step %in% steps, data = list())
+        }
+      },
+      subcort_create_snapshots = function(...) {
+        step4_called <<- TRUE
+        list(
+          views = data.frame(
+            name = "ax_1", type = "axial", start = 1, end = 10,
+            stringsAsFactors = FALSE
+          ),
+          cortex_slices = data.frame(
+            x = 128, y = NA, z = NA, view = "axial", name = "ax_1"
+          )
+        )
+      },
+      process_and_mask_images = function(...) {
+        step5_called <<- TRUE
+        invisible(NULL)
+      },
+      extract_contours = function(...) {
+        step6_called <<- TRUE
+        invisible(NULL)
+      },
+      smooth_contours = function(...) {
+        step7_called <<- TRUE
+        invisible(NULL)
+      },
+      reduce_vertex = function(...) {
+        step8_called <<- TRUE
+        invisible(NULL)
+      }
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    result <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 4:8,
+      verbose = TRUE
+    )
+
+    expect_true(step4_called)
+    expect_true(step5_called)
+    expect_true(step6_called)
+    expect_true(step7_called)
+    expect_true(step8_called)
+  })
+
+  it("step 9 builds final atlas when contours exist", {
+    test_dir <- withr::local_tempdir()
+    cached_components <- list(
+      core = data.frame(
+        hemi = NA, region = "r", label = "region",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(region = "#FF0000"),
+      meshes_df = data.frame(label = "region")
+    )
+    cached_views <- data.frame(
+      name = "ax_1", type = "axial", start = 1, end = 10,
+      stringsAsFactors = FALSE
+    )
+
+    contours_file <- file.path(test_dir, "contours_reduced.rda")
+    file.create(contours_file)
+
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = FALSE, data = list(
+          "colortable.rds" = data.frame(idx = 10, label = "region"),
+          "vol_labels.rds" = c(10),
+          "meshes_list.rds" = list(),
+          "components.rds" = cached_components,
+          "views.rds" = cached_views,
+          "cortex_slices.rds" = NULL
+        ))
+      },
+      build_contour_sf = function(...) "mock_sf_data",
+      brain_atlas = function(...) {
+        args <- list(...)
+        structure(
+          list(
+            core = args$core,
+            palette = args$palette,
+            type = args$type,
+            data = args$data
+          ),
+          class = "brain_atlas"
+        )
+      },
+      subcortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) invisible(NULL),
+      preview_atlas = function(...) invisible(NULL)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    atlas <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 9,
+      verbose = TRUE
+    )
+
+    expect_s3_class(atlas, "brain_atlas")
+  })
+
+  it("step 9 with cleanup removes temp files", {
+    test_dir <- withr::local_tempdir()
+    cached_components <- list(
+      core = data.frame(
+        hemi = NA, region = "r", label = "region",
+        stringsAsFactors = FALSE
+      ),
+      palette = c(region = "#FF0000"),
+      meshes_df = data.frame(label = "region")
+    )
+    cached_views <- data.frame(
+      name = "ax_1", type = "axial", start = 1, end = 10,
+      stringsAsFactors = FALSE
+    )
+
+    contours_file <- file.path(test_dir, "contours_reduced.rda")
+    file.create(contours_file)
+
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = FALSE, data = list(
+          "colortable.rds" = data.frame(idx = 10, label = "region"),
+          "vol_labels.rds" = c(10),
+          "meshes_list.rds" = list(),
+          "components.rds" = cached_components,
+          "views.rds" = cached_views,
+          "cortex_slices.rds" = NULL
+        ))
+      },
+      build_contour_sf = function(...) "mock_sf",
+      brain_atlas = function(...) {
+        args <- list(...)
+        structure(
+          list(core = args$core, palette = args$palette),
+          class = "brain_atlas"
+        )
+      },
+      subcortical_data = function(...) list(...),
+      warn_if_large_atlas = function(...) invisible(NULL),
+      preview_atlas = function(...) invisible(NULL)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(
+      ggsegExtra.output_dir = test_dir,
+      ggsegExtra.cleanup = TRUE
+    )
+
+    atlas <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 9,
+      verbose = TRUE,
+      cleanup = TRUE
+    )
+
+    expect_s3_class(atlas, "brain_atlas")
+  })
+
+  it("returns invisible NULL for partial steps with verbose", {
+    test_dir <- withr::local_tempdir()
+    local_mocked_bindings(
+      check_fs = function(...) TRUE,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = test_dir, meshes = test_dir, snaps = test_dir,
+          processed = test_dir, masks = test_dir
+        )
+      },
+      load_or_run_step = function(step, steps, ...) {
+        list(run = FALSE, data = list(
+          "colortable.rds" = data.frame(idx = 10, label = "r"),
+          "vol_labels.rds" = c(10),
+          "meshes_list.rds" = list(),
+          "components.rds" = list(
+            core = data.frame(hemi = NA, region = "r", label = "r"),
+            palette = c(r = "#FF0000"),
+            meshes_df = data.frame(label = "r")
+          ),
+          "views.rds" = data.frame(
+            name = "ax_1", type = "axial", start = 1, end = 10
+          ),
+          "cortex_slices.rds" = NULL
+        ))
+      },
+      process_and_mask_images = function(...) invisible(NULL),
+      extract_contours = function(...) invisible(NULL)
+    )
+
+    vol_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(vol_file)
+    lut_file <- withr::local_tempfile(fileext = ".txt")
+    file.create(lut_file)
+    withr::local_options(ggsegExtra.output_dir = test_dir)
+
+    result <- create_subcortical_atlas(
+      input_volume = vol_file,
+      input_lut = lut_file,
+      steps = 5:6,
+      verbose = TRUE
+    )
+
+    expect_null(result)
   })
 })
 
