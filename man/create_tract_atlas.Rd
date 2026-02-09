@@ -108,7 +108,7 @@ Use \code{steps = 1} for 3D-only atlas. Use \code{steps = 5:7} to iterate on
 smoothing and vertex reduction.}
 }
 \value{
-A \code{brain_atlas} object with type \code{"tract"}, containing region
+A \code{ggseg_atlas} object with type \code{"tract"}, containing region
 metadata, tube meshes for 3D rendering, colours, and optionally sf
 geometry for 2D projection plots.
 }

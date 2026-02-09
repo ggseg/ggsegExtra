@@ -2,11 +2,21 @@ describe("generate_tube_mesh", {
   it("creates valid mesh from centerline", {
     centerline <- matrix(
       c(
-        0, 0, 0,
-        1, 0, 0,
-        2, 0.5, 0,
-        3, 1, 0,
-        4, 1, 0.5
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        2,
+        0.5,
+        0,
+        3,
+        1,
+        0,
+        4,
+        1,
+        0.5
       ),
       ncol = 3,
       byrow = TRUE
@@ -120,10 +130,18 @@ describe("compute_parallel_transport_frames", {
   it("returns orthonormal frames", {
     curve <- matrix(
       c(
-        0, 0, 0,
-        1, 0, 0,
-        2, 0.5, 0,
-        3, 1, 0
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        2,
+        0.5,
+        0,
+        3,
+        1,
+        0
       ),
       ncol = 3,
       byrow = TRUE
@@ -250,7 +268,9 @@ describe("compute_streamline_density", {
     centerline <- matrix(c(1:5, rep(0.5, 10)), ncol = 3)
 
     result <- compute_streamline_density(
-      streamlines, centerline, search_radius = 1
+      streamlines,
+      centerline,
+      search_radius = 1
     )
 
     expect_length(result, 5)
@@ -264,7 +284,9 @@ describe("compute_streamline_density", {
     centerline <- matrix(c(1:5, rep(0, 10)), ncol = 3)
 
     result <- compute_streamline_density(
-      streamlines, centerline, search_radius = 1
+      streamlines,
+      centerline,
+      search_radius = 1
     )
 
     expect_true(all(result == 0))
@@ -424,7 +446,9 @@ describe("extract_centerline medoid", {
     )
 
     result <- extract_centerline(
-      streamlines, method = "medoid", n_points = 5
+      streamlines,
+      method = "medoid",
+      n_points = 5
     )
 
     expect_equal(nrow(result), 5)
@@ -475,7 +499,9 @@ describe("resample_streamline", {
 
   it("handles streamline where segment_end equals segment_start", {
     streamline <- matrix(
-      c(0, 0, 0, 0, 0, 0, 0, 0, 5), ncol = 3, byrow = TRUE
+      c(0, 0, 0, 0, 0, 0, 0, 0, 5),
+      ncol = 3,
+      byrow = TRUE
     )
     result <- resample_streamline(streamline, 5)
     expect_equal(nrow(result), 5)
@@ -488,7 +514,9 @@ describe("resample_streamline", {
 
   it("handles zero-length segment at end of streamline", {
     streamline <- matrix(
-      c(0, 0, 0, 5, 0, 0, 5, 0, 0), ncol = 3, byrow = TRUE
+      c(0, 0, 0, 5, 0, 0, 5, 0, 0),
+      ncol = 3,
+      byrow = TRUE
     )
     result <- resample_streamline(streamline, 5)
     expect_equal(nrow(result), 5)
@@ -510,7 +538,11 @@ describe("generate_tube_mesh", {
   it("accepts per-point radius vector", {
     centerline <- matrix(c(0, 0, 0, 1, 0, 0, 2, 0, 0), ncol = 3, byrow = TRUE)
     colnames(centerline) <- c("x", "y", "z")
-    mesh <- generate_tube_mesh(centerline, radius = c(0.5, 1.0, 0.5), segments = 4)
+    mesh <- generate_tube_mesh(
+      centerline,
+      radius = c(0.5, 1.0, 0.5),
+      segments = 4
+    )
     expect_equal(nrow(mesh$vertices), 3 * 4)
     expect_equal(nrow(mesh$faces), 2 * 4 * 2)
   })
@@ -526,7 +558,9 @@ describe("compute_streamline_density", {
     centerline <- matrix(c(1:3, rep(0, 6)), ncol = 3)
 
     result <- compute_streamline_density(
-      streamlines, centerline, search_radius = 2
+      streamlines,
+      centerline,
+      search_radius = 2
     )
 
     expect_length(result, 3)
@@ -572,7 +606,9 @@ describe("load_vox2ras_matrix", {
     orig_require <- base::requireNamespace
     local_mocked_bindings(
       requireNamespace = function(pkg, ...) {
-        if (pkg == "freesurferformats") return(FALSE)
+        if (pkg == "freesurferformats") {
+          return(FALSE)
+        }
         orig_require(pkg, ...)
       },
       .package = "base"
@@ -586,7 +622,9 @@ describe("load_vox2ras_matrix", {
     orig_require <- base::requireNamespace
     local_mocked_bindings(
       requireNamespace = function(pkg, ...) {
-        if (pkg == "RNifti") return(FALSE)
+        if (pkg == "RNifti") {
+          return(FALSE)
+        }
         orig_require(pkg, ...)
       },
       .package = "base"
@@ -727,7 +765,9 @@ describe("create_tract_geometry_volumetric", {
     withr::defer(unlink(aseg_tmp))
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sfc <- sf::st_sfc(fake_geom, fake_geom, fake_geom)
     fake_sf <- sf::st_sf(
@@ -765,21 +805,28 @@ describe("create_tract_geometry_volumetric", {
         data.frame(
           name = "axial_1",
           type = "axial",
-          start = 1, end = 20,
+          start = 1,
+          end = 20,
           stringsAsFactors = FALSE
         )
       },
       create_cortex_slices = function(views, dims, ...) {
         data.frame(
-          x = NA, y = NA, z = 10,
-          view = "axial", name = "axial_1",
+          x = NA,
+          y = NA,
+          z = 10,
+          view = "axial",
+          name = "axial_1",
           stringsAsFactors = FALSE
         )
       },
       detect_coords_are_voxels = function(...) TRUE,
       extract_centerline = function(sl, ...) {
-        if (is.list(sl) && !is.matrix(sl)) sl[[1]]
-        else sl
+        if (is.list(sl) && !is.matrix(sl)) {
+          sl[[1]]
+        } else {
+          sl
+        }
       },
       streamlines_to_volume = function(...) fake_vol,
       progressor = function(...) function(...) NULL,
@@ -859,10 +906,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = tmp_dir, snaps = tmp_dir, processed = tmp_dir,
-        masks = tmp_dir, volumes = tmp_dir
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = tmp_dir,
+          snaps = tmp_dir,
+          processed = tmp_dir,
+          masks = tmp_dir,
+          volumes = tmp_dir
+        )
+      },
       detect_coords_are_voxels = function(...) TRUE
     )
 
@@ -889,10 +941,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = tmp_dir, snaps = tmp_dir, processed = tmp_dir,
-        masks = tmp_dir, volumes = tmp_dir
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = tmp_dir,
+          snaps = tmp_dir,
+          processed = tmp_dir,
+          masks = tmp_dir,
+          volumes = tmp_dir
+        )
+      },
       detect_coords_are_voxels = function(...) TRUE
     )
 
@@ -925,7 +982,9 @@ describe("create_tract_geometry_volumetric", {
     dir.create(base_dir, recursive = TRUE)
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_1_tract_a.png",
@@ -937,7 +996,10 @@ describe("create_tract_geometry_volumetric", {
     file.create(contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 1, end = 20,
+      name = "axial_1",
+      type = "axial",
+      start = 1,
+      end = 20,
       stringsAsFactors = FALSE
     )
     views_file <- file.path(base_dir, "views.rds")
@@ -954,13 +1016,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = base_dir,
-        snaps = file.path(base_dir, "snapshots"),
-        processed = file.path(base_dir, "processed"),
-        masks = file.path(base_dir, "masks"),
-        volumes = file.path(base_dir, "volumes")
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = base_dir,
+          snaps = file.path(base_dir, "snapshots"),
+          processed = file.path(base_dir, "processed"),
+          masks = file.path(base_dir, "masks"),
+          volumes = file.path(base_dir, "volumes")
+        )
+      },
       detect_coords_are_voxels = function(...) TRUE,
       make_multipolygon = function(...) fake_sf,
       layout_volumetric_views = function(df) df
@@ -990,7 +1054,9 @@ describe("create_tract_geometry_volumetric", {
     dir.create(base_dir, recursive = TRUE)
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_1_tract_a.png",
@@ -1012,19 +1078,24 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = base_dir,
-        snaps = file.path(base_dir, "snapshots"),
-        processed = file.path(base_dir, "processed"),
-        masks = file.path(base_dir, "masks"),
-        volumes = file.path(base_dir, "volumes")
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = base_dir,
+          snaps = file.path(base_dir, "snapshots"),
+          processed = file.path(base_dir, "processed"),
+          masks = file.path(base_dir, "masks"),
+          volumes = file.path(base_dir, "volumes")
+        )
+      },
       detect_coords_are_voxels = function(...) TRUE,
       read_volume = function(f, ...) array(0L, dim = c(20, 20, 20)),
       default_tract_views = function(dims) {
         data.frame(
-          name = "axial_1", type = "axial",
-          start = 1, end = 20, stringsAsFactors = FALSE
+          name = "axial_1",
+          type = "axial",
+          start = 1,
+          end = 20,
+          stringsAsFactors = FALSE
         )
       },
       make_multipolygon = function(...) fake_sf,
@@ -1057,13 +1128,18 @@ describe("create_tract_geometry_volumetric", {
     file.create(contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 1, end = 20,
+      name = "axial_1",
+      type = "axial",
+      start = 1,
+      end = 20,
       stringsAsFactors = FALSE
     )
     saveRDS(views, file.path(base_dir, "views.rds"))
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_1_tract_a.png",
@@ -1082,13 +1158,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = base_dir,
-        snaps = file.path(base_dir, "snapshots"),
-        processed = file.path(base_dir, "processed"),
-        masks = file.path(base_dir, "masks"),
-        volumes = file.path(base_dir, "volumes")
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = base_dir,
+          snaps = file.path(base_dir, "snapshots"),
+          processed = file.path(base_dir, "processed"),
+          masks = file.path(base_dir, "masks"),
+          volumes = file.path(base_dir, "volumes")
+        )
+      },
       detect_coords_are_voxels = function(...) TRUE,
       make_multipolygon = function(...) fake_sf,
       layout_volumetric_views = function(df) df
@@ -1120,13 +1198,18 @@ describe("create_tract_geometry_volumetric", {
     file.create(contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 1, end = 20,
+      name = "axial_1",
+      type = "axial",
+      start = 1,
+      end = 20,
       stringsAsFactors = FALSE
     )
     saveRDS(views, file.path(base_dir, "views.rds"))
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "unknown_thing.png",
@@ -1145,13 +1228,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = base_dir,
-        snaps = file.path(base_dir, "snapshots"),
-        processed = file.path(base_dir, "processed"),
-        masks = file.path(base_dir, "masks"),
-        volumes = file.path(base_dir, "volumes")
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = base_dir,
+          snaps = file.path(base_dir, "snapshots"),
+          processed = file.path(base_dir, "processed"),
+          masks = file.path(base_dir, "masks"),
+          volumes = file.path(base_dir, "volumes")
+        )
+      },
       detect_coords_are_voxels = function(...) TRUE,
       make_multipolygon = function(...) fake_sf,
       layout_volumetric_views = function(df) df
@@ -1193,11 +1278,18 @@ describe("create_tract_geometry_volumetric", {
     dir.create(masks_dir, recursive = TRUE)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 1, end = 20,
+      name = "axial_1",
+      type = "axial",
+      start = 1,
+      end = 20,
       stringsAsFactors = FALSE
     )
     cortex_slices <- data.frame(
-      x = NA, y = NA, z = 10, view = "axial", name = "axial_1",
+      x = NA,
+      y = NA,
+      z = 10,
+      view = "axial",
+      name = "axial_1",
       stringsAsFactors = FALSE
     )
 
@@ -1207,7 +1299,9 @@ describe("create_tract_geometry_volumetric", {
     }
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_1_tract_a.png",
@@ -1222,13 +1316,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = base_dir,
-        snaps = snaps_dir,
-        processed = processed_dir,
-        masks = masks_dir,
-        volumes = file.path(base_dir, "volumes")
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = base_dir,
+          snaps = snaps_dir,
+          processed = processed_dir,
+          masks = masks_dir,
+          volumes = file.path(base_dir, "volumes")
+        )
+      },
       read_volume = function(f, ...) fake_vol,
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       default_tract_views = function(dims) views,
@@ -1272,7 +1368,9 @@ describe("create_tract_geometry_volumetric", {
     withr::defer(unlink(aseg_tmp))
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_1_tract_a.png",
@@ -1302,14 +1400,20 @@ describe("create_tract_geometry_volumetric", {
       detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
       default_tract_views = function(dims) {
         data.frame(
-          name = "axial_1", type = "axial",
-          start = 1, end = 20, stringsAsFactors = FALSE
+          name = "axial_1",
+          type = "axial",
+          start = 1,
+          end = 20,
+          stringsAsFactors = FALSE
         )
       },
       create_cortex_slices = function(...) {
         data.frame(
-          x = NA, y = NA, z = 10,
-          view = "axial", name = "axial_1",
+          x = NA,
+          y = NA,
+          z = 10,
+          view = "axial",
+          name = "axial_1",
           stringsAsFactors = FALSE
         )
       },
@@ -1373,13 +1477,18 @@ describe("create_tract_geometry_volumetric", {
     file.create(contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 1, end = 20,
+      name = "axial_1",
+      type = "axial",
+      start = 1,
+      end = 20,
       stringsAsFactors = FALSE
     )
     saveRDS(views, file.path(base_dir, "views.rds"))
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_1_tract_a.png",
@@ -1395,13 +1504,15 @@ describe("create_tract_geometry_volumetric", {
       get_tolerance = function(...) 0.01,
       get_smoothness = function(...) 1,
       get_output_dir = function(...) tmp_dir,
-      setup_atlas_dirs = function(...) list(
-        base = base_dir,
-        snaps = file.path(base_dir, "snapshots"),
-        processed = file.path(base_dir, "processed"),
-        masks = file.path(base_dir, "masks"),
-        volumes = file.path(base_dir, "volumes")
-      ),
+      setup_atlas_dirs = function(...) {
+        list(
+          base = base_dir,
+          snaps = file.path(base_dir, "snapshots"),
+          processed = file.path(base_dir, "processed"),
+          masks = file.path(base_dir, "masks"),
+          volumes = file.path(base_dir, "volumes")
+        )
+      },
       detect_coords_are_voxels = function(...) {
         detected_space <<- TRUE
         TRUE

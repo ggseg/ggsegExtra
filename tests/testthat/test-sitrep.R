@@ -72,8 +72,7 @@ describe("check_other_system_deps", {
       has_magick = function() FALSE
     )
     local_mocked_bindings(
-      find_chrome = function() "/usr/bin/chromium",
-      .package = "chromote"
+      find_chrome_path = function() "/usr/bin/chromium"
     )
     msgs <- capture.output(check_other_system_deps("full"), type = "message")
     expect_true(any(grepl("imagemagick.org", msgs)))
@@ -81,11 +80,8 @@ describe("check_other_system_deps", {
 
   it("shows help text when Chrome missing in full detail", {
     local_mocked_bindings(
-      has_magick = function() TRUE
-    )
-    local_mocked_bindings(
-      find_chrome = function() NULL,
-      .package = "chromote"
+      has_magick = function() TRUE,
+      find_chrome_path = function() NULL
     )
     msgs <- capture.output(check_other_system_deps("full"), type = "message")
     expect_true(any(grepl("Install Chrome", msgs)))

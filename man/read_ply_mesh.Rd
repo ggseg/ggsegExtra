@@ -9,15 +9,14 @@ read_ply_mesh(ply, ...)
 \arguments{
 \item{ply}{path to ply-file}
 
-\item{...}{arguments to \code{\link[geomorph:read.ply]{geomorph::read.ply()}}}
+\item{...}{ignored, kept for backward compatibility}
 }
 \value{
 list with vertices (data.frame with x, y, z) and
 faces (data.frame with i, j, k)
 }
 \description{
-PLY files contain mesh information including vertices and faces.
-This function reads a PLY file and extracts the vertices and faces
-into a list format suitable for ggseg3d.
+Reads an ASCII PLY file and extracts vertices and faces into
+a list format suitable for ggseg3d.
 }
 \keyword{internal}

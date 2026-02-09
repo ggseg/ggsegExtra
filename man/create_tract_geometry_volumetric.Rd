@@ -23,7 +23,7 @@ create_tract_geometry_volumetric(
 )
 }
 \arguments{
-\item{atlas}{A \code{brain_atlas} of type \code{"tract"} (from \code{\link[=create_tract_atlas]{create_tract_atlas()}}).}
+\item{atlas}{A \code{ggseg_atlas} of type \code{"tract"} (from \code{\link[=create_tract_atlas]{create_tract_atlas()}}).}
 
 \item{aseg_file}{Path to a segmentation volume (\code{.mgz}, \code{.nii}) used to
 draw cortex outlines for anatomical context.}

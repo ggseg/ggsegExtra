@@ -97,7 +97,7 @@ Use \code{steps = 1:3} for 3D-only atlas. Use \code{steps = 7:8} to iterate on
 smoothing and reduction parameters.}
 }
 \value{
-A \code{brain_atlas} object with region metadata (core), 3D meshes,
+A \code{ggseg_atlas} object with region metadata (core), 3D meshes,
 a colour palette, and optionally sf geometry for 2D slice plots.
 }
 \description{

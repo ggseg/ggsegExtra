@@ -22,5 +22,5 @@ package-lock.json
 _brand.yml
 .*\.pdf$
 ^\.lintr$
-^vignettes/tutorial-.*\.qmd$
-^vignettes/.*\.qmd\.orig$
+^vignettes/tutorial-.*\.Rmd$
+^vignettes/.*\.Rmd\.orig$

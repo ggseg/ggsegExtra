@@ -159,7 +159,6 @@ mri_vol2surf <- function(
 #' @template opts
 #' @return returns nothing. Writes a label file.
 #' @importFrom freesurfer get_fs fs_subj_dir
-#' @importFrom stringr str_pad
 #' @keywords internal
 mri_vol2label <- function(
   input_file,
@@ -183,7 +182,7 @@ mri_vol2label <- function(
     "/",
     hemisphere,
     "_",
-    str_pad(label_id, 4, side = "left", pad = "0"),
+    formatC(label_id, width = 4, flag = "0"),
     ".label"
   )
 
@@ -376,7 +375,8 @@ mri_surf2surf_rereg <- function(
 #' @importFrom freesurfer get_fs
 #' @return ascii data
 #' @noRd
-surf2asc <- function(input_file, output_file, verbose = get_verbose()) { # nolint: object_usage_linter
+surf2asc <- function(input_file, output_file, verbose = get_verbose()) {
+  # nolint: object_usage_linter
   check_fs(abort = TRUE)
 
   k <- strsplit(output_file, "\\.")[[1]]
@@ -419,7 +419,8 @@ surf2asc <- function(input_file, output_file, verbose = get_verbose()) { # nolin
 #' @importFrom freesurfer get_fs
 #' @return ascii data
 #' @noRd
-curv2asc <- function(input_file, white, output_file, verbose = get_verbose()) { # nolint: object_usage_linter
+curv2asc <- function(input_file, white, output_file, verbose = get_verbose()) {
+  # nolint: object_usage_linter
   check_fs(abort = TRUE)
 
   k <- strsplit(output_file, "\\.")[[1]]
@@ -600,7 +601,8 @@ lcbc_surf2surf <- function(
 ) {
   check_fs(abort = TRUE)
 
-  j <- mri_surf2surf( # nolint: object_usage_linter
+  j <- mri_surf2surf(
+    # nolint: object_usage_linter
     sval = input_volume,
     subject = source_subject,
     target_subject = target_subject,
@@ -610,5 +612,3 @@ lcbc_surf2surf <- function(
     verbose = verbose
   )
 }
-
-

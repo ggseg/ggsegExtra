@@ -75,7 +75,7 @@ contour extraction. Use \code{steps = 6:7} to iterate on smoothing and
 reduction parameters without re-extracting contours.}
 }
 \value{
-A \code{brain_atlas} object containing region metadata (core), vertex
+A \code{ggseg_atlas} object containing region metadata (core), vertex
 indices for 3D rendering, a colour palette, and optionally sf geometry
 for 2D plots.
 }

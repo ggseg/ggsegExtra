@@ -62,7 +62,7 @@ check_other_system_deps <- function(detail = "simple") {
     }
   }
 
-  chrome_path <- chromote::find_chrome()
+  chrome_path <- find_chrome_path()
   results$chrome <- !is.null(chrome_path)
   if (results$chrome) {
     if (detail == "full") {
@@ -136,6 +136,25 @@ check_pipeline_options <- function(detail = "simple") {
   }
 
   opts
+}
+
+
+#' @noRd
+find_chrome_path <- function() {
+  for (name in c("google-chrome", "chromium-browser", "chromium", "chrome")) {
+    path <- Sys.which(name)
+    if (nzchar(path)) return(path)
+  }
+  candidates <- c(
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "C:/Program Files/Google/Chrome/Application/chrome.exe",
+    "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+  )
+  for (p in candidates) {
+    if (file.exists(p)) return(p)
+  }
+  NULL
 }
 
 

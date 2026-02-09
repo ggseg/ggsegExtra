@@ -5,7 +5,8 @@ describe("to_coords", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -89,7 +90,8 @@ describe("center_coord", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -109,7 +111,8 @@ describe("range_coord", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -131,7 +134,8 @@ describe("gather_geometry", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(10, 10, 20, 10, 20, 20, 10, 20, 10, 10),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -152,7 +156,8 @@ describe("restack", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -161,7 +166,8 @@ describe("restack", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -186,7 +192,8 @@ describe("correct_coords_sf", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -203,7 +210,8 @@ describe("correct_coords_sf", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 10, 1, 10, 1, 11, 0, 11, 0, 10),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -223,11 +231,13 @@ describe("count_vertices", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
           c(0, 0, 2, 0, 2, 2, 0, 2, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -285,13 +295,19 @@ describe("layout_cortical_views", {
         geometry = sf::st_sfc(
           sf::st_polygon(list(matrix(
             c(
-              x_offset, 0,
-              x_offset + 1, 0,
-              x_offset + 1, 1,
-              x_offset, 1,
-              x_offset, 0
+              x_offset,
+              0,
+              x_offset + 1,
+              0,
+              x_offset + 1,
+              1,
+              x_offset,
+              1,
+              x_offset,
+              0
             ),
-            ncol = 2, byrow = TRUE
+            ncol = 2,
+            byrow = TRUE
           )))
         )
       )
@@ -318,7 +334,9 @@ describe("layout_cortical_views", {
       view = "unknown",
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -334,10 +352,14 @@ describe("layout_volumetric_views", {
       view = c("axial", "coronal"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )

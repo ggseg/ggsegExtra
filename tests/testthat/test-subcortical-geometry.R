@@ -77,7 +77,9 @@ describe("decimate_mesh", {
     skip_if_not_installed("Rvcg")
 
     atlas_file <- system.file(
-      package = "ggseg.formats", "extdata", "aseg.rda"
+      package = "ggseg.formats",
+      "extdata",
+      "aseg.rda"
     )
     if (!file.exists(atlas_file)) {
       atlas_file <- file.path(
@@ -144,10 +146,12 @@ describe("tessellate_label", {
 
     local_mocked_bindings(
       check_fs = function(abort = FALSE) invisible(TRUE),
-      read_fs_surface = function(f) list(
-        vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
-        faces = data.frame(i = 1, j = 2, k = 3)
-      )
+      read_fs_surface = function(f) {
+        list(
+          vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
+          faces = data.frame(i = 1, j = 2, k = 3)
+        )
+      }
     )
     writeLines("placeholder", smooth_file)
 
@@ -170,10 +174,12 @@ describe("tessellate_label", {
       mri_smooth = function(...) {
         writeLines("ok", file.path(tmp_dir, "0010_smooth"))
       },
-      read_fs_surface = function(f) list(
-        vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
-        faces = data.frame(i = 1, j = 2, k = 3)
-      )
+      read_fs_surface = function(f) {
+        list(
+          vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
+          faces = data.frame(i = 1, j = 2, k = 3)
+        )
+      }
     )
 
     result <- tessellate_label("vol.mgz", 10, tmp_dir, skip_existing = FALSE)
@@ -234,10 +240,12 @@ describe("read_fs_surface", {
   it("uses surf2asc and read_dpv when available", {
     local_mocked_bindings(
       surf2asc = function(file, dpv_file, ...) NULL,
-      read_dpv = function(f) list(
-        vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
-        faces = data.frame(i = 0:2, j = 1:3, k = 2:4)
-      ),
+      read_dpv = function(f) {
+        list(
+          vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
+          faces = data.frame(i = 0:2, j = 1:3, k = 2:4)
+        )
+      },
       get_verbose = function() FALSE
     )
 
@@ -254,10 +262,12 @@ describe("read_fs_surface", {
     )
 
     local_mocked_bindings(
-      read.fs.surface = function(file) list(
-        vertices = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3),
-        faces = matrix(c(1, 2, 3), ncol = 3)
-      ),
+      read.fs.surface = function(file) {
+        list(
+          vertices = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9), ncol = 3),
+          faces = matrix(c(1, 2, 3), ncol = 3)
+        )
+      },
       .package = "freesurferformats"
     )
 
@@ -276,7 +286,9 @@ describe("read_fs_surface", {
     orig_require <- base::requireNamespace
     local_mocked_bindings(
       requireNamespace = function(pkg, ...) {
-        if (pkg == "freesurferformats") return(FALSE)
+        if (pkg == "freesurferformats") {
+          return(FALSE)
+        }
         orig_require(pkg, ...)
       },
       .package = "base"
@@ -288,8 +300,6 @@ describe("read_fs_surface", {
     )
   })
 })
-
-
 
 
 describe("generate_colortable_from_volume", {
@@ -328,7 +338,9 @@ describe("create_subcortical_geometry_projection", {
     )
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sfc <- sf::st_sfc(fake_geom, fake_geom)
     fake_sf <- sf::st_sf(
@@ -394,13 +406,18 @@ describe("create_subcortical_geometry_projection", {
     )
 
     custom_cortex <- data.frame(
-      x = NA, y = 5, z = NA,
-      view = "coronal", name = "myview",
+      x = NA,
+      y = 5,
+      z = NA,
+      view = "coronal",
+      name = "myview",
       stringsAsFactors = FALSE
     )
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "myview_region_0005.png",
@@ -450,11 +467,15 @@ describe("create_subcortical_geometry_projection", {
     fake_vol[2, 2, 2] <- 5L
 
     fake_colortable <- data.frame(
-      idx = 5L, label = "region_0005", stringsAsFactors = FALSE
+      idx = 5L,
+      label = "region_0005",
+      stringsAsFactors = FALSE
     )
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_region_0005.png",
@@ -503,11 +524,15 @@ describe("create_subcortical_geometry_projection", {
     fake_vol[2, 2, 2] <- 5L
 
     fake_colortable <- data.frame(
-      idx = 5L, label = "region_0005", stringsAsFactors = FALSE
+      idx = 5L,
+      label = "region_0005",
+      stringsAsFactors = FALSE
     )
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "unknown_thing.png",
@@ -540,12 +565,18 @@ describe("create_subcortical_geometry_projection", {
     )
 
     custom_views <- data.frame(
-      name = "special", type = "coronal",
-      start = 1, end = 10, stringsAsFactors = FALSE
+      name = "special",
+      type = "coronal",
+      start = 1,
+      end = 10,
+      stringsAsFactors = FALSE
     )
     custom_cortex <- data.frame(
-      x = NA, y = 5, z = NA,
-      view = "coronal", name = "special",
+      x = NA,
+      y = 5,
+      z = NA,
+      view = "coronal",
+      name = "special",
       stringsAsFactors = FALSE
     )
 
@@ -572,7 +603,9 @@ describe("create_subcortical_geometry_projection", {
     )
 
     fake_geom <- sf::st_polygon(list(matrix(
-      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+      ncol = 2,
+      byrow = TRUE
     )))
     fake_sf <- sf::st_sf(
       filenm = "axial_region_0005.png",
@@ -609,12 +642,18 @@ describe("create_subcortical_geometry_projection", {
     )
 
     custom_views <- data.frame(
-      name = "axial", type = "axial",
-      start = 1, end = 10, stringsAsFactors = FALSE
+      name = "axial",
+      type = "axial",
+      start = 1,
+      end = 10,
+      stringsAsFactors = FALSE
     )
     custom_cortex <- data.frame(
-      x = NA, y = NA, z = 5,
-      view = "axial", name = "axial",
+      x = NA,
+      y = NA,
+      z = 5,
+      view = "axial",
+      name = "axial",
       stringsAsFactors = FALSE
     )
 

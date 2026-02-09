@@ -30,7 +30,9 @@ describe("create_subcortical_atlas decimate validation", {
 
     expect_error(
       create_subcortical_atlas(
-        vol_file, decimate = c(0.3, 0.5), verbose = FALSE
+        vol_file,
+        decimate = c(0.3, 0.5),
+        verbose = FALSE
       ),
       "decimate.*must be a single number"
     )
@@ -41,7 +43,9 @@ describe("create_subcortical_atlas decimate validation", {
 
     expect_error(
       create_subcortical_atlas(
-        "/nonexistent/volume.mgz", decimate = NULL, verbose = FALSE
+        "/nonexistent/volume.mgz",
+        decimate = NULL,
+        verbose = FALSE
       ),
       "not found"
     )
@@ -53,7 +57,9 @@ describe("create_subcortical_atlas decimate validation", {
     for (val in c(0.1, 0.25, 0.5, 0.75, 0.99)) {
       expect_error(
         create_subcortical_atlas(
-          "/nonexistent/volume.mgz", decimate = val, verbose = FALSE
+          "/nonexistent/volume.mgz",
+          decimate = val,
+          verbose = FALSE
         ),
         "not found"
       )
@@ -66,7 +72,9 @@ describe("create_subcortical_atlas", {
   it("requires FreeSurfer to be available", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) {
-        if (abort) cli::cli_abort("FreeSurfer not found")
+        if (abort) {
+          cli::cli_abort("FreeSurfer not found")
+        }
         FALSE
       }
     )
@@ -124,7 +132,7 @@ describe("create_subcortical_atlas", {
       "No color lookup table"
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_true(nrow(atlas$core) > 0)
     expect_true(all(grepl("^region_", atlas$core$label)))
     expect_null(atlas$palette)
@@ -146,7 +154,7 @@ describe("create_subcortical_atlas", {
       verbose = FALSE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_equal(atlas$type, "subcortical")
     expect_false(is.null(atlas$data$meshes))
     expect_true("mesh" %in% names(atlas$data$meshes))
@@ -269,13 +277,19 @@ describe("subcort_create_meshes", {
     )
 
     colortable <- data.frame(
-      idx = 10, label = "test", stringsAsFactors = FALSE
+      idx = 10,
+      label = "test",
+      stringsAsFactors = FALSE
     )
     dirs <- list(meshes = withr::local_tempdir())
 
     expect_error(
       subcort_create_meshes(
-        "fake.mgz", colortable, dirs, FALSE, FALSE
+        "fake.mgz",
+        colortable,
+        dirs,
+        FALSE,
+        FALSE
       ),
       "No meshes"
     )
@@ -323,12 +337,19 @@ describe("subcort_create_meshes", {
     )
 
     colortable <- data.frame(
-      idx = 10, label = "Left-Putamen", stringsAsFactors = FALSE
+      idx = 10,
+      label = "Left-Putamen",
+      stringsAsFactors = FALSE
     )
     dirs <- list(meshes = withr::local_tempdir())
 
     result <- subcort_create_meshes(
-      "fake.mgz", colortable, dirs, FALSE, TRUE, decimate = NULL
+      "fake.mgz",
+      colortable,
+      dirs,
+      FALSE,
+      TRUE,
+      decimate = NULL
     )
 
     expect_equal(length(result), 1)
@@ -360,7 +381,12 @@ describe("subcort_create_meshes", {
     dirs <- list(meshes = withr::local_tempdir())
 
     result <- subcort_create_meshes(
-      "fake.mgz", colortable, dirs, FALSE, FALSE, decimate = NULL
+      "fake.mgz",
+      colortable,
+      dirs,
+      FALSE,
+      FALSE,
+      decimate = NULL
     )
 
     expect_equal(length(result), 1)
@@ -383,13 +409,20 @@ describe("subcort_create_snapshots", {
       },
       default_subcortical_views = function(dims) {
         data.frame(
-          name = "ax_1", type = "axial", start = 1, end = 10,
+          name = "ax_1",
+          type = "axial",
+          start = 1,
+          end = 10,
           stringsAsFactors = FALSE
         )
       },
       create_cortex_slices = function(views, dims) {
         data.frame(
-          x = NA, y = NA, z = 5, view = "axial", name = "ax_1",
+          x = NA,
+          y = NA,
+          z = 5,
+          view = "axial",
+          name = "ax_1",
           stringsAsFactors = FALSE
         )
       },
@@ -411,13 +444,18 @@ describe("subcort_create_snapshots", {
     )
 
     colortable <- data.frame(
-      idx = 10, label = "Left-Putamen",
+      idx = 10,
+      label = "Left-Putamen",
       stringsAsFactors = FALSE
     )
     dirs <- list(snaps = withr::local_tempdir())
 
     result <- subcort_create_snapshots(
-      "fake.mgz", colortable, NULL, dirs, FALSE
+      "fake.mgz",
+      colortable,
+      NULL,
+      dirs,
+      FALSE
     )
 
     expect_true(is.list(result))
@@ -429,7 +467,10 @@ describe("subcort_create_snapshots", {
 
   it("uses provided views instead of defaults", {
     custom_views <- data.frame(
-      name = "custom_view", type = "coronal", start = 50, end = 60,
+      name = "custom_view",
+      type = "coronal",
+      start = 50,
+      end = 60,
       stringsAsFactors = FALSE
     )
 
@@ -441,11 +482,17 @@ describe("subcort_create_snapshots", {
       },
       create_cortex_slices = function(views, dims) {
         data.frame(
-          x = NA, y = 5, z = NA, view = "coronal", name = "custom_view",
+          x = NA,
+          y = 5,
+          z = NA,
+          view = "coronal",
+          name = "custom_view",
           stringsAsFactors = FALSE
         )
       },
-      detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
+      detect_cortex_labels = function(vol) {
+        list(left = integer(0), right = integer(0))
+      },
       extract_hemi_from_view = function(...) "left",
       progressor = function(...) function(...) NULL,
       future_pmap = mock_future_pmap,
@@ -455,12 +502,18 @@ describe("subcort_create_snapshots", {
     )
 
     colortable <- data.frame(
-      idx = 10, label = "Left-Putamen", stringsAsFactors = FALSE
+      idx = 10,
+      label = "Left-Putamen",
+      stringsAsFactors = FALSE
     )
     dirs <- list(snaps = withr::local_tempdir())
 
     result <- subcort_create_snapshots(
-      "fake.mgz", colortable, custom_views, dirs, FALSE
+      "fake.mgz",
+      colortable,
+      custom_views,
+      dirs,
+      FALSE
     )
 
     expect_equal(result$views$name, "custom_view")
@@ -477,17 +530,26 @@ describe("subcort_create_snapshots", {
       },
       default_subcortical_views = function(dims) {
         data.frame(
-          name = "ax_1", type = "axial", start = 1, end = 10,
+          name = "ax_1",
+          type = "axial",
+          start = 1,
+          end = 10,
           stringsAsFactors = FALSE
         )
       },
       create_cortex_slices = function(views, dims) {
         data.frame(
-          x = NA, y = NA, z = 5, view = "axial", name = "ax_1",
+          x = NA,
+          y = NA,
+          z = 5,
+          view = "axial",
+          name = "ax_1",
           stringsAsFactors = FALSE
         )
       },
-      detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
+      detect_cortex_labels = function(vol) {
+        list(left = integer(0), right = integer(0))
+      },
       extract_hemi_from_view = function(...) "left",
       progressor = function(...) function(...) NULL,
       future_pmap = mock_future_pmap,
@@ -500,12 +562,18 @@ describe("subcort_create_snapshots", {
     )
 
     colortable <- data.frame(
-      idx = 99, label = "Missing-Region", stringsAsFactors = FALSE
+      idx = 99,
+      label = "Missing-Region",
+      stringsAsFactors = FALSE
     )
     dirs <- list(snaps = withr::local_tempdir())
 
     result <- subcort_create_snapshots(
-      "fake.mgz", colortable, NULL, dirs, FALSE
+      "fake.mgz",
+      colortable,
+      NULL,
+      dirs,
+      FALSE
     )
 
     expect_equal(snapshot_calls, 0)
@@ -522,7 +590,9 @@ describe("create_subcortical_atlas pipeline flow", {
       generate_colortable_from_volume = function(vol) {
         generated <<- TRUE
         data.frame(
-          idx = 10, label = "test_region", color = NA_character_,
+          idx = 10,
+          label = "test_region",
+          color = NA_character_,
           stringsAsFactors = FALSE
         )
       },
@@ -533,31 +603,38 @@ describe("create_subcortical_atlas pipeline flow", {
       },
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       subcort_create_meshes = function(...) {
-        list(test_region = list(
-          vertices = list(x = 1, y = 1, z = 1),
-          faces = list(i = 1, j = 1, k = 1)
-        ))
+        list(
+          test_region = list(
+            vertices = list(x = 1, y = 1, z = 1),
+            faces = list(i = 1, j = 1, k = 1)
+          )
+        )
       },
       subcort_build_components = function(...) {
         list(
           core = data.frame(
-            hemi = NA, region = "test", label = "test_region",
+            hemi = NA,
+            region = "test",
+            label = "test_region",
             stringsAsFactors = FALSE
           ),
           palette = NULL,
           meshes_df = data.frame(label = "test_region")
         )
       },
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_subcortical = function(...) list(...)
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_subcortical = function(...) list(...)
     )
 
     withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
@@ -584,7 +661,9 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       get_ctab = function(f) {
         data.frame(
-          idx = 10, label = "region", color = "#FF0000",
+          idx = 10,
+          label = "region",
+          color = "#FF0000",
           stringsAsFactors = FALSE
         )
       },
@@ -595,31 +674,38 @@ describe("create_subcortical_atlas pipeline flow", {
       },
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       subcort_create_meshes = function(...) {
-        list(region = list(
-          vertices = list(x = 1, y = 1, z = 1),
-          faces = list(i = 1, j = 1, k = 1)
-        ))
+        list(
+          region = list(
+            vertices = list(x = 1, y = 1, z = 1),
+            faces = list(i = 1, j = 1, k = 1)
+          )
+        )
       },
       subcort_build_components = function(...) {
         list(
           core = data.frame(
-            hemi = NA, region = "region", label = "region",
+            hemi = NA,
+            region = "region",
+            label = "region",
             stringsAsFactors = FALSE
           ),
           palette = c(region = "#FF0000"),
           meshes_df = data.frame(label = "region")
         )
       },
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_subcortical = function(...) list(...)
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_subcortical = function(...) list(...)
     )
 
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -635,7 +721,7 @@ describe("create_subcortical_atlas pipeline flow", {
       verbose = FALSE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("step 5 calls process_and_mask_images", {
@@ -653,8 +739,11 @@ describe("create_subcortical_atlas pipeline flow", {
     )
 
     process_and_mask_images(
-      dirs$snaps, dirs$processed, dirs$masks,
-      dilate = NULL, skip_existing = FALSE
+      dirs$snaps,
+      dirs$processed,
+      dirs$masks,
+      dilate = NULL,
+      skip_existing = FALSE
     )
 
     expect_true(mask_called)
@@ -667,8 +756,10 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       get_ctab = function(f) {
         data.frame(
-          idx = c(10, 20), label = c("region_a", "region_b"),
-          color = c("#FF0000", "#00FF00"), stringsAsFactors = FALSE
+          idx = c(10, 20),
+          label = c("region_a", "region_b"),
+          color = c("#FF0000", "#00FF00"),
+          stringsAsFactors = FALSE
         )
       },
       read_volume = function(f) {
@@ -679,8 +770,11 @@ describe("create_subcortical_atlas pipeline flow", {
       },
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -701,7 +795,8 @@ describe("create_subcortical_atlas pipeline flow", {
       subcort_build_components = function(...) {
         list(
           core = data.frame(
-            hemi = NA, region = c("a", "b"),
+            hemi = NA,
+            region = c("a", "b"),
             label = c("region_a", "region_b"),
             stringsAsFactors = FALSE
           ),
@@ -709,8 +804,8 @@ describe("create_subcortical_atlas pipeline flow", {
           meshes_df = data.frame(label = c("region_a", "region_b"))
         )
       },
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_subcortical = function(...) list(...)
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_subcortical = function(...) list(...)
     )
 
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -726,7 +821,7 @@ describe("create_subcortical_atlas pipeline flow", {
       verbose = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_equal(nrow(atlas$core), 2)
   })
 
@@ -736,8 +831,10 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       get_ctab = function(f) {
         data.frame(
-          idx = 999, label = "nonexistent",
-          color = "#FF0000", stringsAsFactors = FALSE
+          idx = 999,
+          label = "nonexistent",
+          color = "#FF0000",
+          stringsAsFactors = FALSE
         )
       },
       read_volume = function(f) {
@@ -747,8 +844,11 @@ describe("create_subcortical_atlas pipeline flow", {
       },
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -776,7 +876,9 @@ describe("create_subcortical_atlas pipeline flow", {
   it("loads cached step data when step not in steps", {
     test_dir <- withr::local_tempdir()
     cached_colortable <- data.frame(
-      idx = 10, label = "cached_region", color = "#AABBCC",
+      idx = 10,
+      label = "cached_region",
+      color = "#AABBCC",
       stringsAsFactors = FALSE
     )
     cached_meshes <- list(
@@ -787,7 +889,9 @@ describe("create_subcortical_atlas pipeline flow", {
     )
     cached_components <- list(
       core = data.frame(
-        hemi = NA, region = "cached", label = "cached_region",
+        hemi = NA,
+        region = "cached",
+        label = "cached_region",
         stringsAsFactors = FALSE
       ),
       palette = c(cached_region = "#AABBCC"),
@@ -798,16 +902,22 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, files, ...) {
         if (step == 1L && !(step %in% steps)) {
-          list(run = FALSE, data = list(
-            "colortable.rds" = cached_colortable,
-            "vol_labels.rds" = c(10)
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "colortable.rds" = cached_colortable,
+              "vol_labels.rds" = c(10)
+            )
+          )
         } else if (step == 2L && !(step %in% steps)) {
           list(run = FALSE, data = list("meshes_list.rds" = cached_meshes))
         } else if (step == 3L) {
@@ -817,8 +927,8 @@ describe("create_subcortical_atlas pipeline flow", {
         }
       },
       subcort_build_components = function(...) cached_components,
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_subcortical = function(...) list(...)
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_subcortical = function(...) list(...)
     )
 
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -834,7 +944,7 @@ describe("create_subcortical_atlas pipeline flow", {
       verbose = FALSE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("step 9 errors when contours_reduced.rda missing", {
@@ -843,33 +953,47 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step %in% steps) {
           list(run = TRUE, data = list())
         } else {
-          list(run = FALSE, data = list(
-            "colortable.rds" = data.frame(idx = 10, label = "r"),
-            "vol_labels.rds" = c(10),
-            "meshes_list.rds" = list(),
-            "components.rds" = list(
-              core = data.frame(hemi = NA, region = "r", label = "r"),
-              palette = c(r = "#FF0000"),
-              meshes_df = data.frame(label = "r")
-            ),
-            "views.rds" = data.frame(name = "ax_1", type = "axial",
-                                     start = 1, end = 10),
-            "cortex_slices.rds" = NULL
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "colortable.rds" = data.frame(idx = 10, label = "r"),
+              "vol_labels.rds" = c(10),
+              "meshes_list.rds" = list(),
+              "components.rds" = list(
+                core = data.frame(hemi = NA, region = "r", label = "r"),
+                palette = c(r = "#FF0000"),
+                meshes_df = data.frame(label = "r")
+              ),
+              "views.rds" = data.frame(
+                name = "ax_1",
+                type = "axial",
+                start = 1,
+                end = 10
+              ),
+              "cortex_slices.rds" = NULL
+            )
+          )
         }
       },
       subcort_create_snapshots = function(...) {
         list(
-          views = data.frame(name = "ax_1", type = "axial",
-                             start = 1, end = 10),
+          views = data.frame(
+            name = "ax_1",
+            type = "axial",
+            start = 1,
+            end = 10
+          ),
           cortex_slices = NULL
         )
       },
@@ -899,7 +1023,9 @@ describe("create_subcortical_atlas pipeline flow", {
   it("loads cached data with verbose for steps 1-4", {
     test_dir <- withr::local_tempdir()
     cached_colortable <- data.frame(
-      idx = 10, label = "cached_r", color = "#AABBCC",
+      idx = 10,
+      label = "cached_r",
+      color = "#AABBCC",
       stringsAsFactors = FALSE
     )
     cached_meshes <- list(
@@ -910,14 +1036,19 @@ describe("create_subcortical_atlas pipeline flow", {
     )
     cached_components <- list(
       core = data.frame(
-        hemi = NA, region = "cached", label = "cached_r",
+        hemi = NA,
+        region = "cached",
+        label = "cached_r",
         stringsAsFactors = FALSE
       ),
       palette = c(cached_r = "#AABBCC"),
       meshes_df = data.frame(label = "cached_r")
     )
     cached_views <- data.frame(
-      name = "ax_1", type = "axial", start = 1, end = 10,
+      name = "ax_1",
+      type = "axial",
+      start = 1,
+      end = 10,
       stringsAsFactors = FALSE
     )
 
@@ -925,27 +1056,40 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step == 1L) {
-          list(run = FALSE, data = list(
-            "colortable.rds" = cached_colortable,
-            "vol_labels.rds" = c(10)
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "colortable.rds" = cached_colortable,
+              "vol_labels.rds" = c(10)
+            )
+          )
         } else if (step == 2L) {
           list(run = FALSE, data = list("meshes_list.rds" = cached_meshes))
         } else if (step == 3L) {
           list(run = FALSE, data = list("components.rds" = cached_components))
         } else if (step == 4L) {
-          list(run = FALSE, data = list(
-            "views.rds" = cached_views,
-            "cortex_slices.rds" = data.frame(
-              x = 128, y = NA, z = NA, view = "axial", name = "ax_1"
+          list(
+            run = FALSE,
+            data = list(
+              "views.rds" = cached_views,
+              "cortex_slices.rds" = data.frame(
+                x = 128,
+                y = NA,
+                z = NA,
+                view = "axial",
+                name = "ax_1"
+              )
             )
-          ))
+          )
         } else {
           list(run = step %in% steps, data = list())
         }
@@ -975,7 +1119,9 @@ describe("create_subcortical_atlas pipeline flow", {
   it("runs steps 4-8 via the pipeline", {
     test_dir <- withr::local_tempdir()
     cached_colortable <- data.frame(
-      idx = 10, label = "region", color = "#FF0000",
+      idx = 10,
+      label = "region",
+      color = "#FF0000",
       stringsAsFactors = FALSE
     )
     step4_called <- FALSE
@@ -988,22 +1134,28 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step %in% c(1L, 2L, 3L)) {
-          list(run = FALSE, data = list(
-            "colortable.rds" = cached_colortable,
-            "vol_labels.rds" = c(10),
-            "meshes_list.rds" = list(),
-            "components.rds" = list(
-              core = data.frame(hemi = NA, region = "r", label = "region"),
-              palette = c(region = "#FF0000"),
-              meshes_df = data.frame(label = "region")
+          list(
+            run = FALSE,
+            data = list(
+              "colortable.rds" = cached_colortable,
+              "vol_labels.rds" = c(10),
+              "meshes_list.rds" = list(),
+              "components.rds" = list(
+                core = data.frame(hemi = NA, region = "r", label = "region"),
+                palette = c(region = "#FF0000"),
+                meshes_df = data.frame(label = "region")
+              )
             )
-          ))
+          )
         } else if (step == 4L) {
           list(run = TRUE, data = list())
         } else {
@@ -1014,11 +1166,18 @@ describe("create_subcortical_atlas pipeline flow", {
         step4_called <<- TRUE
         list(
           views = data.frame(
-            name = "ax_1", type = "axial", start = 1, end = 10,
+            name = "ax_1",
+            type = "axial",
+            start = 1,
+            end = 10,
             stringsAsFactors = FALSE
           ),
           cortex_slices = data.frame(
-            x = 128, y = NA, z = NA, view = "axial", name = "ax_1"
+            x = 128,
+            y = NA,
+            z = NA,
+            view = "axial",
+            name = "ax_1"
           )
         )
       },
@@ -1064,14 +1223,19 @@ describe("create_subcortical_atlas pipeline flow", {
     test_dir <- withr::local_tempdir()
     cached_components <- list(
       core = data.frame(
-        hemi = NA, region = "r", label = "region",
+        hemi = NA,
+        region = "r",
+        label = "region",
         stringsAsFactors = FALSE
       ),
       palette = c(region = "#FF0000"),
       meshes_df = data.frame(label = "region")
     )
     cached_views <- data.frame(
-      name = "ax_1", type = "axial", start = 1, end = 10,
+      name = "ax_1",
+      type = "axial",
+      start = 1,
+      end = 10,
       stringsAsFactors = FALSE
     )
 
@@ -1082,22 +1246,28 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
-        list(run = FALSE, data = list(
-          "colortable.rds" = data.frame(idx = 10, label = "region"),
-          "vol_labels.rds" = c(10),
-          "meshes_list.rds" = list(),
-          "components.rds" = cached_components,
-          "views.rds" = cached_views,
-          "cortex_slices.rds" = NULL
-        ))
+        list(
+          run = FALSE,
+          data = list(
+            "colortable.rds" = data.frame(idx = 10, label = "region"),
+            "vol_labels.rds" = c(10),
+            "meshes_list.rds" = list(),
+            "components.rds" = cached_components,
+            "views.rds" = cached_views,
+            "cortex_slices.rds" = NULL
+          )
+        )
       },
       build_contour_sf = function(...) "mock_sf_data",
-      brain_atlas = function(...) {
+      ggseg_atlas = function(...) {
         args <- list(...)
         structure(
           list(
@@ -1106,10 +1276,10 @@ describe("create_subcortical_atlas pipeline flow", {
             type = args$type,
             data = args$data
           ),
-          class = "brain_atlas"
+          class = "ggseg_atlas"
         )
       },
-      brain_data_subcortical = function(...) list(...),
+      ggseg_data_subcortical = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -1127,21 +1297,26 @@ describe("create_subcortical_atlas pipeline flow", {
       verbose = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("step 9 with cleanup removes temp files", {
     test_dir <- withr::local_tempdir()
     cached_components <- list(
       core = data.frame(
-        hemi = NA, region = "r", label = "region",
+        hemi = NA,
+        region = "r",
+        label = "region",
         stringsAsFactors = FALSE
       ),
       palette = c(region = "#FF0000"),
       meshes_df = data.frame(label = "region")
     )
     cached_views <- data.frame(
-      name = "ax_1", type = "axial", start = 1, end = 10,
+      name = "ax_1",
+      type = "axial",
+      start = 1,
+      end = 10,
       stringsAsFactors = FALSE
     )
 
@@ -1152,29 +1327,35 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
-        list(run = FALSE, data = list(
-          "colortable.rds" = data.frame(idx = 10, label = "region"),
-          "vol_labels.rds" = c(10),
-          "meshes_list.rds" = list(),
-          "components.rds" = cached_components,
-          "views.rds" = cached_views,
-          "cortex_slices.rds" = NULL
-        ))
+        list(
+          run = FALSE,
+          data = list(
+            "colortable.rds" = data.frame(idx = 10, label = "region"),
+            "vol_labels.rds" = c(10),
+            "meshes_list.rds" = list(),
+            "components.rds" = cached_components,
+            "views.rds" = cached_views,
+            "cortex_slices.rds" = NULL
+          )
+        )
       },
       build_contour_sf = function(...) "mock_sf",
-      brain_atlas = function(...) {
+      ggseg_atlas = function(...) {
         args <- list(...)
         structure(
           list(core = args$core, palette = args$palette),
-          class = "brain_atlas"
+          class = "ggseg_atlas"
         )
       },
-      brain_data_subcortical = function(...) list(...),
+      ggseg_data_subcortical = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -1196,7 +1377,7 @@ describe("create_subcortical_atlas pipeline flow", {
       cleanup = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("returns invisible NULL for partial steps with verbose", {
@@ -1205,25 +1386,34 @@ describe("create_subcortical_atlas pipeline flow", {
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, meshes = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          meshes = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
-        list(run = FALSE, data = list(
-          "colortable.rds" = data.frame(idx = 10, label = "r"),
-          "vol_labels.rds" = c(10),
-          "meshes_list.rds" = list(),
-          "components.rds" = list(
-            core = data.frame(hemi = NA, region = "r", label = "r"),
-            palette = c(r = "#FF0000"),
-            meshes_df = data.frame(label = "r")
-          ),
-          "views.rds" = data.frame(
-            name = "ax_1", type = "axial", start = 1, end = 10
-          ),
-          "cortex_slices.rds" = NULL
-        ))
+        list(
+          run = FALSE,
+          data = list(
+            "colortable.rds" = data.frame(idx = 10, label = "r"),
+            "vol_labels.rds" = c(10),
+            "meshes_list.rds" = list(),
+            "components.rds" = list(
+              core = data.frame(hemi = NA, region = "r", label = "r"),
+              palette = c(r = "#FF0000"),
+              meshes_df = data.frame(label = "r")
+            ),
+            "views.rds" = data.frame(
+              name = "ax_1",
+              type = "axial",
+              start = 1,
+              end = 10
+            ),
+            "cortex_slices.rds" = NULL
+          )
+        )
       },
       process_and_mask_images = function(...) invisible(NULL),
       extract_contours = function(...) invisible(NULL)

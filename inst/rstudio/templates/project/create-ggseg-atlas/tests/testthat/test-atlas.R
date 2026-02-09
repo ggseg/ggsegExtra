@@ -2,8 +2,8 @@
 # Tests atlas compliance with ggseg ecosystem standards
 
 describe("{GGSEG} atlas structure", {
-  it("is a valid brain_atlas object", {
-    expect_s3_class({GGSEG}, "brain_atlas")
+  it("is a valid ggseg_atlas object", {
+    expect_s3_class({GGSEG}, "ggseg_atlas")
   })
 
   it("has required columns", {

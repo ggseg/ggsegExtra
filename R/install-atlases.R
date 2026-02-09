@@ -11,7 +11,6 @@
 #' @return A tibble of available atlas packages.
 #' @seealso [install_ggseg_atlas()] to install a specific atlas
 #' @export
-#' @importFrom jsonlite fromJSON
 #' @importFrom dplyr as_tibble
 #' @examples
 #' \dontrun{
@@ -22,7 +21,8 @@
 #' ggseg_atlas_repos("yeo")
 #' }
 ggseg_atlas_repos <- function(pattern = NULL, ...) {
-  repos <- fromJSON("https://ggseg.r-universe.dev/api/packages")
+  rlang::check_installed("jsonlite", reason = "to query atlas repositories")
+  repos <- jsonlite::fromJSON("https://ggseg.r-universe.dev/api/packages")
 
   if (!is.null(pattern)) {
     idx <- grep(pattern, repos$Package, ...)
@@ -56,9 +56,10 @@ ggseg_atlas_repos <- function(pattern = NULL, ...) {
 #' install_ggseg_atlas("ggsegYeo2011")
 #' }
 install_ggseg_atlas <- function(
-    package,
-    repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
-    ...) {
+  package,
+  repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
+  ...
+) {
   install.packages(package, repos = repos, ...)
 }
 
@@ -83,8 +84,9 @@ install_ggseg_atlas <- function(
 #' install_ggseg_atlas_all()
 #' }
 install_ggseg_atlas_all <- function(
-    repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
-    ...) {
+  repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
+  ...
+) {
   pkgs <- ggseg_atlas_repos()$Package
 
   install.packages(pkgs, repos = repos, ...)

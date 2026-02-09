@@ -36,10 +36,11 @@
 #' create_atlas_repo("ggsegHarvard", "harvard", open = FALSE)
 #' }
 create_atlas_repo <- function(
-    path,
-    atlas_name = NULL,
-    open = rlang::is_interactive(),
-    rstudio = TRUE) {
+  path,
+  atlas_name = NULL,
+  open = rlang::is_interactive(),
+  rstudio = TRUE
+) {
   path <- normalizePath(path, mustWork = FALSE)
 
   # Derive atlas_name from path if not provided
@@ -154,13 +155,19 @@ create_atlas_from_template <- function(path, atlas_name) {
 
   # Replace template placeholders
   all_files <- list.files(
-    path, full.names = TRUE, recursive = TRUE, all.files = TRUE
+    path,
+    full.names = TRUE,
+    recursive = TRUE,
+    all.files = TRUE
   )
   # Skip binary files
-  all_files <- all_files[!grepl(
-    "\\.(png|jpg|jpeg|gif|ico|rda|RData|rds)$",
-    all_files, ignore.case = TRUE
-  )]
+  all_files <- all_files[
+    !grepl(
+      "\\.(png|jpg|jpeg|gif|ico|rda|RData|rds)$",
+      all_files,
+      ignore.case = TRUE
+    )
+  ]
 
   for (f in all_files) {
     if (file.exists(f) && !dir.exists(f)) {

@@ -81,7 +81,9 @@ extract_contours <- function(
 #' @noRd
 #' @importFrom smoothr smooth
 smooth_contours <- function(
-  dir, smoothness, step,
+  dir,
+  smoothness,
+  step,
   verbose = get_verbose() # nolint: object_usage_linter
 ) {
   load(file.path(dir, "contours.rda"))
@@ -112,7 +114,9 @@ smooth_contours <- function(
 #' @noRd
 #' @importFrom sf st_simplify
 reduce_vertex <- function(
-  dir, tolerance, step = "",
+  dir,
+  tolerance,
+  step = "",
   verbose = get_verbose() # nolint: object_usage_linter
 ) {
   if (verbose) {

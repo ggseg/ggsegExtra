@@ -288,7 +288,10 @@ describe("process_snapshot_image", {
 
     read_called <- FALSE
     local_mocked_bindings(
-      image_read = function(...) { read_called <<- TRUE; NULL }
+      image_read = function(...) {
+        read_called <<- TRUE
+        NULL
+      }
     )
 
     result <- process_snapshot_image(input, output, skip_existing = TRUE)
@@ -309,7 +312,10 @@ describe("process_snapshot_image", {
     local_mocked_bindings(
       image_read = function(...) sentinel,
       image_convert = function(...) sentinel,
-      image_transparent = function(...) { transparent_called <<- TRUE; sentinel },
+      image_transparent = function(...) {
+        transparent_called <<- TRUE
+        sentinel
+      },
       image_write = function(image, path, ...) {
         write_called <<- TRUE
         file.create(path)
@@ -343,7 +349,9 @@ describe("process_snapshot_image", {
         expect_equal(iterations, 2)
         sentinel
       },
-      image_write = function(image, path, ...) { file.create(path) }
+      image_write = function(image, path, ...) {
+        file.create(path)
+      }
     )
 
     process_snapshot_image(input, output, dilate = 2, skip_existing = FALSE)
@@ -363,8 +371,13 @@ describe("process_snapshot_image", {
       image_read = function(...) sentinel,
       image_convert = function(...) sentinel,
       image_transparent = function(...) sentinel,
-      image_morphology = function(...) { morphology_called <<- TRUE; sentinel },
-      image_write = function(image, path, ...) { file.create(path) }
+      image_morphology = function(...) {
+        morphology_called <<- TRUE
+        sentinel
+      },
+      image_write = function(image, path, ...) {
+        file.create(path)
+      }
     )
 
     process_snapshot_image(input, output, dilate = NULL, skip_existing = FALSE)
@@ -383,7 +396,10 @@ describe("extract_alpha_mask", {
 
     system_called <- FALSE
     local_mocked_bindings(
-      system = function(...) { system_called <<- TRUE; 0L },
+      system = function(...) {
+        system_called <<- TRUE
+        0L
+      },
       .package = "base"
     )
 
@@ -400,7 +416,10 @@ describe("extract_alpha_mask", {
 
     captured_cmd <- NULL
     local_mocked_bindings(
-      system = function(command, ...) { captured_cmd <<- command; 0L },
+      system = function(command, ...) {
+        captured_cmd <<- command
+        0L
+      },
       .package = "base"
     )
 
@@ -433,7 +452,10 @@ describe("run_cmd", {
   it("constructs command with get_fs prefix", {
     captured_cmd <- NULL
     local_mocked_bindings(
-      system = function(command, ...) { captured_cmd <<- command; "" },
+      system = function(command, ...) {
+        captured_cmd <<- command
+        ""
+      },
       .package = "base"
     )
     local_mocked_bindings(
@@ -449,7 +471,11 @@ describe("run_cmd", {
   it("passes verbose to intern and ignore params", {
     captured_args <- list()
     local_mocked_bindings(
-      system = function(command, intern, ignore.stdout, ignore.stderr, ...) {
+      # nolint start: object_name_linter.
+      system = function(
+        command, intern, ignore.stdout, ignore.stderr, ...
+      ) {
+        # nolint end
         captured_args <<- list(
           intern = intern,
           ignore.stdout = ignore.stdout,
@@ -479,7 +505,10 @@ describe("run_cmd", {
   it("modifies cmd for macOS freeview when no_ui is TRUE", {
     captured_cmd <- NULL
     local_mocked_bindings(
-      system = function(command, ...) { captured_cmd <<- command; "" },
+      system = function(command, ...) {
+        captured_cmd <<- command
+        ""
+      },
       .package = "base"
     )
     local_mocked_bindings(
@@ -518,7 +547,10 @@ describe("get_contours", {
 
     local_mocked_bindings(
       global = function(x, ...) data.frame(max = 255),
-      as.polygons = function(...) { as_polygons_called <<- TRUE; "mock_poly" }
+      as.polygons = function(...) {
+        as_polygons_called <<- TRUE
+        "mock_poly"
+      }
     )
 
     local_mocked_bindings(
@@ -563,7 +595,10 @@ describe("isolate_region", {
 
     read_called <- FALSE
     local_mocked_bindings(
-      image_read = function(...) { read_called <<- TRUE; NULL }
+      image_read = function(...) {
+        read_called <<- TRUE
+        NULL
+      }
     )
 
     result <- isolate_region(input, output, skip_existing = TRUE)
@@ -588,7 +623,12 @@ describe("isolate_region", {
     )
 
     expect_error(
-      isolate_region(input, output, interim_file = interim, skip_existing = FALSE),
+      isolate_region(
+        input,
+        output,
+        interim_file = interim,
+        skip_existing = FALSE
+      ),
       "imagemagick"
     )
   })
@@ -707,7 +747,10 @@ describe("run_cmd non-Darwin no_ui branch", {
   it("prepends fsxvfb on non-Darwin systems", {
     captured_cmd <- NULL
     local_mocked_bindings(
-      system = function(command, ...) { captured_cmd <<- command; "" },
+      system = function(command, ...) {
+        captured_cmd <<- command
+        ""
+      },
       .package = "base"
     )
     local_mocked_bindings(
@@ -736,7 +779,8 @@ describe("get_contours full processing path", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -745,7 +789,8 @@ describe("get_contours full processing path", {
       geometry = sf::st_sfc(
         sf::st_multipolygon(list(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         ))))
       )
     )

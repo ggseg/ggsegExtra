@@ -84,7 +84,9 @@ expect_warnings <- function(expr, regexp) {
   testthat::expect_true(
     length(warnings_caught) > 0,
     label = paste0(
-      "Expected at least one warning matching '", regexp, "'"
+      "Expected at least one warning matching '",
+      regexp,
+      "'"
     )
   )
   invisible(result)

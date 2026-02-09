@@ -80,7 +80,9 @@ describe("snapshot_slice with label file", {
     expect_error(
       snapshot_slice(
         lab = "lh_0042.label",
-        x = 5, y = 5, z = 5,
+        x = 5,
+        y = 5,
+        z = 5,
         view = "axial",
         output_dir = tempdir()
       ),
@@ -404,18 +406,28 @@ describe("snapshot_volume_slice coronal/sagittal", {
     outdir <- withr::local_tempdir("snapshot_vol_")
 
     result1 <- snapshot_volume_slice(
-      vol = vol, x = 16, y = 16, z = 16,
-      view = "axial", label = "test",
-      output_dir = outdir, skip_existing = FALSE
+      vol = vol,
+      x = 16,
+      y = 16,
+      z = 16,
+      view = "axial",
+      label = "test",
+      output_dir = outdir,
+      skip_existing = FALSE
     )
 
     mtime1 <- file.mtime(result1)
     Sys.sleep(0.1)
 
     result2 <- snapshot_volume_slice(
-      vol = vol, x = 16, y = 16, z = 16,
-      view = "axial", label = "test",
-      output_dir = outdir, skip_existing = TRUE
+      vol = vol,
+      x = 16,
+      y = 16,
+      z = 16,
+      view = "axial",
+      label = "test",
+      output_dir = outdir,
+      skip_existing = TRUE
     )
 
     expect_equal(file.mtime(result2), mtime1)
@@ -483,8 +495,11 @@ describe("snapshot_brain_helper", {
     file.create(tmp)
 
     result <- snapshot_brain_helper(
-      atlas = NULL, hemisphere = "lh", view = "lateral",
-      surface = "inflated", outfile = tmp,
+      atlas = NULL,
+      hemisphere = "lh",
+      view = "lateral",
+      surface = "inflated",
+      outfile = tmp,
       skip_existing = TRUE
     )
     expect_null(result)
@@ -498,14 +513,20 @@ describe("snapshot_brain_helper", {
       set_flat_shading = function(x, ...) x,
       set_orthographic = function(x, ...) x,
       set_legend = function(x, ...) x,
-      snapshot_brain = function(x, file) { called <<- TRUE; file },
+      snapshot_brain = function(x, file) {
+        called <<- TRUE
+        file
+      },
       .package = "ggseg3d"
     )
 
     tmp <- withr::local_tempfile(fileext = ".png")
     snapshot_brain_helper(
-      atlas = NULL, hemisphere = "lh", view = "lateral",
-      surface = "inflated", outfile = tmp
+      atlas = NULL,
+      hemisphere = "lh",
+      view = "lateral",
+      surface = "inflated",
+      outfile = tmp
     )
     expect_true(called)
   })
@@ -516,8 +537,14 @@ describe("snapshot_brain (full brain)", {
   it("constructs correct output filename", {
     captured_outfile <- NULL
     local_mocked_bindings(
-      snapshot_brain_helper = function(atlas, hemisphere, view, surface,
-                                       outfile, ...) {
+      snapshot_brain_helper = function(
+        atlas,
+        hemisphere,
+        view,
+        surface,
+        outfile,
+        ...
+      ) {
         captured_outfile <<- outfile
         invisible(outfile)
       }
@@ -525,8 +552,11 @@ describe("snapshot_brain (full brain)", {
 
     tmp_dir <- withr::local_tempdir()
     ggsegExtra:::snapshot_brain(
-      atlas = NULL, hemisphere = "lh", view = "lateral",
-      surface = "inflated", output_dir = tmp_dir
+      atlas = NULL,
+      hemisphere = "lh",
+      view = "lateral",
+      surface = "inflated",
+      output_dir = tmp_dir
     )
 
     expect_match(basename(captured_outfile), "full_lh_lateral\\.png")
@@ -538,9 +568,17 @@ describe("snapshot_region", {
   it("constructs correct output filename and highlight data", {
     captured <- list()
     local_mocked_bindings(
-      snapshot_brain_helper = function(atlas, hemisphere, view, surface,
-                                       outfile, .data, colour,
-                                       na_colour, ...) {
+      snapshot_brain_helper = function(
+        atlas,
+        hemisphere,
+        view,
+        surface,
+        outfile,
+        .data,
+        colour,
+        na_colour,
+        ...
+      ) {
         captured$outfile <<- outfile
         captured$.data <<- .data
         captured$colour <<- colour
@@ -555,9 +593,12 @@ describe("snapshot_region", {
     tmp_dir <- withr::local_tempdir()
 
     snapshot_region(
-      atlas = mock_atlas, region_label = "lh_frontal",
-      hemisphere = "lh", view = "lateral",
-      surface = "inflated", output_dir = tmp_dir
+      atlas = mock_atlas,
+      region_label = "lh_frontal",
+      hemisphere = "lh",
+      view = "lateral",
+      surface = "inflated",
+      output_dir = tmp_dir
     )
 
     expect_match(basename(captured$outfile), "lh_frontal_lh_lateral\\.png")
@@ -579,9 +620,17 @@ describe("snapshot_na_regions", {
   it("constructs correct filename and white highlight data", {
     captured <- list()
     local_mocked_bindings(
-      snapshot_brain_helper = function(atlas, hemisphere, view, surface,
-                                       outfile, .data, colour,
-                                       na_colour, ...) {
+      snapshot_brain_helper = function(
+        atlas,
+        hemisphere,
+        view,
+        surface,
+        outfile,
+        .data,
+        colour,
+        na_colour,
+        ...
+      ) {
         captured$outfile <<- outfile
         captured$na_colour <<- na_colour
         invisible(outfile)
@@ -594,8 +643,11 @@ describe("snapshot_na_regions", {
     tmp_dir <- withr::local_tempdir()
 
     snapshot_na_regions(
-      atlas = mock_atlas, hemisphere = "lh", view = "lateral",
-      surface = "inflated", output_dir = tmp_dir
+      atlas = mock_atlas,
+      hemisphere = "lh",
+      view = "lateral",
+      surface = "inflated",
+      output_dir = tmp_dir
     )
 
     expect_match(basename(captured$outfile), "nolabel")
@@ -623,7 +675,9 @@ describe("snapshot_cortex_slice when extract_slice_2d returns NULL", {
 
     result <- snapshot_cortex_slice(
       vol = array(1L, dim = c(10, 10, 10)),
-      x = NA, y = NA, z = 5,
+      x = NA,
+      y = NA,
+      z = 5,
       slice_view = "axial",
       view_name = "axial_1",
       hemi = "left",
@@ -645,7 +699,8 @@ describe("snapshot_partial_projection skip and zero paths", {
     result <- snapshot_partial_projection(
       vol = array(1L, dim = c(10, 10, 10)),
       view = "axial",
-      start = 1, end = 10,
+      start = 1,
+      end = 10,
       view_name = "axial_1",
       label = "test",
       output_dir = outdir,
@@ -663,7 +718,8 @@ describe("snapshot_partial_projection skip and zero paths", {
     result <- snapshot_partial_projection(
       vol = vol,
       view = "axial",
-      start = 1, end = 10,
+      start = 1,
+      end = 10,
       view_name = "axial_1",
       label = "empty",
       output_dir = outdir,

@@ -1,6 +1,5 @@
 # Coordinate transformation functions for atlas geometry ----
 
-
 #' @importFrom dplyr mutate
 #' @importFrom sf st_geometry st_bbox st_transform
 correct_coords_sf <- function(data, by) {
@@ -32,8 +31,14 @@ layout_cortical_views <- function(atlas_df) {
   }
 
   view_order <- c(
-    "left inferior", "left lateral", "left medial", "left superior",
-    "right inferior", "right lateral", "right medial", "right superior"
+    "left inferior",
+    "left lateral",
+    "left medial",
+    "left superior",
+    "right inferior",
+    "right lateral",
+    "right medial",
+    "right superior"
   )
 
   atlas_list <- lapply(view_order, function(v) {
@@ -51,10 +56,14 @@ layout_cortical_views <- function(atlas_df) {
     cli::cli_abort("No valid hemi/view combinations found")
   }
 
-  widths <- vapply(atlas_list, function(df) {
-    bbox <- st_bbox(df$geometry)
-    unname(bbox["xmax"] - bbox["xmin"])
-  }, numeric(1))
+  widths <- vapply(
+    atlas_list,
+    function(df) {
+      bbox <- st_bbox(df$geometry)
+      unname(bbox["xmax"] - bbox["xmin"])
+    },
+    numeric(1)
+  )
 
   gap <- max(widths) * 0.05
   offsets <- cumsum(c(0, widths[-length(widths)] + gap))

@@ -182,7 +182,8 @@ describe("get_smoothness", {
 describe("load_or_run_step", {
   it("returns run=TRUE when step is requested and files don't exist", {
     result <- load_or_run_step(
-      1L, 1L:3L,
+      1L,
+      1L:3L,
       files = "/nonexistent/file.rds",
       skip_existing = FALSE,
       step_name = "Test step"
@@ -197,7 +198,8 @@ describe("load_or_run_step", {
     saveRDS(list(a = 1), tmp)
 
     result <- load_or_run_step(
-      1L, 1L:3L,
+      1L,
+      1L:3L,
       files = tmp,
       skip_existing = TRUE,
       step_name = "Test step"
@@ -210,7 +212,8 @@ describe("load_or_run_step", {
   it("errors when step not requested and files missing", {
     expect_error(
       load_or_run_step(
-        1L, 2L:3L,
+        1L,
+        2L:3L,
         files = "/nonexistent/file.rds",
         skip_existing = FALSE,
         step_name = "Test step"
@@ -224,7 +227,8 @@ describe("load_or_run_step", {
     saveRDS(list(b = 2), tmp)
 
     result <- load_or_run_step(
-      1L, 2L:3L,
+      1L,
+      2L:3L,
       files = tmp,
       skip_existing = FALSE,
       step_name = "Test step"
@@ -368,7 +372,9 @@ describe("preview_atlas", {
     sf_data <- sf::st_sf(
       label = "test",
       geometry = sf::st_sfc(sf::st_polygon(list(matrix(
-        c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+        c(0, 0, 1, 0, 1, 1, 0, 0),
+        ncol = 2,
+        byrow = TRUE
       ))))
     )
     atlas <- list(
@@ -401,10 +407,14 @@ describe("preview_atlas", {
       label = c("a", "b"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(2, 2, 3, 2, 3, 3, 2, 2), ncol = 2, byrow = TRUE
+          c(2, 2, 3, 2, 3, 3, 2, 2),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -436,7 +446,9 @@ describe("preview_atlas", {
     sf_data <- sf::st_sf(
       label = "test",
       geometry = sf::st_sfc(sf::st_polygon(list(matrix(
-        c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+        c(0, 0, 1, 0, 1, 1, 0, 0),
+        ncol = 2,
+        byrow = TRUE
       ))))
     )
     atlas <- list(

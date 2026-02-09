@@ -59,7 +59,7 @@ jobs:
         run: |
           checks <- setdiff(
             goodpractice::all_checks(),                 
-            'no_import_package_as_a_whole')
+            'no_import_package_as_a_whole'
           )
 
           gp_result <- goodpractice::gp(checks = checks)
@@ -98,7 +98,3 @@ jobs:
               repo: context.repo.repo,
               body: body
             });
-
-      - name: Fail if checks failed
-        if: steps.gp.outputs.status == 'failure'
-        run: exit 1

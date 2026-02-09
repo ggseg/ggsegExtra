@@ -6,10 +6,14 @@ describe("build_contour_sf", {
       filenm = c("axial_1_regionA", "coronal_1_regionB"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+          c(2, 0, 3, 0, 3, 1, 2, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -46,13 +50,19 @@ describe("build_contour_sf", {
       filenm = c("axial_1_regionA", "axial_1_regionB", "coronal_1_regionC"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+          c(2, 0, 3, 0, 3, 1, 2, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(4, 0, 5, 0, 5, 1, 4, 0), ncol = 2, byrow = TRUE
+          c(4, 0, 5, 0, 5, 1, 4, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -87,14 +97,19 @@ describe("build_contour_sf", {
       filenm = c("axial_1_Left-Putamen"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
     save(contours, file = contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 85, end = 95,
+      name = "axial_1",
+      type = "axial",
+      start = 85,
+      end = 95,
       stringsAsFactors = FALSE
     )
 
@@ -119,21 +134,29 @@ describe("build_contour_sf", {
       filenm = c("axial_1_regionA", "cortex_1_cortex"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+          c(2, 0, 3, 0, 3, 1, 2, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
     save(contours, file = contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 85, end = 95,
+      name = "axial_1",
+      type = "axial",
+      start = 85,
+      end = 95,
       stringsAsFactors = FALSE
     )
     cortex_slices <- data.frame(
-      name = "cortex_1", stringsAsFactors = FALSE
+      name = "cortex_1",
+      stringsAsFactors = FALSE
     )
 
     local_mocked_bindings(
@@ -158,14 +181,19 @@ describe("build_contour_sf", {
       filenm = c("unmatched_region"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
     save(contours, file = contours_file)
 
     views <- data.frame(
-      name = "axial_1", type = "axial", start = 85, end = 95,
+      name = "axial_1",
+      type = "axial",
+      start = 85,
+      end = 95,
       stringsAsFactors = FALSE
     )
 
@@ -204,7 +232,9 @@ describe("extract_contours", {
       get_contours = function(r, max_val, ...) {
         sf::st_sf(
           geometry = sf::st_sfc(sf::st_polygon(list(matrix(
-            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+            c(0, 0, 1, 0, 1, 1, 0, 0),
+            ncol = 2,
+            byrow = TRUE
           ))))
         )
       },
@@ -234,7 +264,9 @@ describe("extract_contours", {
         captured_max_val <<- max_val
         sf::st_sf(
           geometry = sf::st_sfc(sf::st_polygon(list(matrix(
-            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+            c(0, 0, 1, 0, 1, 1, 0, 0),
+            ncol = 2,
+            byrow = TRUE
           ))))
         )
       },
@@ -261,7 +293,9 @@ describe("extract_contours", {
       get_contours = function(...) {
         sf::st_sf(
           geometry = sf::st_sfc(sf::st_polygon(list(matrix(
-            c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+            c(0, 0, 1, 0, 1, 1, 0, 0),
+            ncol = 2,
+            byrow = TRUE
           ))))
         )
       },
@@ -288,7 +322,8 @@ describe("filter_valid_geometries", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon()
       )
@@ -328,11 +363,13 @@ describe("filter_valid_geometries", {
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
           c(0, 0, 1, 0, 1, 1, 0, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
           c(2, 0, 3, 0, 3, 1, 2, 0),
-          ncol = 2, byrow = TRUE
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -348,10 +385,14 @@ describe("filter_valid_geometries", {
       id = c("good", "bad"),
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         ))),
         sf::st_polygon(list(matrix(
-          c(2, 0, 3, 0, 3, 1, 2, 0), ncol = 2, byrow = TRUE
+          c(2, 0, 3, 0, 3, 1, 2, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -381,7 +422,9 @@ describe("filter_valid_geometries", {
       id = "a",
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -400,7 +443,9 @@ describe("filter_valid_geometries", {
       id = "a",
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )
@@ -419,7 +464,9 @@ describe("filter_valid_geometries", {
       id = "a",
       geometry = sf::st_sfc(
         sf::st_polygon(list(matrix(
-          c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+          c(0, 0, 1, 0, 1, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
         )))
       )
     )

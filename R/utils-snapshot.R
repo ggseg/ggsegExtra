@@ -202,7 +202,8 @@ magick_version <- function() {
 # Command execution ----
 
 #' @noRd
-run_cmd <- function(cmd, verbose = get_verbose(), no_ui = FALSE) { # nolint: object_usage_linter
+run_cmd <- function(cmd, verbose = get_verbose(), no_ui = FALSE) {
+  # nolint: object_usage_linter
   if (no_ui) {
     if (Sys.info()["sysname"] == "Darwin") {
       fv_args <- sub("^freeview[[:space:]]*", "", cmd)

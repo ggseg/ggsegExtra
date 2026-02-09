@@ -15,7 +15,7 @@ prompt_user <- function(msg) readline(msg)
 #' Shows ggseg (2D) and ggseg3d (3D) plots of the atlas one at a time,
 #' waiting for user input between each. Only runs in interactive sessions.
 #'
-#' @param atlas A brain_atlas object
+#' @param atlas A ggseg_atlas object
 #' @return Invisible atlas
 #' @noRd
 preview_atlas <- function(atlas) {
@@ -129,8 +129,10 @@ is_verbose <- function(verbose = NULL) {
 #' @return Invisible NULL, called for side effect
 #' @noRd
 log_elapsed <- function(start_time) {
-  elapsed <- round( # nolint: object_usage_linter.
-    difftime(Sys.time(), start_time, units = "mins"), 1
+  elapsed <- round(
+    # nolint: object_usage_linter.
+    difftime(Sys.time(), start_time, units = "mins"),
+    1
   )
   cli::cli_alert_info("Pipeline completed in {elapsed} minutes")
 }
@@ -190,7 +192,6 @@ load_or_run_step <- function(
   names(data) <- basename(files)
   list(run = FALSE, data = data)
 }
-
 
 
 # Pipeline parameter defaults ----

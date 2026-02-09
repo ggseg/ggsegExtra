@@ -181,7 +181,8 @@ read_fs_surface <- function(file) {
 #' @param volume_file Path to volume file
 #' @return data.frame with columns: idx, label, R, G, B, A, roi, color
 #' @keywords internal
-generate_colortable_from_volume <- function(volume_file) { # nolint: object_length_linter
+# nolint next: object_length_linter.
+generate_colortable_from_volume <- function(volume_file) {
   vol <- read_volume(volume_file)
   vol_labels <- sort(unique(c(vol)))
   vol_labels <- vol_labels[vol_labels != 0]
@@ -228,7 +229,8 @@ generate_colortable_from_volume <- function(volume_file) { # nolint: object_leng
 #'
 #' @return sf data.frame with label, view, and geometry columns
 #' @keywords internal
-create_subcortical_geometry_projection <- function( # nolint: object_length_linter
+# nolint next: object_length_linter.
+create_subcortical_geometry_projection <- function(
   input_volume,
   colortable,
   views = NULL,

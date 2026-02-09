@@ -10,7 +10,7 @@ describe("integration tests", {
       verbose = FALSE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_equal(nrow(atlas$core), 3)
 
     expect_no_error({
@@ -37,7 +37,7 @@ describe("integration tests", {
       "version"
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_true(nrow(atlas$core) > 30)
 
     expect_no_error({

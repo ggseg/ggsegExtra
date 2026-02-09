@@ -81,67 +81,41 @@ describe("read_volume with reorient FALSE", {
 })
 
 
-describe("read_ply_mesh from file path", {
-  it("reads PLY file when given a string path", {
-    mock_ply_result <- list(
-      vb = matrix(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 1, 1), nrow = 4, byrow = TRUE),
-      it = matrix(c(1, 2, 3), nrow = 3)
-    )
-
-    local_mocked_bindings(
-      read.ply = function(ply, ...) mock_ply_result
-    )
-
-    result <- read_ply_mesh("/fake/path.ply")
-
-    expect_type(result, "list")
-    expect_named(result, c("vertices", "faces"))
-    expect_equal(nrow(result$vertices), 3)
-    expect_equal(nrow(result$faces), 1)
-  })
-})
-
-
 describe("read_ply_mesh", {
-  it("converts PLY object to mesh format", {
-    mock_ply <- list(
-      vb = matrix(
-        c(
-          0,
-          1,
-          0,
-          1,
-          0,
-          0,
-          1,
-          1,
-          0,
-          0,
-          0,
-          0,
-          1,
-          1,
-          1,
-          1
-        ),
-        nrow = 4,
-        byrow = TRUE
-      ),
-      it = matrix(
-        c(
-          1,
-          1,
-          2,
-          3,
-          3,
-          4
-        ),
-        nrow = 3,
-        byrow = TRUE
-      )
+  make_ply_file <- function(vertices, faces) {
+    tmp <- tempfile(fileext = ".ply")
+    lines <- c(
+      "ply",
+      "format ascii 1.0",
+      paste("element vertex", nrow(vertices)),
+      "property float x",
+      "property float y",
+      "property float z",
+      paste("element face", nrow(faces)),
+      "property list uchar int vertex_index",
+      "end_header"
     )
+    for (i in seq_len(nrow(vertices))) {
+      lines <- c(lines, paste(vertices[i, ], collapse = " "))
+    }
+    for (i in seq_len(nrow(faces))) {
+      lines <- c(lines, paste(c(3, faces[i, ]), collapse = " "))
+    }
+    writeLines(lines, tmp)
+    tmp
+  }
 
-    result <- read_ply_mesh(mock_ply)
+  it("reads PLY file and returns vertices and faces", {
+    verts <- matrix(
+      c(0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0),
+      ncol = 3,
+      byrow = TRUE
+    )
+    fcs <- matrix(c(0, 1, 2, 1, 3, 2), ncol = 3, byrow = TRUE)
+    ply_file <- make_ply_file(verts, fcs)
+    withr::defer(unlink(ply_file))
+
+    result <- read_ply_mesh(ply_file)
 
     expect_type(result, "list")
     expect_named(result, c("vertices", "faces"))
@@ -154,29 +128,12 @@ describe("read_ply_mesh", {
   })
 
   it("extracts correct vertex coordinates", {
-    mock_ply <- list(
-      vb = matrix(
-        c(
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          1,
-          1,
-          1
-        ),
-        nrow = 4,
-        byrow = TRUE
-      ),
-      it = matrix(c(1, 2, 3), nrow = 3)
-    )
+    verts <- matrix(c(1, 4, 7, 2, 5, 8, 3, 6, 9), ncol = 3, byrow = TRUE)
+    fcs <- matrix(c(0, 1, 2), ncol = 3, byrow = TRUE)
+    ply_file <- make_ply_file(verts, fcs)
+    withr::defer(unlink(ply_file))
 
-    result <- read_ply_mesh(mock_ply)
+    result <- read_ply_mesh(ply_file)
 
     expect_equal(result$vertices$x, c(1, 2, 3))
     expect_equal(result$vertices$y, c(4, 5, 6))
@@ -184,27 +141,31 @@ describe("read_ply_mesh", {
   })
 
   it("extracts correct face indices", {
-    mock_ply <- list(
-      vb = matrix(1:12, nrow = 4),
-      it = matrix(
-        c(
-          1,
-          2,
-          2,
-          3,
-          3,
-          1
-        ),
-        nrow = 3,
-        byrow = TRUE
-      )
+    verts <- matrix(
+      c(0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0),
+      ncol = 3,
+      byrow = TRUE
     )
+    fcs <- matrix(c(1, 2, 3, 2, 3, 1), ncol = 3, byrow = TRUE)
+    ply_file <- make_ply_file(verts, fcs)
+    withr::defer(unlink(ply_file))
 
-    result <- read_ply_mesh(mock_ply)
+    result <- read_ply_mesh(ply_file)
 
     expect_equal(result$faces$i, c(1, 2))
     expect_equal(result$faces$j, c(2, 3))
     expect_equal(result$faces$k, c(3, 1))
+  })
+
+  it("errors on non-string input", {
+    expect_error(read_ply_mesh(list(vb = matrix(1:12, nrow = 4))), "file path")
+  })
+
+  it("errors on non-PLY file", {
+    tmp <- tempfile(fileext = ".ply")
+    writeLines("not a ply file", tmp)
+    withr::defer(unlink(tmp))
+    expect_error(read_ply_mesh(tmp), "Not a valid PLY")
   })
 })
 
@@ -249,7 +210,10 @@ describe("write_ctab", {
     ctab <- data.frame(
       idx = 1,
       label = long_label,
-      R = 255, G = 0, B = 0, A = 0
+      R = 255,
+      G = 0,
+      B = 0,
+      A = 0
     )
 
     tmp <- withr::local_tempfile(fileext = ".txt")

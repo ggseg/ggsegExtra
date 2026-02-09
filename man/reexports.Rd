@@ -11,6 +11,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{ggseg.formats}{\code{\link[ggseg.formats]{unify_legacy_atlases}}}
+  \item{ggseg.formats}{\code{\link[ggseg.formats:convert_legacy_brain_atlas]{unify_legacy_atlases}}}
 }}
 

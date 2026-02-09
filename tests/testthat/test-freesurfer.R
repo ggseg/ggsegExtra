@@ -426,13 +426,16 @@ describe("surf2asc", {
     )
     local_mocked_bindings(
       mris_convert = function(infile, outfile, verbose = FALSE) {
-        writeLines(c(
-          "#!ascii",
-          "2 1",
-          "0.0 0.0 0.0 0",
-          "1.0 1.0 1.0 0",
-          "0 1 0 0"
-        ), outfile)
+        writeLines(
+          c(
+            "#!ascii",
+            "2 1",
+            "0.0 0.0 0.0 0",
+            "1.0 1.0 1.0 0",
+            "0 1 0 0"
+          ),
+          outfile
+        )
       },
       .package = "freesurfer"
     )
@@ -456,13 +459,16 @@ describe("surf2asc", {
     )
     local_mocked_bindings(
       mris_convert = function(infile, outfile, verbose = FALSE) {
-        writeLines(c(
-          "#!ascii",
-          "2 1",
-          "0.0 0.0 0.0 0",
-          "1.0 1.0 1.0 0",
-          "0 1 0 0"
-        ), outfile)
+        writeLines(
+          c(
+            "#!ascii",
+            "2 1",
+            "0.0 0.0 0.0 0",
+            "1.0 1.0 1.0 0",
+            "0 1 0 0"
+          ),
+          outfile
+        )
       },
       .package = "freesurfer"
     )
@@ -490,7 +496,12 @@ describe("curv2asc", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) invisible(TRUE)
     )
-    result <- curv2asc("/nonexistent/file", "white", "output.dpv", verbose = FALSE)
+    result <- curv2asc(
+      "/nonexistent/file",
+      "white",
+      "output.dpv",
+      verbose = FALSE
+    )
     expect_null(result)
   })
 
@@ -499,7 +510,12 @@ describe("curv2asc", {
       check_fs = function(abort = FALSE) invisible(TRUE)
     )
     expect_output(
-      result <- curv2asc("/nonexistent/file", "white", "output.dpv", verbose = TRUE),
+      result <- curv2asc(
+        "/nonexistent/file",
+        "white",
+        "output.dpv",
+        verbose = TRUE
+      ),
       "Inputfile does not exist"
     )
     expect_null(result)
@@ -563,16 +579,19 @@ describe("curv2asc", {
 describe("asc2ply", {
   it("converts ASCII surface to PLY format", {
     tmp_asc <- withr::local_tempfile(fileext = ".dpv")
-    writeLines(c(
-      "#!ascii",
-      "4 2",
-      "0.0 0.0 0.0 0",
-      "1.0 0.0 0.0 0",
-      "1.0 1.0 0.0 0",
-      "0.0 1.0 0.0 0",
-      "0 1 2 0",
-      "1 2 3 0"
-    ), tmp_asc)
+    writeLines(
+      c(
+        "#!ascii",
+        "4 2",
+        "0.0 0.0 0.0 0",
+        "1.0 0.0 0.0 0",
+        "1.0 1.0 0.0 0",
+        "0.0 1.0 0.0 0",
+        "0 1 2 0",
+        "1 2 3 0"
+      ),
+      tmp_asc
+    )
 
     local_mocked_bindings(
       read_ply_mesh = function(f, ...) {
@@ -686,7 +705,9 @@ describe("curv2ply", {
     skip_on_covr()
 
     local_mocked_bindings(
-      curv2asc = function(input_file, white, output_file, verbose) invisible(NULL),
+      curv2asc = function(input_file, white, output_file, verbose) {
+        invisible(NULL)
+      },
       asc2ply = function(input_file, output_file) {
         list(
           vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),

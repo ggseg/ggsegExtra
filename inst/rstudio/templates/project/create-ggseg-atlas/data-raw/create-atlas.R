@@ -1,5 +1,5 @@
 # Create {GGSEG} atlas for the ggseg ecosystem
-# Creates a brain_atlas for ggseg and ggseg3d
+# Creates a ggseg_atlas for ggseg and ggseg3d
 
 library(ggsegExtra)
 library(dplyr)

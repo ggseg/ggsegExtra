@@ -149,7 +149,7 @@ describe("create_atlas_repo template files", {
     test_file <- readLines(file.path(tmp, "tests/testthat/test-atlas.R"))
 
     expect_true(any(grepl("describe.*testatlas", test_file)))
-    expect_true(any(grepl("brain_atlas", test_file)))
+    expect_true(any(grepl("ggseg_atlas", test_file)))
     expect_true(any(grepl("vertices", test_file)))
   })
 

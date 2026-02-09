@@ -53,7 +53,7 @@
 #'   Use `steps = 1:3` for 3D-only atlas. Use `steps = 7:8` to iterate on
 #'   smoothing and reduction parameters.
 #'
-#' @return A `brain_atlas` object with region metadata (core), 3D meshes,
+#' @return A `ggseg_atlas` object with region metadata (core), 3D meshes,
 #'   a colour palette, and optionally sf geometry for 2D slice plots.
 #' @export
 #' @importFrom dplyr tibble bind_rows left_join filter distinct
@@ -111,8 +111,12 @@ create_subcortical_atlas <- function(
   output_dir <- get_output_dir(output_dir)
 
   if (!is.null(decimate)) {
-    if (!is.numeric(decimate) || length(decimate) != 1 ||
-        decimate <= 0 || decimate >= 1) {
+    if (
+      !is.numeric(decimate) ||
+        length(decimate) != 1 ||
+        decimate <= 0 ||
+        decimate >= 1
+    ) {
       cli::cli_abort(c(
         "{.arg decimate} must be a single number between 0 and 1 (exclusive)",
         "x" = "Got {.val {decimate}}",
@@ -183,7 +187,9 @@ create_subcortical_atlas <- function(
       colortable <- get_ctab(input_lut)
     }
 
-    if (verbose) cli::cli_progress_step("1/9 Extracting labels from volume")
+    if (verbose) {
+      cli::cli_progress_step("1/9 Extracting labels from volume")
+    }
 
     vol <- read_volume(input_volume)
     vol_labels <- unique(c(vol))
@@ -222,10 +228,16 @@ create_subcortical_atlas <- function(
       cli::cli_progress_step("2/9 Creating meshes for each structure")
     }
     meshes_list <- subcort_create_meshes(
-      input_volume, colortable, dirs, skip_existing, verbose,
+      input_volume,
+      colortable,
+      dirs,
+      skip_existing,
+      verbose,
       decimate = decimate
     )
-    if (verbose) cli::cli_progress_done()
+    if (verbose) {
+      cli::cli_progress_done()
+    }
     saveRDS(meshes_list, file.path(dirs$base, "meshes_list.rds"))
   } else if (any(steps > 2L)) {
     meshes_list <- step2$data[["meshes_list.rds"]]
@@ -234,21 +246,27 @@ create_subcortical_atlas <- function(
 
   step3_files <- file.path(dirs$base, "components.rds")
   step3 <- load_or_run_step(
-    3L, steps, step3_files, skip_existing, "Step 3 (Build atlas data)"
+    3L,
+    steps,
+    step3_files,
+    skip_existing,
+    "Step 3 (Build atlas data)"
   )
 
   if (step3$run) {
-    if (verbose) cli::cli_progress_step("3/9 Building atlas data")
+    if (verbose) {
+      cli::cli_progress_step("3/9 Building atlas data")
+    }
     components <- subcort_build_components(colortable, meshes_list)
     saveRDS(components, file.path(dirs$base, "components.rds"))
 
     if (max(steps) == 3L) {
-      atlas <- brain_atlas(
+      atlas <- ggseg_atlas(
         atlas = atlas_name,
         type = "subcortical",
         palette = components$palette,
         core = components$core,
-        data = brain_data_subcortical(sf = NULL, meshes = components$meshes_df)
+        data = ggseg_data_subcortical(sf = NULL, meshes = components$meshes_df)
       )
 
       cli::cli_progress_done()
@@ -277,15 +295,25 @@ create_subcortical_atlas <- function(
     file.path(dirs$base, "cortex_slices.rds")
   )
   step4 <- load_or_run_step(
-    4L, steps, step4_files, skip_existing, "Step 4 (Create snapshots)"
+    4L,
+    steps,
+    step4_files,
+    skip_existing,
+    "Step 4 (Create snapshots)"
   )
 
   cortex_slices <- NULL
 
   if (step4$run) {
-    if (verbose) cli::cli_progress_step("4/9 Creating projection snapshots")
+    if (verbose) {
+      cli::cli_progress_step("4/9 Creating projection snapshots")
+    }
     snapshot_result <- subcort_create_snapshots(
-      input_volume, colortable, views, dirs, skip_existing
+      input_volume,
+      colortable,
+      views,
+      dirs,
+      skip_existing
     )
     views <- snapshot_result$views
     cortex_slices <- snapshot_result$cortex_slices
@@ -301,18 +329,27 @@ create_subcortical_atlas <- function(
   cli::cli_progress_done()
 
   if (5L %in% steps) {
-    if (verbose) cli::cli_progress_step("5/9 Processing images")
-    process_and_mask_images( # nolint: object_usage_linter.
-      dirs$snaps, dirs$processed, dirs$masks,
-      dilate = dilate, skip_existing = skip_existing
+    if (verbose) {
+      cli::cli_progress_step("5/9 Processing images")
+    }
+    process_and_mask_images(
+      # nolint: object_usage_linter.
+      dirs$snaps,
+      dirs$processed,
+      dirs$masks,
+      dilate = dilate,
+      skip_existing = skip_existing
     )
     if (verbose) cli::cli_progress_done()
   }
 
   if (6L %in% steps) {
     extract_contours(
-      dirs$masks, dirs$base, step = "6/9",
-      verbose = verbose, vertex_size_limits = vertex_size_limits
+      dirs$masks,
+      dirs$base,
+      step = "6/9",
+      verbose = verbose,
+      vertex_size_limits = vertex_size_limits
     )
   }
 
@@ -333,20 +370,27 @@ create_subcortical_atlas <- function(
       ))
     }
 
-    if (verbose) cli::cli_progress_step("9/9 Building final atlas")
+    if (verbose) {
+      cli::cli_progress_step("9/9 Building final atlas")
+    }
 
-    sf_data <- build_contour_sf( # nolint: object_usage_linter.
-      contours_file, views, cortex_slices
+    sf_data <- build_contour_sf(
+      # nolint: object_usage_linter.
+      contours_file,
+      views,
+      cortex_slices
     )
 
-    atlas <- brain_atlas(
+    atlas <- ggseg_atlas(
       atlas = atlas_name,
       type = "subcortical",
       palette = components$palette,
       core = components$core,
-      data = brain_data_subcortical(sf = sf_data, meshes = components$meshes_df)
+      data = ggseg_data_subcortical(sf = sf_data, meshes = components$meshes_df)
     )
-    if (verbose) cli::cli_progress_done()
+    if (verbose) {
+      cli::cli_progress_done()
+    }
 
     if (cleanup) {
       unlink(dirs$base, recursive = TRUE)
@@ -378,7 +422,11 @@ create_subcortical_atlas <- function(
 
 #' @noRd
 subcort_create_meshes <- function(
-  input_volume, colortable, dirs, skip_existing, verbose,
+  input_volume,
+  colortable,
+  dirs,
+  skip_existing,
+  verbose,
   decimate = 0.5
 ) {
   p <- progressor(steps = nrow(colortable))
@@ -424,7 +472,9 @@ subcort_create_meshes <- function(
   if (!is.null(decimate) && decimate < 1) {
     if (verbose) {
       orig_faces <- sum(vapply(
-        meshes_list, function(m) nrow(m$faces), integer(1)
+        meshes_list,
+        function(m) nrow(m$faces),
+        integer(1)
       ))
       cli::cli_alert_info(
         "Decimating meshes to {decimate * 100}% of original faces"
@@ -433,10 +483,13 @@ subcort_create_meshes <- function(
     meshes_list <- lapply(meshes_list, decimate_mesh, percent = decimate)
     if (verbose) {
       new_faces <- sum(vapply(
-        meshes_list, function(m) nrow(m$faces), integer(1)
+        meshes_list,
+        function(m) nrow(m$faces),
+        integer(1)
       ))
+      pct <- round(new_faces / orig_faces * 100)
       cli::cli_alert_success(
-        "Reduced from {orig_faces} to {new_faces} faces ({round(new_faces/orig_faces * 100)}%)"
+        "Reduced from {orig_faces} to {new_faces} faces ({pct}%)"
       )
     }
   }
@@ -469,7 +522,11 @@ subcort_build_components <- function(colortable, meshes_list) {
 
 #' @noRd
 subcort_create_snapshots <- function(
-  input_volume, colortable, views, dirs, skip_existing
+  input_volume,
+  colortable,
+  views,
+  dirs,
+  skip_existing
 ) {
   vol <- read_volume(input_volume)
   dims <- dim(vol)
@@ -499,7 +556,12 @@ subcort_create_snapshots <- function(
       view_name = views$name[snapshot_grid$view_idx]
     ),
     function(
-      label_id, label_name, view_type, view_start, view_end, view_name
+      label_id,
+      label_name,
+      view_type,
+      view_start,
+      view_end,
+      view_name
     ) {
       structure_vol <- array(0L, dim = dims)
       structure_vol[vol == label_id] <- 1L
@@ -538,7 +600,9 @@ subcort_create_snapshots <- function(
     hemi <- extract_hemi_from_view(cs$view, cs$name)
     snapshot_cortex_slice(
       vol = cortex_vol,
-      x = cs$x, y = cs$y, z = cs$z,
+      x = cs$x,
+      y = cs$y,
+      z = cs$z,
       slice_view = cs$view,
       view_name = cs$name,
       hemi = hemi,
@@ -583,5 +647,3 @@ default_subcortical_views <- function(dims) {
 
   rbind(axial_views, coronal_views, sagittal_views)
 }
-
-

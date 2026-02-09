@@ -137,7 +137,6 @@ orient_slice_2d <- function(slice, view, hemi = NULL) {
 #' @return Invisible NULL
 #' @importFrom grDevices png dev.off
 #' @importFrom graphics par image
-#' @importFrom readr parse_number
 #' @keywords internal
 snapshot_slice <- function(
   lab,
@@ -172,7 +171,7 @@ snapshot_slice <- function(
     if (is.null(label_file)) {
       cli::cli_abort("label_file must be provided when lab is a .label file")
     }
-    label_id <- parse_number(lab_name)
+    label_id <- as.numeric(gsub("[^0-9.]", "", lab_name))
     vol <- read_volume(label_file)
     vol[vol != label_id] <- 0
   } else {
@@ -551,5 +550,3 @@ snapshot_partial_projection <- function(
 
   invisible(outfile)
 }
-
-

@@ -62,7 +62,7 @@
 #'   Use `steps = 1` for 3D-only atlas. Use `steps = 5:7` to iterate on
 #'   smoothing and vertex reduction.
 #'
-#' @return A `brain_atlas` object with type `"tract"`, containing region
+#' @return A `ggseg_atlas` object with type `"tract"`, containing region
 #'   metadata, tube meshes for 3D rendering, colours, and optionally sf
 #'   geometry for 2D projection plots.
 #' @export
@@ -200,11 +200,18 @@ create_tract_atlas <- function(
     }
 
     meshes_list <- tract_create_meshes(
-      streamlines_data, tract_names, centerline_method,
-      n_points, tube_radius, tube_segments, density_radius_range
+      streamlines_data,
+      tract_names,
+      centerline_method,
+      n_points,
+      tube_radius,
+      tube_segments,
+      density_radius_range
     )
 
-    if (verbose) cli::cli_progress_done()
+    if (verbose) {
+      cli::cli_progress_done()
+    }
 
     built <- tract_build_core(meshes_list, colours, tract_names)
     core <- built$core
@@ -226,19 +233,21 @@ create_tract_atlas <- function(
     )
 
     if (max(steps) == 1L) {
-      atlas <- brain_atlas(
+      atlas <- ggseg_atlas(
         atlas = atlas_name,
         type = "tract",
         palette = palette,
         core = core,
-        data = brain_data_tract(
+        data = ggseg_data_tract(
           centerlines = centerlines_df,
           tube_radius = if (is.numeric(tube_radius)) tube_radius else 5,
           tube_segments = tube_segments
         )
       )
 
-      if (cleanup) unlink(cache_dir, recursive = TRUE)
+      if (cleanup) {
+        unlink(cache_dir, recursive = TRUE)
+      }
 
       if (verbose) {
         cli::cli_alert_success(
@@ -274,12 +283,17 @@ create_tract_atlas <- function(
     file.path(cache_dir, "cortex_slices.rds")
   )
   step2 <- load_or_run_step(
-    2L, steps, step2_files, skip_existing,
+    2L,
+    steps,
+    step2_files,
+    skip_existing,
     "Step 2 (Create projection snapshots)"
   )
 
   if (step2$run) {
-    if (verbose) cli::cli_progress_step("2/7 Creating projection snapshots")
+    if (verbose) {
+      cli::cli_progress_step("2/7 Creating projection snapshots")
+    }
 
     if (is.null(coords_are_voxels)) {
       all_streamlines <- unlist(streamlines_data, recursive = FALSE)
@@ -291,8 +305,15 @@ create_tract_atlas <- function(
     }
 
     snapshot_result <- tract_create_snapshots(
-      streamlines_data, centerlines_df, input_aseg, views, dirs,
-      coords_are_voxels, skip_existing, tract_radius, verbose
+      streamlines_data,
+      centerlines_df,
+      input_aseg,
+      views,
+      dirs,
+      coords_are_voxels,
+      skip_existing,
+      tract_radius,
+      verbose
     )
     views <- snapshot_result$views
     cortex_slices <- snapshot_result$cortex_slices
@@ -308,18 +329,27 @@ create_tract_atlas <- function(
   }
 
   if (3L %in% steps) {
-    if (verbose) cli::cli_progress_step("3/7 Processing images")
-    process_and_mask_images( # nolint: object_usage_linter.
-      dirs$snaps, dirs$processed, dirs$masks,
-      dilate = dilate, skip_existing = skip_existing
+    if (verbose) {
+      cli::cli_progress_step("3/7 Processing images")
+    }
+    process_and_mask_images(
+      # nolint: object_usage_linter.
+      dirs$snaps,
+      dirs$processed,
+      dirs$masks,
+      dilate = dilate,
+      skip_existing = skip_existing
     )
     if (verbose) cli::cli_progress_done()
   }
 
   if (4L %in% steps) {
     extract_contours(
-      dirs$masks, dirs$base, step = "4/7",
-      verbose = verbose, vertex_size_limits = vertex_size_limits
+      dirs$masks,
+      dirs$base,
+      step = "4/7",
+      verbose = verbose,
+      vertex_size_limits = vertex_size_limits
     )
   }
 
@@ -340,27 +370,36 @@ create_tract_atlas <- function(
       ))
     }
 
-    if (verbose) cli::cli_progress_step("7/7 Building atlas")
+    if (verbose) {
+      cli::cli_progress_step("7/7 Building atlas")
+    }
 
-    sf_data <- build_contour_sf( # nolint: object_usage_linter.
-      contours_file, views, cortex_slices
+    sf_data <- build_contour_sf(
+      # nolint: object_usage_linter.
+      contours_file,
+      views,
+      cortex_slices
     )
 
-    atlas <- brain_atlas(
+    atlas <- ggseg_atlas(
       atlas = atlas_name,
       type = "tract",
       palette = palette,
       core = core,
-      data = brain_data_tract(
+      data = ggseg_data_tract(
         sf = sf_data,
         centerlines = centerlines_df,
         tube_radius = if (is.numeric(tube_radius)) tube_radius else 5,
         tube_segments = tube_segments
       )
     )
-    if (verbose) cli::cli_progress_done()
+    if (verbose) {
+      cli::cli_progress_done()
+    }
 
-    if (cleanup) unlink(cache_dir, recursive = TRUE)
+    if (cleanup) {
+      unlink(cache_dir, recursive = TRUE)
+    }
 
     if (verbose) {
       cli::cli_alert_success(
@@ -420,8 +459,13 @@ tract_read_input <- function(input_tracts, tract_names) {
 
 #' @noRd
 tract_create_meshes <- function(
-  streamlines_data, tract_names, centerline_method,
-  n_points, tube_radius, tube_segments, density_radius_range
+  streamlines_data,
+  tract_names,
+  centerline_method,
+  n_points,
+  tube_radius,
+  tube_segments,
+  density_radius_range
 ) {
   p <- progressor(steps = length(streamlines_data))
 
@@ -441,7 +485,10 @@ tract_create_meshes <- function(
       }
 
       radius <- resolve_tube_radius(
-        tube_radius, streamlines, centerline, density_radius_range
+        tube_radius,
+        streamlines,
+        centerline,
+        density_radius_range
       )
 
       mesh <- generate_tube_mesh(
@@ -456,8 +503,12 @@ tract_create_meshes <- function(
     .options = furrr_options(
       packages = "ggsegExtra",
       globals = c(
-        "centerline_method", "n_points", "tube_radius",
-        "density_radius_range", "tube_segments", "p"
+        "centerline_method",
+        "n_points",
+        "tube_radius",
+        "density_radius_range",
+        "tube_segments",
+        "p"
       )
     )
   )
@@ -517,8 +568,15 @@ tract_build_core <- function(meshes_list, colours, tract_names) {
 
 #' @noRd
 tract_create_snapshots <- function(
-  streamlines_data, centerlines_df, input_aseg, views, dirs,
-  coords_are_voxels, skip_existing, tract_radius, verbose
+  streamlines_data,
+  centerlines_df,
+  input_aseg,
+  views,
+  dirs,
+  coords_are_voxels,
+  skip_existing,
+  tract_radius,
+  verbose
 ) {
   aseg_vol <- read_volume(input_aseg)
   dims <- dim(aseg_vol)
@@ -555,8 +613,11 @@ tract_create_snapshots <- function(
     .options = furrr_options(
       packages = "ggsegExtra",
       globals = c(
-        "streamlines_data", "input_aseg",
-        "tract_radius", "coords_are_voxels", "p"
+        "streamlines_data",
+        "input_aseg",
+        "tract_radius",
+        "coords_are_voxels",
+        "p"
       )
     )
   )
@@ -612,7 +673,9 @@ tract_create_snapshots <- function(
     )
   ))
 
-  if (verbose) cli::cli_alert_info("Creating cortex reference slices")
+  if (verbose) {
+    cli::cli_alert_info("Creating cortex reference slices")
+  }
 
   p2 <- progressor(steps = nrow(cortex_slices))
 
@@ -628,7 +691,9 @@ tract_create_snapshots <- function(
       hemi <- extract_hemi_from_view(slice_view, view_name)
       snapshot_cortex_slice(
         vol = cortex_vol,
-        x = x, y = y, z = z,
+        x = x,
+        y = y,
+        z = z,
         slice_view = slice_view,
         view_name = view_name,
         hemi = hemi,

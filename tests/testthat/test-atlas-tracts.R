@@ -11,7 +11,7 @@ describe("create_tract_atlas", {
       verbose = FALSE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_equal(atlas$type, "tract")
     expect_false(is.null(atlas$data$centerlines))
     expect_equal(nrow(atlas$data$centerlines), 2)
@@ -155,7 +155,8 @@ describe("tract_build_core", {
       cst_left = list(
         metadata = list(
           centerline = matrix(
-            1:9, ncol = 3,
+            1:9,
+            ncol = 3,
             dimnames = list(NULL, c("x", "y", "z"))
           ),
           tangents = matrix(1:9, ncol = 3)
@@ -164,7 +165,8 @@ describe("tract_build_core", {
       cst_right = list(
         metadata = list(
           centerline = matrix(
-            10:18, ncol = 3,
+            10:18,
+            ncol = 3,
             dimnames = list(NULL, c("x", "y", "z"))
           ),
           tangents = matrix(10:18, ncol = 3)
@@ -174,7 +176,9 @@ describe("tract_build_core", {
     colours <- c("#FF0000", "#00FF00")
 
     result <- tract_build_core(
-      meshes_list, colours, c("cst_left", "cst_right")
+      meshes_list,
+      colours,
+      c("cst_left", "cst_right")
     )
 
     expect_equal(nrow(result$core), 2)
@@ -188,7 +192,8 @@ describe("tract_build_core", {
       cst = list(
         metadata = list(
           centerline = matrix(
-            1:9, ncol = 3,
+            1:9,
+            ncol = 3,
             dimnames = list(NULL, c("x", "y", "z"))
           ),
           tangents = matrix(1:9, ncol = 3)
@@ -219,20 +224,25 @@ describe("create_tract_atlas pipeline flow", {
       detect_coords_are_voxels = function(...) TRUE,
       tract_create_meshes = function(...) {
         mesh_called <<- TRUE
-        list(t1 = list(
-          metadata = list(
-            centerline = matrix(
-              1:9, ncol = 3,
-              dimnames = list(NULL, c("x", "y", "z"))
-            ),
-            tangents = matrix(1:9, ncol = 3)
+        list(
+          t1 = list(
+            metadata = list(
+              centerline = matrix(
+                1:9,
+                ncol = 3,
+                dimnames = list(NULL, c("x", "y", "z"))
+              ),
+              tangents = matrix(1:9, ncol = 3)
+            )
           )
-        ))
+        )
       },
       tract_build_core = function(...) {
         list(
           core = data.frame(
-            hemi = "midline", region = "t1", label = "t1",
+            hemi = "midline",
+            region = "t1",
+            label = "t1",
             stringsAsFactors = FALSE
           ),
           palette = c(t1 = "#FF0000"),
@@ -240,13 +250,15 @@ describe("create_tract_atlas pipeline flow", {
           atlas_name = "t1"
         )
       },
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_tract = function(...) list(...),
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_tract = function(...) list(...),
       preview_atlas = function(...) invisible(NULL),
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -272,7 +284,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -284,8 +298,10 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -317,7 +333,9 @@ describe("create_tract_atlas pipeline flow", {
 
     custom_lut <- data.frame(
       region = "Tract A",
-      R = 255, G = 0, B = 128
+      R = 255,
+      G = 0,
+      B = 128
     )
 
     atlas <- create_tract_atlas(
@@ -346,7 +364,7 @@ describe("create_tract_atlas pipeline flow", {
       verbose = FALSE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
     expect_true("Tract A" %in% atlas$core$label)
   })
 
@@ -356,7 +374,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -368,8 +388,10 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -382,8 +404,12 @@ describe("create_tract_atlas pipeline flow", {
       detect_coords_are_voxels = function(...) TRUE,
       tract_create_snapshots = function(...) {
         list(
-          views = data.frame(name = "ax_1", type = "axial",
-                             start = 1, end = 10),
+          views = data.frame(
+            name = "ax_1",
+            type = "axial",
+            start = 1,
+            end = 10
+          ),
           cortex_slices = NULL
         )
       },
@@ -421,18 +447,25 @@ describe("create_tract_atlas pipeline flow", {
       },
       detect_coords_are_voxels = function(...) TRUE,
       tract_create_meshes = function(...) {
-        list(t1 = list(
-          metadata = list(
-            centerline = matrix(1:9, ncol = 3,
-              dimnames = list(NULL, c("x", "y", "z"))),
-            tangents = matrix(1:9, ncol = 3)
+        list(
+          t1 = list(
+            metadata = list(
+              centerline = matrix(
+                1:9,
+                ncol = 3,
+                dimnames = list(NULL, c("x", "y", "z"))
+              ),
+              tangents = matrix(1:9, ncol = 3)
+            )
           )
-        ))
+        )
       },
       tract_build_core = function(...) {
         list(
           core = data.frame(
-            hemi = "midline", region = "t1", label = "t1",
+            hemi = "midline",
+            region = "t1",
+            label = "t1",
             stringsAsFactors = FALSE
           ),
           palette = c(t1 = "#FF0000"),
@@ -440,13 +473,15 @@ describe("create_tract_atlas pipeline flow", {
           atlas_name = "t1"
         )
       },
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_tract = function(...) list(...),
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_tract = function(...) list(...),
       preview_atlas = function(...) invisible(NULL),
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -462,7 +497,7 @@ describe("create_tract_atlas pipeline flow", {
       verbose = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("step 1 3D-only atlas with cleanup", {
@@ -479,18 +514,25 @@ describe("create_tract_atlas pipeline flow", {
       },
       detect_coords_are_voxels = function(...) TRUE,
       tract_create_meshes = function(...) {
-        list(t1 = list(
-          metadata = list(
-            centerline = matrix(1:9, ncol = 3,
-              dimnames = list(NULL, c("x", "y", "z"))),
-            tangents = matrix(1:9, ncol = 3)
+        list(
+          t1 = list(
+            metadata = list(
+              centerline = matrix(
+                1:9,
+                ncol = 3,
+                dimnames = list(NULL, c("x", "y", "z"))
+              ),
+              tangents = matrix(1:9, ncol = 3)
+            )
           )
-        ))
+        )
       },
       tract_build_core = function(...) {
         list(
           core = data.frame(
-            hemi = "midline", region = "t1", label = "t1",
+            hemi = "midline",
+            region = "t1",
+            label = "t1",
             stringsAsFactors = FALSE
           ),
           palette = c(t1 = "#FF0000"),
@@ -498,13 +540,15 @@ describe("create_tract_atlas pipeline flow", {
           atlas_name = "t1"
         )
       },
-      brain_atlas = function(...) structure(list(...), class = "brain_atlas"),
-      brain_data_tract = function(...) list(...),
+      ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
+      ggseg_data_tract = function(...) list(...),
       preview_atlas = function(...) invisible(NULL),
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -521,7 +565,7 @@ describe("create_tract_atlas pipeline flow", {
       cleanup = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("loads cached step1 data with verbose", {
@@ -533,7 +577,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -545,8 +591,10 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -559,8 +607,12 @@ describe("create_tract_atlas pipeline flow", {
       detect_coords_are_voxels = function(...) TRUE,
       tract_create_snapshots = function(...) {
         list(
-          views = data.frame(name = "ax_1", type = "axial",
-                             start = 1, end = 10),
+          views = data.frame(
+            name = "ax_1",
+            type = "axial",
+            start = 1,
+            end = 10
+          ),
           cortex_slices = NULL
         )
       },
@@ -593,7 +645,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -605,20 +659,28 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step == 1L) {
           list(run = FALSE, data = list("step1_data.rds" = cached))
         } else if (step == 2L) {
-          list(run = FALSE, data = list(
-            "views.rds" = data.frame(
-              name = "ax_1", type = "axial", start = 1, end = 10
-            ),
-            "cortex_slices.rds" = NULL
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "views.rds" = data.frame(
+                name = "ax_1",
+                type = "axial",
+                start = 1,
+                end = 10
+              ),
+              "cortex_slices.rds" = NULL
+            )
+          )
         } else {
           list(run = step %in% steps, data = list())
         }
@@ -652,7 +714,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -667,26 +731,34 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step == 1L) {
           list(run = FALSE, data = list("step1_data.rds" = cached))
         } else if (step == 2L) {
-          list(run = FALSE, data = list(
-            "views.rds" = data.frame(
-              name = "ax_1", type = "axial", start = 1, end = 10
-            ),
-            "cortex_slices.rds" = NULL
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "views.rds" = data.frame(
+                name = "ax_1",
+                type = "axial",
+                start = 1,
+                end = 10
+              ),
+              "cortex_slices.rds" = NULL
+            )
+          )
         } else {
           list(run = step %in% steps, data = list())
         }
       },
       build_contour_sf = function(...) "mock_sf_data",
-      brain_atlas = function(...) {
+      ggseg_atlas = function(...) {
         args <- list(...)
         structure(
           list(
@@ -695,10 +767,10 @@ describe("create_tract_atlas pipeline flow", {
             type = args$type,
             data = args$data
           ),
-          class = "brain_atlas"
+          class = "ggseg_atlas"
         )
       },
-      brain_data_tract = function(...) list(...),
+      ggseg_data_tract = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -714,7 +786,7 @@ describe("create_tract_atlas pipeline flow", {
       verbose = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("step 7 with cleanup removes temp files", {
@@ -726,7 +798,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -741,33 +815,41 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step == 1L) {
           list(run = FALSE, data = list("step1_data.rds" = cached))
         } else if (step == 2L) {
-          list(run = FALSE, data = list(
-            "views.rds" = data.frame(
-              name = "ax_1", type = "axial", start = 1, end = 10
-            ),
-            "cortex_slices.rds" = NULL
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "views.rds" = data.frame(
+                name = "ax_1",
+                type = "axial",
+                start = 1,
+                end = 10
+              ),
+              "cortex_slices.rds" = NULL
+            )
+          )
         } else {
           list(run = step %in% steps, data = list())
         }
       },
       build_contour_sf = function(...) "mock_sf",
-      brain_atlas = function(...) {
+      ggseg_atlas = function(...) {
         args <- list(...)
         structure(
           list(core = args$core, palette = args$palette),
-          class = "brain_atlas"
+          class = "ggseg_atlas"
         )
       },
-      brain_data_tract = function(...) list(...),
+      ggseg_data_tract = function(...) list(...),
       warn_if_large_atlas = function(...) invisible(NULL),
       preview_atlas = function(...) invisible(NULL)
     )
@@ -784,7 +866,7 @@ describe("create_tract_atlas pipeline flow", {
       cleanup = TRUE
     )
 
-    expect_s3_class(atlas, "brain_atlas")
+    expect_s3_class(atlas, "ggseg_atlas")
   })
 
   it("step 7 errors when contours_reduced.rda missing", {
@@ -793,7 +875,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -805,20 +889,28 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step == 1L) {
           list(run = FALSE, data = list("step1_data.rds" = cached))
         } else if (step == 2L) {
-          list(run = FALSE, data = list(
-            "views.rds" = data.frame(
-              name = "ax_1", type = "axial", start = 1, end = 10
-            ),
-            "cortex_slices.rds" = NULL
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "views.rds" = data.frame(
+                name = "ax_1",
+                type = "axial",
+                start = 1,
+                end = 10
+              ),
+              "cortex_slices.rds" = NULL
+            )
+          )
         } else {
           list(run = step %in% steps, data = list())
         }
@@ -849,7 +941,9 @@ describe("create_tract_atlas pipeline flow", {
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
       core = data.frame(
-        hemi = "midline", region = "t1", label = "t1",
+        hemi = "midline",
+        region = "t1",
+        label = "t1",
         stringsAsFactors = FALSE
       ),
       palette = c(t1 = "#FF0000"),
@@ -861,20 +955,28 @@ describe("create_tract_atlas pipeline flow", {
     local_mocked_bindings(
       setup_atlas_dirs = function(...) {
         list(
-          base = test_dir, snaps = test_dir,
-          processed = test_dir, masks = test_dir
+          base = test_dir,
+          snaps = test_dir,
+          processed = test_dir,
+          masks = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
         if (step == 1L) {
           list(run = FALSE, data = list("step1_data.rds" = cached))
         } else if (step == 2L) {
-          list(run = FALSE, data = list(
-            "views.rds" = data.frame(
-              name = "ax_1", type = "axial", start = 1, end = 10
-            ),
-            "cortex_slices.rds" = NULL
-          ))
+          list(
+            run = FALSE,
+            data = list(
+              "views.rds" = data.frame(
+                name = "ax_1",
+                type = "axial",
+                start = 1,
+                end = 10
+              ),
+              "cortex_slices.rds" = NULL
+            )
+          )
         } else {
           list(run = step %in% steps, data = list())
         }
@@ -967,8 +1069,13 @@ describe("tract_create_meshes", {
     )
 
     result <- tract_create_meshes(
-      streamlines_data, c("t1", "t2"), "mean",
-      50, 5, 8, c(0.2, 1.0)
+      streamlines_data,
+      c("t1", "t2"),
+      "mean",
+      50,
+      5,
+      8,
+      c(0.2, 1.0)
     )
 
     expect_equal(length(result), 1)
@@ -988,7 +1095,13 @@ describe("tract_create_meshes", {
 
     expect_error(
       tract_create_meshes(
-        streamlines_data, "t1", "mean", 50, 5, 8, c(0.2, 1.0)
+        streamlines_data,
+        "t1",
+        "mean",
+        50,
+        5,
+        8,
+        c(0.2, 1.0)
       ),
       "No meshes"
     )
@@ -1011,7 +1124,13 @@ describe("tract_create_meshes", {
 
     expect_error(
       tract_create_meshes(
-        streamlines_data, "t1", "mean", 50, 5, 8, c(0.2, 1.0)
+        streamlines_data,
+        "t1",
+        "mean",
+        50,
+        5,
+        8,
+        c(0.2, 1.0)
       ),
       "No meshes"
     )
@@ -1032,13 +1151,20 @@ describe("tract_create_snapshots", {
       },
       default_tract_views = function(dims) {
         data.frame(
-          name = "ax_1", type = "axial", start = 1, end = 10,
+          name = "ax_1",
+          type = "axial",
+          start = 1,
+          end = 10,
           stringsAsFactors = FALSE
         )
       },
       create_cortex_slices = function(views, dims) {
         data.frame(
-          x = NA, y = NA, z = 5, view = "axial", name = "ax_1",
+          x = NA,
+          y = NA,
+          z = 5,
+          view = "axial",
+          name = "ax_1",
           stringsAsFactors = FALSE
         )
       },
@@ -1066,8 +1192,15 @@ describe("tract_create_snapshots", {
     dirs <- list(snaps = withr::local_tempdir())
 
     result <- tract_create_snapshots(
-      streamlines_data, centerlines_df, "fake_aseg.mgz",
-      NULL, dirs, TRUE, FALSE, 3, TRUE
+      streamlines_data,
+      centerlines_df,
+      "fake_aseg.mgz",
+      NULL,
+      dirs,
+      TRUE,
+      FALSE,
+      3,
+      TRUE
     )
 
     expect_true(is.list(result))
@@ -1079,7 +1212,10 @@ describe("tract_create_snapshots", {
 
   it("uses provided views instead of defaults", {
     custom_views <- data.frame(
-      name = "cor_1", type = "coronal", start = 50, end = 60,
+      name = "cor_1",
+      type = "coronal",
+      start = 50,
+      end = 60,
       stringsAsFactors = FALSE
     )
 
@@ -1087,11 +1223,17 @@ describe("tract_create_snapshots", {
       read_volume = function(f) array(0L, dim = c(10, 10, 10)),
       create_cortex_slices = function(views, dims) {
         data.frame(
-          x = NA, y = 5, z = NA, view = "coronal", name = "cor_1",
+          x = NA,
+          y = 5,
+          z = NA,
+          view = "coronal",
+          name = "cor_1",
           stringsAsFactors = FALSE
         )
       },
-      detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
+      detect_cortex_labels = function(vol) {
+        list(left = integer(0), right = integer(0))
+      },
       extract_hemi_from_view = function(...) "left",
       extract_centerline = function(streamlines, ...) {
         matrix(1:9, ncol = 3, dimnames = list(NULL, c("x", "y", "z")))
@@ -1109,8 +1251,15 @@ describe("tract_create_snapshots", {
     dirs <- list(snaps = withr::local_tempdir())
 
     result <- tract_create_snapshots(
-      streamlines_data, centerlines_df, "fake_aseg.mgz",
-      custom_views, dirs, TRUE, FALSE, 3, FALSE
+      streamlines_data,
+      centerlines_df,
+      "fake_aseg.mgz",
+      custom_views,
+      dirs,
+      TRUE,
+      FALSE,
+      3,
+      FALSE
     )
 
     expect_equal(result$views$name, "cor_1")
@@ -1122,17 +1271,26 @@ describe("tract_create_snapshots", {
       read_volume = function(f) array(0L, dim = c(10, 10, 10)),
       default_tract_views = function(dims) {
         data.frame(
-          name = "ax_1", type = "axial", start = 1, end = 10,
+          name = "ax_1",
+          type = "axial",
+          start = 1,
+          end = 10,
           stringsAsFactors = FALSE
         )
       },
       create_cortex_slices = function(views, dims) {
         data.frame(
-          x = NA, y = NA, z = 5, view = "axial", name = "ax_1",
+          x = NA,
+          y = NA,
+          z = 5,
+          view = "axial",
+          name = "ax_1",
           stringsAsFactors = FALSE
         )
       },
-      detect_cortex_labels = function(vol) list(left = integer(0), right = integer(0)),
+      detect_cortex_labels = function(vol) {
+        list(left = integer(0), right = integer(0))
+      },
       extract_hemi_from_view = function(...) "left",
       extract_centerline = function(streamlines, ...) {
         matrix(1:9, ncol = 3, dimnames = list(NULL, c("x", "y", "z")))
@@ -1152,8 +1310,15 @@ describe("tract_create_snapshots", {
     dirs <- list(snaps = withr::local_tempdir())
 
     result <- tract_create_snapshots(
-      streamlines_data, centerlines_df, "fake_aseg.mgz",
-      NULL, dirs, TRUE, FALSE, 3, FALSE
+      streamlines_data,
+      centerlines_df,
+      "fake_aseg.mgz",
+      NULL,
+      dirs,
+      TRUE,
+      FALSE,
+      3,
+      FALSE
     )
 
     expect_true(is.list(result))
@@ -1200,7 +1365,10 @@ describe("resolve_tube_radius", {
     )
 
     result <- resolve_tube_radius(
-      "density", streamlines, centerline, c(0.2, 1.0)
+      "density",
+      streamlines,
+      centerline,
+      c(0.2, 1.0)
     )
 
     expect_length(result, 5)
@@ -1215,7 +1383,10 @@ describe("resolve_tube_radius", {
     )
 
     result <- resolve_tube_radius(
-      "density", streamlines, centerline, c(0.2, 1.0)
+      "density",
+      streamlines,
+      centerline,
+      c(0.2, 1.0)
     )
 
     expect_length(result, 5)
@@ -1227,7 +1398,10 @@ describe("resolve_tube_radius", {
     streamlines <- list(centerline)
 
     result <- resolve_tube_radius(
-      "unknown", streamlines, centerline, c(0.2, 1.0)
+      "unknown",
+      streamlines,
+      centerline,
+      c(0.2, 1.0)
     )
 
     expect_length(result, 5)

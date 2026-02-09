@@ -59,38 +59,75 @@ read_volume <- function(file, reorient = TRUE) {
 
 #' Read mesh data from PLY file
 #'
-#' PLY files contain mesh information including vertices and faces.
-#' This function reads a PLY file and extracts the vertices and faces
-#' into a list format suitable for ggseg3d.
+#' Reads an ASCII PLY file and extracts vertices and faces into
+#' a list format suitable for ggseg3d.
 #'
 #' @param ply path to ply-file
-#' @param ... arguments to [geomorph::read.ply()]
+#' @param ... ignored, kept for backward compatibility
 #'
 #' @return list with vertices (data.frame with x, y, z) and
 #'   faces (data.frame with i, j, k)
 #' @keywords internal
-#' @importFrom geomorph read.ply
 read_ply_mesh <- function(ply, ...) {
-  if (is.character(ply)) {
-    ply <- read.ply(ply, ...)
+  if (!is.character(ply)) {
+    cli::cli_abort("{.arg ply} must be a file path")
   }
 
+  lines <- readLines(ply)
+
+  if (lines[1] != "ply") {
+    cli::cli_abort("Not a valid PLY file: {.path {ply}}")
+  }
+
+  n_vertices <- 0L
+  n_faces <- 0L
+  header_end <- 0L
+
+  for (i in seq_along(lines)) {
+    line <- trimws(lines[i])
+    if (grepl("^element vertex", line)) {
+      n_vertices <- as.integer(sub("element vertex ", "", line))
+    } else if (grepl("^element face", line)) {
+      n_faces <- as.integer(sub("element face ", "", line))
+    } else if (line == "end_header") {
+      header_end <- i
+      break
+    }
+  }
+
+  vert_lines <- lines[(header_end + 1):(header_end + n_vertices)]
+  vert_data <- do.call(
+    rbind,
+    lapply(
+      strsplit(vert_lines, "\\s+"),
+      function(x) as.numeric(x[1:3])
+    )
+  )
+
   vertices <- data.frame(
-    x = ply$vb[1, ],
-    y = ply$vb[2, ],
-    z = ply$vb[3, ]
+    x = vert_data[, 1],
+    y = vert_data[, 2],
+    z = vert_data[, 3]
+  )
+
+  face_lines <- lines[
+    (header_end + n_vertices + 1):(header_end + n_vertices + n_faces)
+  ]
+  face_data <- do.call(
+    rbind,
+    lapply(
+      strsplit(face_lines, "\\s+"),
+      function(x) as.integer(x[2:4])
+    )
   )
 
   faces <- data.frame(
-    i = ply$it[1, ],
-    j = ply$it[2, ],
-    k = ply$it[3, ]
+    i = face_data[, 1],
+    j = face_data[, 2],
+    k = face_data[, 3]
   )
 
-  list(
-    vertices = vertices,
-    faces = faces
-  )
+  list(vertices = vertices, faces = faces)
 }
 
 # FreeSurfer annotation reading ----
@@ -368,7 +405,7 @@ get_ctab <- function(color_lut) {
 
 
 #' @noRd
-ctab_line <- function(idx, name, R, G, B, A) { # nolint: object_name_linter
+ctab_line <- function(idx, name, R, G, B, A) { # nolint: object_name_linter.
   if (nchar(name) > 29) {
     name <- substr(name, 1, 29)
   }

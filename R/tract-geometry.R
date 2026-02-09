@@ -221,7 +221,8 @@ generate_tube_mesh <- function(centerline, radius = 0.5, segments = 8) {
 #' @param curve Matrix with N rows and 3 columns
 #' @return List with tangents, normals, and binormals matrices
 #' @keywords internal
-compute_parallel_transport_frames <- function(curve) { # nolint: object_length_linter
+# nolint next: object_length_linter.
+compute_parallel_transport_frames <- function(curve) {
   n <- nrow(curve)
 
   tangents <- matrix(0, nrow = n, ncol = 3)
@@ -530,7 +531,7 @@ detect_coords_are_voxels <- function(streamlines, dims = NULL) {
 #' `include_geometry = TRUE`, but you can call it separately if you want
 #' custom views or need to regenerate geometry.
 #'
-#' @param atlas A `brain_atlas` of type `"tract"` (from [create_tract_atlas()]).
+#' @param atlas A `ggseg_atlas` of type `"tract"` (from [create_tract_atlas()]).
 #' @param aseg_file Path to a segmentation volume (`.mgz`, `.nii`) used to
 #'   draw cortex outlines for anatomical context.
 #' @param streamlines Named list of streamline matrices (Nx3 with x, y, z).
@@ -563,7 +564,7 @@ detect_coords_are_voxels <- function(streamlines, dims = NULL) {
 #' @importFrom furrr future_pmap furrr_options
 #' @importFrom progressr progressor
 #' @importFrom tidyr separate
-create_tract_geometry_volumetric <- function( # nolint: object_length_linter
+create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
   atlas,
   aseg_file,
   streamlines,

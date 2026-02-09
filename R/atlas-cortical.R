@@ -44,7 +44,7 @@
 #'   contour extraction. Use `steps = 6:7` to iterate on smoothing and
 #'   reduction parameters without re-extracting contours.
 #'
-#' @return A `brain_atlas` object containing region metadata (core), vertex
+#' @return A `ggseg_atlas` object containing region metadata (core), vertex
 #'   indices for 3D rendering, a colour palette, and optionally sf geometry
 #'   for 2D plots.
 #' @export
@@ -141,8 +141,12 @@ create_cortical_atlas <- function(
 
   if (max(steps) == 1L) {
     return(cortical_early_return(
-      step1$atlas_3d, step1$components,
-      dirs, cleanup, verbose, start_time
+      step1$atlas_3d,
+      step1$components,
+      dirs,
+      cleanup,
+      verbose,
+      start_time
     ))
   }
 
@@ -169,19 +173,31 @@ create_cortical_atlas <- function(
 
 #' @noRd
 cortical_step1 <- function(
-  dirs, atlas_name, steps, skip_existing, verbose,
-  read_fn, step_label, cache_label
+  dirs,
+  atlas_name,
+  steps,
+  skip_existing,
+  verbose,
+  read_fn,
+  step_label,
+  cache_label
 ) {
   step1_files <- c(
     file.path(dirs$base, "atlas_3d.rds"),
     file.path(dirs$base, "components.rds")
   )
   step1 <- load_or_run_step(
-    1L, steps, step1_files, skip_existing, cache_label
+    1L,
+    steps,
+    step1_files,
+    skip_existing,
+    cache_label
   )
 
   if (step1$run) {
-    if (verbose) cli::cli_progress_step(step_label)
+    if (verbose) {
+      cli::cli_progress_step(step_label)
+    }
 
     atlas_data <- read_fn()
 
@@ -191,12 +207,12 @@ cortical_step1 <- function(
 
     components <- build_atlas_components(atlas_data)
 
-    atlas_3d <- brain_atlas(
+    atlas_3d <- ggseg_atlas(
       atlas = atlas_name,
       type = "cortical",
       palette = components$palette,
       core = components$core,
-      data = brain_data_cortical(sf = NULL, vertices = components$vertices_df)
+      data = ggseg_data_cortical(sf = NULL, vertices = components$vertices_df)
     )
 
     saveRDS(atlas_3d, file.path(dirs$base, "atlas_3d.rds"))
@@ -214,9 +230,16 @@ cortical_step1 <- function(
 
 #' @noRd
 cortical_early_return <- function(
-  atlas_3d, components, dirs, cleanup, verbose, start_time
+  atlas_3d,
+  components,
+  dirs,
+  cleanup,
+  verbose,
+  start_time
 ) {
-  if (cleanup) unlink(dirs$base, recursive = TRUE)
+  if (cleanup) {
+    unlink(dirs$base, recursive = TRUE)
+  }
 
   if (verbose) {
     cli::cli_alert_success(
@@ -231,28 +254,54 @@ cortical_early_return <- function(
 
 #' @noRd
 cortical_pipeline <- function(
-  atlas_3d, components, atlas_name, hemisphere, views,
-  region_snapshot_fn, dirs, steps, skip_existing,
-  tolerance, smoothness, cleanup, verbose, start_time
+  atlas_3d,
+  components,
+  atlas_name,
+  hemisphere,
+  views,
+  region_snapshot_fn,
+  dirs,
+  steps,
+  skip_existing,
+  tolerance,
+  smoothness,
+  cleanup,
+  verbose,
+  start_time
 ) {
   if (2L %in% steps) {
-    if (verbose) cli::cli_progress_step("2/8 Taking full brain snapshots")
+    if (verbose) {
+      cli::cli_progress_step("2/8 Taking full brain snapshots")
+    }
     cortical_brain_snapshots(
-      atlas_3d, hemisphere, views, dirs, skip_existing
+      atlas_3d,
+      hemisphere,
+      views,
+      dirs,
+      skip_existing
     )
     if (verbose) cli::cli_progress_done()
   }
 
   if (3L %in% steps) {
-    if (verbose) cli::cli_progress_step("3/8 Taking region snapshots")
+    if (verbose) {
+      cli::cli_progress_step("3/8 Taking region snapshots")
+    }
     region_snapshot_fn(
-      atlas_3d, components, hemisphere, views, dirs, skip_existing
+      atlas_3d,
+      components,
+      hemisphere,
+      views,
+      dirs,
+      skip_existing
     )
     if (verbose) cli::cli_progress_done()
   }
 
   if (4L %in% steps) {
-    if (verbose) cli::cli_progress_step("4/8 Isolating regions")
+    if (verbose) {
+      cli::cli_progress_step("4/8 Isolating regions")
+    }
     cortical_isolate_regions(dirs, skip_existing)
     if (verbose) cli::cli_progress_done()
   }
@@ -270,16 +319,21 @@ cortical_pipeline <- function(
   }
 
   if (8L %in% steps) {
-    if (verbose) cli::cli_progress_step("8/8 Building atlas data")
+    if (verbose) {
+      cli::cli_progress_step("8/8 Building atlas data")
+    }
 
     sf_data <- cortical_build_sf(dirs)
 
-    atlas <- brain_atlas(
+    atlas <- ggseg_atlas(
       atlas = atlas_name,
       type = "cortical",
       palette = components$palette,
       core = components$core,
-      data = brain_data_cortical(sf = sf_data, vertices = components$vertices_df)
+      data = ggseg_data_cortical(
+        sf = sf_data,
+        vertices = components$vertices_df
+      )
     )
 
     cli::cli_progress_done()
@@ -314,7 +368,11 @@ cortical_pipeline <- function(
 
 #' @noRd
 cortical_brain_snapshots <- function(
-  atlas_3d, hemisphere, views, dirs, skip_existing
+  atlas_3d,
+  hemisphere,
+  views,
+  dirs,
+  skip_existing
 ) {
   snapshot_grid <- expand.grid(
     hemisphere = hemisphere,
@@ -346,7 +404,12 @@ cortical_brain_snapshots <- function(
 
 #' @noRd
 cortical_region_snapshots <- function(
-  atlas_3d, components, hemisphere, views, dirs, skip_existing
+  atlas_3d,
+  components,
+  hemisphere,
+  views,
+  dirs,
+  skip_existing
 ) {
   region_labels <- unique(components$core$label[
     !is.na(components$core$label)
@@ -470,7 +533,7 @@ cortical_build_sf <- function(dirs) {
 #'   Use `steps = 1` for 3D-only atlas. Use `steps = 6:7` to iterate on
 #'   smoothing and reduction parameters.
 #'
-#' @return A `brain_atlas` object containing region metadata, vertex indices,
+#' @return A `ggseg_atlas` object containing region metadata, vertex indices,
 #'   colours, and optionally sf geometry for 2D plots.
 #' @export
 #' @importFrom dplyr tibble bind_rows distinct
@@ -578,8 +641,12 @@ create_atlas_from_labels <- function(
 
   if (max(steps) == 1L) {
     return(cortical_early_return(
-      step1$atlas_3d, step1$components,
-      dirs, cleanup, verbose, start_time
+      step1$atlas_3d,
+      step1$components,
+      dirs,
+      cleanup,
+      verbose,
+      start_time
     ))
   }
 
@@ -616,7 +683,10 @@ create_atlas_from_labels <- function(
 
 #' @noRd
 labels_read_files <- function(
-  label_files, region_names, colours, default_colours
+  label_files,
+  region_names,
+  colours,
+  default_colours
 ) {
   p <- progressor(steps = length(label_files))
 
@@ -671,7 +741,12 @@ labels_read_files <- function(
 
 #' @noRd
 labels_region_snapshots <- function(
-  atlas_3d, components, hemi_short, views, dirs, skip_existing
+  atlas_3d,
+  components,
+  hemi_short,
+  views,
+  dirs,
+  skip_existing
 ) {
   region_labels <- unique(
     components$core$label[!is.na(components$core$region)]
@@ -735,5 +810,3 @@ labels_region_snapshots <- function(
     )
   ))
 }
-
-
