@@ -505,19 +505,23 @@ describe("snapshot_brain_helper", {
     expect_null(result)
   })
 
-  it("calls ggseg3d pipeline when file doesn't exist", {
-    called <- FALSE
+  it("calls rgl pipeline when file doesn't exist", {
+    snapshot_called <- FALSE
+    close_called <- FALSE
     local_mocked_bindings(
-      ggseg3d = function(...) list(),
+      ggsegray = function(...) structure(list(device = 1L), class = "ggsegray"),
       pan_camera = function(x, ...) x,
-      set_flat_shading = function(x, ...) x,
-      set_orthographic = function(x, ...) x,
-      set_legend = function(x, ...) x,
-      snapshot_brain = function(x, file) {
-        called <<- TRUE
-        file
+      set_background = function(x, ...) x
+    )
+    local_mocked_bindings(
+      snapshot3d = function(file, ...) {
+        snapshot_called <<- TRUE
+        file.create(file)
       },
-      .package = "ggseg3d"
+      close3d = function(...) {
+        close_called <<- TRUE
+      },
+      .package = "rgl"
     )
 
     tmp <- withr::local_tempfile(fileext = ".png")
@@ -528,7 +532,8 @@ describe("snapshot_brain_helper", {
       surface = "inflated",
       outfile = tmp
     )
-    expect_true(called)
+    expect_true(snapshot_called)
+    expect_true(close_called)
   })
 })
 

@@ -205,6 +205,7 @@ snapshot_slice <- function(
 #' Core snapshot helper for brain rendering
 #'
 #' Shared logic for taking brain snapshots with different palettes.
+#' Uses rgl via [ggseg3d::ggsegray()] for fast native rendering.
 #'
 #' @param atlas Brain atlas object
 #' @param hemisphere Short hemisphere code ("lh" or "rh")
@@ -216,8 +217,7 @@ snapshot_slice <- function(
 #' @param na_colour Colour for NA regions
 #' @param skip_existing Skip if file exists
 #' @noRd
-#' @importFrom ggseg3d ggseg3d pan_camera set_flat_shading
-#'   set_legend set_orthographic snapshot_brain
+#' @importFrom ggseg3d ggsegray pan_camera set_background
 snapshot_brain_helper <- function(
   atlas,
   hemisphere,
@@ -233,21 +233,23 @@ snapshot_brain_helper <- function(
     return(invisible(NULL))
   }
 
+  rlang::check_installed("rgl", reason = "to take brain snapshots")
   hemi_long <- hemi_to_long(hemisphere)
 
-  ggseg3d(
+  ggsegray(
     .data = .data,
     atlas = atlas,
     hemisphere = hemi_long,
     surface = surface,
     colour = colour,
-    na_colour = na_colour
+    na_colour = na_colour,
+    lit = FALSE
   ) |>
     pan_camera(paste(hemi_long, view)) |>
-    set_flat_shading() |>
-    set_orthographic() |>
-    set_legend(show = FALSE) |>
-    ggseg3d::snapshot_brain(outfile)
+    set_background("white")
+
+  rgl::snapshot3d(outfile, webshot = FALSE)
+  rgl::close3d()
   invisible(outfile)
 }
 
