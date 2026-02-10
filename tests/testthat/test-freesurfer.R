@@ -671,11 +671,6 @@ describe("surf2ply", {
   })
 
   it("executes body lines with mocked intermediate functions", {
-    mock_mesh <- list(
-      vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
-      faces = data.frame(i = 0, j = 1, k = 2)
-    )
-
     pkg_ns <- asNamespace("ggsegExtra")
     orig_surf2asc <- pkg_ns$surf2asc
     orig_asc2ply <- pkg_ns$asc2ply
@@ -683,7 +678,16 @@ describe("surf2ply", {
     unlockBinding("surf2asc", pkg_ns)
     unlockBinding("asc2ply", pkg_ns)
     assign("surf2asc", function(...) invisible(NULL), envir = pkg_ns)
-    assign("asc2ply", function(...) mock_mesh, envir = pkg_ns)
+    assign(
+      "asc2ply",
+      function(...) {
+        list(
+          vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
+          faces = data.frame(i = 0, j = 1, k = 2)
+        )
+      },
+      envir = pkg_ns
+    )
     withr::defer({
       assign("surf2asc", orig_surf2asc, envir = pkg_ns)
       assign("asc2ply", orig_asc2ply, envir = pkg_ns)
@@ -723,11 +727,6 @@ describe("curv2ply", {
   })
 
   it("executes body lines with mocked intermediate functions", {
-    mock_mesh <- list(
-      vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
-      faces = data.frame(i = 0, j = 1, k = 2)
-    )
-
     pkg_ns <- asNamespace("ggsegExtra")
     orig_curv2asc <- pkg_ns$curv2asc
     orig_asc2ply <- pkg_ns$asc2ply
@@ -735,7 +734,16 @@ describe("curv2ply", {
     unlockBinding("curv2asc", pkg_ns)
     unlockBinding("asc2ply", pkg_ns)
     assign("curv2asc", function(...) invisible(NULL), envir = pkg_ns)
-    assign("asc2ply", function(...) mock_mesh, envir = pkg_ns)
+    assign(
+      "asc2ply",
+      function(...) {
+        list(
+          vertices = data.frame(x = 1:3, y = 1:3, z = 1:3),
+          faces = data.frame(i = 0, j = 1, k = 2)
+        )
+      },
+      envir = pkg_ns
+    )
     withr::defer({
       assign("curv2asc", orig_curv2asc, envir = pkg_ns)
       assign("asc2ply", orig_asc2ply, envir = pkg_ns)

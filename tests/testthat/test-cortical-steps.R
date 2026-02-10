@@ -239,13 +239,24 @@ describe("validate_cortical_config", {
     )
 
     result <- validate_cortical_config(
-      NULL, NULL, NULL, NULL, NULL, NULL, NULL
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL
     )
 
     expect_true(is.list(result))
     expected_fields <- c(
-      "output_dir", "verbose", "cleanup", "skip_existing",
-      "tolerance", "smoothness", "steps"
+      "output_dir",
+      "verbose",
+      "cleanup",
+      "skip_existing",
+      "tolerance",
+      "smoothness",
+      "steps"
     )
     expect_true(all(expected_fields %in% names(result)))
   })
@@ -261,7 +272,13 @@ describe("validate_cortical_config", {
     )
 
     result <- validate_cortical_config(
-      NULL, NULL, NULL, NULL, NULL, NULL, NULL
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL
     )
 
     expect_equal(result$steps, 1L:8L)
@@ -278,7 +295,13 @@ describe("validate_cortical_config", {
     )
 
     result <- validate_cortical_config(
-      NULL, NULL, NULL, NULL, NULL, NULL, c(1, 3, 5)
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      c(1, 3, 5)
     )
 
     expect_equal(result$steps, c(1L, 3L, 5L))
@@ -442,7 +465,9 @@ describe("cortical_assemble_full", {
           label = "lh_test",
           geometry = sf::st_sfc(
             sf::st_polygon(list(matrix(
-              c(0, 0, 1, 0, 1, 1, 0, 0), ncol = 2, byrow = TRUE
+              c(0, 0, 1, 0, 1, 1, 0, 0),
+              ncol = 2,
+              byrow = TRUE
             )))
           )
         )
@@ -471,7 +496,11 @@ describe("cortical_assemble_full", {
       vertices_df = data.frame(vertex = 1:3)
     )
 
-    result <- cortical_assemble_full("test_atlas", components, list(base = tempdir()))
+    result <- cortical_assemble_full(
+      "test_atlas",
+      components,
+      list(base = tempdir())
+    )
 
     expect_s3_class(result, "ggseg_atlas")
     expect_equal(result$atlas, "test_atlas")
@@ -511,7 +540,10 @@ describe("parse_lut_colours", {
     result <- parse_lut_colours(lut)
 
     expect_equal(result$region_names, "Motor")
-    expect_equal(result$colours, grDevices::rgb(255, 0, 128, maxColorValue = 255))
+    expect_equal(
+      result$colours,
+      grDevices::rgb(255, 0, 128, maxColorValue = 255)
+    )
   })
 
   it("returns NULL colours when no colour columns", {

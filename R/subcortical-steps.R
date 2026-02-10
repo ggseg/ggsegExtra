@@ -67,7 +67,8 @@ subcort_create_meshes <- function(
         function(m) nrow(m$faces),
         integer(1)
       ))
-      pct <- round(new_faces / orig_faces * 100)
+      # fmt: skip
+      pct <- round(new_faces / orig_faces * 100) # nolint
       cli::cli_alert_success(
         "Reduced from {orig_faces} to {new_faces} faces ({pct}%)"
       )

@@ -111,20 +111,33 @@ create_tract_atlas <- function(
   start_time <- Sys.time()
 
   config <- validate_tract_config(
-    output_dir, verbose, cleanup, skip_existing,
-    tolerance, smoothness, steps, centerline_method,
-    tube_radius, tube_segments, n_points
+    output_dir,
+    verbose,
+    cleanup,
+    skip_existing,
+    tolerance,
+    smoothness,
+    steps,
+    centerline_method,
+    tube_radius,
+    tube_segments,
+    n_points
   )
 
-  if (is.null(atlas_name)) atlas_name <- basename(config$output_dir)
+  if (is.null(atlas_name)) {
+    atlas_name <- basename(config$output_dir)
+  }
 
   dirs <- setup_atlas_dirs(config$output_dir, atlas_name, type = "tract")
   lut_result <- parse_lut_colours(input_lut)
   tract_log_header(config, input_tracts, input_aseg)
 
   step1 <- tract_resolve_step1(
-    config, dirs, input_tracts,
-    lut_result$region_names, lut_result$colours
+    config,
+    dirs,
+    input_tracts,
+    lut_result$region_names,
+    lut_result$colours
   )
 
   if (max(config$steps) == 1L) {
@@ -135,7 +148,11 @@ create_tract_atlas <- function(
   tract_check_aseg(input_aseg, config$steps)
 
   snaps <- tract_resolve_snapshots(
-    config, dirs, step1, input_aseg, views
+    config,
+    dirs,
+    step1,
+    input_aseg,
+    views
   )
 
   tract_run_image_steps(config, dirs, dilate, vertex_size_limits)
@@ -153,9 +170,17 @@ create_tract_atlas <- function(
 
 #' @noRd
 validate_tract_config <- function(
-  output_dir, verbose, cleanup, skip_existing,
-  tolerance, smoothness, steps, centerline_method,
-  tube_radius, tube_segments, n_points
+  output_dir,
+  verbose,
+  cleanup,
+  skip_existing,
+  tolerance,
+  smoothness,
+  steps,
+  centerline_method,
+  tube_radius,
+  tube_segments,
+  n_points
 ) {
   verbose <- is_verbose(verbose)
   cleanup <- get_cleanup(cleanup)
@@ -167,7 +192,9 @@ validate_tract_config <- function(
 
   centerline_method <- match.arg(centerline_method, c("mean", "medoid"))
 
-  if (is.null(steps)) steps <- 1L:7L
+  if (is.null(steps)) {
+    steps <- 1L:7L
+  }
   steps <- as.integer(steps)
 
   list(
@@ -190,7 +217,9 @@ validate_tract_config <- function(
 
 #' @noRd
 tract_log_header <- function(config, input_tracts, input_aseg) {
-  if (!config$verbose) return(invisible(NULL))
+  if (!config$verbose) {
+    return(invisible(NULL))
+  }
   cli::cli_h1("Creating tractography atlas")
   cli::cli_alert_info("Tract files: {.path {input_tracts}}")
   if (!is.null(input_aseg)) {
@@ -200,15 +229,26 @@ tract_log_header <- function(config, input_tracts, input_aseg) {
 
 
 #' @noRd
-tract_resolve_step1 <- function(config, dirs, input_tracts, tract_names, colours) {
+tract_resolve_step1 <- function(
+  config,
+  dirs,
+  input_tracts,
+  tract_names,
+  colours
+) {
   files <- file.path(dirs$base, "step1_data.rds")
   cached <- load_or_run_step(
-    1L, config$steps, files, config$skip_existing,
+    1L,
+    config$steps,
+    files,
+    config$skip_existing,
     "Step 1 (Read tracts & create tube meshes)"
   )
 
   if (!cached$run) {
-    if (config$verbose) cli::cli_alert_success("1/7 Loaded existing tract data")
+    if (config$verbose) {
+      cli::cli_alert_success("1/7 Loaded existing tract data")
+    }
     return(cached$data[["step1_data.rds"]])
   }
 
@@ -216,7 +256,10 @@ tract_resolve_step1 <- function(config, dirs, input_tracts, tract_names, colours
   streamlines_data <- input_result$streamlines_data
   tract_names <- input_result$tract_names
 
-  coords_are_voxels <- detect_tract_coord_space(streamlines_data, config$verbose)
+  coords_are_voxels <- detect_tract_coord_space(
+    streamlines_data,
+    config$verbose
+  )
 
   if (is.null(colours)) {
     colours <- rep(NA_character_, length(streamlines_data))
@@ -229,13 +272,18 @@ tract_resolve_step1 <- function(config, dirs, input_tracts, tract_names, colours
   }
 
   meshes_list <- tract_create_meshes(
-    streamlines_data, tract_names,
-    config$centerline_method, config$n_points,
-    config$tube_radius, config$tube_segments,
+    streamlines_data,
+    tract_names,
+    config$centerline_method,
+    config$n_points,
+    config$tube_radius,
+    config$tube_segments,
     config$density_radius_range
   )
 
-  if (config$verbose) cli::cli_progress_done()
+  if (config$verbose) {
+    cli::cli_progress_done()
+  }
 
   built <- tract_build_core(meshes_list, colours, tract_names)
 
@@ -285,7 +333,10 @@ tract_resolve_snapshots <- function(config, dirs, step1, input_aseg, views) {
     file.path(dirs$base, "cortex_slices.rds")
   )
   cached <- load_or_run_step(
-    2L, config$steps, files, config$skip_existing,
+    2L,
+    config$steps,
+    files,
+    config$skip_existing,
     "Step 2 (Create projection snapshots)"
   )
 
@@ -309,20 +360,28 @@ tract_resolve_snapshots <- function(config, dirs, step1, input_aseg, views) {
   coords_are_voxels <- step1$coords_are_voxels
   if (is.null(coords_are_voxels)) {
     coords_are_voxels <- detect_tract_coord_space(
-      step1$streamlines_data, config$verbose
+      step1$streamlines_data,
+      config$verbose
     )
   }
 
   result <- tract_create_snapshots(
-    step1$streamlines_data, step1$centerlines_df,
-    input_aseg, views, dirs,
-    coords_are_voxels, config$skip_existing,
-    config$tract_radius, config$verbose
+    step1$streamlines_data,
+    step1$centerlines_df,
+    input_aseg,
+    views,
+    dirs,
+    coords_are_voxels,
+    config$skip_existing,
+    config$tract_radius,
+    config$verbose
   )
 
   saveRDS(result$views, file.path(dirs$base, "views.rds"))
   saveRDS(result$cortex_slices, file.path(dirs$base, "cortex_slices.rds"))
-  if (config$verbose) cli::cli_progress_done()
+  if (config$verbose) {
+    cli::cli_progress_done()
+  }
   result
 }
 
@@ -330,33 +389,45 @@ tract_resolve_snapshots <- function(config, dirs, step1, input_aseg, views) {
 #' @noRd
 tract_run_image_steps <- function(config, dirs, dilate, vertex_size_limits) {
   if (3L %in% config$steps) {
-    if (config$verbose) cli::cli_progress_step("3/7 Processing images")
-    process_and_mask_images( # nolint: object_usage_linter.
-      dirs$snaps, dirs$processed, dirs$masks,
-      dilate = dilate, skip_existing = config$skip_existing
+    if (config$verbose) {
+      cli::cli_progress_step("3/7 Processing images")
+    }
+    process_and_mask_images(
+      # nolint: object_usage_linter.
+      dirs$snaps,
+      dirs$processed,
+      dirs$masks,
+      dilate = dilate,
+      skip_existing = config$skip_existing
     )
     if (config$verbose) cli::cli_progress_done()
   }
 
   if (4L %in% config$steps) {
     extract_contours(
-      dirs$masks, dirs$base,
-      step = "4/7", verbose = config$verbose,
+      dirs$masks,
+      dirs$base,
+      step = "4/7",
+      verbose = config$verbose,
       vertex_size_limits = vertex_size_limits
     )
   }
 
   if (5L %in% config$steps) {
     smooth_contours(
-      dirs$base, config$smoothness,
-      step = "5/7", verbose = config$verbose
+      dirs$base,
+      config$smoothness,
+      step = "5/7",
+      verbose = config$verbose
     )
   }
 
   if (6L %in% config$steps) {
     reduce_vertex(
-      dirs$base, config$tolerance,
-      step = "6/7", verbose = config$verbose
+      dirs$base,
+      config$tolerance,
+      step = "6/7",
+      verbose = config$verbose
     )
   }
 }
@@ -392,8 +463,10 @@ tract_assemble_full <- function(step1, dirs, views, cortex_slices) {
     ))
   }
 
-  sf_data <- build_contour_sf( # nolint: object_usage_linter.
-    contours_file, views, cortex_slices
+  sf_data <- build_contour_sf(
+    contours_file,
+    views,
+    cortex_slices
   )
 
   atlas <- ggseg_atlas(
@@ -428,7 +501,12 @@ tract_finalize <- function(atlas, config, dirs, start_time) {
 
   if (config$verbose) {
     if (!is.null(atlas)) {
-      type <- if (max(config$steps) == 1L) "3D" else "Tract"
+      # fmt: skip
+      type <- if (max(config$steps) == 1L) { # nolint
+        "3D"
+      } else {
+        "Tract"
+      }
       cli::cli_alert_success(
         "{type} atlas created with {nrow(atlas$core)} tracts"
       )

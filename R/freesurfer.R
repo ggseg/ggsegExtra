@@ -597,18 +597,18 @@ lcbc_surf2surf <- function(
   subjects_dir = fs_subj_dir(),
   output_dir = file.path(subjects_dir, target_subject, "surf"),
   cortex = TRUE,
-  verbose = get_verbose() # nolint: object_usage_linter
+  verbose = get_verbose()
 ) {
   check_fs(abort = TRUE)
-
-  j <- mri_surf2surf(
-    # nolint: object_usage_linter
-    sval = input_volume,
-    subject = source_subject,
-    target_subject = target_subject,
-    hemi = hemisphere,
-    outfile = paste0(output_dir, hemisphere, ".lcbc"),
-    subj_dir = subjects_dir,
-    verbose = verbose
+  invisible(
+    mri_surf2surf(
+      sval = input_volume,
+      subject = source_subject,
+      target_subject = target_subject,
+      hemi = hemisphere,
+      outfile = paste0(output_dir, hemisphere, ".lcbc"),
+      subj_dir = subjects_dir,
+      verbose = verbose
+    )
   )
 }

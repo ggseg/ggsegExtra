@@ -404,9 +404,17 @@ describe("validate_subcort_config", {
 
     expect_type(result, "list")
     expected_fields <- c(
-      "input_volume", "input_lut", "atlas_name", "output_dir",
-      "verbose", "cleanup", "skip_existing", "decimate",
-      "steps", "tolerance", "smoothness"
+      "input_volume",
+      "input_lut",
+      "atlas_name",
+      "output_dir",
+      "verbose",
+      "cleanup",
+      "skip_existing",
+      "decimate",
+      "steps",
+      "tolerance",
+      "smoothness"
     )
     expect_true(all(expected_fields %in% names(result)))
     expect_equal(result$atlas_name, "test_atlas")
@@ -497,7 +505,9 @@ describe("subcort_log_header", {
 describe("subcort_resolve_labels", {
   it("loads cached labels when skip_existing", {
     cached_ct <- data.frame(
-      idx = 10, label = "cached_label", color = "#FF0000",
+      idx = 10,
+      label = "cached_label",
+      color = "#FF0000",
       stringsAsFactors = FALSE
     )
     cached_vol <- c(10L)
@@ -534,7 +544,9 @@ describe("subcort_resolve_labels", {
       load_or_run_step = function(...) list(run = TRUE, data = list()),
       generate_colortable_from_volume = function(vol) {
         data.frame(
-          idx = 10, label = "region_0010", color = NA_character_,
+          idx = 10,
+          label = "region_0010",
+          color = NA_character_,
           stringsAsFactors = FALSE
         )
       },
@@ -589,7 +601,8 @@ describe("subcort_resolve_meshes", {
     )
     dirs <- list(base = withr::local_tempdir())
     colortable <- data.frame(
-      idx = 12, label = "Left-Putamen",
+      idx = 12,
+      label = "Left-Putamen",
       stringsAsFactors = FALSE
     )
 
@@ -604,7 +617,9 @@ describe("subcort_resolve_components", {
   it("loads cached components when skip_existing", {
     cached_components <- list(
       core = data.frame(
-        hemi = "left", region = "Putamen", label = "Left-Putamen",
+        hemi = "left",
+        region = "Putamen",
+        label = "Left-Putamen",
         stringsAsFactors = FALSE
       ),
       palette = c("Left-Putamen" = "#FF0000"),
@@ -627,13 +642,17 @@ describe("subcort_resolve_components", {
     )
     dirs <- list(base = withr::local_tempdir())
     colortable <- data.frame(
-      idx = 12, label = "Left-Putamen",
+      idx = 12,
+      label = "Left-Putamen",
       stringsAsFactors = FALSE
     )
     meshes_list <- list()
 
     result <- subcort_resolve_components(
-      config, dirs, colortable, meshes_list
+      config,
+      dirs,
+      colortable,
+      meshes_list
     )
 
     expect_equal(result, cached_components)
@@ -655,7 +674,9 @@ describe("subcort_assemble_3d", {
     components <- list(
       palette = c(region = "#FF0000"),
       core = data.frame(
-        hemi = NA, region = "r", label = "region",
+        hemi = NA,
+        region = "r",
+        label = "region",
         stringsAsFactors = FALSE
       ),
       meshes_df = data.frame(label = "region")
@@ -768,7 +789,12 @@ describe("subcort_run_image_steps", {
       base = withr::local_tempdir()
     )
 
-    subcort_run_image_steps(config, dirs, dilate = NULL, vertex_size_limits = NULL)
+    subcort_run_image_steps(
+      config,
+      dirs,
+      dilate = NULL,
+      vertex_size_limits = NULL
+    )
 
     expect_true(step5_called)
     expect_true(step6_called)
@@ -815,7 +841,12 @@ describe("subcort_run_image_steps", {
       base = withr::local_tempdir()
     )
 
-    subcort_run_image_steps(config, dirs, dilate = NULL, vertex_size_limits = NULL)
+    subcort_run_image_steps(
+      config,
+      dirs,
+      dilate = NULL,
+      vertex_size_limits = NULL
+    )
 
     expect_false(step5_called)
     expect_true(step6_called)

@@ -104,18 +104,33 @@ create_subcortical_atlas <- function(
   start_time <- Sys.time()
 
   config <- validate_subcort_config(
-    input_volume, input_lut, atlas_name, output_dir,
-    verbose, cleanup, skip_existing, decimate, steps,
-    tolerance, smoothness
+    input_volume,
+    input_lut,
+    atlas_name,
+    output_dir,
+    verbose,
+    cleanup,
+    skip_existing,
+    decimate,
+    steps,
+    tolerance,
+    smoothness
   )
 
-  dirs <- setup_atlas_dirs(config$output_dir, config$atlas_name, type = "subcortical")
+  dirs <- setup_atlas_dirs(
+    config$output_dir,
+    config$atlas_name,
+    type = "subcortical"
+  )
   subcort_log_header(config)
 
   labels <- subcort_resolve_labels(config, dirs)
   meshes_list <- subcort_resolve_meshes(config, dirs, labels$colortable)
   components <- subcort_resolve_components(
-    config, dirs, labels$colortable, meshes_list
+    config,
+    dirs,
+    labels$colortable,
+    meshes_list
   )
 
   if (max(config$steps) == 3L) {
@@ -128,7 +143,11 @@ create_subcortical_atlas <- function(
 
   if (9L %in% config$steps) {
     atlas <- subcort_assemble_full(
-      config$atlas_name, components, dirs, snaps$views, snaps$cortex_slices
+      config$atlas_name,
+      components,
+      dirs,
+      snaps$views,
+      snaps$cortex_slices
     )
     return(subcort_finalize(atlas, config, dirs, start_time))
   }
@@ -141,9 +160,17 @@ create_subcortical_atlas <- function(
 
 #' @noRd
 validate_subcort_config <- function(
-  input_volume, input_lut, atlas_name, output_dir,
-  verbose, cleanup, skip_existing, decimate, steps,
-  tolerance, smoothness
+  input_volume,
+  input_lut,
+  atlas_name,
+  output_dir,
+  verbose,
+  cleanup,
+  skip_existing,
+  decimate,
+  steps,
+  tolerance,
+  smoothness
 ) {
   verbose <- is_verbose(verbose)
   cleanup <- get_cleanup(cleanup)
@@ -167,7 +194,9 @@ validate_subcort_config <- function(
     }
   }
 
-  if (is.null(steps)) steps <- 1L:9L
+  if (is.null(steps)) {
+    steps <- 1L:9L
+  }
   steps <- as.integer(steps)
 
   check_fs(abort = TRUE)
@@ -203,7 +232,9 @@ validate_subcort_config <- function(
 
 #' @noRd
 subcort_log_header <- function(config) {
-  if (!config$verbose) return(invisible(NULL))
+  if (!config$verbose) {
+    return(invisible(NULL))
+  }
   cli::cli_h1("Creating subcortical atlas {.val {config$atlas_name}}")
   cli::cli_alert_info("Volume: {.path {config$input_volume}}")
   if (!is.null(config$input_lut)) {
@@ -222,11 +253,17 @@ subcort_resolve_labels <- function(config, dirs) {
     file.path(dirs$base, "vol_labels.rds")
   )
   cached <- load_or_run_step(
-    1L, config$steps, files, config$skip_existing, "Step 1 (Extract labels)"
+    1L,
+    config$steps,
+    files,
+    config$skip_existing,
+    "Step 1 (Extract labels)"
   )
 
   if (!cached$run) {
-    if (config$verbose) cli::cli_alert_success("1/9 Loaded existing labels")
+    if (config$verbose) {
+      cli::cli_alert_success("1/9 Loaded existing labels")
+    }
     return(list(
       colortable = cached$data[["colortable.rds"]],
       vol_labels = cached$data[["vol_labels.rds"]]
@@ -263,7 +300,9 @@ subcort_resolve_labels <- function(config, dirs) {
 
   saveRDS(colortable, file.path(dirs$base, "colortable.rds"))
   saveRDS(vol_labels, file.path(dirs$base, "vol_labels.rds"))
-  if (config$verbose) cli::cli_progress_done()
+  if (config$verbose) {
+    cli::cli_progress_done()
+  }
 
   list(colortable = colortable, vol_labels = vol_labels)
 }
@@ -273,7 +312,11 @@ subcort_resolve_labels <- function(config, dirs) {
 subcort_resolve_meshes <- function(config, dirs, colortable) {
   files <- file.path(dirs$base, "meshes_list.rds")
   cached <- load_or_run_step(
-    2L, config$steps, files, config$skip_existing, "Step 2 (Create meshes)"
+    2L,
+    config$steps,
+    files,
+    config$skip_existing,
+    "Step 2 (Create meshes)"
   )
 
   if (!cached$run) {
@@ -299,7 +342,9 @@ subcort_resolve_meshes <- function(config, dirs, colortable) {
     decimate = config$decimate
   )
 
-  if (config$verbose) cli::cli_progress_done()
+  if (config$verbose) {
+    cli::cli_progress_done()
+  }
   saveRDS(meshes_list, file.path(dirs$base, "meshes_list.rds"))
   meshes_list
 }
@@ -309,7 +354,10 @@ subcort_resolve_meshes <- function(config, dirs, colortable) {
 subcort_resolve_components <- function(config, dirs, colortable, meshes_list) {
   files <- file.path(dirs$base, "components.rds")
   cached <- load_or_run_step(
-    3L, config$steps, files, config$skip_existing,
+    3L,
+    config$steps,
+    files,
+    config$skip_existing,
     "Step 3 (Build atlas data)"
   )
 
@@ -329,7 +377,9 @@ subcort_resolve_components <- function(config, dirs, colortable, meshes_list) {
 
   components <- subcort_build_components(colortable, meshes_list)
   saveRDS(components, file.path(dirs$base, "components.rds"))
-  if (config$verbose) cli::cli_progress_done()
+  if (config$verbose) {
+    cli::cli_progress_done()
+  }
   components
 }
 
@@ -341,13 +391,18 @@ subcort_resolve_snapshots <- function(config, dirs, colortable, views) {
     file.path(dirs$base, "cortex_slices.rds")
   )
   cached <- load_or_run_step(
-    4L, config$steps, files, config$skip_existing,
+    4L,
+    config$steps,
+    files,
+    config$skip_existing,
     "Step 4 (Create snapshots)"
   )
 
   if (!cached$run) {
     if (any(config$steps > 4L)) {
-      if (config$verbose) cli::cli_alert_success("4/9 Loaded existing views")
+      if (config$verbose) {
+        cli::cli_alert_success("4/9 Loaded existing views")
+      }
       return(list(
         views = cached$data[["views.rds"]],
         cortex_slices = cached$data[["cortex_slices.rds"]]
@@ -361,12 +416,18 @@ subcort_resolve_snapshots <- function(config, dirs, colortable, views) {
   }
 
   result <- subcort_create_snapshots(
-    config$input_volume, colortable, views, dirs, config$skip_existing
+    config$input_volume,
+    colortable,
+    views,
+    dirs,
+    config$skip_existing
   )
 
   saveRDS(result$views, file.path(dirs$base, "views.rds"))
   saveRDS(result$cortex_slices, file.path(dirs$base, "cortex_slices.rds"))
-  if (config$verbose) cli::cli_progress_done()
+  if (config$verbose) {
+    cli::cli_progress_done()
+  }
   result
 }
 
@@ -374,33 +435,45 @@ subcort_resolve_snapshots <- function(config, dirs, colortable, views) {
 #' @noRd
 subcort_run_image_steps <- function(config, dirs, dilate, vertex_size_limits) {
   if (5L %in% config$steps) {
-    if (config$verbose) cli::cli_progress_step("5/9 Processing images")
-    process_and_mask_images( # nolint: object_usage_linter.
-      dirs$snaps, dirs$processed, dirs$masks,
-      dilate = dilate, skip_existing = config$skip_existing
+    if (config$verbose) {
+      cli::cli_progress_step("5/9 Processing images")
+    }
+    process_and_mask_images(
+      # nolint: object_usage_linter.
+      dirs$snaps,
+      dirs$processed,
+      dirs$masks,
+      dilate = dilate,
+      skip_existing = config$skip_existing
     )
     if (config$verbose) cli::cli_progress_done()
   }
 
   if (6L %in% config$steps) {
     extract_contours(
-      dirs$masks, dirs$base,
-      step = "6/9", verbose = config$verbose,
+      dirs$masks,
+      dirs$base,
+      step = "6/9",
+      verbose = config$verbose,
       vertex_size_limits = vertex_size_limits
     )
   }
 
   if (7L %in% config$steps) {
     smooth_contours(
-      dirs$base, config$smoothness,
-      step = "7/9", verbose = config$verbose
+      dirs$base,
+      config$smoothness,
+      step = "7/9",
+      verbose = config$verbose
     )
   }
 
   if (8L %in% config$steps) {
     reduce_vertex(
-      dirs$base, config$tolerance,
-      step = "8/9", verbose = config$verbose
+      dirs$base,
+      config$tolerance,
+      step = "8/9",
+      verbose = config$verbose
     )
   }
 }
@@ -420,7 +493,11 @@ subcort_assemble_3d <- function(atlas_name, components) {
 
 #' @noRd
 subcort_assemble_full <- function(
-  atlas_name, components, dirs, views, cortex_slices
+  atlas_name,
+  components,
+  dirs,
+  views,
+  cortex_slices
 ) {
   contours_file <- file.path(dirs$base, "contours_reduced.rda")
   if (!file.exists(contours_file)) {
@@ -455,14 +532,19 @@ subcort_finalize <- function(atlas, config, dirs, start_time) {
 
   if (config$verbose) {
     if (!is.null(atlas)) {
-      type <- if (max(config$steps) == 3L) "3D" else "Subcortical"
+      # fmt: skip
+      type <- if (max(config$steps) == 3L) { # nolint
+        "3D"
+      } else {
+        "Subcortical"
+      }
       cli::cli_alert_success(
         "{type} atlas created with {nrow(atlas$core)} structures"
       )
     } else {
       cli::cli_alert_success("Completed steps {.val {config$steps}}")
     }
-    log_elapsed(start_time) # nolint: object_usage_linter.
+    log_elapsed(start_time)
   }
 
   if (is.null(atlas)) invisible(NULL) else atlas

@@ -129,8 +129,8 @@ is_verbose <- function(verbose = NULL) {
 #' @return Invisible NULL, called for side effect
 #' @noRd
 log_elapsed <- function(start_time) {
-  elapsed <- round(
-    # nolint: object_usage_linter.
+  # fmt: skip
+  elapsed <- round(# nolint: object_usage_linter.
     difftime(Sys.time(), start_time, units = "mins"),
     1
   )
