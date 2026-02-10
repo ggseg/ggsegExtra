@@ -25,6 +25,7 @@
 #'   "superior", "inferior".
 #' @template tolerance
 #' @template smoothness
+#' @template snapshot_dim
 #' @template cleanup
 #' @template verbose
 #' @template skip_existing
@@ -87,6 +88,7 @@ create_cortical_atlas <- function(
   views = c("lateral", "medial", "superior", "inferior"),
   tolerance = NULL,
   smoothness = NULL,
+  snapshot_dim = NULL,
   cleanup = NULL,
   verbose = get_verbose(), # nolint: object_usage_linter
   skip_existing = NULL,
@@ -96,7 +98,7 @@ create_cortical_atlas <- function(
 
   config <- validate_cortical_config(
     output_dir, verbose, cleanup, skip_existing,
-    tolerance, smoothness, steps
+    tolerance, smoothness, snapshot_dim, steps
   )
 
   if (any(config$steps > 1L)) {
@@ -154,13 +156,14 @@ create_cortical_atlas <- function(
 #' @noRd
 validate_cortical_config <- function(
   output_dir, verbose, cleanup, skip_existing,
-  tolerance, smoothness, steps
+  tolerance, smoothness, snapshot_dim, steps
 ) {
   verbose <- is_verbose(verbose)
   cleanup <- get_cleanup(cleanup)
   skip_existing <- get_skip_existing(skip_existing)
   tolerance <- get_tolerance(tolerance)
   smoothness <- get_smoothness(smoothness)
+  snapshot_dim <- get_snapshot_dim(snapshot_dim)
   output_dir <- get_output_dir(output_dir)
 
   if (is.null(steps)) steps <- 1L:8L
@@ -173,6 +176,7 @@ validate_cortical_config <- function(
     skip_existing = skip_existing,
     tolerance = tolerance,
     smoothness = smoothness,
+    snapshot_dim = snapshot_dim,
     steps = steps
   )
 }
@@ -250,12 +254,14 @@ cortical_run_snapshot_steps <- function(
   atlas_3d, components, hemisphere, views,
   region_snapshot_fn, config, dirs
 ) {
+  snapshot_dim <- config$snapshot_dim
+
   if (2L %in% config$steps) {
     if (config$verbose) {
       cli::cli_progress_step("2/8 Taking full brain snapshots")
     }
     cortical_brain_snapshots(
-      atlas_3d, hemisphere, views, dirs, config$skip_existing
+      atlas_3d, hemisphere, views, dirs, config$skip_existing, snapshot_dim
     )
     if (config$verbose) cli::cli_progress_done()
   }
@@ -265,7 +271,8 @@ cortical_run_snapshot_steps <- function(
       cli::cli_progress_step("3/8 Taking region snapshots")
     }
     region_snapshot_fn(
-      atlas_3d, components, hemisphere, views, dirs, config$skip_existing
+      atlas_3d, components, hemisphere, views, dirs, config$skip_existing,
+      snapshot_dim
     )
     if (config$verbose) cli::cli_progress_done()
   }
@@ -378,6 +385,7 @@ cortical_finalize <- function(
 #'   "superior", "inferior".
 #' @template tolerance
 #' @template smoothness
+#' @template snapshot_dim
 #' @template cleanup
 #' @template verbose
 #' @template skip_existing
@@ -425,6 +433,7 @@ create_atlas_from_labels <- function(
   views = c("lateral", "medial"),
   tolerance = NULL,
   smoothness = NULL,
+  snapshot_dim = NULL,
   cleanup = NULL,
   verbose = get_verbose(), # nolint: object_usage_linter
   skip_existing = NULL,
@@ -434,7 +443,7 @@ create_atlas_from_labels <- function(
 
   config <- validate_cortical_config(
     output_dir, verbose, cleanup, skip_existing,
-    tolerance, smoothness, steps
+    tolerance, smoothness, snapshot_dim, steps
   )
 
   if (any(config$steps > 1L)) {

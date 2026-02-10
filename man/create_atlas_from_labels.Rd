@@ -12,6 +12,7 @@ create_atlas_from_labels(
   views = c("lateral", "medial"),
   tolerance = NULL,
   smoothness = NULL,
+  snapshot_dim = NULL,
   cleanup = NULL,
   verbose = get_verbose(),
   skip_existing = NULL,
@@ -45,6 +46,11 @@ If not specified, uses \code{options("ggsegExtra.tolerance")} or the
 smoother region boundaries. Passed to \code{\link[smoothr:smooth]{smoothr::smooth()}}. If not
 specified, uses \code{options("ggsegExtra.smoothness")} or the
 \code{GGSEGEXTRA_SMOOTHNESS} environment variable. Default is 5.}
+
+\item{snapshot_dim}{Width and height (in pixels) for brain surface
+snapshots. Higher values capture more detail for dense parcellations.
+If not specified, uses \code{options("ggsegExtra.snapshot_dim")} or the
+\code{GGSEGEXTRA_SNAPSHOT_DIM} environment variable. Default is 800.}
 
 \item{cleanup}{Remove intermediate files after atlas creation. If not
 specified, uses \code{options("ggsegExtra.cleanup")} or the \code{GGSEGEXTRA_CLEANUP}

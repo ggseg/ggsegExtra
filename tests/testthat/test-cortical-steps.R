@@ -235,17 +235,12 @@ describe("validate_cortical_config", {
       get_skip_existing = function(x) FALSE,
       get_tolerance = function(x) 0.5,
       get_smoothness = function(x) 5,
+      get_snapshot_dim = function(x) 800,
       get_output_dir = function(x) tempdir()
     )
 
     result <- validate_cortical_config(
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL
+      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
     )
 
     expect_true(is.list(result))
@@ -256,6 +251,7 @@ describe("validate_cortical_config", {
       "skip_existing",
       "tolerance",
       "smoothness",
+      "snapshot_dim",
       "steps"
     )
     expect_true(all(expected_fields %in% names(result)))
@@ -268,17 +264,12 @@ describe("validate_cortical_config", {
       get_skip_existing = function(x) FALSE,
       get_tolerance = function(x) 0.5,
       get_smoothness = function(x) 5,
+      get_snapshot_dim = function(x) 800,
       get_output_dir = function(x) tempdir()
     )
 
     result <- validate_cortical_config(
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL
+      NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
     )
 
     expect_equal(result$steps, 1L:8L)
@@ -291,17 +282,12 @@ describe("validate_cortical_config", {
       get_skip_existing = function(x) FALSE,
       get_tolerance = function(x) 0.5,
       get_smoothness = function(x) 5,
+      get_snapshot_dim = function(x) 800,
       get_output_dir = function(x) tempdir()
     )
 
     result <- validate_cortical_config(
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      c(1, 3, 5)
+      NULL, NULL, NULL, NULL, NULL, NULL, NULL, c(1, 3, 5)
     )
 
     expect_equal(result$steps, c(1L, 3L, 5L))
@@ -332,7 +318,8 @@ describe("cortical_run_snapshot_steps", {
     config <- list(
       steps = 2L:4L,
       verbose = FALSE,
-      skip_existing = FALSE
+      skip_existing = FALSE,
+      snapshot_dim = 800
     )
 
     cortical_run_snapshot_steps(
@@ -364,7 +351,10 @@ describe("cortical_run_snapshot_steps", {
       }
     )
 
-    config <- list(steps = 5L:8L, verbose = FALSE, skip_existing = FALSE)
+    config <- list(
+      steps = 5L:8L, verbose = FALSE, skip_existing = FALSE,
+      snapshot_dim = 800
+    )
 
     cortical_run_snapshot_steps(
       atlas_3d = structure(list(), class = "ggseg_atlas"),

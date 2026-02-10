@@ -495,7 +495,7 @@ asc2ply <- function(
   on.exit(close(con))
   writeLines(ply, con)
 
-  return(invisible(read_ply_mesh(output_file)))
+  invisible(read_ply_mesh(output_file))
 }
 
 
@@ -518,9 +518,7 @@ surf2ply <- function(
   basefile <- gsub("\\.ply", "", output_file)
 
   srf <- surf2asc(input_file, paste0(basefile, ".asc"), FALSE) # nolint: object_usage_linter
-  ply <- asc2ply(paste0(basefile, ".asc"), output_file)
-
-  return(ply)
+  asc2ply(paste0(basefile, ".asc"), output_file)
 }
 
 
@@ -543,9 +541,7 @@ curv2ply <- function(
   basefile <- gsub("\\.ply", "", output_file)
 
   srf <- curv2asc(input_file, paste0(basefile, ".asc"), FALSE) # nolint: object_usage_linter
-  ply <- asc2ply(paste0(basefile, ".asc"), output_file)
-
-  return(ply)
+  asc2ply(paste0(basefile, ".asc"), output_file)
 }
 
 

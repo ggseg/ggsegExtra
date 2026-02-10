@@ -254,7 +254,7 @@ get_contours <- function(
 
     return(coords)
   }
-  return(NULL)
+  NULL
 }
 
 

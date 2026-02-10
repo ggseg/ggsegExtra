@@ -155,9 +155,7 @@ coords2sf <- function(x, vertex_size_limits = NULL) {
     dt_sf <- st_cast(dt_sf, "MULTIPOLYGON")
     return(dt_sf)
   }
-  return(
-    st_sf(geometry = st_sfc(crs = st_crs(NA)))
-  )
+  st_sf(geometry = st_sfc(crs = st_crs(NA)))
 }
 
 

@@ -227,7 +227,8 @@ snapshot_brain_helper <- function(
   .data = NULL,
   colour = "colour",
   na_colour = "#CCCCCC",
-  skip_existing = get_skip_existing()
+  skip_existing = get_skip_existing(),
+  snapshot_dim = 800
 ) {
   if (skip_existing && file.exists(outfile)) {
     return(invisible(NULL))
@@ -248,6 +249,8 @@ snapshot_brain_helper <- function(
     pan_camera(paste(hemi_long, view)) |>
     set_background("white")
 
+  rgl::par3d(windowRect = c(0, 0, snapshot_dim, snapshot_dim))
+  Sys.sleep(0.2)
   rgl::snapshot3d(outfile, webshot = FALSE)
   rgl::close3d()
   invisible(outfile)
@@ -262,7 +265,8 @@ snapshot_brain <- function(
   view,
   surface,
   output_dir,
-  skip_existing = get_skip_existing()
+  skip_existing = get_skip_existing(),
+  snapshot_dim = 800
 ) {
   outfile <- file.path(output_dir, sprintf("full_%s_%s.png", hemisphere, view))
 
@@ -273,7 +277,8 @@ snapshot_brain <- function(
     surface,
     outfile,
     na_colour = "#CCCCCC",
-    skip_existing = skip_existing
+    skip_existing = skip_existing,
+    snapshot_dim = snapshot_dim
   )
 }
 
@@ -287,7 +292,8 @@ snapshot_region <- function(
   view,
   surface,
   output_dir,
-  skip_existing = get_skip_existing()
+  skip_existing = get_skip_existing(),
+  snapshot_dim = 800
 ) {
   outfile <- file.path(
     output_dir,
@@ -309,7 +315,8 @@ snapshot_region <- function(
     .data = highlight_data,
     colour = "highlight",
     na_colour = "#FFFFFF",
-    skip_existing = skip_existing
+    skip_existing = skip_existing,
+    snapshot_dim = snapshot_dim
   )
 }
 
@@ -322,7 +329,8 @@ snapshot_na_regions <- function(
   view,
   surface,
   output_dir,
-  skip_existing = get_skip_existing()
+  skip_existing = get_skip_existing(),
+  snapshot_dim = 800
 ) {
   outfile <- file.path(
     output_dir,
@@ -344,7 +352,8 @@ snapshot_na_regions <- function(
     .data = white_data,
     colour = "highlight",
     na_colour = "#FF0000",
-    skip_existing = skip_existing
+    skip_existing = skip_existing,
+    snapshot_dim = snapshot_dim
   )
 }
 

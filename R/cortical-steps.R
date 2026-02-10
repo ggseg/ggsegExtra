@@ -6,7 +6,8 @@ cortical_brain_snapshots <- function(
   hemisphere,
   views,
   dirs,
-  skip_existing
+  skip_existing,
+  snapshot_dim = 800
 ) {
   snapshot_grid <- expand.grid(
     hemisphere = hemisphere,
@@ -24,13 +25,14 @@ cortical_brain_snapshots <- function(
         view = view,
         surface = "inflated",
         output_dir = dirs$base,
-        skip_existing = skip_existing
+        skip_existing = skip_existing,
+        snapshot_dim = snapshot_dim
       )
       p()
     },
     .options = furrr_options(
       packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "p")
+      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim", "p")
     )
   ))
 }
@@ -43,7 +45,8 @@ cortical_region_snapshots <- function(
   hemisphere,
   views,
   dirs,
-  skip_existing
+  skip_existing,
+  snapshot_dim = 800
 ) {
   region_labels <- unique(components$core$label[
     !is.na(components$core$label)
@@ -74,13 +77,14 @@ cortical_region_snapshots <- function(
         view = view,
         surface = "inflated",
         output_dir = dirs$snapshots,
-        skip_existing = skip_existing
+        skip_existing = skip_existing,
+        snapshot_dim = snapshot_dim
       )
       p()
     },
     .options = furrr_options(
       packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "p")
+      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim", "p")
     )
   ))
 }
@@ -190,7 +194,8 @@ labels_region_snapshots <- function(
   hemi_short,
   views,
   dirs,
-  skip_existing
+  skip_existing,
+  snapshot_dim = 800
 ) {
   region_labels <- unique(
     components$core$label[!is.na(components$core$region)]
@@ -221,13 +226,14 @@ labels_region_snapshots <- function(
         view = view,
         surface = "inflated",
         output_dir = dirs$snapshots,
-        skip_existing = skip_existing
+        skip_existing = skip_existing,
+        snapshot_dim = snapshot_dim
       )
       p()
     },
     .options = furrr_options(
       packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "p")
+      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim", "p")
     )
   ))
 
@@ -245,12 +251,13 @@ labels_region_snapshots <- function(
         view = view,
         surface = "inflated",
         output_dir = dirs$snapshots,
-        skip_existing = skip_existing
+        skip_existing = skip_existing,
+        snapshot_dim = snapshot_dim
       )
     },
     .options = furrr_options(
       packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing")
+      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim")
     )
   ))
 }

@@ -208,7 +208,7 @@ read_annotation_data <- function(annot_files) {
       )
     }
 
-    all_vertex_indices <- seq_len(length(ant$label)) - 1L
+    all_vertex_indices <- seq_along(ant$label) - 1L
     unlabeled_vertices <- setdiff(all_vertex_indices, labeled_vertices)
 
     if (length(unlabeled_vertices) > 0) {
@@ -361,7 +361,7 @@ is_ctab <- function(x) {
   if (!is.data.frame(x)) {
     return(FALSE)
   }
-  required <- c("idx", "label", "R", "G", "B", "A")
+  required <- c("idx", "label", "R", "G", "B", "A") #nolint
   all(required %in% names(x))
 }
 
@@ -403,11 +403,20 @@ get_ctab <- function(color_lut) {
   colourtable
 }
 
-
+# nolint start
 #' @noRd
-ctab_line <- function(idx, name, R, G, B, A) { # nolint: object_name_linter.
+ctab_line <- function(idx, name, R, G, B, A) {
   if (nchar(name) > 29) {
     name <- substr(name, 1, 29)
   }
-  sprintf("% 3s  % -30s  % 3s % 3s % 3s % 3s", idx, name, R, G, B, A)
+  sprintf(
+    "% 3s  % -30s  % 3s % 3s % 3s % 3s",
+    idx,
+    name,
+    R,
+    G,
+    B,
+    A
+  )
 }
+# nolint end

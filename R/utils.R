@@ -260,6 +260,23 @@ get_smoothness <- function(smoothness = NULL) {
   )
 }
 
+#' Get snapshot dimension setting
+#'
+#' Returns the snapshot dimension (width and height in pixels) for brain
+#' surface snapshots. Higher values capture more detail for dense parcellations.
+#'
+#' @param snapshot_dim Optional explicit value. If NULL, reads from options/env.
+#' @return Numeric pixel dimension
+#' @noRd
+get_snapshot_dim <- function(snapshot_dim = NULL) {
+  get_numeric_option(
+    snapshot_dim,
+    "ggsegExtra.snapshot_dim",
+    "GGSEGEXTRA_SNAPSHOT_DIM",
+    800
+  )
+}
+
 #' Helper to get boolean option with fallback
 #' @noRd
 get_bool_option <- function(explicit, option_name, env_name, default) {
