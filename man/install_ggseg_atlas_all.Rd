@@ -16,17 +16,8 @@ r-universe plus your current CRAN mirror.}
 \item{...}{Additional arguments passed to \code{\link[utils:install.packages]{utils::install.packages()}}.}
 }
 \description{
-Downloads and installs every atlas package from the ggseg r-universe.
-This will take a while and use substantial disk space. For most users,
-installing individual atlases with \code{\link[=install_ggseg_atlas]{install_ggseg_atlas()}} is more
-practical.
-}
-\examples{
-\dontrun{
-# Install everything (slow, large download)
-install_ggseg_atlas_all()
-}
-}
-\seealso{
-\code{\link[=install_ggseg_atlas]{install_ggseg_atlas()}} to install specific atlases
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+This function has moved to the ggseg.hub package. Please use
+\code{\link[ggseg.hub:install_ggseg_atlas_all]{ggseg.hub::install_ggseg_atlas_all()}} instead.
 }

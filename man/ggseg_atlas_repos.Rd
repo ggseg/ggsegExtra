@@ -12,23 +12,9 @@ to find Yeo atlas packages).}
 
 \item{...}{Additional arguments passed to \code{\link[base:grep]{base::grep()}}.}
 }
-\value{
-A tibble of available atlas packages.
-}
 \description{
-Query the ggseg r-universe to see which atlas packages are available
-for installation. Returns package metadata including name, version,
-and description.
-}
-\examples{
-\dontrun{
-# See all available atlases
-ggseg_atlas_repos()
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-# Find Yeo parcellation atlases
-ggseg_atlas_repos("yeo")
-}
-}
-\seealso{
-\code{\link[=install_ggseg_atlas]{install_ggseg_atlas()}} to install a specific atlas
+This function has moved to the ggseg.hub package. Please use
+\code{\link[ggseg.hub:ggseg_atlas_repos]{ggseg.hub::ggseg_atlas_repos()}} instead.
 }

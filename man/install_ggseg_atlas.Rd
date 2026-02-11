@@ -12,7 +12,7 @@ install_ggseg_atlas(
 }
 \arguments{
 \item{package}{Package name (e.g., \code{"ggsegYeo2011"}, \code{"ggsegDKT"}).
-Use \code{\link[=ggseg_atlas_repos]{ggseg_atlas_repos()}} to see available packages.}
+Use \code{\link[ggseg.hub:ggseg_atlas_repos]{ggseg_atlas_repos()}} to see available packages.}
 
 \item{repos}{Repositories to install from. Defaults to the ggseg
 r-universe plus your current CRAN mirror.}
@@ -20,18 +20,8 @@ r-universe plus your current CRAN mirror.}
 \item{...}{Additional arguments passed to \code{\link[utils:install.packages]{utils::install.packages()}}.}
 }
 \description{
-Install an atlas package from the ggseg r-universe. This is the
-easiest way to get pre-built atlases like DKT, Yeo, Schaefer, etc.
-}
-\examples{
-\dontrun{
-# Find available Yeo atlases
-ggseg_atlas_repos("yeo")
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-# Install one
-install_ggseg_atlas("ggsegYeo2011")
-}
-}
-\seealso{
-\code{\link[=ggseg_atlas_repos]{ggseg_atlas_repos()}} to list available atlases
+This function has moved to the ggseg.hub package. Please use
+\code{\link[ggseg.hub:install_ggseg_atlas]{ggseg.hub::install_ggseg_atlas()}} instead.
 }
