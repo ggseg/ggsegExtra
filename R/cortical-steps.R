@@ -1,5 +1,61 @@
 # Cortical step functions ----
 
+
+# Camera positions from ggseg3d::camera_preset_to_position
+# Each vector is the camera position; it looks at the origin.
+camera_presets <- list(
+  lh_lateral  = c(-350,    0,    0),
+  lh_medial   = c( 350,    0,    0),
+  lh_superior = c(-120,    0,  330),
+  lh_inferior = c(-120,    0, -330),
+  rh_lateral  = c( 350,    0,    0),
+  rh_medial   = c(-350,    0,    0),
+  rh_superior = c( 120,    0,  330),
+  rh_inferior = c( 120,    0, -330)
+)
+
+
+#' @noRd
+region_faces_camera <- function(vertex_positions, camera_pos, centroid) {
+  centered <- sweep(vertex_positions, 2, centroid)
+  dots <- centered %*% camera_pos
+  any(dots > 0)
+}
+
+
+#' @noRd
+filter_visible_regions <- function(region_grid, vertices_df) {
+  mesh_lh <- ggseg.formats::get_brain_mesh("lh", "inflated")
+  mesh_rh <- ggseg.formats::get_brain_mesh("rh", "inflated")
+
+  meshes <- list(lh = mesh_lh, rh = mesh_rh)
+  centroids <- lapply(meshes, function(m) colMeans(as.matrix(m$vertices)))
+
+  keep <- vapply(seq_len(nrow(region_grid)), function(i) {
+    label <- region_grid$region_label[i]
+    hemi <- region_grid$hemisphere[i]
+    view <- region_grid$view[i]
+
+    key <- paste(hemi, view, sep = "_")
+    cam <- camera_presets[[key]]
+    if (is.null(cam)) return(TRUE)
+
+    idx <- which(vertices_df$label == label)
+    if (length(idx) == 0) return(TRUE)
+
+    v_indices <- vertices_df$vertices[[idx[1]]]
+    if (length(v_indices) == 0) return(TRUE)
+
+    mesh_verts <- as.matrix(meshes[[hemi]]$vertices)
+    positions <- mesh_verts[v_indices + 1L, , drop = FALSE]
+
+    region_faces_camera(positions, cam, centroids[[hemi]])
+  }, logical(1))
+
+  region_grid[keep, , drop = FALSE]
+}
+
+
 #' @noRd
 cortical_brain_snapshots <- function(
   atlas_3d,
@@ -61,6 +117,8 @@ cortical_region_snapshots <- function(
       (grepl("^rh_", region_grid$region_label) &
          region_grid$hemisphere == "rh"),
   ]
+
+  region_grid <- filter_visible_regions(region_grid, components$vertices_df)
 
   p <- progressor(steps = nrow(region_grid))
   invisible(future_pmap(
@@ -206,6 +264,8 @@ labels_region_snapshots <- function(
          region_grid$hemisphere == "rh") |
       (!grepl("^[lr]h_", region_grid$region_label)),
   ]
+
+  region_grid <- filter_visible_regions(region_grid, components$vertices_df)
 
   p <- progressor(steps = nrow(region_grid))
   invisible(future_pmap(

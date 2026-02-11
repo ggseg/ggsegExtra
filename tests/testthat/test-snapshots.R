@@ -621,6 +621,92 @@ describe("snapshot_region", {
 })
 
 
+describe("region_faces_camera", {
+  it("returns TRUE when vertices face the camera", {
+    positions <- matrix(c(-5, 0, 0, -4, 1, 0), nrow = 2, byrow = TRUE)
+    camera <- c(-350, 0, 0)
+    centroid <- c(0, 0, 0)
+
+    expect_true(region_faces_camera(positions, camera, centroid))
+  })
+
+  it("returns FALSE when vertices face away", {
+    positions <- matrix(c(5, 0, 0, 4, 1, 0), nrow = 2, byrow = TRUE)
+    camera <- c(-350, 0, 0)
+    centroid <- c(0, 0, 0)
+
+    expect_false(region_faces_camera(positions, camera, centroid))
+  })
+
+  it("returns TRUE when at least one vertex faces camera", {
+    positions <- matrix(
+      c(-5, 0, 0, 5, 0, 0),
+      nrow = 2, byrow = TRUE
+    )
+    camera <- c(-350, 0, 0)
+    centroid <- c(0, 0, 0)
+
+    expect_true(region_faces_camera(positions, camera, centroid))
+  })
+})
+
+
+describe("filter_visible_regions", {
+  it("removes regions that face away from camera", {
+    local_mocked_bindings(
+      get_brain_mesh = function(hemi, surface, ...) {
+        verts <- data.frame(
+          x = c(-5, -4, -3, 3, 4, 5),
+          y = c(0, 1, -1, 0, 1, -1),
+          z = c(0, 0, 0, 0, 0, 0)
+        )
+        list(vertices = verts)
+      },
+      .package = "ggseg.formats"
+    )
+
+    vertices_df <- data.frame(label = c("lh_outer", "lh_inner"))
+    vertices_df$vertices <- list(
+      c(0L, 1L, 2L),
+      c(3L, 4L, 5L)
+    )
+
+    grid <- data.frame(
+      region_label = c("lh_outer", "lh_inner"),
+      hemisphere = c("lh", "lh"),
+      view = c("lateral", "lateral"),
+      stringsAsFactors = FALSE
+    )
+
+    result <- filter_visible_regions(grid, vertices_df)
+    expect_equal(nrow(result), 1)
+    expect_equal(result$region_label, "lh_outer")
+  })
+
+  it("keeps all regions for unknown view", {
+    local_mocked_bindings(
+      get_brain_mesh = function(hemi, surface, ...) {
+        list(vertices = data.frame(x = 0, y = 0, z = 0))
+      },
+      .package = "ggseg.formats"
+    )
+
+    vertices_df <- data.frame(label = "lh_test")
+    vertices_df$vertices <- list(0L)
+
+    grid <- data.frame(
+      region_label = "lh_test",
+      hemisphere = "lh",
+      view = "unknown_view",
+      stringsAsFactors = FALSE
+    )
+
+    result <- filter_visible_regions(grid, vertices_df)
+    expect_equal(nrow(result), 1)
+  })
+})
+
+
 describe("snapshot_na_regions", {
   it("constructs correct filename and white highlight data", {
     captured <- list()
