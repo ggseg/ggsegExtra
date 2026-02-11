@@ -16,7 +16,7 @@ cortical_brain_snapshots <- function(
   )
 
   p <- progressor(steps = nrow(snapshot_grid))
-  invisible(purrr::pmap(
+  invisible(future_pmap(
     snapshot_grid,
     function(hemisphere, view) {
       snapshot_brain(
@@ -63,7 +63,7 @@ cortical_region_snapshots <- function(
   ]
 
   p <- progressor(steps = nrow(region_grid))
-  invisible(purrr::pmap(
+  invisible(future_pmap(
     region_grid,
     function(region_label, hemisphere, view) {
       snapshot_region(
@@ -208,7 +208,7 @@ labels_region_snapshots <- function(
   ]
 
   p <- progressor(steps = nrow(region_grid))
-  invisible(purrr::pmap(
+  invisible(future_pmap(
     region_grid,
     function(region_label, hemisphere, view) {
       snapshot_region(
@@ -230,7 +230,7 @@ labels_region_snapshots <- function(
     view = views,
     stringsAsFactors = FALSE
   )
-  invisible(purrr::pmap(
+  invisible(future_pmap(
     na_grid,
     function(hemisphere, view) {
       snapshot_na_regions(
