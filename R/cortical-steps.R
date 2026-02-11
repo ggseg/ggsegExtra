@@ -16,7 +16,7 @@ cortical_brain_snapshots <- function(
   )
 
   p <- progressor(steps = nrow(snapshot_grid))
-  invisible(future_pmap(
+  invisible(purrr::pmap(
     snapshot_grid,
     function(hemisphere, view) {
       snapshot_brain(
@@ -29,11 +29,7 @@ cortical_brain_snapshots <- function(
         snapshot_dim = snapshot_dim
       )
       p()
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim", "p")
-    )
+    }
   ))
 }
 
@@ -67,7 +63,7 @@ cortical_region_snapshots <- function(
   ]
 
   p <- progressor(steps = nrow(region_grid))
-  invisible(future_pmap(
+  invisible(purrr::pmap(
     region_grid,
     function(region_label, hemisphere, view) {
       snapshot_region(
@@ -81,11 +77,7 @@ cortical_region_snapshots <- function(
         snapshot_dim = snapshot_dim
       )
       p()
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim", "p")
-    )
+    }
   ))
 }
 
@@ -216,7 +208,7 @@ labels_region_snapshots <- function(
   ]
 
   p <- progressor(steps = nrow(region_grid))
-  invisible(future_pmap(
+  invisible(purrr::pmap(
     region_grid,
     function(region_label, hemisphere, view) {
       snapshot_region(
@@ -230,11 +222,7 @@ labels_region_snapshots <- function(
         snapshot_dim = snapshot_dim
       )
       p()
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim", "p")
-    )
+    }
   ))
 
   na_grid <- expand.grid(
@@ -242,7 +230,7 @@ labels_region_snapshots <- function(
     view = views,
     stringsAsFactors = FALSE
   )
-  invisible(future_pmap(
+  invisible(purrr::pmap(
     na_grid,
     function(hemisphere, view) {
       snapshot_na_regions(
@@ -254,10 +242,6 @@ labels_region_snapshots <- function(
         skip_existing = skip_existing,
         snapshot_dim = snapshot_dim
       )
-    },
-    .options = furrr_options(
-      packages = "ggsegExtra",
-      globals = c("atlas_3d", "dirs", "skip_existing", "snapshot_dim")
-    )
+    }
   ))
 }

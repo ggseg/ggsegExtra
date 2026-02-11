@@ -509,6 +509,29 @@ subcort_assemble_full <- function(
 
   sf_data <- build_contour_sf(contours_file, views, cortex_slices)
 
+  sf_labels <- if (is.data.frame(sf_data)) {
+    unique(sf_data$label[!is.na(sf_data$label)])
+  } else {
+    character(0)
+  }
+  core_labels <- components$core$label[!is.na(components$core$label)]
+  missing <- setdiff(core_labels, sf_labels)
+
+  if (length(missing) > 0) {
+    cli::cli_warn(c(
+      "Dropping {length(missing)} label{?s} with no valid contour data.",
+      "i" = "Dropped: {.val {missing}}."
+    ))
+    keep <- !components$core$label %in% missing
+    components$core <- components$core[keep, ]
+    components$palette <- components$palette[
+      !names(components$palette) %in% missing
+    ]
+    components$meshes_df <- components$meshes_df[
+      !components$meshes_df$label %in% missing,
+    ]
+  }
+
   atlas <- ggseg_atlas(
     atlas = atlas_name,
     type = "subcortical",

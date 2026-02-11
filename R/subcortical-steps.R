@@ -210,10 +210,10 @@ default_subcortical_views <- function(dims) {
   chunk_size <- 10
   scale <- dims[1] / 256
 
-  z_lo <- round(85 * scale)
-  z_hi <- round(152 * scale)
-  y_lo <- round(110 * scale)
-  y_hi <- round(154 * scale)
+  z_lo <- min(round(85 * scale), dims[3])
+  z_hi <- min(round(152 * scale), dims[3])
+  y_lo <- min(round(110 * scale), dims[2])
+  y_hi <- min(round(154 * scale), dims[2])
 
   axial_views <- make_view_chunks(z_lo, z_hi, chunk_size, "axial")
   coronal_views <- make_view_chunks(y_lo, y_hi, chunk_size, "coronal")

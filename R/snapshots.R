@@ -237,22 +237,32 @@ snapshot_brain_helper <- function(
   rlang::check_installed("rgl", reason = "to take brain snapshots")
   hemi_long <- hemi_to_long(hemisphere)
 
-  ggsegray(
-    .data = .data,
-    atlas = atlas,
-    hemisphere = hemi_long,
-    surface = surface,
-    colour = colour,
-    na_colour = na_colour,
-    lit = FALSE
-  ) |>
-    pan_camera(paste(hemi_long, view)) |>
-    set_background("white")
+  tryCatch(
+    {
+      ggsegray(
+        .data = .data,
+        atlas = atlas,
+        hemisphere = hemi_long,
+        surface = surface,
+        colour = colour,
+        na_colour = na_colour,
+        lit = FALSE
+      ) |>
+        pan_camera(paste(hemi_long, view)) |>
+        set_background("white")
 
-  rgl::par3d(windowRect = c(0, 0, snapshot_dim, snapshot_dim))
-  Sys.sleep(0.2)
-  rgl::snapshot3d(outfile, webshot = FALSE)
-  rgl::close3d()
+      rgl::par3d(windowRect = c(0, 0, snapshot_dim, snapshot_dim))
+      Sys.sleep(0.2)
+      rgl::snapshot3d(outfile, webshot = FALSE)
+    },
+    finally = {
+      try(
+        while (length(rgl::rgl.dev.list()) > 0) rgl::close3d(),
+        silent = TRUE
+      )
+      gc(verbose = FALSE)
+    }
+  )
   invisible(outfile)
 }
 
