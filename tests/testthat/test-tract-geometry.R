@@ -791,7 +791,6 @@ describe("create_tract_geometry_volumetric", {
         dirs <- list(
           base = file.path(tmp_dir, "tract_geom"),
           snapshots = file.path(tmp_dir, "tract_geom", "snapshots"),
-          snaps = file.path(tmp_dir, "tract_geom", "snapshots"),
           processed = file.path(tmp_dir, "tract_geom", "processed"),
           masks = file.path(tmp_dir, "tract_geom", "masks"),
           volumes = file.path(tmp_dir, "tract_geom", "volumes")
@@ -909,7 +908,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = tmp_dir,
-          snaps = tmp_dir,
+          snapshots = tmp_dir,
           processed = tmp_dir,
           masks = tmp_dir,
           volumes = tmp_dir
@@ -944,7 +943,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = tmp_dir,
-          snaps = tmp_dir,
+          snapshots = tmp_dir,
           processed = tmp_dir,
           masks = tmp_dir,
           volumes = tmp_dir
@@ -1019,7 +1018,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = base_dir,
-          snaps = file.path(base_dir, "snapshots"),
+          snapshots = file.path(base_dir, "snapshots"),
           processed = file.path(base_dir, "processed"),
           masks = file.path(base_dir, "masks"),
           volumes = file.path(base_dir, "volumes")
@@ -1081,7 +1080,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = base_dir,
-          snaps = file.path(base_dir, "snapshots"),
+          snapshots = file.path(base_dir, "snapshots"),
           processed = file.path(base_dir, "processed"),
           masks = file.path(base_dir, "masks"),
           volumes = file.path(base_dir, "volumes")
@@ -1161,7 +1160,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = base_dir,
-          snaps = file.path(base_dir, "snapshots"),
+          snapshots = file.path(base_dir, "snapshots"),
           processed = file.path(base_dir, "processed"),
           masks = file.path(base_dir, "masks"),
           volumes = file.path(base_dir, "volumes")
@@ -1231,7 +1230,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = base_dir,
-          snaps = file.path(base_dir, "snapshots"),
+          snapshots = file.path(base_dir, "snapshots"),
           processed = file.path(base_dir, "processed"),
           masks = file.path(base_dir, "masks"),
           volumes = file.path(base_dir, "volumes")
@@ -1319,7 +1318,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = base_dir,
-          snaps = snaps_dir,
+          snapshots = snaps_dir,
           processed = processed_dir,
           masks = masks_dir,
           volumes = file.path(base_dir, "volumes")
@@ -1388,7 +1387,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         dirs <- list(
           base = file.path(tmp_dir, "tg"),
-          snaps = file.path(tmp_dir, "tg", "snapshots"),
+          snapshots = file.path(tmp_dir, "tg", "snapshots"),
           processed = file.path(tmp_dir, "tg", "processed"),
           masks = file.path(tmp_dir, "tg", "masks"),
           volumes = file.path(tmp_dir, "tg", "volumes")
@@ -1507,7 +1506,7 @@ describe("create_tract_geometry_volumetric", {
       setup_atlas_dirs = function(...) {
         list(
           base = base_dir,
-          snaps = file.path(base_dir, "snapshots"),
+          snapshots = file.path(base_dir, "snapshots"),
           processed = file.path(base_dir, "processed"),
           masks = file.path(base_dir, "masks"),
           volumes = file.path(base_dir, "volumes")

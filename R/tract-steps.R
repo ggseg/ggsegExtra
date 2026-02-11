@@ -235,7 +235,7 @@ tract_create_snapshots <- function(
         end = view_end,
         view_name = view_name,
         label = label,
-        output_dir = dirs$snaps,
+        output_dir = dirs$snapshots,
         colour = "red",
         hemi = hemi,
         skip_existing = skip_existing
@@ -273,7 +273,7 @@ tract_create_snapshots <- function(
         slice_view = slice_view,
         view_name = view_name,
         hemi = hemi,
-        output_dir = dirs$snaps,
+        output_dir = dirs$snapshots,
         skip_existing = skip_existing
       )
       p2()

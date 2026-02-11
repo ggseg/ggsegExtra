@@ -182,7 +182,7 @@ describe("create_wholebrain_atlas validation", {
           snapshots = test_dir,
           processed = test_dir,
           masks = test_dir,
-          snaps = test_dir
+          snapshots = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -238,7 +238,7 @@ describe("create_wholebrain_atlas pipeline flow", {
           snapshots = test_dir,
           processed = test_dir,
           masks = test_dir,
-          snaps = test_dir
+          snapshots = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -299,7 +299,7 @@ describe("create_wholebrain_atlas pipeline flow", {
           snapshots = test_dir,
           processed = test_dir,
           masks = test_dir,
-          snaps = test_dir
+          snapshots = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -383,7 +383,7 @@ describe("create_wholebrain_atlas pipeline flow", {
           snapshots = test_dir,
           processed = test_dir,
           masks = test_dir,
-          snaps = test_dir
+          snapshots = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {
@@ -452,7 +452,7 @@ describe("create_wholebrain_atlas pipeline flow", {
           snapshots = test_dir,
           processed = test_dir,
           masks = test_dir,
-          snaps = test_dir
+          snapshots = test_dir
         )
       },
       load_or_run_step = function(step, steps, ...) {

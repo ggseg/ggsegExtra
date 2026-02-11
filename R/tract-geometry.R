@@ -665,7 +665,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
     }
 
     n_snapshots <- nrow(views) * length(tract_labels) + nrow(cortex_slices)
-    existing_snaps <- length(list.files(dirs$snaps, pattern = "\\.png$"))
+    existing_snaps <- length(list.files(dirs$snapshots, pattern = "\\.png$"))
 
     if (skip_existing && existing_snaps >= n_snapshots) {
       if (verbose) {
@@ -754,7 +754,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
             end = view_end,
             view_name = view_name,
             label = label,
-            output_dir = dirs$snaps,
+            output_dir = dirs$snapshots,
             colour = "red",
             hemi = hemi,
             skip_existing = skip_existing
@@ -789,7 +789,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
             slice_view = slice_view,
             view_name = view_name,
             hemi = hemi,
-            output_dir = dirs$snaps,
+            output_dir = dirs$snapshots,
             skip_existing = skip_existing
           )
           p2()
@@ -806,7 +806,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
       cli::cli_alert_info("Processing images")
     }
 
-    files <- list.files(dirs$snaps, full.names = TRUE, pattern = "\\.png$")
+    files <- list.files(dirs$snapshots, full.names = TRUE, pattern = "\\.png$")
 
     for (f in files) {
       process_snapshot_image(

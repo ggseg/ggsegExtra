@@ -263,7 +263,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -334,7 +334,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -391,13 +391,13 @@ describe("create_subcortical_atlas pipeline flow", {
     )
 
     dirs <- list(
-      snaps = withr::local_tempdir(),
+      snapshots = withr::local_tempdir(),
       processed = withr::local_tempdir(),
       masks = withr::local_tempdir()
     )
 
     process_and_mask_images(
-      dirs$snaps,
+      dirs$snapshots,
       dirs$processed,
       dirs$masks,
       dilate = NULL,
@@ -430,7 +430,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -504,7 +504,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -562,7 +562,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -613,7 +613,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -716,7 +716,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -794,7 +794,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -906,7 +906,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -987,7 +987,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -1046,7 +1046,7 @@ describe("create_subcortical_atlas pipeline flow", {
         list(
           base = test_dir,
           meshes = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )

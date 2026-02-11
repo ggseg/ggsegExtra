@@ -213,15 +213,10 @@ validate_wholebrain_config <- function(
   verbose, cleanup, skip_existing,
   tolerance, smoothness, steps
 ) {
-  verbose <- is_verbose(verbose)
-  cleanup <- get_cleanup(cleanup)
-  skip_existing <- get_skip_existing(skip_existing)
-  tolerance <- get_tolerance(tolerance)
-  smoothness <- get_smoothness(smoothness)
-  output_dir <- get_output_dir(output_dir)
-
-  if (is.null(steps)) steps <- 1L:4L
-  steps <- as.integer(steps)
+  config <- resolve_common_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, steps, max_step = 4L
+  )
 
   check_fs(abort = TRUE)
 
@@ -233,7 +228,7 @@ validate_wholebrain_config <- function(
     cli::cli_abort("Color lookup table not found: {.path {input_lut}}")
   }
 
-  output_dir <- normalizePath(output_dir, mustWork = FALSE)
+  config$output_dir <- normalizePath(config$output_dir, mustWork = FALSE)
 
   if (is.null(atlas_name)) {
     atlas_name <- basename(input_volume)
@@ -241,23 +236,15 @@ validate_wholebrain_config <- function(
                        ignore.case = TRUE)
   }
 
-  list(
-    input_volume = input_volume,
-    input_lut = input_lut,
-    atlas_name = atlas_name,
-    output_dir = output_dir,
-    projfrac = projfrac,
-    projfrac_range = projfrac_range,
-    subject = subject,
-    regheader = regheader,
-    min_vertices = as.integer(min_vertices),
-    verbose = verbose,
-    cleanup = cleanup,
-    skip_existing = skip_existing,
-    tolerance = tolerance,
-    smoothness = smoothness,
-    steps = steps
-  )
+  config$input_volume <- input_volume
+  config$input_lut <- input_lut
+  config$atlas_name <- atlas_name
+  config$projfrac <- projfrac
+  config$projfrac_range <- projfrac_range
+  config$subject <- subject
+  config$regheader <- regheader
+  config$min_vertices <- as.integer(min_vertices)
+  config
 }
 
 

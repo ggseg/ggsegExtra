@@ -133,13 +133,26 @@ create_subcortical_atlas <- function(
     meshes_list
   )
 
+  subcort_final <- function(atlas) {
+    finalize_atlas(
+      atlas, config, dirs, start_time,
+      type_label = "Subcortical", unit = "structures", early_step = 3L
+    )
+  }
+
   if (max(config$steps) == 3L) {
     atlas <- subcort_assemble_3d(config$atlas_name, components)
-    return(subcort_finalize(atlas, config, dirs, start_time))
+    return(subcort_final(atlas))
   }
 
   snaps <- subcort_resolve_snapshots(config, dirs, labels$colortable, views)
-  subcort_run_image_steps(config, dirs, dilate, vertex_size_limits)
+  run_image_steps(
+    config, dirs,
+    step_map = list(process = 5L, extract = 6L, smooth = 7L, reduce = 8L),
+    total_steps = 9L,
+    dilate = dilate,
+    vertex_size_limits = vertex_size_limits
+  )
 
   if (9L %in% config$steps) {
     atlas <- subcort_assemble_full(
@@ -149,10 +162,10 @@ create_subcortical_atlas <- function(
       snaps$views,
       snaps$cortex_slices
     )
-    return(subcort_finalize(atlas, config, dirs, start_time))
+    return(subcort_final(atlas))
   }
 
-  subcort_finalize(NULL, config, dirs, start_time)
+  subcort_final(NULL)
 }
 
 
@@ -172,12 +185,10 @@ validate_subcort_config <- function(
   tolerance,
   smoothness
 ) {
-  verbose <- is_verbose(verbose)
-  cleanup <- get_cleanup(cleanup)
-  skip_existing <- get_skip_existing(skip_existing)
-  tolerance <- get_tolerance(tolerance)
-  smoothness <- get_smoothness(smoothness)
-  output_dir <- get_output_dir(output_dir)
+  config <- resolve_common_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, steps, max_step = 9L
+  )
 
   if (!is.null(decimate)) {
     if (
@@ -194,11 +205,6 @@ validate_subcort_config <- function(
     }
   }
 
-  if (is.null(steps)) {
-    steps <- 1L:9L
-  }
-  steps <- as.integer(steps)
-
   check_fs(abort = TRUE)
 
   if (!file.exists(input_volume)) {
@@ -208,25 +214,17 @@ validate_subcort_config <- function(
     cli::cli_abort("Color lookup table not found: {.path {input_lut}}")
   }
 
-  output_dir <- normalizePath(output_dir, mustWork = FALSE)
+  config$output_dir <- normalizePath(config$output_dir, mustWork = FALSE)
 
   if (is.null(atlas_name)) {
     atlas_name <- file_path_sans_ext(basename(input_volume))
   }
 
-  list(
-    input_volume = input_volume,
-    input_lut = input_lut,
-    atlas_name = atlas_name,
-    output_dir = output_dir,
-    verbose = verbose,
-    cleanup = cleanup,
-    skip_existing = skip_existing,
-    decimate = decimate,
-    steps = steps,
-    tolerance = tolerance,
-    smoothness = smoothness
-  )
+  config$input_volume <- input_volume
+  config$input_lut <- input_lut
+  config$atlas_name <- atlas_name
+  config$decimate <- decimate
+  config
 }
 
 
@@ -433,53 +431,6 @@ subcort_resolve_snapshots <- function(config, dirs, colortable, views) {
 
 
 #' @noRd
-subcort_run_image_steps <- function(config, dirs, dilate, vertex_size_limits) {
-  if (5L %in% config$steps) {
-    if (config$verbose) {
-      cli::cli_progress_step("5/9 Processing images")
-    }
-    process_and_mask_images(
-      # nolint: object_usage_linter.
-      dirs$snaps,
-      dirs$processed,
-      dirs$masks,
-      dilate = dilate,
-      skip_existing = config$skip_existing
-    )
-    if (config$verbose) cli::cli_progress_done()
-  }
-
-  if (6L %in% config$steps) {
-    extract_contours(
-      dirs$masks,
-      dirs$base,
-      step = "6/9",
-      verbose = config$verbose,
-      vertex_size_limits = vertex_size_limits
-    )
-  }
-
-  if (7L %in% config$steps) {
-    smooth_contours(
-      dirs$base,
-      config$smoothness,
-      step = "7/9",
-      verbose = config$verbose
-    )
-  }
-
-  if (8L %in% config$steps) {
-    reduce_vertex(
-      dirs$base,
-      config$tolerance,
-      step = "8/9",
-      verbose = config$verbose
-    )
-  }
-}
-
-
-#' @noRd
 subcort_assemble_3d <- function(atlas_name, components) {
   ggseg_atlas(
     atlas = atlas_name,
@@ -543,32 +494,4 @@ subcort_assemble_full <- function(
   warn_if_large_atlas(atlas)
   preview_atlas(atlas)
   atlas
-}
-
-
-#' @noRd
-subcort_finalize <- function(atlas, config, dirs, start_time) {
-  if (config$cleanup) {
-    unlink(dirs$base, recursive = TRUE)
-    if (config$verbose) cli::cli_alert_success("Temporary files removed")
-  }
-
-  if (config$verbose) {
-    if (!is.null(atlas)) {
-      # fmt: skip
-      type <- if (max(config$steps) == 3L) { # nolint
-        "3D"
-      } else {
-        "Subcortical"
-      }
-      cli::cli_alert_success(
-        "{type} atlas created with {nrow(atlas$core)} structures"
-      )
-    } else {
-      cli::cli_alert_success("Completed steps {.val {config$steps}}")
-    }
-    log_elapsed(start_time)
-  }
-
-  if (is.null(atlas)) invisible(NULL) else atlas
 }

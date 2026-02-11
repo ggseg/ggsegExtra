@@ -283,7 +283,7 @@ describe("tract_create_snapshots", {
 
     centerlines_df <- data.frame(label = "t1", stringsAsFactors = FALSE)
     streamlines_data <- list(t1 = list(matrix(1:9, ncol = 3)))
-    dirs <- list(snaps = withr::local_tempdir())
+    dirs <- list(snapshots = withr::local_tempdir())
 
     result <- tract_create_snapshots(
       streamlines_data,
@@ -342,7 +342,7 @@ describe("tract_create_snapshots", {
 
     centerlines_df <- data.frame(label = "t1", stringsAsFactors = FALSE)
     streamlines_data <- list(t1 = list(matrix(1:9, ncol = 3)))
-    dirs <- list(snaps = withr::local_tempdir())
+    dirs <- list(snapshots = withr::local_tempdir())
 
     result <- tract_create_snapshots(
       streamlines_data,
@@ -401,7 +401,7 @@ describe("tract_create_snapshots", {
     streamlines_data <- list(
       t1 = list(matrix(1:9, ncol = 3), matrix(10:18, ncol = 3))
     )
-    dirs <- list(snaps = withr::local_tempdir())
+    dirs <- list(snapshots = withr::local_tempdir())
 
     result <- tract_create_snapshots(
       streamlines_data,
@@ -692,7 +692,7 @@ describe("tract_resolve_step1", {
       density_radius_range = c(0.2, 1.0)
     )
     dirs <- list(
-      base = test_dir, snaps = test_dir,
+      base = test_dir, snapshots = test_dir,
       processed = test_dir, masks = test_dir
     )
 
@@ -750,7 +750,7 @@ describe("tract_resolve_step1", {
       density_radius_range = c(0.2, 1.0)
     )
     dirs <- list(
-      base = test_dir, snaps = test_dir,
+      base = test_dir, snapshots = test_dir,
       processed = test_dir, masks = test_dir
     )
 
@@ -844,7 +844,7 @@ describe("tract_resolve_snapshots", {
       steps = 3L:7L, skip_existing = TRUE, verbose = FALSE,
       tract_radius = 3
     )
-    dirs <- list(base = test_dir, snaps = test_dir)
+    dirs <- list(base = test_dir, snapshots = test_dir)
     step1 <- list(
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
@@ -882,7 +882,7 @@ describe("tract_resolve_snapshots", {
       steps = 2L:7L, skip_existing = FALSE, verbose = FALSE,
       tract_radius = 3
     )
-    dirs <- list(base = test_dir, snaps = test_dir)
+    dirs <- list(base = test_dir, snapshots = test_dir)
     step1 <- list(
       streamlines_data = list(t1 = matrix(1:30, ncol = 3)),
       centerlines_df = data.frame(label = "t1"),
@@ -900,7 +900,9 @@ describe("tract_resolve_snapshots", {
 })
 
 
-describe("tract_run_image_steps", {
+describe("run_image_steps (tract step_map)", {
+  tract_step_map <- list(process = 3L, extract = 4L, smooth = 5L, reduce = 6L)
+
   it("calls process_and_mask_images for step 3", {
     process_called <- FALSE
     local_mocked_bindings(
@@ -911,9 +913,9 @@ describe("tract_run_image_steps", {
     )
 
     config <- list(steps = 3L, verbose = FALSE, skip_existing = FALSE)
-    dirs <- list(snaps = "s", processed = "p", masks = "m", base = "b")
+    dirs <- list(snapshots = "s", processed = "p", masks = "m", base = "b")
 
-    tract_run_image_steps(config, dirs, NULL, NULL)
+    run_image_steps(config, dirs, tract_step_map, 7L)
 
     expect_true(process_called)
   })
@@ -928,9 +930,9 @@ describe("tract_run_image_steps", {
     )
 
     config <- list(steps = 4L, verbose = FALSE)
-    dirs <- list(snaps = "s", processed = "p", masks = "m", base = "b")
+    dirs <- list(snapshots = "s", processed = "p", masks = "m", base = "b")
 
-    tract_run_image_steps(config, dirs, NULL, NULL)
+    run_image_steps(config, dirs, tract_step_map, 7L)
 
     expect_true(extract_called)
   })
@@ -945,9 +947,9 @@ describe("tract_run_image_steps", {
     )
 
     config <- list(steps = 5L, verbose = FALSE, smoothness = 1.0)
-    dirs <- list(snaps = "s", processed = "p", masks = "m", base = "b")
+    dirs <- list(snapshots = "s", processed = "p", masks = "m", base = "b")
 
-    tract_run_image_steps(config, dirs, NULL, NULL)
+    run_image_steps(config, dirs, tract_step_map, 7L)
 
     expect_true(smooth_called)
   })
@@ -962,9 +964,9 @@ describe("tract_run_image_steps", {
     )
 
     config <- list(steps = 6L, verbose = FALSE, tolerance = 0.01)
-    dirs <- list(snaps = "s", processed = "p", masks = "m", base = "b")
+    dirs <- list(snapshots = "s", processed = "p", masks = "m", base = "b")
 
-    tract_run_image_steps(config, dirs, NULL, NULL)
+    run_image_steps(config, dirs, tract_step_map, 7L)
 
     expect_true(reduce_called)
   })
@@ -994,9 +996,9 @@ describe("tract_run_image_steps", {
       steps = 3L:6L, verbose = FALSE,
       skip_existing = FALSE, smoothness = 1.0, tolerance = 0.01
     )
-    dirs <- list(snaps = "s", processed = "p", masks = "m", base = "b")
+    dirs <- list(snapshots = "s", processed = "p", masks = "m", base = "b")
 
-    tract_run_image_steps(config, dirs, NULL, NULL)
+    run_image_steps(config, dirs, tract_step_map, 7L)
 
     expect_equal(calls, c("process", "extract", "smooth", "reduce"))
   })
@@ -1065,7 +1067,7 @@ describe("tract_assemble_full", {
 })
 
 
-describe("tract_finalize", {
+describe("finalize_atlas (tract parameters)", {
   it("deletes dir when cleanup is TRUE", {
     test_dir <- withr::local_tempdir()
     sub_dir <- file.path(test_dir, "atlas_work")
@@ -1075,7 +1077,10 @@ describe("tract_finalize", {
     config <- list(verbose = FALSE, cleanup = TRUE, steps = 1L)
     dirs <- list(base = sub_dir)
 
-    tract_finalize(NULL, config, dirs, Sys.time())
+    finalize_atlas(
+      NULL, config, dirs, Sys.time(),
+      type_label = "Tract", unit = "tracts", early_step = 1L
+    )
 
     expect_false(dir.exists(sub_dir))
   })
@@ -1090,7 +1095,10 @@ describe("tract_finalize", {
     )
 
     expect_message(
-      tract_finalize(NULL, config, dirs, Sys.time()),
+      finalize_atlas(
+        NULL, config, dirs, Sys.time(),
+        type_label = "Tract", unit = "tracts", early_step = 1L
+      ),
       "Completed steps"
     )
   })
@@ -1100,7 +1108,10 @@ describe("tract_finalize", {
     config <- list(verbose = FALSE, cleanup = FALSE, steps = 3L:5L)
     dirs <- list(base = test_dir)
 
-    result <- tract_finalize(NULL, config, dirs, Sys.time())
+    result <- finalize_atlas(
+      NULL, config, dirs, Sys.time(),
+      type_label = "Tract", unit = "tracts", early_step = 1L
+    )
 
     expect_null(result)
   })
@@ -1119,7 +1130,10 @@ describe("tract_finalize", {
     config <- list(verbose = FALSE, cleanup = FALSE, steps = 1L)
     dirs <- list(base = test_dir)
 
-    result <- tract_finalize(mock_atlas, config, dirs, Sys.time())
+    result <- finalize_atlas(
+      mock_atlas, config, dirs, Sys.time(),
+      type_label = "Tract", unit = "tracts", early_step = 1L
+    )
 
     expect_s3_class(result, "ggseg_atlas")
   })

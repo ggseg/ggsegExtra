@@ -127,7 +127,6 @@ describe("setup_atlas_dirs", {
     dirs <- setup_atlas_dirs(tmp, "test_subcort", type = "subcortical")
 
     expect_true(dir.exists(dirs$meshes))
-    expect_equal(dirs$snaps, dirs$snapshots)
   })
 
   it("handles existing directories without error", {

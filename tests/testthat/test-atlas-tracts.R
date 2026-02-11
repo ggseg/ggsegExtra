@@ -157,7 +157,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -200,7 +200,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -290,7 +290,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -380,7 +380,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -447,7 +447,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -493,7 +493,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -561,7 +561,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -633,7 +633,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -717,7 +717,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -791,7 +791,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )
@@ -857,7 +857,7 @@ describe("create_tract_atlas pipeline flow", {
       setup_atlas_dirs = function(...) {
         list(
           base = test_dir,
-          snaps = test_dir,
+          snapshots = test_dir,
           processed = test_dir,
           masks = test_dir
         )

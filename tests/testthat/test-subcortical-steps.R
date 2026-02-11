@@ -207,7 +207,7 @@ describe("subcort_create_snapshots", {
       label = "Left-Putamen",
       stringsAsFactors = FALSE
     )
-    dirs <- list(snaps = withr::local_tempdir())
+    dirs <- list(snapshots = withr::local_tempdir())
 
     result <- subcort_create_snapshots(
       "fake.mgz",
@@ -265,7 +265,7 @@ describe("subcort_create_snapshots", {
       label = "Left-Putamen",
       stringsAsFactors = FALSE
     )
-    dirs <- list(snaps = withr::local_tempdir())
+    dirs <- list(snapshots = withr::local_tempdir())
 
     result <- subcort_create_snapshots(
       "fake.mgz",
@@ -325,7 +325,7 @@ describe("subcort_create_snapshots", {
       label = "Missing-Region",
       stringsAsFactors = FALSE
     )
-    dirs <- list(snaps = withr::local_tempdir())
+    dirs <- list(snapshots = withr::local_tempdir())
 
     result <- subcort_create_snapshots(
       "fake.mgz",
@@ -689,7 +689,7 @@ describe("subcort_assemble_3d", {
 })
 
 
-describe("subcort_finalize", {
+describe("finalize_atlas (subcort parameters)", {
   it("cleanup deletes directory", {
     test_dir <- withr::local_tempdir()
     sub_dir <- file.path(test_dir, "atlas_work")
@@ -703,7 +703,10 @@ describe("subcort_finalize", {
     )
     dirs <- list(base = sub_dir)
 
-    subcort_finalize(NULL, config, dirs, Sys.time())
+    finalize_atlas(
+      NULL, config, dirs, Sys.time(),
+      type_label = "Subcortical", unit = "structures", early_step = 3L
+    )
 
     expect_false(dir.exists(sub_dir))
   })
@@ -725,7 +728,10 @@ describe("subcort_finalize", {
     )
 
     expect_message(
-      subcort_finalize(mock_atlas, config, dirs, Sys.time()),
+      finalize_atlas(
+        mock_atlas, config, dirs, Sys.time(),
+        type_label = "Subcortical", unit = "structures", early_step = 3L
+      ),
       "atlas created"
     )
   })
@@ -742,14 +748,19 @@ describe("subcort_finalize", {
     )
     dirs <- list(base = withr::local_tempdir())
 
-    result <- subcort_finalize(NULL, config, dirs, Sys.time())
+    result <- finalize_atlas(
+      NULL, config, dirs, Sys.time(),
+      type_label = "Subcortical", unit = "structures", early_step = 3L
+    )
 
     expect_null(result)
   })
 })
 
 
-describe("subcort_run_image_steps", {
+describe("run_image_steps (subcort step_map)", {
+  subcort_step_map <- list(process = 5L, extract = 6L, smooth = 7L, reduce = 8L)
+
   it("calls the right functions for the right steps", {
     step5_called <- FALSE
     step6_called <- FALSE
@@ -783,18 +794,13 @@ describe("subcort_run_image_steps", {
       tolerance = 0.5
     )
     dirs <- list(
-      snaps = withr::local_tempdir(),
+      snapshots = withr::local_tempdir(),
       processed = withr::local_tempdir(),
       masks = withr::local_tempdir(),
       base = withr::local_tempdir()
     )
 
-    subcort_run_image_steps(
-      config,
-      dirs,
-      dilate = NULL,
-      vertex_size_limits = NULL
-    )
+    run_image_steps(config, dirs, subcort_step_map, 9L)
 
     expect_true(step5_called)
     expect_true(step6_called)
@@ -835,18 +841,13 @@ describe("subcort_run_image_steps", {
       tolerance = 0.5
     )
     dirs <- list(
-      snaps = withr::local_tempdir(),
+      snapshots = withr::local_tempdir(),
       processed = withr::local_tempdir(),
       masks = withr::local_tempdir(),
       base = withr::local_tempdir()
     )
 
-    subcort_run_image_steps(
-      config,
-      dirs,
-      dilate = NULL,
-      vertex_size_limits = NULL
-    )
+    run_image_steps(config, dirs, subcort_step_map, 9L)
 
     expect_false(step5_called)
     expect_true(step6_called)

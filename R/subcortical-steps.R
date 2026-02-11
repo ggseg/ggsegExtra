@@ -156,7 +156,7 @@ subcort_create_snapshots <- function(
           end = view_end,
           view_name = view_name,
           label = label_name,
-          output_dir = dirs$snaps,
+          output_dir = dirs$snapshots,
           colour = "red",
           hemi = hemi,
           skip_existing = skip_existing
@@ -187,7 +187,7 @@ subcort_create_snapshots <- function(
       slice_view = cs$view,
       view_name = cs$name,
       hemi = hemi,
-      output_dir = dirs$snaps,
+      output_dir = dirs$snapshots,
       skip_existing = skip_existing
     )
   }))

@@ -156,8 +156,7 @@ setup_atlas_dirs <- function(output_dir, atlas_name = NULL, type = "cortical") {
     base = base,
     snapshots = file.path(base, "snapshots"),
     processed = file.path(base, "processed"),
-    masks = file.path(base, "masks"),
-    snaps = file.path(base, "snapshots")
+    masks = file.path(base, "masks")
   )
 
   if (type == "subcortical") {
@@ -224,4 +223,123 @@ build_atlas_components <- function(atlas_data) {
   }
 
   result
+}
+
+
+# Shared pipeline helpers ----
+
+#' @noRd
+resolve_common_config <- function(
+  output_dir, verbose, cleanup, skip_existing,
+  tolerance, smoothness, steps, max_step
+) {
+  list(
+    output_dir = get_output_dir(output_dir),
+    verbose = is_verbose(verbose),
+    cleanup = get_cleanup(cleanup),
+    skip_existing = get_skip_existing(skip_existing),
+    tolerance = get_tolerance(tolerance),
+    smoothness = get_smoothness(smoothness),
+    steps = if (is.null(steps)) seq_len(max_step) else as.integer(steps)
+  )
+}
+
+
+#' @noRd
+finalize_atlas <- function(
+  atlas, config, dirs, start_time,
+  type_label = "Brain", unit = "regions", early_step = 1L
+) {
+  if (config$cleanup) {
+    unlink(dirs$base, recursive = TRUE)
+    if (config$verbose) cli::cli_alert_success("Temporary files removed")
+  }
+
+  if (config$verbose) {
+    if (!is.null(atlas)) {
+      # fmt: skip
+      type <- if (max(config$steps) == early_step) { # nolint
+        "3D"
+      } else {
+        type_label
+      }
+      cli::cli_alert_success(
+        "{type} atlas created with {nrow(atlas$core)} {unit}"
+      )
+    } else {
+      cli::cli_alert_success("Completed steps {.val {config$steps}}")
+    }
+    log_elapsed(start_time) # nolint: object_usage_linter.
+  }
+
+  if (is.null(atlas)) invisible(NULL) else atlas
+}
+
+
+#' @noRd
+run_image_steps <- function(
+  config, dirs, step_map, total_steps,
+  dilate = NULL, vertex_size_limits = NULL
+) {
+  fmt <- function(step) paste0(step, "/", total_steps)
+
+  if (step_map$process %in% config$steps) {
+    if (config$verbose) {
+      cli::cli_progress_step("{fmt(step_map$process)} Processing images")
+    }
+    process_and_mask_images(
+      # nolint: object_usage_linter.
+      dirs$snapshots,
+      dirs$processed,
+      dirs$masks,
+      dilate = dilate,
+      skip_existing = config$skip_existing
+    )
+    if (config$verbose) cli::cli_progress_done()
+  }
+
+  if (step_map$extract %in% config$steps) {
+    extract_contours(
+      dirs$masks, dirs$base,
+      step = fmt(step_map$extract),
+      verbose = config$verbose,
+      vertex_size_limits = vertex_size_limits
+    )
+  }
+
+  if (step_map$smooth %in% config$steps) {
+    smooth_contours(
+      dirs$base, config$smoothness,
+      step = fmt(step_map$smooth),
+      verbose = config$verbose
+    )
+  }
+
+  if (step_map$reduce %in% config$steps) {
+    reduce_vertex(
+      dirs$base, config$tolerance,
+      step = fmt(step_map$reduce),
+      verbose = config$verbose
+    )
+  }
+}
+
+
+#' @noRd
+parse_lut_colours <- function(input_lut) {
+  if (is.null(input_lut)) {
+    return(list(region_names = NULL, colours = NULL))
+  }
+
+  lut <- if (is.character(input_lut)) read_ctab(input_lut) else input_lut
+  region_names <- lut$region
+  colours <- if ("hex" %in% names(lut)) {
+    lut$hex
+  } else if (all(c("R", "G", "B") %in% names(lut))) {
+    grDevices::rgb(lut$R, lut$G, lut$B, maxColorValue = 255)
+  } else {
+    NULL
+  }
+
+  list(region_names = region_names, colours = colours)
 }

@@ -255,7 +255,7 @@ create_subcortical_geometry_projection <- function(
 
   dirs <- list(
     base = file.path(output_dir, "subcort_proj_geom"),
-    snaps = file.path(output_dir, "subcort_proj_geom", "snapshots"),
+    snapshots = file.path(output_dir, "subcort_proj_geom", "snapshots"),
     processed = file.path(output_dir, "subcort_proj_geom", "processed"),
     masks = file.path(output_dir, "subcort_proj_geom", "masks")
   )
@@ -329,7 +329,7 @@ create_subcortical_geometry_projection <- function(
           end = view_end,
           view_name = view_name,
           label = label_name,
-          output_dir = dirs$snaps,
+          output_dir = dirs$snapshots,
           colour = "red",
           skip_existing = skip_existing
         )
@@ -363,7 +363,7 @@ create_subcortical_geometry_projection <- function(
       slice_view = cs$view,
       view_name = cs$name,
       hemi = "cortex",
-      output_dir = dirs$snaps,
+      output_dir = dirs$snapshots,
       skip_existing = skip_existing
     )
   }
@@ -372,7 +372,7 @@ create_subcortical_geometry_projection <- function(
     cli::cli_alert_info("Processing images")
   }
 
-  files <- list.files(dirs$snaps, full.names = TRUE, pattern = "\\.png$")
+  files <- list.files(dirs$snapshots, full.names = TRUE, pattern = "\\.png$")
 
   for (f in files) {
     process_snapshot_image(

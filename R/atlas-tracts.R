@@ -140,9 +140,16 @@ create_tract_atlas <- function(
     lut_result$colours
   )
 
+  tract_final <- function(atlas) {
+    finalize_atlas(
+      atlas, config, dirs, start_time,
+      type_label = "Tract", unit = "tracts", early_step = 1L
+    )
+  }
+
   if (max(config$steps) == 1L) {
     atlas <- tract_assemble_3d(step1)
-    return(tract_finalize(atlas, config, dirs, start_time))
+    return(tract_final(atlas))
   }
 
   tract_check_aseg(input_aseg, config$steps)
@@ -155,14 +162,20 @@ create_tract_atlas <- function(
     views
   )
 
-  tract_run_image_steps(config, dirs, dilate, vertex_size_limits)
+  run_image_steps(
+    config, dirs,
+    step_map = list(process = 3L, extract = 4L, smooth = 5L, reduce = 6L),
+    total_steps = 7L,
+    dilate = dilate,
+    vertex_size_limits = vertex_size_limits
+  )
 
   if (7L %in% config$steps) {
     atlas <- tract_assemble_full(step1, dirs, snaps$views, snaps$cortex_slices)
-    return(tract_finalize(atlas, config, dirs, start_time))
+    return(tract_final(atlas))
   }
 
-  tract_finalize(NULL, config, dirs, start_time)
+  tract_final(NULL)
 }
 
 
@@ -182,36 +195,21 @@ validate_tract_config <- function(
   tube_segments,
   n_points
 ) {
-  verbose <- is_verbose(verbose)
-  cleanup <- get_cleanup(cleanup)
-  skip_existing <- get_skip_existing(skip_existing)
-  tolerance <- get_tolerance(tolerance)
-  smoothness <- get_smoothness(smoothness)
-  output_dir <- get_output_dir(output_dir)
-  output_dir <- normalizePath(output_dir, mustWork = FALSE)
-
-  centerline_method <- match.arg(centerline_method, c("mean", "medoid"))
-
-  if (is.null(steps)) {
-    steps <- 1L:7L
-  }
-  steps <- as.integer(steps)
-
-  list(
-    output_dir = output_dir,
-    verbose = verbose,
-    cleanup = cleanup,
-    skip_existing = skip_existing,
-    tolerance = tolerance,
-    smoothness = smoothness,
-    steps = steps,
-    centerline_method = centerline_method,
-    tube_radius = tube_radius,
-    tube_segments = tube_segments,
-    n_points = n_points,
-    density_radius_range = c(0.2, 1.0),
-    tract_radius = 3
+  config <- resolve_common_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, steps, max_step = 7L
   )
+  config$output_dir <- normalizePath(config$output_dir, mustWork = FALSE)
+
+  config$centerline_method <- match.arg(
+    centerline_method, c("mean", "medoid")
+  )
+  config$tube_radius <- tube_radius
+  config$tube_segments <- tube_segments
+  config$n_points <- n_points
+  config$density_radius_range <- c(0.2, 1.0)
+  config$tract_radius <- 3
+  config
 }
 
 
@@ -387,53 +385,6 @@ tract_resolve_snapshots <- function(config, dirs, step1, input_aseg, views) {
 
 
 #' @noRd
-tract_run_image_steps <- function(config, dirs, dilate, vertex_size_limits) {
-  if (3L %in% config$steps) {
-    if (config$verbose) {
-      cli::cli_progress_step("3/7 Processing images")
-    }
-    process_and_mask_images(
-      # nolint: object_usage_linter.
-      dirs$snaps,
-      dirs$processed,
-      dirs$masks,
-      dilate = dilate,
-      skip_existing = config$skip_existing
-    )
-    if (config$verbose) cli::cli_progress_done()
-  }
-
-  if (4L %in% config$steps) {
-    extract_contours(
-      dirs$masks,
-      dirs$base,
-      step = "4/7",
-      verbose = config$verbose,
-      vertex_size_limits = vertex_size_limits
-    )
-  }
-
-  if (5L %in% config$steps) {
-    smooth_contours(
-      dirs$base,
-      config$smoothness,
-      step = "5/7",
-      verbose = config$verbose
-    )
-  }
-
-  if (6L %in% config$steps) {
-    reduce_vertex(
-      dirs$base,
-      config$tolerance,
-      step = "6/7",
-      verbose = config$verbose
-    )
-  }
-}
-
-
-#' @noRd
 tract_assemble_3d <- function(step1) {
   ggseg_atlas(
     atlas = step1$atlas_name,
@@ -477,32 +428,4 @@ tract_assemble_full <- function(step1, dirs, views, cortex_slices) {
   warn_if_large_atlas(atlas)
   preview_atlas(atlas)
   atlas
-}
-
-
-#' @noRd
-tract_finalize <- function(atlas, config, dirs, start_time) {
-  if (config$cleanup) {
-    unlink(dirs$base, recursive = TRUE)
-    if (config$verbose) cli::cli_alert_success("Temporary files removed")
-  }
-
-  if (config$verbose) {
-    if (!is.null(atlas)) {
-      # fmt: skip
-      type <- if (max(config$steps) == 1L) { # nolint
-        "3D"
-      } else {
-        "Tract"
-      }
-      cli::cli_alert_success(
-        "{type} atlas created with {nrow(atlas$core)} tracts"
-      )
-    } else {
-      cli::cli_alert_success("Completed steps {.val {config$steps}}")
-    }
-    log_elapsed(start_time) # nolint: object_usage_linter.
-  }
-
-  if (is.null(atlas)) invisible(NULL) else atlas
 }
