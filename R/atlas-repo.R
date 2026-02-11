@@ -43,21 +43,17 @@ create_atlas_repo <- function(
 ) {
   path <- normalizePath(path, mustWork = FALSE)
 
-  # Derive atlas_name from path if not provided
   if (is.null(atlas_name)) {
     dir_name <- basename(path)
-    # Extract atlas name from ggsegXxx format (case sensitive for ggseg prefix)
     if (grepl("^ggseg[A-Z]", dir_name)) {
       atlas_name <- sub("^ggseg", "", dir_name)
     } else if (grepl("^ggseg", dir_name, ignore.case = TRUE)) {
-      # Handle lowercase ggseg prefix
       atlas_name <- sub("^ggseg", "", dir_name, ignore.case = TRUE)
     } else {
       atlas_name <- dir_name
     }
   }
 
-  # Clean atlas name: lowercase first, then remove non-alphanumeric
   atlas_name <- tolower(atlas_name)
   atlas_name <- gsub("[^a-z0-9]", "", atlas_name)
   repo_name <- paste0("ggseg", tools::toTitleCase(atlas_name))
@@ -70,7 +66,6 @@ create_atlas_repo <- function(
     ))
   }
 
-  # Check if path exists and is empty
   if (dir.exists(path)) {
     files <- list.files(path, all.files = TRUE, no.. = TRUE)
     if (length(files) > 0) {
@@ -82,10 +77,8 @@ create_atlas_repo <- function(
     }
   }
 
-  # Create the package structure
   create_atlas_from_template(path, atlas_name)
 
-  # Create .Rproj file if requested
   if (rstudio) {
     create_rproj_file(path, repo_name)
   }
@@ -102,7 +95,6 @@ create_atlas_repo <- function(
     "5" = "Run {.code devtools::check()} to verify the package"
   ))
 
-  # Open in RStudio if requested
   if (open && rstudio) {
     open_rstudio_project(path)
   }
@@ -126,10 +118,8 @@ create_atlas_from_template <- function(path, atlas_name) {
     ))
   }
 
-  # Create base directory
   mkdir(path)
 
-  # Create all subdirectories (excluding hidden ones - we'll generate those)
   dirs <- list.dirs(template_dir, full.names = FALSE, recursive = TRUE)
   dirs <- dirs[!grepl("^\\.", dirs)]
   for (d in dirs) {
@@ -138,7 +128,6 @@ create_atlas_from_template <- function(path, atlas_name) {
     }
   }
 
-  # Copy all files (excluding hidden ones - we'll generate those)
   files <- list.files(template_dir, recursive = TRUE, all.files = FALSE)
 
   for (f in files) {
@@ -148,19 +137,16 @@ create_atlas_from_template <- function(path, atlas_name) {
     file.copy(src, dst, overwrite = TRUE)
   }
 
-  # Generate hidden files programmatically
   write_gitignore(path)
   write_rbuildignore(path)
   write_github_workflows(path)
 
-  # Replace template placeholders
   all_files <- list.files(
     path,
     full.names = TRUE,
     recursive = TRUE,
     all.files = TRUE
   )
-  # Skip binary files
   all_files <- all_files[
     !grepl(
       "\\.(png|jpg|jpeg|gif|ico|rda|RData|rds)$",
@@ -251,7 +237,6 @@ template_replace <- function(file, atlas_name) {
       writeLines(output, file)
     },
     error = function(e) {
-      # Skip files that can't be read/written
       NULL
     }
   )
@@ -315,7 +300,6 @@ write_rbuildignore <- function(path) {
 write_github_workflows <- function(path) {
   mkdir(file.path(path, ".github", "workflows"))
 
-  # R-CMD-check workflow
   check_workflow <- c(
     paste0(
       "# Workflow derived from ",
@@ -379,7 +363,6 @@ write_github_workflows <- function(path) {
     file.path(path, ".github", "workflows", "R-CMD-check.yaml")
   )
 
-  # pkgdown workflow
   pkgdown_workflow <- c(
     paste0(
       "# Workflow derived from ",
@@ -450,15 +433,11 @@ write_github_workflows <- function(path) {
 }
 
 
-# RStudio project wizard binding ----
-
 #' @keywords internal
 new_project_create_atlas_repo <- function(dir, ...) {
   params <- list(...)
   atlas_name <- params$atlas_name
 
-  # Don't open new session when called from project wizard
-  # (RStudio handles this)
   create_atlas_repo(
     path = dir,
     atlas_name = atlas_name,
