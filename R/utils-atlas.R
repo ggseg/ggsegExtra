@@ -110,8 +110,10 @@ clean_region_name <- function(
   }
 
   if (normalize) {
-    region <- gsub("-|_", " ", region)
+    region <- gsub("[()]", " ", region)
+    region <- gsub("[-_/]", " ", region)
     region <- tolower(region)
+    region <- gsub("\\s+", " ", trimws(region))
   }
 
   region

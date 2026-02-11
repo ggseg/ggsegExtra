@@ -1,8 +1,8 @@
 describe("re-exported conversion functions", {
-  it("re-exports unify_legacy_atlases from ggseg.formats", {
+  it("re-exports convert_legacy_brain_atlas from ggseg.formats", {
     expect_identical(
-      unify_legacy_atlases,
-      ggseg.formats::unify_legacy_atlases
+      convert_legacy_brain_atlas,
+      ggseg.formats::convert_legacy_brain_atlas
     )
   })
 })

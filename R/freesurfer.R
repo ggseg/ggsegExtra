@@ -93,7 +93,11 @@ check_fs <- function(msg = NULL, abort = FALSE) {
 #' @param input_file input volume
 #' @template output_file
 #' @template hemisphere
-#' @param projfrac argument to projfrac
+#' @param projfrac single cortical depth fraction (0-1). Ignored if
+#'   `projfrac_range` is provided.
+#' @param projfrac_range numeric vector `c(min, max, delta)` for multi-depth
+#'   projection via `--projfrac-max`. Takes the maximum value across depths,
+#'   giving much better coverage for volumetric parcellations.
 #' @template verbose
 #' @template opts
 #' @importFrom freesurfer get_fs
@@ -103,6 +107,8 @@ mri_vol2surf <- function(
   output_file,
   hemisphere,
   projfrac = .5,
+  projfrac_range = NULL,
+  mni152reg = TRUE,
   opts = NULL,
   verbose = get_verbose() # nolint: object_usage_linter
 ) {
@@ -119,13 +125,23 @@ mri_vol2surf <- function(
     "--mov",
     input_file,
     "--o",
-    output_file,
-    "--mni152reg",
-    "--hemi",
-    hemisphere,
-    "--projfrac",
-    projfrac
+    output_file
   )
+
+  if (mni152reg) {
+    cmd <- paste(cmd, "--mni152reg")
+  }
+
+  cmd <- paste(cmd, "--hemi", hemisphere)
+
+  if (!is.null(projfrac_range)) {
+    cmd <- paste(
+      cmd, "--projfrac-max",
+      projfrac_range[1], projfrac_range[2], projfrac_range[3]
+    )
+  } else {
+    cmd <- paste(cmd, "--projfrac", projfrac)
+  }
 
   suppressWarnings(
     k <- run_cmd(cmd, verbose = verbose)

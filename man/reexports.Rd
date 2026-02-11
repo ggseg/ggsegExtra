@@ -3,7 +3,7 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{unify_legacy_atlases}
+\alias{convert_legacy_brain_atlas}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -11,6 +11,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{ggseg.formats}{\code{\link[ggseg.formats:convert_legacy_brain_atlas]{unify_legacy_atlases}}}
+  \item{ggseg.formats}{\code{\link[ggseg.formats]{convert_legacy_brain_atlas}}}
 }}
 

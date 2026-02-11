@@ -1,5 +1,5 @@
 # Re-exports from ggseg.formats ----
 
-#' @importFrom ggseg.formats unify_legacy_atlases
+#' @importFrom ggseg.formats convert_legacy_brain_atlas
 #' @export
-ggseg.formats::unify_legacy_atlases
+ggseg.formats::convert_legacy_brain_atlas

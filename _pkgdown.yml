@@ -94,6 +94,6 @@ reference:
     desc: General package utilities
     contents:
       - read_annotation_data
-      - unify_legacy_atlases
+      - convert_legacy_brain_atlas
       - read_tractography
       - mri_surf2surf_rereg

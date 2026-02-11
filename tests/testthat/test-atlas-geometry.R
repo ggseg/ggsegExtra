@@ -215,11 +215,6 @@ describe("build_contour_sf", {
 
 
 describe("extract_contours", {
-  it("extracts contours from mask directory", {
-    skip_if_no_imagemagick()
-    skip("Requires mask images - tested via integration tests")
-  })
-
   it("scans for max value and processes regions", {
     input_dir <- withr::local_tempdir("masks_")
     output_dir <- withr::local_tempdir("output_")

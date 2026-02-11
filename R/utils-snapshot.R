@@ -283,7 +283,7 @@ isolate_region <- function(
   k <- image_write(tmp, interim_file)
 
   if (has_magick()) {
-    cmd <- paste("magick", interim_file, "-alpha extract", output_file)
+    cmd <- paste("magick", shQuote(interim_file), "-alpha extract", shQuote(output_file))
 
     k <- run_cmd(cmd)
     invisible(k)
