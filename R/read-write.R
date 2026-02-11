@@ -403,6 +403,236 @@ get_ctab <- function(color_lut) {
   colourtable
 }
 
+# GIFTI annotation reading ----
+
+#' Detect hemisphere from GIFTI filename
+#'
+#' @param filename Basename of the GIFTI file
+#' @return "lh" or "rh", or NA if undetectable
+#' @keywords internal
+detect_hemi_from_gifti_filename <- function(filename) {
+  if (grepl("^lh\\.|[._]lh[._]|\\.L\\.", filename)) {
+    return("lh")
+  }
+  if (grepl("^rh\\.|[._]rh[._]|\\.R\\.", filename)) {
+    return("rh")
+  }
+  NA_character_
+}
+
+
+#' Read GIFTI annotation files
+#'
+#' Reads GIFTI annotation (`.label.gii`) files and extracts region
+#' information including vertices, colours, and labels. Returns data in
+#' the same format as [read_annotation_data()] for use with the cortical
+#' atlas pipeline.
+#'
+#' Hemisphere is detected from filename patterns: `lh.`, `rh.`, `.L.`, `.R.`
+#'
+#' @param gifti_files Character vector of paths to `.label.gii` files.
+#'
+#' @return A tibble with columns: hemi, region, label, colour, vertices
+#' @export
+#' @importFrom dplyr tibble bind_rows
+#' @importFrom grDevices rgb
+#'
+#' @examples
+#' \dontrun{
+#' atlas_data <- read_gifti_annotation(c(
+#'   "lh.aparc.label.gii",
+#'   "rh.aparc.label.gii"
+#' ))
+#' }
+read_gifti_annotation <- function(gifti_files) {
+  rlang::check_installed(
+    "freesurferformats",
+    reason = "to read GIFTI annotation files"
+  )
+
+  if (!all(file.exists(gifti_files))) {
+    missing <- gifti_files[!file.exists(gifti_files)]
+    cli::cli_abort("GIFTI file{?s} not found: {.path {missing}}")
+  }
+
+  all_data <- list()
+
+  for (gifti_file in gifti_files) {
+    filename <- basename(gifti_file)
+    hemi_short <- detect_hemi_from_gifti_filename(filename)
+
+    if (is.na(hemi_short)) {
+      cli::cli_warn(
+        "Cannot detect hemisphere from filename: {.file {filename}}"
+      )
+      next
+    }
+    hemi <- if (hemi_short == "lh") "left" else "right"
+
+    annot <- freesurferformats::read.fs.annot.gii(gifti_file)
+    colortable <- annot$colortable
+    colortable <- colortable[!is.na(colortable$R), ]
+
+    labeled_vertices <- integer(0)
+
+    for (i in seq_len(nrow(colortable))) {
+      region_name <- colortable$label[i]
+      region_code <- colortable$code[i]
+
+      region_vertices <- which(annot$label == region_code) - 1L
+      if (length(region_vertices) == 0) next
+
+      labeled_vertices <- c(labeled_vertices, region_vertices)
+
+      all_data[[length(all_data) + 1]] <- tibble(
+        hemi = hemi,
+        region = region_name,
+        label = paste(hemi_short, region_name, sep = "_"),
+        colour = rgb(
+          colortable$R[i],
+          colortable$G[i],
+          colortable$B[i],
+          maxColorValue = 255
+        ),
+        vertices = list(region_vertices)
+      )
+    }
+
+    all_vertex_indices <- seq_along(annot$label) - 1L
+    unlabeled_vertices <- setdiff(all_vertex_indices, labeled_vertices)
+
+    if (length(unlabeled_vertices) > 0) {
+      all_data[[length(all_data) + 1]] <- tibble(
+        hemi = hemi,
+        region = "unknown",
+        label = paste(hemi_short, "unknown", sep = "_"),
+        colour = "#BEBEBE",
+        vertices = list(unlabeled_vertices)
+      )
+    }
+  }
+
+  bind_rows(all_data)
+}
+
+
+# CIFTI annotation reading ----
+
+#' Read CIFTI annotation file
+#'
+#' Reads a CIFTI dense label file (`.dlabel.nii`) and extracts region
+#' information for both hemispheres. Returns data in the same format as
+#' [read_annotation_data()] for use with the cortical atlas pipeline.
+#'
+#' The CIFTI file must be in fsaverage5 space (10,242 vertices per
+#' hemisphere). If your file uses a different resolution, resample it first
+#' with Connectome Workbench:
+#' ```
+#' wb_command -cifti-resample input.dlabel.nii ...
+#' ```
+#'
+#' @param cifti_file Path to a `.dlabel.nii` CIFTI file.
+#'
+#' @return A tibble with columns: hemi, region, label, colour, vertices
+#' @export
+#' @importFrom dplyr tibble bind_rows
+#' @importFrom grDevices rgb
+#'
+#' @examples
+#' \dontrun{
+#' atlas_data <- read_cifti_annotation("parcellation.dlabel.nii")
+#' }
+read_cifti_annotation <- function(cifti_file) {
+  rlang::check_installed("ciftiTools", reason = "to read CIFTI files")
+
+  if (!file.exists(cifti_file)) {
+    cli::cli_abort("CIFTI file not found: {.path {cifti_file}}")
+  }
+
+  cii <- ciftiTools::read_cifti(cifti_file)
+
+  fsaverage5_nverts <- 10242L
+  all_data <- list()
+
+  hemi_info <- list(
+    list(
+      data = cii$data$cortex_left,
+      hemi = "left",
+      hemi_short = "lh",
+      expected_n = fsaverage5_nverts
+    ),
+    list(
+      data = cii$data$cortex_right,
+      hemi = "right",
+      hemi_short = "rh",
+      expected_n = fsaverage5_nverts
+    )
+  )
+
+  label_table <- cii$meta$cifti$labels[[1]]
+
+  for (hi in hemi_info) {
+    if (is.null(hi$data)) next
+
+    vertex_labels <- as.integer(hi$data[, 1])
+    n_verts <- length(vertex_labels)
+
+    if (n_verts != hi$expected_n) {
+      cli::cli_abort(c(
+        paste(
+          "CIFTI {hi$hemi} hemisphere has {n_verts} vertices,",
+          "expected {hi$expected_n} (fsaverage5)"
+        ),
+        "i" = paste(
+          "Resample to fsaverage5 first using",
+          "{.code wb_command -cifti-resample}"
+        )
+      ))
+    }
+
+    labeled_vertices <- integer(0)
+
+    for (i in seq_len(nrow(label_table))) {
+      region_key <- label_table$Key[i]
+      region_name <- label_table$Label[i]
+
+      region_vertices <- which(vertex_labels == region_key) - 1L
+      if (length(region_vertices) == 0) next
+
+      labeled_vertices <- c(labeled_vertices, region_vertices)
+
+      all_data[[length(all_data) + 1]] <- tibble(
+        hemi = hi$hemi,
+        region = region_name,
+        label = paste(hi$hemi_short, region_name, sep = "_"),
+        colour = rgb(
+          label_table$Red[i],
+          label_table$Green[i],
+          label_table$Blue[i],
+          maxColorValue = 1
+        ),
+        vertices = list(region_vertices)
+      )
+    }
+
+    all_vertex_indices <- seq_len(n_verts) - 1L
+    unlabeled_vertices <- setdiff(all_vertex_indices, labeled_vertices)
+
+    if (length(unlabeled_vertices) > 0) {
+      all_data[[length(all_data) + 1]] <- tibble(
+        hemi = hi$hemi,
+        region = "unknown",
+        label = paste(hi$hemi_short, "unknown", sep = "_"),
+        colour = "#BEBEBE",
+        vertices = list(unlabeled_vertices)
+      )
+    }
+  }
+
+  bind_rows(all_data)
+}
+
+
 # nolint start
 #' @noRd
 ctab_line <- function(idx, name, R, G, B, A) {

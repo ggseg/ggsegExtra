@@ -522,6 +522,224 @@ create_atlas_from_labels <- function(
 }
 
 
+# GIFTI atlas creation ----
+
+#' Create cortical atlas from GIFTI annotation files
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' Build a brain atlas from GIFTI label files (`.label.gii`). This is the
+#' entry point for parcellations distributed in GIFTI format, such as those
+#' from the Human Connectome Project or neuromaps.
+#'
+#' The function assumes fsaverage5 surface space (10,242 vertices per
+#' hemisphere). No FreeSurfer installation is needed for 3D-only atlases
+#' (`steps = 1`).
+#'
+#' @param gifti_files Character vector of paths to `.label.gii` files.
+#'   Hemisphere is detected from filename patterns (`lh.`, `rh.`, `.L.`, `.R.`).
+#' @template atlas_name
+#' @template output_dir
+#' @param hemisphere Which hemispheres to include: "lh", "rh", or both.
+#' @param views Which views to include: "lateral", "medial",
+#'   "superior", "inferior".
+#' @template tolerance
+#' @template smoothness
+#' @template snapshot_dim
+#' @template cleanup
+#' @template verbose
+#' @template skip_existing
+#' @param steps Which pipeline steps to run. See [create_cortical_atlas()]
+#'   for step descriptions. Use `steps = 1` for 3D-only atlas.
+#'
+#' @return A `ggseg_atlas` object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' atlas <- create_atlas_from_gifti(
+#'   gifti_files = c("lh.aparc.label.gii", "rh.aparc.label.gii"),
+#'   steps = 1
+#' )
+#' ggseg3d::ggseg3d(atlas = atlas)
+#' }
+create_atlas_from_gifti <- function(
+  gifti_files,
+  atlas_name = NULL,
+  output_dir = NULL,
+  hemisphere = c("rh", "lh"),
+  views = c("lateral", "medial", "superior", "inferior"),
+  tolerance = NULL,
+  smoothness = NULL,
+  snapshot_dim = NULL,
+  cleanup = NULL,
+  verbose = get_verbose(),
+  skip_existing = NULL,
+  steps = NULL
+) {
+  start_time <- Sys.time()
+
+  config <- validate_cortical_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, snapshot_dim, steps
+  )
+
+  if (any(config$steps > 1L)) {
+    check_fs(abort = TRUE)
+    check_magick()
+  }
+
+  if (is.null(atlas_name)) {
+    atlas_name <- gifti_files[1] |>
+      basename() |>
+      tools::file_path_sans_ext() |>
+      tools::file_path_sans_ext() |>
+      gsub("^[lr]h\\.|\\.[LR]\\.", "", x = _) |>
+      gsub("\\.", "_", x = _)
+  }
+
+  dirs <- setup_atlas_dirs(config$output_dir, atlas_name, type = "cortical")
+
+  if (config$verbose) {
+    cli::cli_h1("Creating brain atlas {.val {atlas_name}} from GIFTI")
+    cli::cli_alert_info("Input files: {.path {gifti_files}}")
+  }
+
+  step1 <- cortical_resolve_step1(
+    config, dirs, atlas_name,
+    read_fn = function() read_gifti_annotation(gifti_files),
+    step_label = "1/8 Reading GIFTI annotation files",
+    cache_label = "Step 1 (Read GIFTI)"
+  )
+
+  if (max(config$steps) == 1L) {
+    return(cortical_finalize(
+      step1$atlas_3d, config, dirs, start_time
+    ))
+  }
+
+  cortical_pipeline(
+    atlas_3d = step1$atlas_3d,
+    components = step1$components,
+    atlas_name = atlas_name,
+    hemisphere = hemisphere,
+    views = views,
+    region_snapshot_fn = cortical_region_snapshots,
+    config = config,
+    dirs = dirs,
+    start_time = start_time
+  )
+}
+
+
+# CIFTI atlas creation ----
+
+#' Create cortical atlas from a CIFTI file
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' Build a brain atlas from a CIFTI dense label file (`.dlabel.nii`).
+#' A single CIFTI file contains data for both hemispheres. The file must
+#' be in fsaverage5 space (10,242 vertices per hemisphere).
+#'
+#' No FreeSurfer installation is needed for 3D-only atlases (`steps = 1`).
+#'
+#' @param cifti_file Path to a `.dlabel.nii` CIFTI file.
+#' @template atlas_name
+#' @template output_dir
+#' @param hemisphere Which hemispheres to include: "lh", "rh", or both.
+#' @param views Which views to include: "lateral", "medial",
+#'   "superior", "inferior".
+#' @template tolerance
+#' @template smoothness
+#' @template snapshot_dim
+#' @template cleanup
+#' @template verbose
+#' @template skip_existing
+#' @param steps Which pipeline steps to run. See [create_cortical_atlas()]
+#'   for step descriptions. Use `steps = 1` for 3D-only atlas.
+#'
+#' @return A `ggseg_atlas` object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' atlas <- create_atlas_from_cifti(
+#'   cifti_file = "parcellation.dlabel.nii",
+#'   steps = 1
+#' )
+#' ggseg3d::ggseg3d(atlas = atlas)
+#' }
+create_atlas_from_cifti <- function(
+  cifti_file,
+  atlas_name = NULL,
+  output_dir = NULL,
+  hemisphere = c("rh", "lh"),
+  views = c("lateral", "medial", "superior", "inferior"),
+  tolerance = NULL,
+  smoothness = NULL,
+  snapshot_dim = NULL,
+  cleanup = NULL,
+  verbose = get_verbose(),
+  skip_existing = NULL,
+  steps = NULL
+) {
+  start_time <- Sys.time()
+
+  config <- validate_cortical_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, snapshot_dim, steps
+  )
+
+  if (any(config$steps > 1L)) {
+    check_fs(abort = TRUE)
+    check_magick()
+  }
+
+  if (is.null(atlas_name)) {
+    atlas_name <- cifti_file |>
+      basename() |>
+      tools::file_path_sans_ext() |>
+      tools::file_path_sans_ext() |>
+      gsub("\\.", "_", x = _)
+  }
+
+  dirs <- setup_atlas_dirs(config$output_dir, atlas_name, type = "cortical")
+
+  if (config$verbose) {
+    cli::cli_h1("Creating brain atlas {.val {atlas_name}} from CIFTI")
+    cli::cli_alert_info("Input file: {.path {cifti_file}}")
+  }
+
+  step1 <- cortical_resolve_step1(
+    config, dirs, atlas_name,
+    read_fn = function() read_cifti_annotation(cifti_file),
+    step_label = "1/8 Reading CIFTI file",
+    cache_label = "Step 1 (Read CIFTI)"
+  )
+
+  if (max(config$steps) == 1L) {
+    return(cortical_finalize(
+      step1$atlas_3d, config, dirs, start_time
+    ))
+  }
+
+  cortical_pipeline(
+    atlas_3d = step1$atlas_3d,
+    components = step1$components,
+    atlas_name = atlas_name,
+    hemisphere = hemisphere,
+    views = views,
+    region_snapshot_fn = cortical_region_snapshots,
+    config = config,
+    dirs = dirs,
+    start_time = start_time
+  )
+}
+
+
 #' @noRd
 parse_lut_colours <- function(input_lut) {
   if (is.null(input_lut)) {

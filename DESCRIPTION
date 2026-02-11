@@ -43,16 +43,17 @@ Imports:
     tools,
     utils
 Suggests:
+    ciftiTools,
     freesurferformats,
-    jsonlite,
     ggplot2,
-    rgl,
-    Rvcg,
     ggseg,
+    ggseg.hub,
     ggsegDKT,
     hexSticker,
     knitr,
+    rgl,
     rstudioapi,
+    Rvcg,
     spelling,
     testthat (>= 3.0.0),
     withr
@@ -62,7 +63,8 @@ Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-SystemRequirements: Freesurfer, ImageMagick
+SystemRequirements: Freesurfer, ImageMagick, Connectome Workbench (optional,
+    for CIFTI resampling)
 Remotes:
     ggseg/ggsegDKT
 LazyData: true
