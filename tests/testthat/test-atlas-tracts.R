@@ -73,7 +73,7 @@ describe("create_tract_atlas", {
     expect_true(all(c("x", "y", "z") %in% colnames(points)))
   })
 
-  it("stores tube parameters", {
+  it("tube params are not stored on data object", {
     tract <- list(
       tract1 = matrix(c(1:10, rep(0, 20)), ncol = 3)
     )
@@ -86,8 +86,8 @@ describe("create_tract_atlas", {
       verbose = FALSE
     )
 
-    expect_equal(atlas$data$tube_radius, 3.5)
-    expect_equal(atlas$data$tube_segments, 12L)
+    expect_null(atlas$data$tube_radius)
+    expect_null(atlas$data$tube_segments)
   })
 
   it("can render with ggseg3d", {

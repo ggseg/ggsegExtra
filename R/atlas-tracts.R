@@ -441,13 +441,7 @@ tract_assemble_3d <- function(step1) {
     palette = step1$palette,
     core = step1$core,
     data = ggseg_data_tract(
-      centerlines = step1$centerlines_df,
-      tube_radius = if (is.numeric(step1$tube_radius)) {
-        step1$tube_radius
-      } else {
-        5
-      },
-      tube_segments = step1$tube_segments
+      centerlines = step1$centerlines_df
     )
   )
 }
@@ -476,13 +470,7 @@ tract_assemble_full <- function(step1, dirs, views, cortex_slices) {
     core = step1$core,
     data = ggseg_data_tract(
       sf = sf_data,
-      centerlines = step1$centerlines_df,
-      tube_radius = if (is.numeric(step1$tube_radius)) {
-        step1$tube_radius
-      } else {
-        5
-      },
-      tube_segments = step1$tube_segments
+      centerlines = step1$centerlines_df
     )
   )
 
