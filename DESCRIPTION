@@ -46,6 +46,7 @@ Suggests:
     ciftiTools,
     freesurferformats,
     ggplot2,
+    gifti,
     ggseg,
     ggseg.hub,
     ggsegDKT,

@@ -43,13 +43,10 @@ describe("create_cortical_atlas", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas <- expect_warnings(
-      create_cortical_atlas(
-        input_annot = annot_files,
-        steps = 1,
-        verbose = FALSE
-      ),
-      "version"
+    atlas <- create_cortical_atlas(
+      input_annot = annot_files,
+      steps = 1,
+      verbose = FALSE
     )
 
     expect_s3_class(atlas, "ggseg_atlas")
@@ -70,13 +67,10 @@ describe("create_cortical_atlas", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas <- expect_warnings(
-      create_cortical_atlas(
-        input_annot = annot_files,
-        steps = 1,
-        verbose = FALSE
-      ),
-      "version"
+    atlas <- create_cortical_atlas(
+      input_annot = annot_files,
+      steps = 1,
+      verbose = FALSE
     )
 
     vertices <- ggseg.formats::atlas_vertices(atlas)
@@ -97,13 +91,10 @@ describe("create_cortical_atlas", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_aparc <- expect_warnings(
-      create_cortical_atlas(
-        input_annot = aparc_files,
-        steps = 1,
-        verbose = FALSE
-      ),
-      "version"
+    atlas_aparc <- create_cortical_atlas(
+      input_annot = aparc_files,
+      steps = 1,
+      verbose = FALSE
     )
 
     expect_true(nrow(atlas_aparc$core) > 0)
@@ -115,13 +106,10 @@ describe("create_cortical_atlas", {
     has_a2009s <- all(file.exists(a2009s_files))
 
     if (has_a2009s) {
-      atlas_a2009s <- expect_warnings(
-        create_cortical_atlas(
-          input_annot = a2009s_files,
-          steps = 1,
-          verbose = FALSE
-        ),
-        "version"
+      atlas_a2009s <- create_cortical_atlas(
+        input_annot = a2009s_files,
+        steps = 1,
+        verbose = FALSE
       )
       expect_true(nrow(atlas_a2009s$core) > 0)
       expect_false(
@@ -143,13 +131,10 @@ describe("create_cortical_atlas", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas <- expect_warnings(
-      create_cortical_atlas(
-        input_annot = annot_files,
-        steps = 1,
-        verbose = FALSE
-      ),
-      "version"
+    atlas <- create_cortical_atlas(
+      input_annot = annot_files,
+      steps = 1,
+      verbose = FALSE
     )
 
     expect_no_error({
@@ -411,10 +396,7 @@ describe("read_annotation_data", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- expect_warnings(
-      read_annotation_data(annot_files),
-      "version"
-    )
+    atlas_data <- read_annotation_data(annot_files)
 
     expect_s3_class(atlas_data, "tbl_df")
     expect_true(all(
@@ -431,11 +413,8 @@ describe("read_annotation_data", {
       "Test annotation files not found"
     )
 
-    atlas_data <- expect_warnings(
-      read_annotation_data(
-        c(annot_files$lh, annot_files$rh)
-      ),
-      "version"
+    atlas_data <- read_annotation_data(
+      c(annot_files$lh, annot_files$rh)
     )
 
     expect_s3_class(atlas_data, "tbl_df")
@@ -455,10 +434,7 @@ describe("read_annotation_data", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- expect_warnings(
-      read_annotation_data(annot_files),
-      "version"
-    )
+    atlas_data <- read_annotation_data(annot_files)
 
     expect_true("left" %in% atlas_data$hemi)
     expect_true("right" %in% atlas_data$hemi)
@@ -477,10 +453,7 @@ describe("read_annotation_data", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- expect_warnings(
-      read_annotation_data(annot_files),
-      "version"
-    )
+    atlas_data <- read_annotation_data(annot_files)
 
     lh_labels <- atlas_data$label[atlas_data$hemi == "left"]
     rh_labels <- atlas_data$label[atlas_data$hemi == "right"]
@@ -502,10 +475,7 @@ describe("read_annotation_data", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- expect_warnings(
-      read_annotation_data(annot_files),
-      "version"
-    )
+    atlas_data <- read_annotation_data(annot_files)
 
     expect_type(atlas_data$vertices, "list")
     expect_true(all(
@@ -533,10 +503,7 @@ describe("read_annotation_data", {
       file.path(annot_dir, "rh.aparc.annot")
     )
 
-    atlas_data <- expect_warnings(
-      read_annotation_data(annot_files),
-      "version"
-    )
+    atlas_data <- read_annotation_data(annot_files)
 
     wall_rows <- grepl(
       "wall|unknown",

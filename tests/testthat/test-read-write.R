@@ -289,20 +289,24 @@ describe("get_ctab", {
 
 
 describe("read_label_vertices", {
-  it("returns empty integer for empty file", {
+  it("warns and returns empty for malformed file", {
+    skip_if_not_installed("freesurferformats")
+
     tmp <- withr::local_tempfile(fileext = ".label")
     writeLines("", tmp)
 
     expect_warning(
       result <- read_label_vertices(tmp),
-      "Empty or malformed"
+      "Could not parse"
     )
 
     expect_type(result, "integer")
     expect_length(result, 0)
   })
 
-  it("handles file with comment header", {
+  it("reads standard FreeSurfer label file", {
+    skip_if_not_installed("freesurferformats")
+
     tmp <- withr::local_tempfile(fileext = ".label")
     content <- c(
       "#!ascii label from subject",
@@ -318,31 +322,21 @@ describe("read_label_vertices", {
     expect_equal(result, c(100L, 101L, 102L))
   })
 
-  it("handles file without comment header", {
-    tmp <- withr::local_tempfile(fileext = ".label")
-    content <- c(
-      "2",
-      "50  0.0  0.0  0.0  0.0",
-      "51  1.0  0.0  0.0  0.0"
-    )
-    writeLines(content, tmp)
+  it("returns 0-indexed vertex indices", {
+    skip_if_not_installed("freesurferformats")
 
-    result <- read_label_vertices(tmp)
-
-    expect_equal(result, c(50L, 51L))
-  })
-
-  it("handles zero vertices gracefully", {
     tmp <- withr::local_tempfile(fileext = ".label")
     content <- c(
       "#!ascii label",
-      "0"
+      "2",
+      "0  0.0  0.0  0.0  0.0",
+      "1  1.0  0.0  0.0  0.0"
     )
     writeLines(content, tmp)
 
     result <- read_label_vertices(tmp)
 
-    expect_length(result, 0)
+    expect_equal(result, c(0L, 1L))
   })
 })
 
@@ -380,14 +374,16 @@ describe("write_dpv and read_dpv", {
 
 describe("read_annotation_data", {
   it("warns and skips files without hemisphere prefix", {
+    skip_if_not_installed("freesurferformats")
+
     tmp <- withr::local_tempfile(fileext = ".annot")
     writeLines("dummy", tmp)
 
     local_mocked_bindings(
-      read_annotation = function(...) {
+      read.fs.annot = function(...) {
         stop("should not be called")
       },
-      .package = "freesurfer"
+      .package = "freesurferformats"
     )
 
     expect_warning(
@@ -399,25 +395,31 @@ describe("read_annotation_data", {
   })
 
   it("skips regions with zero matching vertices", {
+    skip_if_not_installed("freesurferformats")
+
     tmp_dir <- withr::local_tempdir()
     tmp_lh <- file.path(tmp_dir, "lh.test.annot")
     writeLines("dummy", tmp_lh)
 
-    mock_annotation <- list(
-      label = c(1L, 1L, 1L),
-      colortable = data.frame(
-        label = c("motor", "ghost_region"),
+    mock_annot <- list(
+      label_codes = c(1L, 1L, 1L),
+      colortable_df = data.frame(
+        struct_name = c("motor", "ghost_region"),
+        r = c(255L, 0L),
+        g = c(0L, 255L),
+        b = c(0L, 0L),
+        a = c(0L, 0L),
         code = c(1L, 999L),
-        R = c(255L, 0L),
-        G = c(0L, 255L),
-        B = c(0L, 0L),
+        hex_color_string_rgb = c("#FF0000", "#00FF00"),
+        hex_color_string_rgba = c("#FF000000", "#00FF0000"),
+        struct_index = c(0L, 1L),
         stringsAsFactors = FALSE
       )
     )
 
     local_mocked_bindings(
-      read_annotation = function(...) mock_annotation,
-      .package = "freesurfer"
+      read.fs.annot = function(...) mock_annot,
+      .package = "freesurferformats"
     )
 
     result <- read_annotation_data(tmp_lh)

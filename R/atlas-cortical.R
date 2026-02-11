@@ -51,7 +51,7 @@
 #' @export
 #' @importFrom dplyr filter select mutate left_join group_by ungroup tibble
 #'   bind_rows distinct
-#' @importFrom freesurfer read_annotation have_fs
+#' @importFrom freesurfer have_fs
 #' @importFrom furrr future_pmap furrr_options
 #' @importFrom grDevices rgb
 #' @importFrom progressr progressor
@@ -158,27 +158,12 @@ validate_cortical_config <- function(
   output_dir, verbose, cleanup, skip_existing,
   tolerance, smoothness, snapshot_dim, steps
 ) {
-  verbose <- is_verbose(verbose)
-  cleanup <- get_cleanup(cleanup)
-  skip_existing <- get_skip_existing(skip_existing)
-  tolerance <- get_tolerance(tolerance)
-  smoothness <- get_smoothness(smoothness)
-  snapshot_dim <- get_snapshot_dim(snapshot_dim)
-  output_dir <- get_output_dir(output_dir)
-
-  if (is.null(steps)) steps <- 1L:8L
-  steps <- as.integer(steps)
-
-  list(
-    output_dir = output_dir,
-    verbose = verbose,
-    cleanup = cleanup,
-    skip_existing = skip_existing,
-    tolerance = tolerance,
-    smoothness = smoothness,
-    snapshot_dim = snapshot_dim,
-    steps = steps
+  config <- resolve_common_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, steps, max_step = 8L
   )
+  config$snapshot_dim <- get_snapshot_dim(snapshot_dim)
+  config
 }
 
 
@@ -740,21 +725,168 @@ create_atlas_from_cifti <- function(
 }
 
 
-#' @noRd
-parse_lut_colours <- function(input_lut) {
-  if (is.null(input_lut)) {
-    return(list(region_names = NULL, colours = NULL))
+# Neuromaps atlas creation ----
+
+#' Create cortical atlas from a neuromaps annotation
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' Build a brain atlas directly from a [neuromaps](
+#' https://github.com/netneurolab/neuromaps) annotation. The annotation
+#' is downloaded via [ggseg.hub::fetch_neuromaps_annotation()] and must
+#' contain integer parcel IDs (parcellation map). Vertex value 0 is
+#' treated as medial wall.
+#'
+#' Defaults to fsaverage5 surface space (`space = "fsaverage"`,
+#' `density = "10k"`, 10,242 vertices per hemisphere). No FreeSurfer
+#' installation is needed for 3D-only atlases (`steps = 1`).
+#'
+#' @param source Neuromaps source identifier (e.g., `"schaefer"`).
+#'   See [ggseg.hub::neuromaps_available()] for options.
+#' @param desc Neuromaps descriptor key (e.g., `"400Parcels7Networks"`).
+#' @param space Coordinate space. Defaults to `"fsaverage"`.
+#' @param density Surface vertex density. Defaults to `"10k"`
+#'   (fsaverage5, 10,242 vertices).
+#' @param label_table Optional data.frame mapping parcel IDs to region
+#'   names. Must have columns `id` (integer) and `region` (character).
+#'   Optionally include `colour` (hex string). When `NULL`, regions are
+#'   named `parcel_1`, `parcel_2`, etc.
+#' @template atlas_name
+#' @template output_dir
+#' @param hemisphere Which hemispheres to include: "lh", "rh", or both.
+#' @param views Which views to include: "lateral", "medial",
+#'   "superior", "inferior".
+#' @template tolerance
+#' @template smoothness
+#' @template snapshot_dim
+#' @template cleanup
+#' @template verbose
+#' @template skip_existing
+#' @param steps Which pipeline steps to run. See [create_cortical_atlas()]
+#'   for step descriptions. Use `steps = 1` for 3D-only atlas.
+#'
+#' @return A `ggseg_atlas` object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' atlas <- create_atlas_from_neuromaps(
+#'   source = "schaefer",
+#'   desc = "400Parcels7Networks",
+#'   steps = 1
+#' )
+#' ggseg3d::ggseg3d(atlas = atlas)
+#' }
+create_atlas_from_neuromaps <- function(
+  source,
+  desc,
+  space = "fsaverage",
+  density = "10k",
+  label_table = NULL,
+  atlas_name = NULL,
+  output_dir = NULL,
+  hemisphere = c("rh", "lh"),
+  views = c("lateral", "medial", "superior", "inferior"),
+  tolerance = NULL,
+  smoothness = NULL,
+  snapshot_dim = NULL,
+  cleanup = NULL,
+  verbose = get_verbose(),
+  skip_existing = NULL,
+  steps = NULL
+) {
+  rlang::check_installed(
+    "ggseg.hub",
+    reason = "to download neuromaps annotations"
+  )
+
+  start_time <- Sys.time()
+
+  config <- validate_cortical_config(
+    output_dir, verbose, cleanup, skip_existing,
+    tolerance, smoothness, snapshot_dim, steps
+  )
+
+  if (any(config$steps > 1L)) {
+    check_fs(abort = TRUE)
+    check_magick()
   }
 
-  lut <- if (is.character(input_lut)) read_ctab(input_lut) else input_lut
-  region_names <- lut$region
-  colours <- if ("hex" %in% names(lut)) {
-    lut$hex
-  } else if (all(c("R", "G", "B") %in% names(lut))) {
-    grDevices::rgb(lut$R, lut$G, lut$B, maxColorValue = 255)
-  } else {
-    NULL
+  if (space != "fsaverage" || density != "10k") {
+    cli::cli_warn(c(
+      "Non-default space/density: {.val {space}} / {.val {density}}",
+      "i" = paste(
+        "The cortical pipeline requires fsaverage5",
+        "(space='fsaverage', density='10k').",
+        "Other values may cause vertex count mismatches."
+      )
+    ))
   }
 
-  list(region_names = region_names, colours = colours)
+  if (config$verbose) {
+    cli::cli_alert_info(
+      "Fetching neuromaps: source={.val {source}}, desc={.val {desc}}"
+    )
+  }
+
+  gifti_files <- ggseg.hub::fetch_neuromaps_annotation(
+    source = source,
+    desc = desc,
+    space = space,
+    density = density,
+    verbose = config$verbose
+  )
+
+  if (any(grepl("\\.(nii|nii\\.gz)$", gifti_files, ignore.case = TRUE))) {
+    cli::cli_abort(c(
+      "The requested annotation is in volume format, which is not supported.",
+      "i" = paste(
+        "Only surface annotations (.func.gii) can be",
+        "used for cortical atlas creation."
+      ),
+      "i" = paste(
+        "Check {.code ggseg.hub::neuromaps_available(",
+        "source = '{source}', desc = '{desc}',",
+        "format = 'surface')} for surface versions."
+      )
+    ))
+  }
+
+  if (is.null(atlas_name)) {
+    atlas_name <- paste(source, desc, sep = "_")
+  }
+
+  dirs <- setup_atlas_dirs(config$output_dir, atlas_name, type = "cortical")
+
+  if (config$verbose) {
+    cli::cli_h1("Creating brain atlas {.val {atlas_name}} from neuromaps")
+    cli::cli_alert_info("Input files: {.path {gifti_files}}")
+  }
+
+  step1 <- cortical_resolve_step1(
+    config, dirs, atlas_name,
+    read_fn = function() read_neuromaps_annotation(gifti_files, label_table),
+    step_label = "1/8 Reading neuromaps annotation",
+    cache_label = "Step 1 (Read neuromaps)"
+  )
+
+  if (max(config$steps) == 1L) {
+    return(cortical_finalize(
+      step1$atlas_3d, config, dirs, start_time
+    ))
+  }
+
+  cortical_pipeline(
+    atlas_3d = step1$atlas_3d,
+    components = step1$components,
+    atlas_name = atlas_name,
+    hemisphere = hemisphere,
+    views = views,
+    region_snapshot_fn = cortical_region_snapshots,
+    config = config,
+    dirs = dirs,
+    start_time = start_time
+  )
 }
+

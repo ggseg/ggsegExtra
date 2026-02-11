@@ -130,7 +130,50 @@ read_ply_mesh <- function(ply, ...) {
   list(vertices = vertices, faces = faces)
 }
 
-# FreeSurfer annotation reading ----
+# Annotation reading ----
+
+#' @noRd
+annot_to_atlas_data <- function(annot, hemi, hemi_short) {
+  ct <- annot$colortable_df
+  ct <- ct[!is.na(ct$r), ]
+
+  all_data <- list()
+  labeled_vertices <- integer(0)
+
+  for (i in seq_len(nrow(ct))) {
+    region_name <- ct$struct_name[i]
+    region_code <- ct$code[i]
+
+    region_vertices <- which(annot$label_codes == region_code) - 1L
+    if (length(region_vertices) == 0) next
+
+    labeled_vertices <- c(labeled_vertices, region_vertices)
+
+    all_data[[length(all_data) + 1]] <- tibble(
+      hemi = hemi,
+      region = region_name,
+      label = paste(hemi_short, region_name, sep = "_"),
+      colour = ct$hex_color_string_rgb[i],
+      vertices = list(region_vertices)
+    )
+  }
+
+  all_vertex_indices <- seq_along(annot$label_codes) - 1L
+  unlabeled_vertices <- setdiff(all_vertex_indices, labeled_vertices)
+
+  if (length(unlabeled_vertices) > 0) {
+    all_data[[length(all_data) + 1]] <- tibble(
+      hemi = hemi,
+      region = "unknown",
+      label = paste(hemi_short, "unknown", sep = "_"),
+      colour = "#BEBEBE",
+      vertices = list(unlabeled_vertices)
+    )
+  }
+
+  all_data
+}
+
 
 #' Read annotation data from files
 #'
@@ -144,18 +187,20 @@ read_ply_mesh <- function(ply, ...) {
 #' @return A tibble with columns: hemi, region, label, colour, vertices
 #' @export
 #' @importFrom dplyr tibble bind_rows
-#' @importFrom freesurfer read_annotation
-#' @importFrom grDevices rgb
 #'
 #' @examples
 #' \dontrun{
-#' # Read from file paths
 #' atlas_data <- read_annotation_data(c(
 #'   "path/to/lh.aparc.annot",
 #'   "path/to/rh.aparc.annot"
 #' ))
 #' }
 read_annotation_data <- function(annot_files) {
+  rlang::check_installed(
+    "freesurferformats",
+    reason = "to read annotation files"
+  )
+
   if (!all(file.exists(annot_files))) {
     missing <- annot_files[!file.exists(annot_files)] # nolint: object_usage_linter
     cli::cli_abort("Annotation file{?s} not found: {.path {missing}}")
@@ -177,49 +222,8 @@ read_annotation_data <- function(annot_files) {
     }
     hemi <- if (hemi_short == "lh") "left" else "right"
 
-    ant <- freesurfer::read_annotation(annot_file, verbose = get_verbose()) # nolint: object_usage_linter
-    colortable <- ant$colortable[!is.na(ant$colortable$R), ]
-    colortable_codes <- colortable$code # nolint: object_usage_linter
-
-    labeled_vertices <- integer(0)
-
-    for (i in seq_len(nrow(colortable))) {
-      region_name <- colortable$label[i]
-      region_code <- colortable$code[i]
-
-      region_vertices <- which(ant$label == region_code) - 1L
-      if (length(region_vertices) == 0) {
-        next
-      }
-
-      labeled_vertices <- c(labeled_vertices, region_vertices)
-
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = region_name,
-        label = paste(hemi_short, region_name, sep = "_"),
-        colour = rgb(
-          colortable$R[i],
-          colortable$G[i],
-          colortable$B[i],
-          maxColorValue = 255
-        ),
-        vertices = list(region_vertices)
-      )
-    }
-
-    all_vertex_indices <- seq_along(ant$label) - 1L
-    unlabeled_vertices <- setdiff(all_vertex_indices, labeled_vertices)
-
-    if (length(unlabeled_vertices) > 0) {
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = "unknown",
-        label = paste(hemi_short, "unknown", sep = "_"),
-        colour = "#BEBEBE",
-        vertices = list(unlabeled_vertices)
-      )
-    }
+    annot <- freesurferformats::read.fs.annot(annot_file)
+    all_data <- c(all_data, annot_to_atlas_data(annot, hemi, hemi_short))
   }
 
   bind_rows(all_data)
@@ -232,28 +236,20 @@ read_annotation_data <- function(annot_files) {
 #' @return Integer vector of vertex indices (0-indexed)
 #' @keywords internal
 read_label_vertices <- function(label_file) {
-  lines <- readLines(label_file)
-
-  if (length(lines) < 2) {
-    cli::cli_warn("Empty or malformed label file: {label_file}")
-    return(integer(0))
-  }
-
-  first_data_line <- if (grepl("^#", lines[1])) 3 else 2
-  n_vertices <- as.integer(lines[first_data_line - 1])
-
-  if (is.na(n_vertices) || n_vertices == 0) {
-    return(integer(0))
-  }
-
-  data_lines <- lines[first_data_line:(first_data_line + n_vertices - 1)]
-  vertices <- vapply(
-    strsplit(data_lines, "\\s+"),
-    function(x) as.integer(x[1]),
-    integer(1)
+  rlang::check_installed(
+    "freesurferformats",
+    reason = "to read label files"
   )
-
-  vertices
+  tryCatch(
+    freesurferformats::read.fs.label.native(
+      label_file,
+      return_one_based_indices = FALSE
+    ),
+    error = function(e) {
+      cli::cli_warn("Could not parse label file: {.path {label_file}}")
+      integer(0)
+    }
+  )
 }
 
 
@@ -421,6 +417,14 @@ detect_hemi_from_gifti_filename <- function(filename) {
 }
 
 
+#' @noRd
+detect_hemi_from_neuromaps_filename <- function(filename) {
+  if (grepl("hemi-L", filename, fixed = TRUE)) return("lh")
+  if (grepl("hemi-R", filename, fixed = TRUE)) return("rh")
+  detect_hemi_from_gifti_filename(filename)
+}
+
+
 #' Read GIFTI annotation files
 #'
 #' Reads GIFTI annotation (`.label.gii`) files and extracts region
@@ -470,46 +474,7 @@ read_gifti_annotation <- function(gifti_files) {
     hemi <- if (hemi_short == "lh") "left" else "right"
 
     annot <- freesurferformats::read.fs.annot.gii(gifti_file)
-    colortable <- annot$colortable
-    colortable <- colortable[!is.na(colortable$R), ]
-
-    labeled_vertices <- integer(0)
-
-    for (i in seq_len(nrow(colortable))) {
-      region_name <- colortable$label[i]
-      region_code <- colortable$code[i]
-
-      region_vertices <- which(annot$label == region_code) - 1L
-      if (length(region_vertices) == 0) next
-
-      labeled_vertices <- c(labeled_vertices, region_vertices)
-
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = region_name,
-        label = paste(hemi_short, region_name, sep = "_"),
-        colour = rgb(
-          colortable$R[i],
-          colortable$G[i],
-          colortable$B[i],
-          maxColorValue = 255
-        ),
-        vertices = list(region_vertices)
-      )
-    }
-
-    all_vertex_indices <- seq_along(annot$label) - 1L
-    unlabeled_vertices <- setdiff(all_vertex_indices, labeled_vertices)
-
-    if (length(unlabeled_vertices) > 0) {
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = "unknown",
-        label = paste(hemi_short, "unknown", sep = "_"),
-        colour = "#BEBEBE",
-        vertices = list(unlabeled_vertices)
-      )
-    }
+    all_data <- c(all_data, annot_to_atlas_data(annot, hemi, hemi_short))
   }
 
   bind_rows(all_data)
@@ -630,6 +595,153 @@ read_cifti_annotation <- function(cifti_file) {
   }
 
   bind_rows(all_data)
+}
+
+
+# Neuromaps annotation reading ----
+
+#' Read neuromaps annotation files
+#'
+#' Reads neuromaps GIFTI metric files (`.func.gii`) containing integer
+#' parcel IDs and converts them to the standard annotation format used by
+#' the cortical atlas pipeline. Vertex value 0 is treated as medial
+#' wall / background.
+#'
+#' Files must be in fsaverage5 space (10,242 vertices per hemisphere).
+#' Use `space = "fsaverage"` with `density = "10k"` when fetching from
+#' neuromaps.
+#'
+#' @param gifti_files Character vector of paths to `.func.gii` files.
+#'   Hemisphere is detected from BIDS filename patterns (`hemi-L`, `hemi-R`).
+#' @param label_table Optional data.frame mapping integer parcel IDs to
+#'   region names. Must have columns `id` (integer) and `region` (character).
+#'   Optionally include `colour` (hex string). When `NULL`, regions are
+#'   named `parcel_1`, `parcel_2`, etc.
+#'
+#' @return A tibble with columns: hemi, region, label, colour, vertices
+#' @export
+#' @importFrom dplyr tibble bind_rows
+#' @importFrom grDevices hcl.colors
+#'
+#' @examples
+#' \dontrun{
+#' files <- ggseg.hub::fetch_neuromaps_annotation(
+#'   "schaefer", "400parcels", "fsaverage", density = "10k"
+#' )
+#' atlas_data <- read_neuromaps_annotation(files)
+#' }
+read_neuromaps_annotation <- function(gifti_files, label_table = NULL) {
+  rlang::check_installed("gifti", reason = "to read GIFTI metric files")
+
+  if (!all(file.exists(gifti_files))) {
+    missing <- gifti_files[!file.exists(gifti_files)]
+    cli::cli_abort("GIFTI file{?s} not found: {.path {missing}}")
+  }
+
+  volume_files <- grepl("\\.(nii|nii\\.gz)$", gifti_files, ignore.case = TRUE)
+  if (any(volume_files)) {
+    cli::cli_abort(c(
+      "Volume files are not supported for cortical atlas creation.",
+      "i" = "Found volume file{?s}: {.path {gifti_files[volume_files]}}",
+      "i" = "Use only surface (.func.gii) files."
+    ))
+  }
+
+  if (!is.null(label_table)) {
+    if (!all(c("id", "region") %in% names(label_table))) {
+      cli::cli_abort(c(
+        "{.arg label_table} must have columns {.field id} and {.field region}",
+        "i" = "Optionally include a {.field colour} column with hex colour codes."
+      ))
+    }
+  }
+
+  fsaverage5_nverts <- 10242L
+  all_data <- list()
+
+  for (gifti_file in gifti_files) {
+    filename <- basename(gifti_file)
+    hemi_short <- detect_hemi_from_neuromaps_filename(filename)
+
+    if (is.na(hemi_short)) {
+      cli::cli_warn(
+        "Cannot detect hemisphere from filename: {.file {filename}}"
+      )
+      next
+    }
+    hemi <- if (hemi_short == "lh") "left" else "right"
+
+    gii <- gifti::read_gifti(gifti_file)
+    values <- as.numeric(gii$data[[1]])
+    n_verts <- length(values)
+
+    if (n_verts != fsaverage5_nverts) {
+      cli::cli_abort(c(
+        paste(
+          "{hemi} hemisphere has {n_verts} vertices,",
+          "expected {fsaverage5_nverts} (fsaverage5)"
+        ),
+        "i" = paste(
+          "Use space='fsaverage' with density='10k'",
+          "for fsaverage5 compatibility."
+        )
+      ))
+    }
+
+    parcel_ids <- round(values)
+    unique_ids <- sort(unique(parcel_ids))
+    labeled_vertices <- integer(0)
+
+    for (pid in unique_ids) {
+      if (pid == 0) next
+
+      region_vertices <- which(parcel_ids == pid) - 1L
+      if (length(region_vertices) == 0) next
+
+      labeled_vertices <- c(labeled_vertices, region_vertices)
+
+      if (!is.null(label_table) && pid %in% label_table$id) {
+        row <- label_table[label_table$id == pid, ]
+        region_name <- row$region[1]
+        colour <- if ("colour" %in% names(row)) row$colour[1] else NA_character_
+      } else {
+        region_name <- paste0("parcel_", pid)
+        colour <- NA_character_
+      }
+
+      all_data[[length(all_data) + 1]] <- tibble(
+        hemi = hemi,
+        region = region_name,
+        label = paste(hemi_short, region_name, sep = "_"),
+        colour = colour,
+        vertices = list(region_vertices)
+      )
+    }
+
+    unlabeled_vertices <- which(parcel_ids == 0) - 1L
+    if (length(unlabeled_vertices) > 0) {
+      all_data[[length(all_data) + 1]] <- tibble(
+        hemi = hemi,
+        region = "unknown",
+        label = paste(hemi_short, "unknown", sep = "_"),
+        colour = "#BEBEBE",
+        vertices = list(unlabeled_vertices)
+      )
+    }
+  }
+
+  result <- bind_rows(all_data)
+
+  if (nrow(result) == 0) return(result)
+
+  needs_colour <- is.na(result$colour) & result$region != "unknown"
+  if (any(needs_colour)) {
+    n_missing <- sum(needs_colour)
+    generated <- hcl.colors(n_missing, palette = "Set2")
+    result$colour[needs_colour] <- generated
+  }
+
+  result
 }
 
 

@@ -46,13 +46,17 @@ describe("read_gifti_annotation", {
     skip_if_not_installed("freesurferformats")
 
     mock_annot <- list(
-      label = c(1L, 1L, 2L, 2L, 0L),
-      colortable = data.frame(
-        label = c("region_a", "region_b"),
+      label_codes = c(1L, 1L, 2L, 2L, 0L),
+      colortable_df = data.frame(
+        struct_name = c("region_a", "region_b"),
+        r = c(255L, 0L),
+        g = c(0L, 255L),
+        b = c(0L, 0L),
+        a = c(0L, 0L),
         code = c(1L, 2L),
-        R = c(255L, 0L),
-        G = c(0L, 255L),
-        B = c(0L, 0L),
+        hex_color_string_rgb = c("#FF0000", "#00FF00"),
+        hex_color_string_rgba = c("#FF000000", "#00FF0000"),
+        struct_index = c(0L, 1L),
         stringsAsFactors = FALSE
       )
     )
@@ -81,13 +85,17 @@ describe("read_gifti_annotation", {
     skip_if_not_installed("freesurferformats")
 
     mock_annot <- list(
-      label = c(1L, 1L, 2L),
-      colortable = data.frame(
-        label = c("a", "b"),
+      label_codes = c(1L, 1L, 2L),
+      colortable_df = data.frame(
+        struct_name = c("a", "b"),
+        r = c(100L, 200L),
+        g = c(100L, 200L),
+        b = c(100L, 200L),
+        a = c(0L, 0L),
         code = c(1L, 2L),
-        R = c(100L, 200L),
-        G = c(100L, 200L),
-        B = c(100L, 200L),
+        hex_color_string_rgb = c("#646464", "#C8C8C8"),
+        hex_color_string_rgba = c("#64646400", "#C8C8C800"),
+        struct_index = c(0L, 1L),
         stringsAsFactors = FALSE
       )
     )
@@ -262,13 +270,17 @@ describe("create_atlas_from_gifti", {
     skip_if_not_installed("freesurferformats")
 
     mock_annot <- list(
-      label = c(1L, 1L, 2L, 2L, 0L),
-      colortable = data.frame(
-        label = c("region_a", "region_b"),
+      label_codes = c(1L, 1L, 2L, 2L, 0L),
+      colortable_df = data.frame(
+        struct_name = c("region_a", "region_b"),
+        r = c(255L, 0L),
+        g = c(0L, 255L),
+        b = c(0L, 0L),
+        a = c(0L, 0L),
         code = c(1L, 2L),
-        R = c(255L, 0L),
-        G = c(0L, 255L),
-        B = c(0L, 0L),
+        hex_color_string_rgb = c("#FF0000", "#00FF00"),
+        hex_color_string_rgba = c("#FF000000", "#00FF0000"),
+        struct_index = c(0L, 1L),
         stringsAsFactors = FALSE
       )
     )

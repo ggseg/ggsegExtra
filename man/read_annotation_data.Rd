@@ -20,7 +20,6 @@ including vertices, colours, and labels for both hemispheres.
 }
 \examples{
 \dontrun{
-# Read from file paths
 atlas_data <- read_annotation_data(c(
   "path/to/lh.aparc.annot",
   "path/to/rh.aparc.annot"
