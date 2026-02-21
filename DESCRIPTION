@@ -1,4 +1,4 @@
-Package: ggsegExtra
+Package: ggseg.extra
 Title: Extra Utilities for the 'ggseg' and 'ggseg3d' Plotting Tools
 Version: 2.0.0
 Authors@R: c(
@@ -17,8 +17,8 @@ Description: Contains functions to create new data sets compatible with
     features data, and also 3d tri-surface mesh plots. Also has a list of
     compatible data sets and functions for easy installation of these.
 License: MIT + file LICENSE
-URL: https://github.com/ggseg/ggsegExtra
-BugReports: https://github.com/ggseg/ggsegExtra/issues
+URL: https://github.com/ggsegverse/ggseg.extra
+BugReports: https://github.com/ggsegverse/ggseg.extra/issues
 Depends:
     R (>= 4.2.0)
 Imports:
@@ -49,6 +49,7 @@ Suggests:
     gifti,
     ggseg,
     ggseg.hub,
+    neuromapr,
     ggsegDKT,
     hexSticker,
     knitr,
@@ -67,7 +68,7 @@ RoxygenNote: 7.3.3
 SystemRequirements: Freesurfer, ImageMagick, Connectome Workbench (optional,
     for CIFTI resampling)
 Remotes:
-    ggseg/ggsegDKT
-LazyData: true
+    ggsegverse/ggsegDKT
 Config/testthat/edition: 3
 Config/testthat/parallel: true
+Config/Needs/website: ggsegverse/ggseg.docs

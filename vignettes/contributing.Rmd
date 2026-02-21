@@ -10,10 +10,10 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-library(ggsegExtra)
+library(ggseg.extra)
 ```
 
-ggseg atlases live in their own R packages, distributed through the [ggseg r-universe](https://ggseg.r-universe.dev).
+ggseg atlases live in their own R packages, distributed through the [ggsegverse r-universe](https://ggsegverse.r-universe.dev).
 This provides a single place for all ggseg-compatible packages, whether hosted on GitHub, GitLab, or elsewhere.
 
 If you have a working atlas and want it available through r-universe, follow these steps.
@@ -32,6 +32,13 @@ It includes tests and the general structure we expect from a ggseg-atlas package
 If you already make R packages comfortably, skip this step.
 
 To create a ggseg repo, use the RStudio New Project creation GUI and look for the ggseg icon.
+Or call `setup_atlas_repo()` directly:
+
+```{r}
+#| label: setup-repo
+#| eval: false
+ggseg.extra::setup_atlas_repo("ggsegMyatlas", "myatlas")
+```
 
 ### Edit DESCRIPTION
 
@@ -45,20 +52,67 @@ You need to edit it for several reasons:
 - Change `URL:` and `BugReports` to point to your remote repository.
   If your host doesn't support issues, delete `BugReports` entirely.
 
-### Add data
+### Create your atlas
 
-Place your atlas files as `.rda` files in the `data/` folder.
-The data object must have the same name as the file.
+Run the script in `data-raw/create-atlas.R`.
+This walks you through the atlas creation pipeline and saves the result as internal package data in `R/sysdata.rda`.
 
-For example, `cc200.rda` should load an object called `cc200` using `load("data/cc200.rda")`.
-The object should be a valid `brain_atlas` (check with `is_brain_atlas()`).
+The pipeline produces a `ggseg_atlas` object validated by `is_ggseg_atlas()`.
 
-Adapt the atlas documentation in `R/cc200.R` to match your atlas.
-Take particular care with the reference to the original paper introducing the parcellation.
+### How atlas data is stored
+
+Atlas packages store their data as **internal objects** accessed through **exported functions**.
+This avoids lazy-loading issues and gives you full control over how the atlas is loaded.
+
+The pattern looks like this:
+
+**`R/data.R`** -- the exported accessor function:
+
+```r
+#' My Atlas
+#'
+#' @references
+#' Author A, Author B (Year). Title. *Journal*. doi
+#'
+#' @return A [ggseg.formats::ggseg_atlas] object.
+#' @export
+#' @family ggseg_atlases
+myatlas <- function() .myatlas
+```
+
+**`data-raw/create-atlas.R`** -- saves the atlas as internal data:
+
+```r
+.myatlas <- myatlas
+usethis::use_data(.myatlas, internal = TRUE, overwrite = TRUE, compress = "xz")
+```
+
+This creates `R/sysdata.rda` containing the dot-prefixed object `.myatlas`.
+The exported function `myatlas()` returns it.
+Users call `myatlas()` (with parentheses) to access the atlas.
+
+Do **not** use `LazyData: true` or place `.rda` files in `data/`.
+
+### Document your atlas
+
+Edit `R/data.R` to describe your atlas.
+Pay particular attention to:
+
+- The `@references` tag: cite the original publication for the parcellation.
+- The `@return` tag: specify the atlas type (cortical, subcortical, tract).
+- The `@family ggseg_atlases` tag: this is required for the pkgdown documentation site to work.
+
+After editing, regenerate documentation:
+
+```{r}
+#| label: document
+#| eval: false
+devtools::document()
+```
 
 ### Getting tests to pass
 
-Once data is added and references fixed, run the tests:
+Once data is saved and documentation is updated, run the tests:
 
 ```{r}
 #| label: run-tests
@@ -73,12 +127,37 @@ Common things to check:
 
 - If you only have a 2D or 3D atlas, comment out test sections that refer to the atlas type you're not including.
 - If you have a ggseg-atlas, the tests check for a palette matching `atlas$region`.
-  If you haven't created a palette, look at `data-raw/palettes.R` for how to set one up.
-  Palettes are stored in the `brain_pal` object as named string vectors.
-  Names should match `atlas$region` and values should be hexadecimal colour codes.
+  Palettes are stored in `atlas$palette` as a named character vector.
+  Names should match region labels and values should be hexadecimal colour codes.
 
 Let us know if you struggle.
 We would love to improve this tutorial with the issues you encounter.
+
+### Multiple atlases in one package
+
+If your package contains multiple atlases (e.g. `yeo7` and `yeo17`), create one accessor function per atlas:
+
+```r
+#' Yeo 7-Network Atlas
+#' @return A [ggseg.formats::ggseg_atlas] object.
+#' @export
+#' @family ggseg_atlases
+yeo7 <- function() .yeo7
+
+#' Yeo 17-Network Atlas
+#' @return A [ggseg.formats::ggseg_atlas] object.
+#' @export
+#' @family ggseg_atlases
+yeo17 <- function() .yeo17
+```
+
+Save all objects together in one call:
+
+```r
+.yeo7 <- yeo7
+.yeo17 <- yeo17
+usethis::use_data(.yeo7, .yeo17, internal = TRUE, overwrite = TRUE, compress = "xz")
+```
 
 ### Getting package checks to pass
 
@@ -102,22 +181,22 @@ If everything passes, push to your remote repository.
 
 ## Adding your package to r-universe
 
-Once your package is ready and hosted publicly, submit it to the ggseg r-universe.
+Once your package is ready and hosted publicly, submit it to the ggsegverse r-universe.
 
 ### 1. Fork the r-universe repository
 
-Go to [github.com/ggseg/universe](https://github.com/ggseg/universe) and fork the repository.
+Go to [github.com/ggsegverse/universe](https://github.com/ggsegverse/universe) and fork the repository.
 
 ### 2. Edit packages.json
 
-The `packages.json` file lists all packages in the ggseg r-universe.
+The `packages.json` file lists all packages in the ggsegverse r-universe.
 Add an entry for your package:
 
 ```json
 [
   {
     "package": "ggsegYeo2011",
-    "url": "https://github.com/ggseg/ggsegYeo2011"
+    "url": "https://github.com/ggsegverse/ggsegYeo2011"
   },
   {
     "package": "yourpackage",
@@ -155,7 +234,7 @@ We will check that:
 - The atlas works with ggseg and/or ggseg3d
 
 Once merged, r-universe automatically builds your package.
-It typically appears within an hour at [ggseg.r-universe.dev](https://ggseg.r-universe.dev).
+It typically appears within an hour at [ggsegverse.r-universe.dev](https://ggsegverse.r-universe.dev).
 
 ## Installing from r-universe
 
@@ -164,10 +243,10 @@ Users can then install your atlas with:
 ```{r}
 #| label: install-example
 #| eval: false
-install.packages("yourpackage", repos = "https://ggseg.r-universe.dev")
+install.packages("yourpackage", repos = "https://ggsegverse.r-universe.dev")
 ```
 
-Or use the ggsegExtra helper:
+Or use the ggseg.extra helper:
 
 ```{r}
 #| label: install-helper

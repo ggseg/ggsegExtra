@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 # {REPO} <img src="man/figures/logo.png" align="right" height="138" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/ggseg/{REPO}/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggseg/{REPO}/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/ggsegverse/{REPO}/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggsegverse/{REPO}/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
 
-This package provides the **{GGSEG}** brain atlas for use with the [ggseg](https://ggseg.github.io/ggseg/) and [ggseg3d](https://ggseg.github.io/ggseg3d/) packages.
+This package provides the **{GGSEG}** brain atlas for use with the [ggseg](https://ggsegverse.github.io/ggseg/) and [ggseg3d](https://ggsegverse.github.io/ggseg3d/) packages.
 
 ## Atlas Citation
 
@@ -38,12 +38,11 @@ If you use this atlas in your work, please cite both the original atlas publicat
 
 ## Installation
 
-Install from the ggseg [r-universe](https://ggseg.r-universe.dev/):
+Install from the ggsegverse [r-universe](https://ggsegverse.r-universe.dev/):
 
 ```{r eval = FALSE}
-# Enable the ggseg universe
 options(repos = c(
-  ggseg = "https://ggseg.r-universe.dev",
+  ggsegverse = "https://ggsegverse.r-universe.dev",
   CRAN = "https://cloud.r-project.org"
 ))
 
@@ -54,7 +53,7 @@ Or install the development version from GitHub:
 
 ```{r eval = FALSE}
 # install.packages("remotes")
-remotes::install_github("ggseg/{REPO}")
+remotes::install_github("ggsegverse/{REPO}")
 ```
 
 
@@ -64,13 +63,9 @@ remotes::install_github("ggseg/{REPO}")
 
 ```{r plot-2d}
 library(ggseg)
-library({
-  REPO
-})
+library({REPO})
 
-ggseg(atlas = {
-  GGSEG
-}) +
+plot({GGSEG}()) +
   theme(
     legend.position = "bottom",
     legend.text = element_text(size = 7)
@@ -83,51 +78,25 @@ ggseg(atlas = {
 ```{r plot-3d-code, eval = FALSE}
 library(ggseg3d)
 
-ggseg3d(atlas = {
-  GGSEG
-}) |>
-  add_glassbrain() |>
+ggseg3d(atlas = {GGSEG}()) |>
   pan_camera("right lateral")
-```
-
-```{r plot-3d-render, echo = FALSE, eval = FALSE}
-# This chunk generates the 3D screenshot (run manually)
-library(ggseg3d)
-p <- ggseg3d(atlas = {
-  GGSEG
-}) |>
-  add_glassbrain(hemisphere = "left") |>
-  pan_camera("right lateral")
-# Save screenshot
-htmlwidgets::saveWidget(p, "man/figures/README-3d-plot.html")
-webshot2::webshot(
-  "man/figures/README-3d-plot.html",
-  "man/figures/README-3d-plot.png"
-)
-```
-
-```{r show-3d, echo=FALSE, out.width="50%", eval=file.exists("man/figures/README-3d-plot.png")}
-knitr::include_graphics("man/figures/README-3d-plot.png")
 ```
 
 
 ## Atlas Details
-
-| Property | Value |
-|----------|-------|
-| **Type** | `r {GGSEG}$type` |
-| **Regions** | `r nrow({GGSEG}$data)` |
-| **Hemispheres** | `r paste(unique({GGSEG}$data$hemi), collapse = ", ")` |
-| **Has 2D geometry** | `r "geometry" %in% names({GGSEG}$data)` |
-| **Has 3D vertices** | `r "vertices" %in% names({GGSEG}$data)` |
+```{r atlas-details, echo = FALSE}
+cat(sprintf("- **Type**: %s\n", {GGSEG}()$type))
+cat(sprintf("- **Regions**: %d\n", nrow({GGSEG}()$core)))
+cat(sprintf("- **Hemispheres**: %s\n", paste(unique({GGSEG}()$core$hemi), collapse = ", ")))
+cat(sprintf("- **Has 2D geometry**: %s\n", !is.null({GGSEG}()$data$sf)))
+cat(sprintf("- **Has 3D vertices**: %s\n", !is.null({GGSEG}()$data$vertices)))
+```
 
 
 ## Region Names
 
 ```{r regions, echo = FALSE}
-regions <- unique({
-  GGSEG
-}$data$region)
+regions <- unique({GGSEG}()$core$region)
 regions <- regions[!is.na(regions)]
 cat(paste("-", sort(regions)), sep = "\n")
 ```

@@ -1,4 +1,4 @@
-url: https://ggseg.github.io/{REPO}/
+url: https://ggsegverse.github.io/{REPO}/
 
 template:
   package: ggseg.docs
@@ -7,10 +7,10 @@ navbar:
   components:
     github:
       icon: fa-github
-      href: https://github.com/ggseg/{REPO}
+      href: https://github.com/ggsegverse/{REPO}
       aria-label: GitHub
 
 reference:
-  - title: Atlas Data
+  - title: Atlases
     contents:
-      - "{GGSEG}"
+      - has_concept("ggseg_atlases")
