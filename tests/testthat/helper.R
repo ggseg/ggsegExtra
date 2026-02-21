@@ -3,6 +3,11 @@ library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
 library(ggseg, quietly = TRUE, warn.conflicts = FALSE)
 library(ggseg3d, quietly = TRUE, warn.conflicts = FALSE)
 
+options(
+  ggseg.extra.verbose = FALSE,
+  freesurfer.verbose = FALSE
+)
+
 # Helper to get test data directory
 testdata_dir <- function() {
   testthat::test_path("testdata")
@@ -96,7 +101,7 @@ expect_warnings <- function(expr, regexp) {
 skip_if_offline <- function() {
   tryCatch(
     {
-      con <- url("https://ggseg.r-universe.dev/api/packages", open = "r")
+      con <- url("https://ggsegverse.r-universe.dev/api/packages", open = "r")
       close(con)
     },
     error = function(e) {

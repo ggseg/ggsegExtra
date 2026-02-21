@@ -197,12 +197,12 @@ describe("read_neuromaps_annotation", {
 })
 
 
-describe("create_atlas_from_neuromaps", {
+describe("create_cortical_from_neuromaps", {
   it("creates ggseg_atlas with steps = 1", {
-    skip_if_not_installed("ggseg.hub")
+    skip_if_not_installed("neuromapr")
     skip_if_not(
-      exists("fetch_neuromaps_annotation", envir = asNamespace("ggseg.hub")),
-      "ggseg.hub without neuromaps support"
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
     )
     skip_if_not_installed("gifti")
 
@@ -224,7 +224,7 @@ describe("create_atlas_from_neuromaps", {
 
     local_mocked_bindings(
       fetch_neuromaps_annotation = function(...) c(lh, rh),
-      .package = "ggseg.hub"
+      .package = "neuromapr"
     )
     local_mocked_bindings(
       read_gifti = function(...) mock_gii,
@@ -235,7 +235,7 @@ describe("create_atlas_from_neuromaps", {
       preview_atlas = function(atlas) invisible(atlas)
     )
 
-    result <- create_atlas_from_neuromaps(
+    result <- create_cortical_from_neuromaps(
       source = "test",
       desc = "testdesc",
       atlas_name = "test_neuromaps",
@@ -251,10 +251,10 @@ describe("create_atlas_from_neuromaps", {
   })
 
   it("derives atlas_name from source and desc", {
-    skip_if_not_installed("ggseg.hub")
+    skip_if_not_installed("neuromapr")
     skip_if_not(
-      exists("fetch_neuromaps_annotation", envir = asNamespace("ggseg.hub")),
-      "ggseg.hub without neuromaps support"
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
     )
     skip_if_not_installed("gifti")
 
@@ -271,7 +271,7 @@ describe("create_atlas_from_neuromaps", {
 
     local_mocked_bindings(
       fetch_neuromaps_annotation = function(...) tmp,
-      .package = "ggseg.hub"
+      .package = "neuromapr"
     )
     local_mocked_bindings(
       read_gifti = function(...) mock_gii,
@@ -282,7 +282,7 @@ describe("create_atlas_from_neuromaps", {
       preview_atlas = function(atlas) invisible(atlas)
     )
 
-    result <- create_atlas_from_neuromaps(
+    result <- create_cortical_from_neuromaps(
       source = "abagen",
       desc = "genepc1",
       steps = 1,
@@ -293,40 +293,54 @@ describe("create_atlas_from_neuromaps", {
     expect_equal(result$atlas, "abagen_genepc1")
   })
 
-  it("errors for volume annotations", {
-    skip_if_not_installed("ggseg.hub")
+  it("routes volume annotations through read_neuromaps_volume", {
+    skip_if_not_installed("neuromapr")
     skip_if_not(
-      exists("fetch_neuromaps_annotation", envir = asNamespace("ggseg.hub")),
-      "ggseg.hub without neuromaps support"
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
     )
 
     local_mocked_bindings(
       fetch_neuromaps_annotation = function(...) "brain_map.nii.gz",
-      .package = "ggseg.hub"
+      .package = "neuromapr"
     )
     local_mocked_bindings(
       is_interactive = function() FALSE,
       preview_atlas = function(atlas) invisible(atlas)
     )
 
-    expect_error(
-      suppressWarnings(create_atlas_from_neuromaps(
-        source = "test",
-        desc = "vol",
-        space = "MNI152",
-        density = "2mm",
-        steps = 1,
-        verbose = FALSE
-      )),
-      "volume format"
+    n <- 10242L
+    mock_annot <- data.frame(
+      hemi = rep("left", 3),
+      region = c("bin_01", "bin_02", "unknown"),
+      label = c("bin_01", "bin_02", "unknown"),
+      colour = c("#FF0000", "#00FF00", NA),
+      vertices = I(list(1:5000, 5001:9000, 9001:n)),
+      stringsAsFactors = FALSE
     )
+
+    local_mocked_bindings(
+      read_neuromaps_volume = function(...) mock_annot,
+      check_fs = function(...) invisible(TRUE)
+    )
+
+    result <- suppressWarnings(create_cortical_from_neuromaps(
+      source = "test",
+      desc = "vol",
+      space = "MNI152",
+      density = "2mm",
+      steps = 1,
+      verbose = FALSE
+    ))
+
+    expect_s3_class(result, "ggseg_atlas")
   })
 
   it("warns for non-default space/density", {
-    skip_if_not_installed("ggseg.hub")
+    skip_if_not_installed("neuromapr")
     skip_if_not(
-      exists("fetch_neuromaps_annotation", envir = asNamespace("ggseg.hub")),
-      "ggseg.hub without neuromaps support"
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
     )
     skip_if_not_installed("gifti")
 
@@ -343,7 +357,7 @@ describe("create_atlas_from_neuromaps", {
 
     local_mocked_bindings(
       fetch_neuromaps_annotation = function(...) tmp,
-      .package = "ggseg.hub"
+      .package = "neuromapr"
     )
     local_mocked_bindings(
       read_gifti = function(...) mock_gii,
@@ -355,7 +369,7 @@ describe("create_atlas_from_neuromaps", {
     )
 
     expect_warning(
-      create_atlas_from_neuromaps(
+      create_cortical_from_neuromaps(
         source = "test",
         desc = "test",
         space = "fsLR",
@@ -366,5 +380,52 @@ describe("create_atlas_from_neuromaps", {
       ),
       "Non-default space/density"
     )
+  })
+
+  it("calls cortical_pipeline for steps > 1", {
+    skip_if_not_installed("neuromapr")
+    skip_if_not(
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
+    )
+    skip_if_not_installed("gifti")
+
+    pipeline_called <- FALSE
+    n <- 10242L
+    mock_gii <- list(data = list(c(rep(1, 5000), rep(2, 5242))))
+
+    tmp <- withr::local_tempfile(
+      pattern = "source-test_hemi-L_feature",
+      fileext = ".func.gii"
+    )
+    writeLines("mock", tmp)
+
+    local_mocked_bindings(
+      fetch_neuromaps_annotation = function(...) tmp,
+      .package = "neuromapr"
+    )
+    local_mocked_bindings(
+      read_gifti = function(...) mock_gii,
+      .package = "gifti"
+    )
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      cortical_pipeline = function(...) {
+        pipeline_called <<- TRUE
+        structure(list(), class = "ggseg_atlas")
+      }
+    )
+
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
+
+    create_cortical_from_neuromaps(
+      source = "test",
+      desc = "testdesc",
+      atlas_name = "test_neuromaps",
+      steps = 1:8,
+      verbose = FALSE
+    )
+    expect_true(pipeline_called)
   })
 })

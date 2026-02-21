@@ -32,9 +32,9 @@ contours). Defaults to \code{\link[=tempdir]{tempdir()}}.}
 \item{cortex}{toggle "--cortex" (TRUE) or "--no-cortex" (FALSE)}
 
 \item{verbose}{Logical. If not specified, uses the value from
-\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+\code{options("ggseg.extra.verbose")} or the \code{GGSEG_EXTRA_VERBOSE}
 environment variable. Defaults to \code{TRUE}.
-Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
+Use \code{options(ggseg.extra.verbose = FALSE)} to suppress output globally.}
 }
 \description{
 Convert LCBC surface file to other subjects

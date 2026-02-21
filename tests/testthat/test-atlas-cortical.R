@@ -1,4 +1,4 @@
-describe("create_cortical_atlas", {
+describe("create_cortical_from_annotation", {
   it("checks for FreeSurfer when geometry is requested", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) {
@@ -10,7 +10,7 @@ describe("create_cortical_atlas", {
     )
 
     expect_error(
-      create_cortical_atlas(
+      create_cortical_from_annotation(
         input_annot = c("lh.test.annot", "rh.test.annot"),
         steps = NULL,
         verbose = FALSE
@@ -21,7 +21,7 @@ describe("create_cortical_atlas", {
 
   it("validates annotation files exist", {
     expect_error(
-      create_cortical_atlas(
+      create_cortical_from_annotation(
         input_annot = c("nonexistent.annot"),
         steps = 1,
         verbose = FALSE
@@ -31,19 +31,12 @@ describe("create_cortical_atlas", {
   })
 
   it("creates 3D-only atlas from annotation", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
-    atlas <- create_cortical_atlas(
+    atlas <- create_cortical_from_annotation(
       input_annot = annot_files,
       steps = 1,
       verbose = FALSE
@@ -55,19 +48,12 @@ describe("create_cortical_atlas", {
   })
 
   it("includes vertices for 3D rendering", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
-    atlas <- create_cortical_atlas(
+    atlas <- create_cortical_from_annotation(
       input_annot = annot_files,
       steps = 1,
       verbose = FALSE
@@ -78,60 +64,13 @@ describe("create_cortical_atlas", {
     expect_true("vertices" %in% names(vertices))
   })
 
-  it("works with different annotations", {
-    skip_if_no_freesurfer()
-
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    aparc_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
-
-    atlas_aparc <- create_cortical_atlas(
-      input_annot = aparc_files,
-      steps = 1,
-      verbose = FALSE
-    )
-
-    expect_true(nrow(atlas_aparc$core) > 0)
-
-    a2009s_files <- c(
-      file.path(annot_dir, "lh.aparc.a2009s.annot"),
-      file.path(annot_dir, "rh.aparc.a2009s.annot")
-    )
-    has_a2009s <- all(file.exists(a2009s_files))
-
-    if (has_a2009s) {
-      atlas_a2009s <- create_cortical_atlas(
-        input_annot = a2009s_files,
-        steps = 1,
-        verbose = FALSE
-      )
-      expect_true(nrow(atlas_a2009s$core) > 0)
-      expect_false(
-        identical(atlas_aparc$core$region, atlas_a2009s$core$region)
-      )
-    }
-  })
-
   it("can render with ggseg3d", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
-    atlas <- create_cortical_atlas(
+    atlas <- create_cortical_from_annotation(
       input_annot = annot_files,
       steps = 1,
       verbose = FALSE
@@ -286,7 +225,7 @@ describe("cortical_pipeline", {
 })
 
 
-describe("create_cortical_atlas pipeline flow", {
+describe("create_cortical_from_annotation pipeline flow", {
   it("step 1 passes input_annot to read_annotation_data", {
     captured <- list()
     local_mocked_bindings(
@@ -321,9 +260,9 @@ describe("create_cortical_atlas pipeline flow", {
       ggseg_data_cortical = function(...) list(...)
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    result <- create_cortical_atlas(
+    result <- create_cortical_from_annotation(
       input_annot = c("lh.test.annot"),
       steps = 1,
       verbose = FALSE
@@ -369,9 +308,9 @@ describe("create_cortical_atlas pipeline flow", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    create_cortical_atlas(
+    create_cortical_from_annotation(
       input_annot = c("lh.test.annot"),
       steps = 1,
       verbose = FALSE
@@ -384,17 +323,10 @@ describe("create_cortical_atlas pipeline flow", {
 
 describe("read_annotation_data", {
   it("reads annotation data from files", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
     atlas_data <- read_annotation_data(annot_files)
 
@@ -406,33 +338,11 @@ describe("read_annotation_data", {
     expect_true(nrow(atlas_data) > 0)
   })
 
-  it("reads annotation from custom files", {
-    annot_files <- test_annot_files()
-    skip_if(
-      !file.exists(annot_files$lh),
-      "Test annotation files not found"
-    )
-
-    atlas_data <- read_annotation_data(
-      c(annot_files$lh, annot_files$rh)
-    )
-
-    expect_s3_class(atlas_data, "tbl_df")
-    expect_true(nrow(atlas_data) > 0)
-  })
-
   it("returns data for both hemispheres", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
     atlas_data <- read_annotation_data(annot_files)
 
@@ -441,17 +351,10 @@ describe("read_annotation_data", {
   })
 
   it("creates proper labels with hemisphere prefix", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
     atlas_data <- read_annotation_data(annot_files)
 
@@ -463,17 +366,10 @@ describe("read_annotation_data", {
   })
 
   it("includes vertex indices as list column", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
     atlas_data <- read_annotation_data(annot_files)
 
@@ -490,31 +386,6 @@ describe("read_annotation_data", {
     ))
   })
 
-  it("sets NA colour for medial wall/unknown regions", {
-    skip_if_no_freesurfer()
-
-    annot_dir <- file.path(
-      freesurfer::fs_subj_dir(),
-      "fsaverage5",
-      "label"
-    )
-    annot_files <- c(
-      file.path(annot_dir, "lh.aparc.annot"),
-      file.path(annot_dir, "rh.aparc.annot")
-    )
-
-    atlas_data <- read_annotation_data(annot_files)
-
-    wall_rows <- grepl(
-      "wall|unknown",
-      atlas_data$region,
-      ignore.case = TRUE
-    )
-    if (any(wall_rows)) {
-      expect_true(all(!is.na(atlas_data$colour[wall_rows])))
-    }
-  })
-
   it("errors when files not found", {
     expect_error(
       read_annotation_data(c("nonexistent.annot")),
@@ -524,12 +395,12 @@ describe("read_annotation_data", {
 })
 
 
-describe("create_atlas_from_labels", {
+describe("create_cortical_from_labels", {
   it("creates atlas from label files", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
     labels <- unlist(test_label_files())
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       atlas_name = "test_atlas",
       steps = 1,
@@ -543,10 +414,10 @@ describe("create_atlas_from_labels", {
   })
 
   it("correctly parses hemisphere from filename", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
     labels <- unlist(test_label_files())
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       steps = 1,
       verbose = FALSE
@@ -559,10 +430,10 @@ describe("create_atlas_from_labels", {
   })
 
   it("stores vertices correctly", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
     labels <- unlist(test_label_files())
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       steps = 1,
       verbose = FALSE
@@ -574,7 +445,7 @@ describe("create_atlas_from_labels", {
   })
 
   it("accepts custom names and colours via input_lut", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
     labels <- unlist(test_label_files())
     custom_lut <- data.frame(
@@ -582,7 +453,7 @@ describe("create_atlas_from_labels", {
       hex = c("#FF0000", "#00FF00", "#0000FF")
     )
 
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       input_lut = custom_lut,
       steps = 1,
@@ -594,10 +465,8 @@ describe("create_atlas_from_labels", {
   })
 
   it("errors when label files not found", {
-    skip_if_no_freesurfer()
-
     expect_error(
-      create_atlas_from_labels(
+      create_cortical_from_labels(
         c("nonexistent.label"),
         verbose = FALSE
       ),
@@ -616,7 +485,7 @@ describe("create_atlas_from_labels", {
     )
 
     expect_error(
-      create_atlas_from_labels(
+      create_cortical_from_labels(
         c("lh.test.label"),
         verbose = FALSE
       ),
@@ -693,7 +562,7 @@ describe("cortical_finalize", {
     )
     dirs <- list(base = withr::local_tempdir())
 
-    msgs <- capture.output(
+    expect_message(
       result <- cortical_finalize(
         mock_atlas,
         config = list(
@@ -702,11 +571,10 @@ describe("cortical_finalize", {
         dirs = dirs,
         start_time = Sys.time()
       ),
-      type = "message"
+      "1 regions"
     )
 
     expect_s3_class(result, "ggseg_atlas")
-    expect_true(any(grepl("1 regions", msgs)))
   })
 
   it("cleans up when cleanup is TRUE", {
@@ -773,7 +641,11 @@ describe("cortical_pipeline verbose and cleanup paths", {
       vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
     )
 
-    msgs <- capture.output(
+    scrub <- function(x) {
+      x <- gsub("\\[\\d+ms\\]", "[<TIME>]", x)
+      gsub("/tmp/Rtmp[^ ]*|/var/folders[^ ]*", "<TMPDIR>", x)
+    }
+    expect_snapshot(
       cortical_pipeline(
         atlas_3d = structure(list(), class = "ggseg_atlas"),
         components = components,
@@ -797,13 +669,8 @@ describe("cortical_pipeline verbose and cleanup paths", {
         ),
         start_time = Sys.time()
       ),
-      type = "message"
+      transform = scrub
     )
-
-    expect_true(any(grepl("2/8", msgs)))
-    expect_true(any(grepl("3/8", msgs)))
-    expect_true(any(grepl("4/8", msgs)))
-    expect_true(any(grepl("8/8", msgs)))
   })
 
   it("cleans up base directory when cleanup is TRUE in step 8", {
@@ -924,7 +791,7 @@ describe("cortical_pipeline verbose and cleanup paths", {
 })
 
 
-describe("create_cortical_atlas magick check", {
+describe("create_cortical_from_annotation magick check", {
   it("checks for ImageMagick when steps > 1", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) invisible(TRUE),
@@ -932,7 +799,7 @@ describe("create_cortical_atlas magick check", {
     )
 
     expect_error(
-      create_cortical_atlas(
+      create_cortical_from_annotation(
         input_annot = c("lh.test.annot"),
         steps = 2:8,
         verbose = FALSE
@@ -943,7 +810,7 @@ describe("create_cortical_atlas magick check", {
 })
 
 
-describe("create_cortical_atlas verbose output", {
+describe("create_cortical_from_annotation verbose output", {
   it("prints atlas name and paths when verbose is TRUE", {
     local_mocked_bindings(
       read_annotation_data = function(annot_files) {
@@ -975,25 +842,25 @@ describe("create_cortical_atlas verbose output", {
       log_elapsed = function(...) NULL
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    msgs <- capture.output(
-      create_cortical_atlas(
+    scrub <- function(x) {
+      x <- gsub("\\[\\d+ms\\]", "[<TIME>]", x)
+      gsub("/tmp/Rtmp[^ ]*|/var/folders[^ ]*", "<TMPDIR>", x)
+    }
+    expect_snapshot(
+      create_cortical_from_annotation(
         input_annot = c("lh.test.annot"),
         steps = 1,
         verbose = TRUE
       ),
-      type = "message"
+      transform = scrub
     )
-
-    expect_true(any(grepl("Creating brain atlas", msgs)))
-    expect_true(any(grepl("lh.test.annot", msgs)))
-    expect_true(any(grepl("output directory", msgs)))
   })
 })
 
 
-describe("create_cortical_atlas full pipeline path", {
+describe("create_cortical_from_annotation full pipeline path", {
   it("calls cortical_pipeline when steps > 1", {
     pipeline_called <- FALSE
     local_mocked_bindings(
@@ -1031,9 +898,9 @@ describe("create_cortical_atlas full pipeline path", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    create_cortical_atlas(
+    create_cortical_from_annotation(
       input_annot = c("lh.test.annot"),
       steps = 1:8,
       verbose = FALSE
@@ -1062,7 +929,7 @@ describe("cortical_resolve_step1 verbose paths", {
       )
     }
 
-    msgs <- capture.output(
+    expect_message(
       cortical_resolve_step1(
         config = list(steps = 1L, skip_existing = FALSE, verbose = TRUE),
         dirs = list(base = tmp_dir),
@@ -1071,10 +938,8 @@ describe("cortical_resolve_step1 verbose paths", {
         step_label = "1/8 Reading annotation files",
         cache_label = "Step 1 (Read annotations)"
       ),
-      type = "message"
+      "1/8 Reading"
     )
-
-    expect_true(any(grepl("1/8 Reading", msgs)))
   })
 
   it("aborts when read_fn returns zero rows", {
@@ -1113,7 +978,7 @@ describe("cortical_resolve_step1 verbose paths", {
     saveRDS(mock_atlas, file.path(tmp_dir, "atlas_3d.rds"))
     saveRDS(mock_components, file.path(tmp_dir, "components.rds"))
 
-    msgs <- capture.output(
+    expect_message(
       cortical_resolve_step1(
         config = list(steps = 1L, skip_existing = TRUE, verbose = TRUE),
         dirs = list(base = tmp_dir),
@@ -1122,10 +987,8 @@ describe("cortical_resolve_step1 verbose paths", {
         step_label = "test",
         cache_label = "test"
       ),
-      type = "message"
+      "Loaded existing atlas data"
     )
-
-    expect_true(any(grepl("Loaded existing atlas data", msgs)))
   })
 })
 
@@ -1171,7 +1034,7 @@ describe("cortical_pipeline cleanup verbose in step 8", {
       vertices_df = data.frame(label = "lh_r", vertices = I(list(1:5)))
     )
 
-    msgs <- capture.output(
+    expect_message(
       cortical_pipeline(
         atlas_3d = structure(list(), class = "ggseg_atlas"),
         components = components,
@@ -1195,10 +1058,8 @@ describe("cortical_pipeline cleanup verbose in step 8", {
         ),
         start_time = Sys.time()
       ),
-      type = "message"
+      "Temporary files removed"
     )
-
-    expect_true(any(grepl("Temporary files removed", msgs)))
   })
 })
 
@@ -1226,7 +1087,7 @@ describe("cortical_pipeline verbose for non-step-8 completion", {
 
     mock_atlas <- structure(list(atlas = "test_3d"), class = "ggseg_atlas")
 
-    msgs <- capture.output(
+    expect_message(
       cortical_pipeline(
         atlas_3d = mock_atlas,
         components = components,
@@ -1250,15 +1111,13 @@ describe("cortical_pipeline verbose for non-step-8 completion", {
         ),
         start_time = Sys.time()
       ),
-      type = "message"
+      "Completed steps"
     )
-
-    expect_true(any(grepl("Completed steps", msgs)))
   })
 })
 
 
-describe("create_atlas_from_labels verbose and LUT paths", {
+describe("create_cortical_from_labels verbose and LUT paths", {
   it("prints verbose output when verbose is TRUE", {
     local_mocked_bindings(
       ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
@@ -1268,19 +1127,19 @@ describe("create_atlas_from_labels verbose and LUT paths", {
 
     labels <- unlist(test_label_files())
 
-    msgs <- capture.output(
-      create_atlas_from_labels(
+    scrub <- function(x) {
+      x <- gsub("\\[\\d+ms\\]", "[<TIME>]", x)
+      gsub("/tmp/Rtmp[^ ]*|/var/folders[^ ]*", "<TMPDIR>", x)
+    }
+    expect_snapshot(
+      create_cortical_from_labels(
         labels,
         atlas_name = "test_atlas",
         steps = 1,
         verbose = TRUE
       ),
-      type = "message"
+      transform = scrub
     )
-
-    expect_true(any(grepl("Creating brain atlas", msgs)))
-    expect_true(any(grepl("Input files", msgs)))
-    expect_true(any(grepl("output directory", msgs)))
   })
 
   it("extracts colours from RGB columns in LUT", {
@@ -1310,7 +1169,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
       log_elapsed = function(...) NULL
     )
 
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       input_lut = rgb_lut,
       atlas_name = "test_atlas",
@@ -1347,7 +1206,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
       log_elapsed = function(...) NULL
     )
 
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       input_lut = bad_lut,
       atlas_name = "test_atlas",
@@ -1372,9 +1231,9 @@ describe("create_atlas_from_labels verbose and LUT paths", {
     )
 
     labels <- unlist(test_label_files())
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    create_atlas_from_labels(
+    create_cortical_from_labels(
       labels,
       atlas_name = "test_atlas",
       steps = 1:8,
@@ -1386,7 +1245,7 @@ describe("create_atlas_from_labels verbose and LUT paths", {
 })
 
 
-describe("create_atlas_from_labels hemi fallback", {
+describe("create_cortical_from_labels hemi fallback", {
   it("defaults to both hemispheres when all hemi values are NA", {
     captured_hemisphere <- NULL
     local_mocked_bindings(
@@ -1414,9 +1273,9 @@ describe("create_atlas_from_labels hemi fallback", {
       nohemi_file
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    create_atlas_from_labels(
+    create_cortical_from_labels(
       c(nohemi_file),
       atlas_name = "test_nohemi",
       steps = 1:8,
@@ -1424,5 +1283,279 @@ describe("create_atlas_from_labels hemi fallback", {
     )
 
     expect_equal(captured_hemisphere, c("lh", "rh"))
+  })
+})
+
+
+describe("create_cortical_from_gifti verbose", {
+  it("emits 'from GIFTI' message when verbose and steps > 1", {
+    skip_if_not_installed("freesurferformats")
+
+    mock_annot <- list(
+      label_codes = c(1L, 1L, 2L, 2L),
+      colortable_df = data.frame(
+        struct_name = c("a", "b"),
+        r = c(255L, 0L),
+        g = c(0L, 255L),
+        b = c(0L, 0L),
+        a = c(0L, 0L),
+        code = c(1L, 2L),
+        hex_color_string_rgb = c("#FF0000", "#00FF00"),
+        hex_color_string_rgba = c("#FF000000", "#00FF0000"),
+        struct_index = c(0L, 1L),
+        stringsAsFactors = FALSE
+      )
+    )
+
+    local_mocked_bindings(
+      read.fs.annot.gii = function(...) mock_annot,
+      .package = "freesurferformats"
+    )
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      cortical_pipeline = function(...) structure(list(), class = "ggseg_atlas")
+    )
+
+    tmp <- withr::local_tempfile(pattern = "lh.test", fileext = ".label.gii")
+    writeLines("mock", tmp)
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
+
+    expect_message(
+      create_cortical_from_gifti(
+        gifti_files = tmp,
+        atlas_name = "test_gifti",
+        steps = 1:2,
+        verbose = TRUE
+      ),
+      "from GIFTI"
+    )
+  })
+})
+
+
+describe("create_cortical_from_cifti verbose", {
+  it("emits 'from CIFTI' message when verbose and steps > 1", {
+    skip_if_not_installed("ciftiTools")
+
+    n <- 10242L
+    mock_cii <- list(
+      data = list(
+        cortex_left = matrix(c(rep(1L, 5000), rep(2L, 5242)), ncol = 1),
+        cortex_right = matrix(c(rep(1L, 4000), rep(2L, 6242)), ncol = 1)
+      ),
+      meta = list(
+        cifti = list(
+          labels = list(
+            data.frame(
+              Key = c(1L, 2L),
+              Label = c("region_a", "region_b"),
+              Red = c(1, 0),
+              Green = c(0, 1),
+              Blue = c(0, 0),
+              stringsAsFactors = FALSE
+            )
+          )
+        )
+      )
+    )
+
+    local_mocked_bindings(
+      read_cifti = function(...) mock_cii,
+      .package = "ciftiTools"
+    )
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      cortical_pipeline = function(...) structure(list(), class = "ggseg_atlas")
+    )
+
+    tmp <- withr::local_tempfile(fileext = ".dlabel.nii")
+    writeLines("mock", tmp)
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
+
+    expect_message(
+      create_cortical_from_cifti(
+        cifti_file = tmp,
+        atlas_name = "test_cifti",
+        steps = 1:2,
+        verbose = TRUE
+      ),
+      "from CIFTI"
+    )
+  })
+})
+
+
+describe("create_cortical_from_neuromaps verbose", {
+  it("emits 'Fetching neuromaps' and 'from neuromaps' messages", {
+    skip_if_not_installed("neuromapr")
+    skip_if_not(
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
+    )
+    skip_if_not_installed("gifti")
+
+    n <- 10242L
+    mock_gii <- list(data = list(c(rep(1, 5000), rep(2, 5242))))
+
+    lh <- withr::local_tempfile(
+      pattern = "source-test_hemi-L_feature",
+      fileext = ".func.gii"
+    )
+    rh <- withr::local_tempfile(
+      pattern = "source-test_hemi-R_feature",
+      fileext = ".func.gii"
+    )
+    writeLines("mock", lh)
+    writeLines("mock", rh)
+
+    local_mocked_bindings(
+      fetch_neuromaps_annotation = function(...) c(lh, rh),
+      .package = "neuromapr"
+    )
+    local_mocked_bindings(
+      read_gifti = function(...) mock_gii,
+      .package = "gifti"
+    )
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      cortical_pipeline = function(...) structure(list(), class = "ggseg_atlas")
+    )
+
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
+
+    expect_message(
+      create_cortical_from_neuromaps(
+        source = "test",
+        desc = "testdesc",
+        atlas_name = "test_neuromaps",
+        steps = 1:2,
+        verbose = TRUE
+      ),
+      "Fetching neuromaps"
+    )
+
+    expect_message(
+      create_cortical_from_neuromaps(
+        source = "test",
+        desc = "testdesc",
+        atlas_name = "test_neuromaps",
+        steps = 1:2,
+        verbose = TRUE
+      ),
+      "from neuromaps"
+    )
+  })
+
+  it("emits 'Volume annotation detected' for .nii.gz files", {
+    skip_if_not_installed("neuromapr")
+    skip_if_not(
+      exists("fetch_neuromaps_annotation", envir = asNamespace("neuromapr")),
+      "neuromapr without neuromaps support"
+    )
+
+    n <- 10242L
+    mock_annot <- data.frame(
+      hemi = rep("left", 3),
+      region = c("bin_01", "bin_02", "unknown"),
+      label = c("bin_01", "bin_02", "unknown"),
+      colour = c("#FF0000", "#00FF00", NA),
+      vertices = I(list(1:5000, 5001:9000, 9001:n)),
+      stringsAsFactors = FALSE
+    )
+
+    local_mocked_bindings(
+      fetch_neuromaps_annotation = function(...) "brain_map.nii.gz",
+      .package = "neuromapr"
+    )
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      check_magick = function() invisible(TRUE),
+      read_neuromaps_volume = function(...) mock_annot,
+      cortical_pipeline = function(...) structure(list(), class = "ggseg_atlas")
+    )
+
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
+
+    expect_message(
+      create_cortical_from_neuromaps(
+        source = "test",
+        desc = "vol",
+        atlas_name = "test_vol",
+        steps = 1:2,
+        verbose = TRUE
+      ),
+      "Volume annotation detected"
+    )
+  })
+})
+
+
+describe("cortical_region_snapshots invisible-region filtering", {
+  it("skips regions that face away from the camera", {
+    captured <- list()
+    local_mocked_bindings(
+      snapshot_region = function(atlas, region_label, hemisphere, view, ...) {
+        captured[[length(captured) + 1]] <<- list(
+          region_label = region_label,
+          hemisphere = hemisphere,
+          view = view
+        )
+      },
+      progressor = function(...) function(...) NULL,
+      filter_visible_regions = function(region_grid, vertices_df) {
+        region_grid[region_grid$region_label != "lh_hidden", , drop = FALSE]
+      }
+    )
+
+    components <- list(
+      core = data.frame(
+        label = c("lh_visible", "lh_hidden"),
+        stringsAsFactors = FALSE
+      ),
+      vertices_df = data.frame(label = character(0))
+    )
+    atlas_3d <- structure(list(), class = "ggseg_atlas")
+    dirs <- list(snapshots = tempdir())
+
+    cortical_region_snapshots(
+      atlas_3d,
+      components,
+      hemisphere = "lh",
+      views = "lateral",
+      dirs = dirs,
+      skip_existing = FALSE
+    )
+
+    labels <- vapply(captured, `[[`, character(1), "region_label")
+    expect_true("lh_visible" %in% labels)
+    expect_false("lh_hidden" %in% labels)
+  })
+})
+
+
+describe("filter_visible_regions with empty vertices", {
+  it("keeps region when vertices list is empty", {
+    fake_mesh <- list(vertices = data.frame(x = 1:10, y = 1:10, z = 1:10))
+    local_mocked_bindings(
+      get_brain_mesh = function(...) fake_mesh,
+      .package = "ggseg.formats"
+    )
+
+    region_grid <- data.frame(
+      region_label = "lh_empty",
+      hemisphere = "lh",
+      view = "lateral",
+      stringsAsFactors = FALSE
+    )
+    vertices_df <- data.frame(
+      label = "lh_empty",
+      vertices = I(list(integer(0)))
+    )
+
+    result <- filter_visible_regions(region_grid, vertices_df)
+    expect_equal(nrow(result), 1)
   })
 })

@@ -75,7 +75,7 @@ cortical_brain_snapshots <- function(
   invisible(future_pmap(
     snapshot_grid,
     function(hemisphere, view) {
-      snapshot_brain(
+      snapshot_brain_full(
         atlas = atlas_3d,
         hemisphere = hemisphere,
         view = view,
@@ -228,7 +228,7 @@ labels_read_files <- function(
       )
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c("region_names", "colours", "default_colours", "p")
     )
   )

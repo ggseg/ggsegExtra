@@ -1,8 +1,8 @@
 ---
-title: "Getting started with ggsegExtra"
+title: "Getting started with ggseg.extra"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting started with ggsegExtra}
+  %\VignetteIndexEntry{Getting started with ggseg.extra}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,14 +10,14 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-library(ggsegExtra)
+library(ggseg.extra)
 ```
 
-ggsegExtra does two things: it helps you find and install brain atlases that work with ggseg and ggseg3d, and it provides the tools to create your own from neuroimaging data.
+ggseg.extra does two things: it helps you find and install brain atlases that work with ggseg and ggseg3d, and it provides the tools to create your own from neuroimaging data.
 
 ## Finding and installing atlases
 
-Atlases live in their own packages, distributed through the [ggseg r-universe](https://ggseg.r-universe.dev).
+Atlases live in their own packages, distributed through the [ggsegverse r-universe](https://ggsegverse.r-universe.dev).
 Browse what's available:
 
 ```{r}
@@ -82,18 +82,18 @@ One atlas, both packages.
 
 ## Creating your own atlases
 
-ggsegExtra provides four functions to create brain atlases from different neuroimaging inputs:
+ggseg.extra provides four functions to create brain atlases from different neuroimaging inputs:
 
 | Function | Input | Use case |
 |----------|-------|----------|
-| `create_cortical_atlas()` | FreeSurfer annotation files | Cortical parcellations (DK, DKT, Yeo networks) |
-| `create_subcortical_atlas()` | Volumetric segmentation | Subcortical structures (thalamus, amygdala) |
-| `create_tract_atlas()` | Tractography files (TRK, TCK) | White matter tracts |
-| `create_atlas_from_labels()` | Individual label files | Custom region combinations |
+| `create_cortical_from_annotation()` | FreeSurfer annotation files | Cortical parcellations (DK, DKT, Yeo networks) |
+| `create_subcortical_from_volume()` | Volumetric segmentation | Subcortical structures (thalamus, amygdala) |
+| `create_tract_from_tractography()` | Tractography files (TRK, TCK) | White matter tracts |
+| `create_cortical_from_labels()` | Individual label files | Custom region combinations |
 
-All four produce a `brain_atlas` object that works with both ggseg and ggseg3d.
+All four produce a `ggseg_atlas` object that works with both ggseg and ggseg3d.
 
-### What's inside a brain_atlas
+### What's inside a ggseg_atlas
 
 Every atlas contains:
 
@@ -116,12 +116,12 @@ annot_files <- file.path(
   c("lh.aparc.annot", "rh.aparc.annot")
 )
 
-atlas_3d_only <- create_cortical_atlas(
+atlas_3d_only <- create_cortical_from_annotation(
   input_annot = annot_files,
   steps = 1
 )
 
-atlas_full <- create_cortical_atlas(
+atlas_full <- create_cortical_from_annotation(
   input_annot = annot_files,
   output_dir = "my_atlas",
   steps = 1:8

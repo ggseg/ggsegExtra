@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(ggsegExtra)
+library(ggseg.extra)
 
-test_check("ggsegExtra")
+test_check("ggseg.extra")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/sitrep.R
 \name{setup_sitrep}
 \alias{setup_sitrep}
-\title{Check ggsegExtra setup status}
+\title{Check ggseg.extra setup status}
 \usage{
 setup_sitrep(detail = c("simple", "full"))
 }
@@ -18,7 +18,7 @@ Invisibly returns a list with check results.
 }
 \description{
 Performs diagnostic checks to verify that system dependencies
-and environment variables required by ggsegExtra are properly
+and environment variables required by ggseg.extra are properly
 configured.
 }
 \examples{

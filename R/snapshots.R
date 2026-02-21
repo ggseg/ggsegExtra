@@ -205,7 +205,8 @@ snapshot_slice <- function(
 #' Core snapshot helper for brain rendering
 #'
 #' Shared logic for taking brain snapshots with different palettes.
-#' Uses rgl via [ggseg3d::ggsegray()] for fast native rendering.
+#' Uses [ggseg3d::ggseg3d()] with webshot2 for headless rendering,
+#' allowing safe parallelization without X11 context issues.
 #'
 #' @param atlas Brain atlas object
 #' @param hemisphere Short hemisphere code ("lh" or "rh")
@@ -217,7 +218,8 @@ snapshot_slice <- function(
 #' @param na_colour Colour for NA regions
 #' @param skip_existing Skip if file exists
 #' @noRd
-#' @importFrom ggseg3d ggsegray pan_camera set_background
+#' @importFrom ggseg3d ggseg3d pan_camera set_background set_flat_shading
+#'   set_orthographic set_legend snapshot_brain
 snapshot_brain_helper <- function(
   atlas,
   hemisphere,
@@ -234,42 +236,34 @@ snapshot_brain_helper <- function(
     return(invisible(NULL))
   }
 
-  rlang::check_installed("rgl", reason = "to take brain snapshots")
   hemi_long <- hemi_to_long(hemisphere)
 
-  tryCatch(
-    {
-      ggsegray(
-        .data = .data,
-        atlas = atlas,
-        hemisphere = hemi_long,
-        surface = surface,
-        colour = colour,
-        na_colour = na_colour,
-        lit = FALSE
-      ) |>
-        pan_camera(paste(hemi_long, view)) |>
-        set_background("white")
+  ggseg3d(
+    .data = .data,
+    atlas = atlas,
+    hemisphere = hemi_long,
+    surface = surface,
+    colour = colour,
+    na_colour = na_colour
+  ) |>
+    set_flat_shading() |>
+    set_orthographic() |>
+    pan_camera(paste(hemi_long, view)) |>
+    set_background("white") |>
+    set_legend(show = FALSE) |>
+    snapshot_brain(
+      outfile,
+      width = snapshot_dim,
+      height = snapshot_dim
+    )
 
-      rgl::par3d(windowRect = c(0, 0, snapshot_dim, snapshot_dim))
-      Sys.sleep(0.2)
-      rgl::snapshot3d(outfile, webshot = FALSE)
-    },
-    finally = {
-      try(
-        while (length(rgl::rgl.dev.list()) > 0) rgl::close3d(),
-        silent = TRUE
-      )
-      gc(verbose = FALSE)
-    }
-  )
   invisible(outfile)
 }
 
 
 #' Snapshot full brain with vertex coloring
 #' @noRd
-snapshot_brain <- function(
+snapshot_brain_full <- function(
   atlas,
   hemisphere,
   view,

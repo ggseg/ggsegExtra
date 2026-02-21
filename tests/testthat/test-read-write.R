@@ -429,3 +429,300 @@ describe("read_annotation_data", {
     expect_false("ghost_region" %in% region_names)
   })
 })
+
+
+describe("read_neuromaps_volume", {
+  it("projects volume to surface and returns atlas data", {
+    skip_if_not_installed("RNifti")
+
+    output_dir <- withr::local_tempdir()
+    surf_dir <- file.path(output_dir, "surface_overlays")
+    dir.create(surf_dir, recursive = TRUE)
+
+    n <- 10242L
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      mri_vol2surf = function(input_file, output_file, hemisphere, ...) {
+        values <- if (grepl("lh", hemisphere)) {
+          c(rep(1, 5000), rep(2, 5242))
+        } else {
+          c(rep(1, 4000), rep(2, 6242))
+        }
+        RNifti::writeNifti(array(values, dim = c(n, 1, 1)), output_file)
+      }
+    )
+
+    result <- read_neuromaps_volume("fake.nii.gz", output_dir = output_dir)
+
+    expect_s3_class(result, "tbl_df")
+    expect_named(result, c("hemi", "region", "label", "colour", "vertices"))
+    expect_true("left" %in% result$hemi)
+    expect_true("right" %in% result$hemi)
+  })
+
+  it("auto-assigns colours to regions without colour", {
+    skip_if_not_installed("RNifti")
+
+    output_dir <- withr::local_tempdir()
+    surf_dir <- file.path(output_dir, "surface_overlays")
+    dir.create(surf_dir, recursive = TRUE)
+
+    n <- 10242L
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      mri_vol2surf = function(input_file, output_file, hemisphere, ...) {
+        values <- c(rep(1, 5000), rep(2, 5242))
+        RNifti::writeNifti(array(values, dim = c(n, 1, 1)), output_file)
+      }
+    )
+
+    result <- read_neuromaps_volume("fake.nii.gz", output_dir = output_dir)
+
+    named_regions <- result[result$region != "unknown", ]
+    expect_true(all(!is.na(named_regions$colour)))
+  })
+
+  it("handles continuous values with binning", {
+    skip_if_not_installed("RNifti")
+
+    output_dir <- withr::local_tempdir()
+    surf_dir <- file.path(output_dir, "surface_overlays")
+    dir.create(surf_dir, recursive = TRUE)
+
+    n <- 10242L
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      mri_vol2surf = function(input_file, output_file, hemisphere, ...) {
+        values <- seq(0.1, 10, length.out = n)
+        RNifti::writeNifti(array(values, dim = c(n, 1, 1)), output_file)
+      }
+    )
+
+    result <- read_neuromaps_volume(
+      "fake.nii.gz", n_bins = 5, output_dir = output_dir
+    )
+
+    expect_s3_class(result, "tbl_df")
+    bin_regions <- result[grepl("^bin_", result$region), ]
+    expect_true(nrow(bin_regions) > 0)
+    expect_true(all(!is.na(bin_regions$colour)))
+  })
+
+  it("errors when mri_vol2surf fails to produce output", {
+    skip_if_not_installed("RNifti")
+
+    output_dir <- withr::local_tempdir()
+
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      mri_vol2surf = function(...) invisible(NULL)
+    )
+
+    expect_error(
+      read_neuromaps_volume("fake.nii.gz", output_dir = output_dir),
+      "mri_vol2surf failed"
+    )
+  })
+
+  it("includes medial wall as unknown region for parcellation data", {
+    skip_if_not_installed("RNifti")
+
+    output_dir <- withr::local_tempdir()
+    surf_dir <- file.path(output_dir, "surface_overlays")
+    dir.create(surf_dir, recursive = TRUE)
+
+    n <- 10242L
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      mri_vol2surf = function(input_file, output_file, hemisphere, ...) {
+        values <- c(rep(0, 2000), rep(1, 4000), rep(2, 4242))
+        RNifti::writeNifti(array(values, dim = c(n, 1, 1)), output_file)
+      }
+    )
+
+    result <- read_neuromaps_volume("fake.nii.gz", output_dir = output_dir)
+
+    expect_true("unknown" %in% result$region)
+  })
+})
+
+
+describe("read_cifti_annotation", {
+  it("skips label_table entries with zero matching vertices", {
+    skip_if_not_installed("ciftiTools")
+
+    local_mocked_bindings(
+      read_cifti = function(...) {
+        list(
+          data = list(
+            cortex_left = matrix(c(rep(1L, 5000), rep(2L, 5242)), ncol = 1),
+            cortex_right = matrix(rep(1L, 10242), ncol = 1)
+          ),
+          meta = list(
+            cifti = list(
+              labels = list(data.frame(
+                Key = c(1L, 2L, 999L),
+                Label = c("region_a", "region_b", "ghost"),
+                Red = c(1, 0, 0.5),
+                Green = c(0, 1, 0.5),
+                Blue = c(0, 0, 0.5),
+                Alpha = c(1, 1, 1),
+                stringsAsFactors = FALSE
+              ))
+            )
+          )
+        )
+      },
+      .package = "ciftiTools"
+    )
+
+    tmp <- withr::local_tempfile(fileext = ".dlabel.nii")
+    file.create(tmp)
+
+    result <- read_cifti_annotation(tmp)
+
+    expect_false("ghost" %in% result$region)
+    expect_true("region_a" %in% result$region)
+    expect_true("region_b" %in% result$region)
+  })
+
+  it("creates unknown region for unlabeled vertices", {
+    skip_if_not_installed("ciftiTools")
+
+    local_mocked_bindings(
+      read_cifti = function(...) {
+        list(
+          data = list(
+            cortex_left = matrix(c(rep(1L, 5000), rep(0L, 5242)), ncol = 1),
+            cortex_right = NULL
+          ),
+          meta = list(
+            cifti = list(
+              labels = list(data.frame(
+                Key = 1L,
+                Label = "region_a",
+                Red = 1,
+                Green = 0,
+                Blue = 0,
+                Alpha = 1,
+                stringsAsFactors = FALSE
+              ))
+            )
+          )
+        )
+      },
+      .package = "ciftiTools"
+    )
+
+    tmp <- withr::local_tempfile(fileext = ".dlabel.nii")
+    file.create(tmp)
+
+    result <- read_cifti_annotation(tmp)
+
+    expect_true("unknown" %in% result$region)
+    unknown_row <- result[result$region == "unknown", ]
+    expect_equal(unknown_row$colour[1], "#BEBEBE")
+  })
+})
+
+
+describe("parse_parcellation_values", {
+  it("skips parcel_id with zero matching vertices", {
+    values <- c(1, 1, 2, 2, 0)
+    result <- parse_parcellation_values(values, "left", "lh", NULL)
+    regions <- vapply(result, function(x) x$region[1], character(1))
+    expect_true("parcel_1" %in% regions)
+    expect_true("parcel_2" %in% regions)
+  })
+})
+
+
+describe("parse_continuous_values", {
+  it("skips bins with zero vertices", {
+    values <- c(rep(NaN, 10240), 0.5, 9.5)
+    result <- parse_continuous_values(values, "left", "lh", n_bins = 10)
+    bin_regions <- vapply(
+      result[vapply(result, function(x) grepl("^bin_", x$region[1]), logical(1))],
+      function(x) x$region[1],
+      character(1)
+    )
+    expect_true(length(bin_regions) <= 10)
+    expect_true(length(bin_regions) >= 1)
+  })
+})
+
+
+describe("read_neuromaps_volume vertex count mismatch", {
+  it("aborts when projected surface has wrong vertex count", {
+    skip_if_not_installed("RNifti")
+
+    output_dir <- withr::local_tempdir()
+    surf_dir <- file.path(output_dir, "surface_overlays")
+    dir.create(surf_dir, recursive = TRUE)
+
+    local_mocked_bindings(
+      check_fs = function(...) invisible(TRUE),
+      mri_vol2surf = function(input_file, output_file, hemisphere, ...) {
+        wrong_n <- 5000L
+        values <- rep(1, wrong_n)
+        RNifti::writeNifti(array(values, dim = c(wrong_n, 1, 1)), output_file)
+      }
+    )
+
+    expect_error(
+      read_neuromaps_volume("fake.nii.gz", output_dir = output_dir),
+      "expected.*10242"
+    )
+  })
+})
+
+
+describe("read_neuromaps_annotation", {
+  it("skips label_table entries with zero matching vertices", {
+    skip_if_not_installed("gifti")
+
+    tmp_dir <- withr::local_tempdir()
+    gii_file <- file.path(tmp_dir, "source_hemi-L_feature.func.gii")
+    file.create(gii_file)
+
+    local_mocked_bindings(
+      read_gifti = function(...) {
+        list(data = list(c(rep(1, 5000), rep(2, 5242))))
+      },
+      .package = "gifti"
+    )
+
+    label_tbl <- data.frame(
+      id = c(1L, 2L, 999L),
+      region = c("area_a", "area_b", "phantom"),
+      stringsAsFactors = FALSE
+    )
+
+    result <- read_neuromaps_annotation(gii_file, label_table = label_tbl)
+
+    expect_true("area_a" %in% result$region)
+    expect_true("area_b" %in% result$region)
+    expect_false("phantom" %in% result$region)
+  })
+
+  it("creates unknown region for unlabeled vertices", {
+    skip_if_not_installed("gifti")
+
+    tmp_dir <- withr::local_tempdir()
+    gii_file <- file.path(tmp_dir, "source_hemi-L_feature.func.gii")
+    file.create(gii_file)
+
+    local_mocked_bindings(
+      read_gifti = function(...) {
+        list(data = list(c(rep(1, 5000), rep(0, 5242))))
+      },
+      .package = "gifti"
+    )
+
+    result <- read_neuromaps_annotation(gii_file, label_table = NULL)
+
+    expect_true("unknown" %in% result$region)
+    unknown_row <- result[result$region == "unknown", ]
+    expect_equal(unknown_row$colour[1], "#BEBEBE")
+  })
+})

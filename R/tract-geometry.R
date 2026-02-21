@@ -527,11 +527,11 @@ detect_coords_are_voxels <- function(streamlines, dims = NULL) {
 #' projects tract centerlines onto slice views (coronal, axial) and extracts
 #' contours. Also creates cortex outlines for anatomical context.
 #'
-#' This is typically called automatically by [create_tract_atlas()] when
+#' This is typically called automatically by [create_tract_from_tractography()] when
 #' `include_geometry = TRUE`, but you can call it separately if you want
 #' custom views or need to regenerate geometry.
 #'
-#' @param atlas A `ggseg_atlas` of type `"tract"` (from [create_tract_atlas()]).
+#' @param atlas A `ggseg_atlas` of type `"tract"` (from [create_tract_from_tractography()]).
 #' @param aseg_file Path to a segmentation volume (`.mgz`, `.nii`) used to
 #'   draw cortex outlines for anatomical context.
 #' @param streamlines Named list of streamline matrices (Nx3 with x, y, z).
@@ -704,7 +704,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
           vol
         },
         .options = furrr_options(
-          packages = "ggsegExtra",
+          packages = "ggseg.extra",
           globals = c(
             "streamlines",
             "aseg_file",
@@ -763,7 +763,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
           NULL
         },
         .options = furrr_options(
-          packages = "ggsegExtra",
+          packages = "ggseg.extra",
           globals = c("tract_volumes", "dirs", "skip_existing", "p")
         )
       ))
@@ -796,7 +796,7 @@ create_tract_geometry_volumetric <- function( # nolint: object_length_linter.
           NULL
         },
         .options = furrr_options(
-          packages = "ggsegExtra",
+          packages = "ggseg.extra",
           globals = c("cortex_vol", "dirs", "skip_existing", "p2")
         )
       ))

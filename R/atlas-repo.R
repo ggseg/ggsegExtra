@@ -24,18 +24,18 @@
 #' @examples
 #' \dontrun{
 #' # Create atlas package in a new directory
-#' create_atlas_repo("ggsegDkt", "dkt")
+#' setup_atlas_repo("ggsegDkt", "dkt")
 #'
 #' # Create in current directory, derive name from path
-#' create_atlas_repo("ggsegMyatlas")
+#' setup_atlas_repo("ggsegMyatlas")
 #'
 #' # Specify full path
-#' create_atlas_repo("~/projects/ggsegSchaefer", "schaefer")
+#' setup_atlas_repo("~/projects/ggsegSchaefer", "schaefer")
 #'
 #' # Without opening in RStudio
-#' create_atlas_repo("ggsegHarvard", "harvard", open = FALSE)
+#' setup_atlas_repo("ggsegHarvard", "harvard", open = FALSE)
 #' }
-create_atlas_repo <- function(
+setup_atlas_repo <- function(
   path,
   atlas_name = NULL,
   open = rlang::is_interactive(),
@@ -62,7 +62,7 @@ create_atlas_repo <- function(
     cli::cli_abort(c(
       "Invalid atlas name",
       "x" = "atlas_name must contain at least one letter or number",
-      "i" = "Example: {.code create_atlas_repo('ggsegDkt', 'dkt')}"
+      "i" = "Example: {.code setup_atlas_repo('ggsegDkt', 'dkt')}"
     ))
   }
 
@@ -107,14 +107,14 @@ create_atlas_repo <- function(
 create_atlas_from_template <- function(path, atlas_name) {
   template_dir <- system.file(
     file.path("rstudio", "templates", "project", "create-ggseg-atlas"),
-    package = "ggsegExtra"
+    package = "ggseg.extra"
   )
 
   if (!dir.exists(template_dir)) {
     cli::cli_abort(c(
       "Template not found",
       "x" = "Could not find atlas template directory",
-      "i" = "Is ggsegExtra installed correctly?"
+      "i" = "Is ggseg.extra installed correctly?"
     ))
   }
 
@@ -234,6 +234,7 @@ template_replace <- function(file, atlas_name) {
       input <- readLines(file, warn = FALSE)
       output <- gsub("\\{GGSEG\\}", atlas_name, input)
       output <- gsub("\\{REPO\\}", repo_name, output)
+      output <- gsub("\\{YEAR\\}", format(Sys.Date(), "%Y"), output)
       writeLines(output, file)
     },
     error = function(e) {
@@ -434,11 +435,11 @@ write_github_workflows <- function(path) {
 
 
 #' @keywords internal
-new_project_create_atlas_repo <- function(dir, ...) {
+new_project_setup_atlas_repo <- function(dir, ...) {
   params <- list(...)
   atlas_name <- params$atlas_name
 
-  create_atlas_repo(
+  setup_atlas_repo(
     path = dir,
     atlas_name = atlas_name,
     open = FALSE,

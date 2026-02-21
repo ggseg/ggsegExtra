@@ -1,4 +1,4 @@
-describe("create_subcortical_atlas decimate validation", {
+describe("create_subcortical_from_volume decimate validation", {
   it("errors for values outside (0, 1)", {
     local_mocked_bindings(check_fs = function(...) TRUE)
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -6,7 +6,7 @@ describe("create_subcortical_atlas decimate validation", {
 
     for (val in list(-0.5, 0, 1, 1.5, 2)) {
       expect_error(
-        create_subcortical_atlas(vol_file, decimate = val, verbose = FALSE),
+        create_subcortical_from_volume(vol_file, decimate = val, verbose = FALSE),
         "decimate.*must be a single number between 0 and 1"
       )
     }
@@ -18,7 +18,7 @@ describe("create_subcortical_atlas decimate validation", {
     file.create(vol_file)
 
     expect_error(
-      create_subcortical_atlas(vol_file, decimate = "half", verbose = FALSE),
+      create_subcortical_from_volume(vol_file, decimate = "half", verbose = FALSE),
       "decimate.*must be a single number"
     )
   })
@@ -29,7 +29,7 @@ describe("create_subcortical_atlas decimate validation", {
     file.create(vol_file)
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         vol_file,
         decimate = c(0.3, 0.5),
         verbose = FALSE
@@ -42,7 +42,7 @@ describe("create_subcortical_atlas decimate validation", {
     local_mocked_bindings(check_fs = function(...) TRUE)
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         "/nonexistent/volume.mgz",
         decimate = NULL,
         verbose = FALSE
@@ -56,7 +56,7 @@ describe("create_subcortical_atlas decimate validation", {
 
     for (val in c(0.1, 0.25, 0.5, 0.75, 0.99)) {
       expect_error(
-        create_subcortical_atlas(
+        create_subcortical_from_volume(
           "/nonexistent/volume.mgz",
           decimate = val,
           verbose = FALSE
@@ -68,7 +68,7 @@ describe("create_subcortical_atlas decimate validation", {
 })
 
 
-describe("create_subcortical_atlas", {
+describe("create_subcortical_from_volume", {
   it("requires FreeSurfer to be available", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) {
@@ -80,7 +80,7 @@ describe("create_subcortical_atlas", {
     )
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         input_volume = "test.mgz",
         verbose = FALSE
       ),
@@ -92,7 +92,7 @@ describe("create_subcortical_atlas", {
     skip_if_no_freesurfer()
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         input_volume = "nonexistent_file.mgz",
         verbose = FALSE
       ),
@@ -107,7 +107,7 @@ describe("create_subcortical_atlas", {
     skip_if(!file.exists(vol_file), "Test volume file not found")
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         input_volume = vol_file,
         input_lut = "nonexistent_lut.txt",
         verbose = FALSE
@@ -123,7 +123,7 @@ describe("create_subcortical_atlas", {
     skip_if(!file.exists(vol_file), "Test volume file not found")
 
     expect_warning(
-      atlas <- create_subcortical_atlas(
+      atlas <- create_subcortical_from_volume(
         input_volume = vol_file,
         input_lut = NULL,
         steps = 1:3,
@@ -137,23 +137,26 @@ describe("create_subcortical_atlas", {
     expect_true(all(grepl("^region_", atlas$core$label)))
     expect_null(atlas$palette)
   })
+})
+
+
+describe("create_subcortical_from_volume with meshes", {
+  skip_if_no_freesurfer()
+
+  vol_file <- test_mgz_file()
+  skip_if(!file.exists(vol_file), "Test volume file not found")
+
+  lut_file <- test_lut_file()
+  skip_if(!file.exists(lut_file), "Test LUT file not found")
+
+  atlas <- create_subcortical_from_volume(
+    input_volume = vol_file,
+    input_lut = lut_file,
+    steps = 1:3,
+    verbose = FALSE
+  )
 
   it("creates atlas with meshes component", {
-    skip_if_no_freesurfer()
-
-    vol_file <- test_mgz_file()
-    skip_if(!file.exists(vol_file), "Test volume file not found")
-
-    lut_file <- test_lut_file()
-    skip_if(!file.exists(lut_file), "Test LUT file not found")
-
-    atlas <- create_subcortical_atlas(
-      input_volume = vol_file,
-      input_lut = lut_file,
-      steps = 1:3,
-      verbose = FALSE
-    )
-
     expect_s3_class(atlas, "ggseg_atlas")
     expect_equal(atlas$type, "subcortical")
     expect_false(is.null(atlas$data$meshes))
@@ -161,21 +164,6 @@ describe("create_subcortical_atlas", {
   })
 
   it("creates valid mesh structure", {
-    skip_if_no_freesurfer()
-
-    vol_file <- test_mgz_file()
-    skip_if(!file.exists(vol_file), "Test volume file not found")
-
-    lut_file <- test_lut_file()
-    skip_if(!file.exists(lut_file), "Test LUT file not found")
-
-    atlas <- create_subcortical_atlas(
-      input_volume = vol_file,
-      input_lut = lut_file,
-      steps = 1:3,
-      verbose = FALSE
-    )
-
     for (i in seq_len(nrow(atlas$data$meshes))) {
       mesh <- atlas$data$meshes$mesh[[i]]
       if (!is.null(mesh)) {
@@ -187,21 +175,6 @@ describe("create_subcortical_atlas", {
   })
 
   it("assigns correct hemisphere", {
-    skip_if_no_freesurfer()
-
-    vol_file <- test_mgz_file()
-    skip_if(!file.exists(vol_file), "Test volume file not found")
-
-    lut_file <- test_lut_file()
-    skip_if(!file.exists(lut_file), "Test LUT file not found")
-
-    atlas <- create_subcortical_atlas(
-      input_volume = vol_file,
-      input_lut = lut_file,
-      steps = 1:3,
-      verbose = FALSE
-    )
-
     left_labels <- atlas$core$label[grepl("Left|left|lh", atlas$core$label)]
     right_labels <- atlas$core$label[grepl("Right|right|rh", atlas$core$label)]
 
@@ -217,21 +190,6 @@ describe("create_subcortical_atlas", {
   })
 
   it("can render with ggseg3d", {
-    skip_if_no_freesurfer()
-
-    vol_file <- test_mgz_file()
-    skip_if(!file.exists(vol_file), "Test volume file not found")
-
-    lut_file <- test_lut_file()
-    skip_if(!file.exists(lut_file), "Test LUT file not found")
-
-    atlas <- create_subcortical_atlas(
-      input_volume = vol_file,
-      input_lut = lut_file,
-      steps = 1:3,
-      verbose = FALSE
-    )
-
     expect_no_error({
       p <- ggseg3d::ggseg3d(atlas = atlas, hemisphere = "subcort")
     })
@@ -239,7 +197,7 @@ describe("create_subcortical_atlas", {
 })
 
 
-describe("create_subcortical_atlas pipeline flow", {
+describe("create_subcortical_from_volume pipeline flow", {
   it("step 1 uses generate_colortable_from_volume when no LUT", {
     generated <- FALSE
     test_dir <- withr::local_tempdir()
@@ -295,12 +253,12 @@ describe("create_subcortical_atlas pipeline flow", {
       ggseg_data_subcortical = function(...) list(...)
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
     vol_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(vol_file)
 
     expect_warning(
-      atlas <- create_subcortical_atlas(
+      atlas <- create_subcortical_from_volume(
         input_volume = vol_file,
         input_lut = NULL,
         steps = 1:3,
@@ -370,9 +328,9 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    atlas <- create_subcortical_atlas(
+    atlas <- create_subcortical_from_volume(
       input_volume = vol_file,
       input_lut = lut_file,
       steps = 1:3,
@@ -470,9 +428,9 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
-    atlas <- create_subcortical_atlas(
+    atlas <- create_subcortical_from_volume(
       input_volume = vol_file,
       input_lut = lut_file,
       steps = 1:3,
@@ -518,10 +476,10 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         input_volume = vol_file,
         input_lut = lut_file,
         steps = 1,
@@ -593,9 +551,9 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
-    atlas <- create_subcortical_atlas(
+    atlas <- create_subcortical_from_volume(
       input_volume = vol_file,
       input_lut = lut_file,
       steps = 3,
@@ -665,10 +623,10 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
     expect_error(
-      create_subcortical_atlas(
+      create_subcortical_from_volume(
         input_volume = vol_file,
         input_lut = lut_file,
         steps = 9,
@@ -762,9 +720,9 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
-    result <- create_subcortical_atlas(
+    result <- create_subcortical_from_volume(
       input_volume = vol_file,
       input_lut = lut_file,
       steps = 5:8,
@@ -861,9 +819,9 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
-    result <- create_subcortical_atlas(
+    result <- create_subcortical_from_volume(
       input_volume = vol_file,
       input_lut = lut_file,
       steps = 4:8,
@@ -946,13 +904,16 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
-    atlas <- create_subcortical_atlas(
-      input_volume = vol_file,
-      input_lut = lut_file,
-      steps = 9,
-      verbose = TRUE
+    expect_warning(
+      atlas <- create_subcortical_from_volume(
+        input_volume = vol_file,
+        input_lut = lut_file,
+        steps = 9,
+        verbose = TRUE
+      ),
+      "Dropping"
     )
 
     expect_s3_class(atlas, "ggseg_atlas")
@@ -1023,16 +984,19 @@ describe("create_subcortical_atlas pipeline flow", {
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
     withr::local_options(
-      ggsegExtra.output_dir = test_dir,
-      ggsegExtra.cleanup = TRUE
+      ggseg.extra.output_dir = test_dir,
+      ggseg.extra.cleanup = TRUE
     )
 
-    atlas <- create_subcortical_atlas(
-      input_volume = vol_file,
-      input_lut = lut_file,
-      steps = 9,
-      verbose = TRUE,
-      cleanup = TRUE
+    expect_warning(
+      atlas <- create_subcortical_from_volume(
+        input_volume = vol_file,
+        input_lut = lut_file,
+        steps = 9,
+        verbose = TRUE,
+        cleanup = TRUE
+      ),
+      "Dropping"
     )
 
     expect_s3_class(atlas, "ggseg_atlas")
@@ -1081,9 +1045,9 @@ describe("create_subcortical_atlas pipeline flow", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
-    result <- create_subcortical_atlas(
+    result <- create_subcortical_from_volume(
       input_volume = vol_file,
       input_lut = lut_file,
       steps = 5:6,
@@ -1091,5 +1055,109 @@ describe("create_subcortical_atlas pipeline flow", {
     )
 
     expect_null(result)
+  })
+})
+
+
+describe("subcort_resolve_meshes early-return NULL", {
+  it("returns NULL when step not run and no future steps", {
+    local_mocked_bindings(
+      load_or_run_step = function(step, steps, ...) {
+        list(run = FALSE, data = list("meshes_list.rds" = list()))
+      }
+    )
+
+    config <- list(steps = 1L, verbose = FALSE)
+    dirs <- list(base = withr::local_tempdir())
+    colortable <- data.frame(idx = 10, label = "r")
+
+    result <- subcort_resolve_meshes(config, dirs, colortable)
+    expect_null(result)
+  })
+})
+
+
+describe("subcort_resolve_components early-return NULL", {
+  it("returns NULL when step not run and no future steps", {
+    local_mocked_bindings(
+      load_or_run_step = function(step, steps, ...) {
+        list(run = FALSE, data = list("components.rds" = list()))
+      }
+    )
+
+    config <- list(steps = 1:2, verbose = FALSE)
+    dirs <- list(base = withr::local_tempdir())
+    colortable <- data.frame(idx = 10, label = "r")
+    meshes_list <- list()
+
+    result <- subcort_resolve_components(config, dirs, colortable, meshes_list)
+    expect_null(result)
+  })
+})
+
+
+describe("subcort_assemble_full sf_data as data.frame", {
+  it("extracts labels from sf_data when build_contour_sf returns a data.frame", {
+    test_dir <- withr::local_tempdir()
+    save(
+      list = character(0),
+      file = file.path(test_dir, "contours_reduced.rda")
+    )
+
+    sf_df <- data.frame(label = c("lh_region1", "rh_region2", NA))
+
+    local_mocked_bindings(
+      build_contour_sf = function(...) sf_df,
+      ggseg_atlas = function(...) {
+        args <- list(...)
+        structure(
+          list(core = args$core, palette = args$palette,
+               type = args$type, data = args$data),
+          class = "ggseg_atlas"
+        )
+      },
+      ggseg_data_subcortical = function(...) list(...),
+      warn_if_large_atlas = function(...) invisible(NULL),
+      preview_atlas = function(...) invisible(NULL)
+    )
+
+    components <- list(
+      core = tibble::tibble(
+        hemi = "left", region = "region1",
+        label = "lh_region1", colour = "#FF0000"
+      ),
+      palette = c(lh_region1 = "#FF0000"),
+      meshes_df = tibble::tibble(label = "lh_region1", mesh = list(NULL))
+    )
+
+    result <- subcort_assemble_full(
+      "test", components,
+      list(base = test_dir),
+      c("axial"), NULL
+    )
+    expect_s3_class(result, "ggseg_atlas")
+  })
+})
+
+
+describe("subcort_resolve_snapshots early-return NULL", {
+  it("returns NULL views and cortex_slices when step not run and no future steps", {
+    local_mocked_bindings(
+      load_or_run_step = function(step, steps, ...) {
+        list(
+          run = FALSE,
+          data = list("views.rds" = NULL, "cortex_slices.rds" = NULL)
+        )
+      }
+    )
+
+    config <- list(steps = 1:3, verbose = FALSE)
+    dirs <- list(base = withr::local_tempdir())
+    colortable <- data.frame(idx = 10, label = "r")
+    views <- c("axial", "coronal", "sagittal")
+
+    result <- subcort_resolve_snapshots(config, dirs, colortable, views)
+    expect_null(result$views)
+    expect_null(result$cortex_slices)
   })
 })

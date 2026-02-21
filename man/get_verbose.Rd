@@ -11,13 +11,13 @@ Logical TRUE/FALSE
 }
 \description{
 Returns the verbose setting from option, environment variable, or default.
-Checks in order: \code{ggsegExtra.verbose} option, \code{GGSEGEXTRA_VERBOSE} env var,
+Checks in order: \code{ggseg.extra.verbose} option, \code{GGSEG_EXTRA_VERBOSE} env var,
 then defaults to TRUE.
 }
 \details{
 Used as default argument in verbose parameters throughout the package.
-Set \code{options(ggsegExtra.verbose = FALSE)} or
-\code{Sys.setenv(GGSEGEXTRA_VERBOSE = "false")} to suppress output globally.
+Set \code{options(ggseg.extra.verbose = FALSE)} or
+\code{Sys.setenv(GGSEG_EXTRA_VERBOSE = "false")} to suppress output globally.
 }
 \examples{
 get_verbose()

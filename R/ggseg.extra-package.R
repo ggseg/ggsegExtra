@@ -10,12 +10,15 @@ NULL
 # nocov start
 #' Utility to easily knit tutorial vignettes
 #' @noRd
-knit_tutorials <- function() {
-  tutorials <- list.files("vignettes", "orig$", full.names = TRUE)
+knit_tutorials <- function(tutorials = NULL) {
+  if (is.null(tutorials)) {
+    tutorials <- list.files("vignettes", "orig$", full.names = TRUE)
+  }
 
   build_tutorials <- function(file) {
     cli::cli_h1("Building {basename(file)}")
 
+    knitr::opts_knit$set(base.dir = "vignettes/")
     knitr::knit(
       file,
       sub("\\.orig$", "", file)
@@ -28,23 +31,22 @@ knit_tutorials <- function() {
 #' Utility to set tutorial build options
 #' @noRd
 set_tutorial_options <- function() {
+  name <- tools::file_path_sans_ext(
+    tools::file_path_sans_ext(basename(knitr::current_input()))
+  )
   knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>",
-    error = FALSE
+    error = FALSE,
+    fig.path = paste0("figures/", name, "-"),
+    fig.retina = 2,
+    dpi = 96
   )
   options(
     freesurfer.verbose = FALSE,
     progressr.enabled = TRUE
   )
-
-  with(
-    future::plan(
-      future::multisession(workers = future::availableCores() / 2)
-    )
-  )
-
-  check_fs(abort = FALSE) && has_magick()
+  freesurfer::have_fs() && has_magick()
 }
 # nocov end
 

@@ -338,7 +338,7 @@ create_subcortical_geometry_projection <- function(
       NULL
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c("dims", "vol", "dirs", "skip_existing", "p")
     )
   ))

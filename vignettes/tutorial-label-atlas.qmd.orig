@@ -12,7 +12,7 @@ can_run <- set_tutorial_options()
 Sometimes you have brain regions defined as individual FreeSurfer label files rather than a complete annotation.
 This happens when you extract results from vertex-wise analyses, combine regions from different sources, or work with manually defined ROIs.
 
-`create_atlas_from_labels()` builds an atlas from a collection of `.label` files.
+`create_cortical_from_labels()` builds an atlas from a collection of `.label` files.
 
 ## What label files contain
 
@@ -32,7 +32,7 @@ Label files conventionally include hemisphere in the filename: `lh.motor.label` 
 ```{r}
 #| label: load-libraries
 #| eval: !expr can_run
-library(ggsegExtra)
+library(ggseg.extra)
 library(ggseg.formats)
 library(dplyr)
 ```
@@ -61,7 +61,7 @@ head(basename(ba_labels))
 ```{r}
 #| label: basic-atlas
 #| eval: !expr can_run
-ba_atlas <- create_atlas_from_labels(
+ba_atlas <- create_cortical_from_labels(
   label_files = ba_labels,
   atlas_name = "brodmann"
 )
@@ -78,7 +78,7 @@ Override auto-detected names when the filenames don't produce readable labels:
 ```{r}
 #| label: custom-names
 #| eval: false
-atlas <- create_atlas_from_labels(
+atlas <- create_cortical_from_labels(
   label_files = c(
     "lh.motor.label", "rh.motor.label",
     "lh.visual.label", "rh.visual.label"
@@ -101,7 +101,7 @@ For 2D plots, enable the full pipeline:
 #| label: full-atlas
 #| eval: !expr can_run
 
-ba_atlas <- create_atlas_from_labels(
+ba_atlas <- create_cortical_from_labels(
   label_files = ba_labels,
   atlas_name = "custom"
 )
@@ -109,7 +109,7 @@ ba_atlas <- create_atlas_from_labels(
 ba_atlas
 ```
 
-This runs the same screenshot pipeline as `create_cortical_atlas()` --- it takes screenshots of each region from multiple angles, extracts contours, and converts them to sf polygons.
+This runs the same screenshot pipeline as `create_cortical_from_annotation()` --- it takes screenshots of each region from multiple angles, extracts contours, and converts them to sf polygons.
 
 ## Post-processing
 
@@ -120,8 +120,7 @@ Clean up region names:
 #| eval: !expr can_run
 ba_atlas <- ba_atlas |>
   atlas_region_contextual("cortex", match_on = "label") |>
-  atlas_region_contextual("unknown", match_on = "label") |>
-  atlas_view_gather()
+  atlas_region_contextual("unknown", match_on = "label")
 
 core_clean <- ba_atlas$core |>
   mutate(
@@ -129,13 +128,25 @@ core_clean <- ba_atlas$core |>
     region = gsub("_exvivo", "", region)
   )
 
-ba_atlas <- brain_atlas(
+ba_atlas <- ggseg_atlas(
   atlas = ba_atlas$atlas,
   type = ba_atlas$type,
   palette = ba_atlas$palette,
   core = core_clean,
   data = ba_atlas$data
 )
+```
+
+```{r}
+#| label: plot
+#| eval: !expr can_run
+#| fig-cap: "Brodmann area atlas plotted with ggseg."
+#| fig-alt: "2D brain atlas plot showing Brodmann area regions across lateral and medial views of both hemispheres."
+#| fig-width: 10
+#| fig-height: 6
+
+plot(ba_atlas) +
+  ggplot2::scale_fill_viridis_d(na.value = "grey80")
 ```
 
 ## Finding label files
@@ -174,7 +185,7 @@ my_labels <- c(
   "rh.V1.label"
 )
 
-atlas <- create_atlas_from_labels(
+atlas <- create_cortical_from_labels(
   label_files = file.path(label_dir, my_labels),
   atlas_name = "somatosensory_visual",
   region_names = c(

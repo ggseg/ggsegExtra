@@ -10,7 +10,7 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-library(ggsegExtra)
+library(ggseg.extra)
 ```
 
 The atlas creation functions share common parameters that control pipeline behaviour.
@@ -31,11 +31,11 @@ This lets you set project-wide defaults while still overriding them for specific
 
 | Parameter | R Option | Environment Variable | Default |
 |-----------|----------|---------------------|---------|
-| `verbose` | `ggsegExtra.verbose` | `GGSEGEXTRA_VERBOSE` | `TRUE` |
-| `cleanup` | `ggsegExtra.cleanup` | `GGSEGEXTRA_CLEANUP` | `TRUE` |
-| `skip_existing` | `ggsegExtra.skip_existing` | `GGSEGEXTRA_SKIP_EXISTING` | `TRUE` |
-| `tolerance` | `ggsegExtra.tolerance` | `GGSEGEXTRA_TOLERANCE` | `1` |
-| `smoothness` | `ggsegExtra.smoothness` | `GGSEGEXTRA_SMOOTHNESS` | `5` |
+| `verbose` | `ggseg.extra.verbose` | `GGSEG_EXTRA_VERBOSE` | `TRUE` |
+| `cleanup` | `ggseg.extra.cleanup` | `GGSEG_EXTRA_CLEANUP` | `TRUE` |
+| `skip_existing` | `ggseg.extra.skip_existing` | `GGSEG_EXTRA_SKIP_EXISTING` | `TRUE` |
+| `tolerance` | `ggseg.extra.tolerance` | `GGSEG_EXTRA_TOLERANCE` | `1` |
+| `smoothness` | `ggseg.extra.smoothness` | `GGSEG_EXTRA_SMOOTHNESS` | `5` |
 
 ## Setting options in R
 
@@ -45,12 +45,12 @@ Use `options()` to set defaults for your R session:
 #| label: set-options
 #| eval: false
 options(
-  ggsegExtra.tolerance = 0.5,
-  ggsegExtra.smoothness = 10,
-  ggsegExtra.cleanup = FALSE
+  ggseg.extra.tolerance = 0.5,
+  ggseg.extra.smoothness = 10,
+  ggseg.extra.cleanup = FALSE
 )
 
-atlas <- create_cortical_atlas(
+atlas <- create_cortical_from_annotation(
   input_annot = c("lh.aparc.annot", "rh.aparc.annot"),
   output_dir = "my_atlas"
 )
@@ -63,9 +63,9 @@ The `verbose` parameter controls progress messages during pipeline execution.
 ```{r}
 #| label: verbose
 #| eval: false
-options(ggsegExtra.verbose = FALSE)
+options(ggseg.extra.verbose = FALSE)
 
-Sys.setenv(GGSEGEXTRA_VERBOSE = "false")
+Sys.setenv(GGSEG_EXTRA_VERBOSE = "false")
 ```
 
 ### Cleanup
@@ -76,9 +76,9 @@ Set it to `FALSE` to keep them for debugging:
 ```{r}
 #| label: cleanup
 #| eval: false
-options(ggsegExtra.cleanup = FALSE)
+options(ggseg.extra.cleanup = FALSE)
 
-atlas <- create_subcortical_atlas(
+atlas <- create_subcortical_from_volume(
   input_volume = "aseg.mgz",
   output_dir = "my_atlas_files"
 )
@@ -91,9 +91,9 @@ The `skip_existing` parameter lets you resume interrupted pipeline runs by reusi
 ```{r}
 #| label: skip-existing
 #| eval: false
-options(ggsegExtra.skip_existing = FALSE)
+options(ggseg.extra.skip_existing = FALSE)
 
-options(ggsegExtra.skip_existing = TRUE)
+options(ggseg.extra.skip_existing = TRUE)
 ```
 
 ### Geometry parameters
@@ -106,9 +106,9 @@ Higher smoothness means rounder region boundaries.
 ```{r}
 #| label: geometry
 #| eval: false
-options(ggsegExtra.tolerance = 1.0)
+options(ggseg.extra.tolerance = 1.0)
 
-options(ggsegExtra.smoothness = 15)
+options(ggseg.extra.smoothness = 15)
 ```
 
 ## Environment variables
@@ -118,26 +118,26 @@ Environment variables are useful for CI pipelines, Docker containers, or setting
 In `.Renviron`:
 
 ```
-GGSEGEXTRA_VERBOSE=false
-GGSEGEXTRA_CLEANUP=true
-GGSEGEXTRA_SKIP_EXISTING=true
-GGSEGEXTRA_TOLERANCE=0.5
-GGSEGEXTRA_SMOOTHNESS=10
+GGSEG_EXTRA_VERBOSE=false
+GGSEG_EXTRA_CLEANUP=true
+GGSEG_EXTRA_SKIP_EXISTING=true
+GGSEG_EXTRA_TOLERANCE=0.5
+GGSEG_EXTRA_SMOOTHNESS=10
 ```
 
 In a shell:
 
 ```bash
-export GGSEGEXTRA_VERBOSE=false
-export GGSEGEXTRA_TOLERANCE=0.5
-R -e "ggsegExtra::create_cortical_atlas(...)"
+export GGSEG_EXTRA_VERBOSE=false
+export GGSEG_EXTRA_TOLERANCE=0.5
+R -e "ggseg.extra::create_cortical_from_annotation(...)"
 ```
 
 In Docker:
 
 ```dockerfile
-ENV GGSEGEXTRA_VERBOSE=false
-ENV GGSEGEXTRA_CLEANUP=true
+ENV GGSEG_EXTRA_VERBOSE=false
+ENV GGSEG_EXTRA_CLEANUP=true
 ```
 
 ## Overriding defaults
@@ -147,9 +147,9 @@ Explicit arguments always win:
 ```{r}
 #| label: override
 #| eval: false
-options(ggsegExtra.cleanup = TRUE)
+options(ggseg.extra.cleanup = TRUE)
 
-atlas <- create_cortical_atlas(
+atlas <- create_cortical_from_annotation(
   input_annot = c("lh.aparc.annot", "rh.aparc.annot"),
   cleanup = FALSE
 )
@@ -163,9 +163,9 @@ atlas <- create_cortical_atlas(
 #| label: dev-options
 #| eval: false
 options(
-  ggsegExtra.verbose = TRUE,
-  ggsegExtra.cleanup = FALSE,
-  ggsegExtra.skip_existing = FALSE
+  ggseg.extra.verbose = TRUE,
+  ggseg.extra.cleanup = FALSE,
+  ggseg.extra.skip_existing = FALSE
 )
 ```
 
@@ -175,9 +175,9 @@ options(
 #| label: prod-options
 #| eval: false
 options(
-  ggsegExtra.verbose = FALSE,
-  ggsegExtra.cleanup = TRUE,
-  ggsegExtra.skip_existing = TRUE
+  ggseg.extra.verbose = FALSE,
+  ggseg.extra.cleanup = TRUE,
+  ggseg.extra.skip_existing = TRUE
 )
 ```
 
@@ -189,16 +189,16 @@ Run the full pipeline once to generate screenshots, then re-run only the geometr
 ```{r}
 #| label: iterate
 #| eval: false
-options(ggsegExtra.cleanup = FALSE)
+options(ggseg.extra.cleanup = FALSE)
 
 annot_files <- c("lh.myatlas.annot", "rh.myatlas.annot")
 
-atlas <- create_cortical_atlas(
+atlas <- create_cortical_from_annotation(
   input_annot = annot_files,
   output_dir = "atlas_workdir"
 )
 
-atlas <- create_cortical_atlas(
+atlas <- create_cortical_from_annotation(
   input_annot = annot_files,
   output_dir = "atlas_workdir",
   steps = 6:8,

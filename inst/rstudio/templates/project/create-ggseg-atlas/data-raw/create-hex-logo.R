@@ -10,9 +10,7 @@ load(here::here("data/{GGSEG}.rda"))
 
 # Create the brain plot for the logo
 p <- ggseg(
-  atlas = {
-    GGSEG
-  },
+  atlas = {GGSEG},
   hemi = "left",
   view = "lateral",
   show.legend = FALSE,

@@ -386,7 +386,7 @@ describe("validate_subcort_config", {
     file.create(vol_file)
     lut_file <- withr::local_tempfile(fileext = ".txt")
     file.create(lut_file)
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     result <- validate_subcort_config(
       input_volume = vol_file,
@@ -425,7 +425,7 @@ describe("validate_subcort_config", {
     local_mocked_bindings(check_fs = function(...) TRUE)
     vol_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(vol_file)
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     for (val in list(-0.5, 0, 1, 1.5, "half", c(0.3, 0.5))) {
       expect_error(
@@ -451,7 +451,7 @@ describe("validate_subcort_config", {
     local_mocked_bindings(check_fs = function(...) TRUE)
     vol_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(vol_file)
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     result <- validate_subcort_config(
       input_volume = vol_file,
@@ -482,10 +482,7 @@ describe("subcort_log_header", {
       output_dir = "/tmp/output"
     )
 
-    expect_message(
-      subcort_log_header(config),
-      "volume.mgz"
-    )
+    expect_message(subcort_log_header(config), "volume.mgz")
   })
 
   it("is silent when verbose is FALSE", {
@@ -853,5 +850,44 @@ describe("run_image_steps (subcort step_map)", {
     expect_true(step6_called)
     expect_false(step7_called)
     expect_true(step8_called)
+  })
+})
+
+
+describe("subcort_create_meshes", {
+  it("logs decimation stats when verbose and decimate < 1", {
+    mock_mesh <- list(
+      vertices = data.frame(x = 1:10, y = 1:10, z = 1:10),
+      faces = data.frame(i = 1:5, j = 2:6, k = 3:7)
+    )
+    local_mocked_bindings(
+      tessellate_label = function(...) mock_mesh,
+      progressor = function(...) function(...) NULL,
+      future_map2 = mock_future_map2,
+      furrr_options = function(...) list(),
+      center_meshes = function(x) x,
+      decimate_mesh = function(mesh, ...) {
+        list(
+          vertices = data.frame(x = 1:8, y = 1:8, z = 1:8),
+          faces = data.frame(i = 1:3, j = 2:4, k = 3:5)
+        )
+      }
+    )
+
+    colortable <- data.frame(
+      idx = 10,
+      label = "Left-Putamen",
+      stringsAsFactors = FALSE
+    )
+    dirs <- list(meshes = withr::local_tempdir())
+
+    expect_message(
+      subcort_create_meshes(
+        "fake.mgz", colortable, dirs,
+        skip_existing = FALSE, verbose = TRUE,
+        decimate = 0.5
+      ),
+      "Decimating"
+    )
   })
 })

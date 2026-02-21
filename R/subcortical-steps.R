@@ -36,7 +36,7 @@ subcort_create_meshes <- function(
       mesh
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c("input_volume", "dirs", "verbose", "skip_existing", "p")
     )
   )
@@ -166,7 +166,7 @@ subcort_create_snapshots <- function(
       NULL
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c("dims", "vol", "dirs", "skip_existing", "p")
     )
   ))

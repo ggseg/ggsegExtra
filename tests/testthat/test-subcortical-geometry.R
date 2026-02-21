@@ -76,20 +76,7 @@ describe("decimate_mesh", {
   it("works on real aseg meshes", {
     skip_if_not_installed("Rvcg")
 
-    atlas_file <- system.file(
-      package = "ggseg.formats",
-      "extdata",
-      "aseg.rda"
-    )
-    if (!file.exists(atlas_file)) {
-      atlas_file <- file.path(
-        "/Users/athanasm/workspace/ggseg/ggseg.formats/data/aseg.rda"
-      )
-    }
-    skip_if(!file.exists(atlas_file), "aseg atlas not available")
-
-    load(atlas_file)
-    mesh <- aseg$data$meshes$mesh[[1]]
+    mesh <- aseg()$data$meshes$mesh[[1]]
 
     result <- decimate_mesh(mesh, percent = 0.5)
 
@@ -664,6 +651,99 @@ describe("create_subcortical_geometry_projection", {
       cortex_slices = custom_cortex
     )
 
+    expect_s3_class(result, "sf")
+  })
+})
+
+
+describe("create_subcortical_geometry_projection image processing loop", {
+  it("calls process_snapshot_image and extract_alpha_mask for each file", {
+    tmp_dir <- withr::local_tempdir()
+
+    fake_vol <- array(0L, dim = c(10, 10, 10))
+    fake_vol[2:3, 2:3, 2:3] <- 5L
+
+    fake_colortable <- data.frame(
+      idx = 5L,
+      label = "region_0005",
+      stringsAsFactors = FALSE
+    )
+
+    snap_dir <- file.path(tmp_dir, "subcort_proj_geom", "snapshots")
+    proc_dir <- file.path(tmp_dir, "subcort_proj_geom", "processed")
+
+    process_files <- character(0)
+    mask_files <- character(0)
+
+    fake_geom <- sf::st_polygon(list(matrix(
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+    )))
+    fake_sf <- sf::st_sf(
+      filenm = "axial_region_0005.png",
+      geometry = sf::st_sfc(fake_geom)
+    )
+    fake_sf$view <- "axial"
+
+    local_mocked_bindings(
+      is_verbose = function(...) FALSE,
+      get_cleanup = function(...) FALSE,
+      get_skip_existing = function(...) FALSE,
+      get_tolerance = function(...) 0.01,
+      get_smoothness = function(...) 1,
+      get_output_dir = function(...) tmp_dir,
+      mkdir = function(d) {
+        dir.create(d, recursive = TRUE, showWarnings = FALSE)
+        invisible(NULL)
+      },
+      read_volume = function(f, ...) fake_vol,
+      detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
+      progressor = function(...) function(...) NULL,
+      future_pmap = mock_future_pmap,
+      furrr_options = function(...) list(),
+      snapshot_partial_projection = function(..., output_dir, label, view_name) {
+        f <- file.path(output_dir, paste0(view_name, "_", label, ".png"))
+        file.create(f)
+        invisible(NULL)
+      },
+      snapshot_cortex_slice = function(...) invisible(NULL),
+      process_snapshot_image = function(input_file, output_file, ...) {
+        process_files <<- c(process_files, basename(input_file))
+        file.create(output_file)
+        invisible(NULL)
+      },
+      extract_alpha_mask = function(input, output, ...) {
+        mask_files <<- c(mask_files, basename(input))
+        invisible(NULL)
+      },
+      extract_contours = function(...) invisible(NULL),
+      smooth_contours = function(...) invisible(NULL),
+      reduce_vertex = function(...) invisible(NULL),
+      make_multipolygon = function(...) fake_sf,
+      layout_volumetric_views = function(df) df
+    )
+
+    custom_views <- data.frame(
+      name = "axial",
+      type = "axial",
+      start = 1,
+      end = 10,
+      stringsAsFactors = FALSE
+    )
+    custom_cortex <- data.frame(
+      x = NA, y = NA, z = 5,
+      view = "axial", name = "axial",
+      stringsAsFactors = FALSE
+    )
+
+    result <- create_subcortical_geometry_projection(
+      input_volume = "fake.mgz",
+      colortable = fake_colortable,
+      views = custom_views,
+      cortex_slices = custom_cortex
+    )
+
+    expect_true(length(process_files) > 0)
+    expect_true(length(mask_files) > 0)
     expect_s3_class(result, "sf")
   })
 })

@@ -25,7 +25,7 @@ This tutorial recreates the TRACULA atlas --- the same pipeline behind `data-raw
 ```{r}
 #| label: load-libraries
 #| eval: !expr can_run
-library(ggsegExtra)
+library(ggseg.extra)
 library(ggseg.formats)
 library(dplyr)
 ```
@@ -52,14 +52,14 @@ If it's missing, you can still create a 3D-only atlas.
 
 ## Creating the atlas
 
-`create_tract_atlas()` reads each tractography file, computes a centerline, and generates a tube mesh around it.
+`create_tract_from_tractography()` reads each tractography file, computes a centerline, and generates a tube mesh around it.
 The `input_aseg` provides cortex context for 2D views:
 
 ```{r}
 #| label: create-atlas
 #| eval: !expr can_run
 
-tracula_raw <- create_tract_atlas(
+tracula_raw <- create_tract_from_tractography(
   input_tracts = tract_files,
   input_aseg = aseg_file,
   atlas_name = "tracula"
@@ -113,11 +113,11 @@ Remove fragments below a minimum area:
 #| label: remove-small
 #| eval: !expr can_run
 tracula_raw <- tracula_raw |>
-  atlas_view_remove_region_small(
+  atlas_view_remove_small(
     min_area = 500,
     views = c("axial", "coronal")
   ) |>
-  atlas_view_remove_region_small(min_area = 50)
+  atlas_view_remove_small(min_area = 50)
 ```
 
 The first call applies a higher threshold to axial and coronal views (where tracts appear in cross-section and produce small dots).
@@ -187,7 +187,7 @@ core_with_meta <- tracula_raw$core |>
 ```{r}
 #| label: rebuild
 #| eval: !expr can_run
-tracula <- brain_atlas(
+tracula <- ggseg_atlas(
   atlas = "tracula",
   type = "tract",
   palette = tracula_raw$palette,
@@ -204,4 +204,16 @@ tracula
 brain_labels(tracula)
 
 table(tracula$core$group, useNA = "ifany")
+```
+
+```{r}
+#| label: plot
+#| eval: !expr can_run
+#| fig-cap: "TRACULA white matter tract atlas plotted with ggseg."
+#| fig-alt: "2D brain atlas plot showing white matter tracts including corticospinal tract, uncinate fasciculus, and cingulum across axial, coronal, and sagittal projection views."
+#| fig-width: 10
+#| fig-height: 8
+
+plot(tracula) +
+  ggplot2::scale_fill_viridis_d(na.value = "grey80")
 ```

@@ -25,25 +25,25 @@ describe("mkdir", {
 
 describe("get_verbose", {
   it("returns TRUE by default", {
-    withr::local_options(ggsegExtra.verbose = NULL)
-    withr::local_envvar(GGSEGEXTRA_VERBOSE = NA)
+    withr::local_options(ggseg.extra.verbose = NULL)
+    withr::local_envvar(GGSEG_EXTRA_VERBOSE = NA)
     expect_true(get_verbose())
   })
 
   it("reads from option", {
-    withr::local_options(ggsegExtra.verbose = FALSE)
+    withr::local_options(ggseg.extra.verbose = FALSE)
     expect_false(get_verbose())
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.verbose = NULL)
-    withr::local_envvar(GGSEGEXTRA_VERBOSE = "false")
+    withr::local_options(ggseg.extra.verbose = NULL)
+    withr::local_envvar(GGSEG_EXTRA_VERBOSE = "false")
     expect_false(get_verbose())
   })
 
   it("option takes precedence over envvar", {
-    withr::local_options(ggsegExtra.verbose = TRUE)
-    withr::local_envvar(GGSEGEXTRA_VERBOSE = "false")
+    withr::local_options(ggseg.extra.verbose = TRUE)
+    withr::local_envvar(GGSEG_EXTRA_VERBOSE = "false")
     expect_true(get_verbose())
   })
 })
@@ -61,10 +61,10 @@ describe("is_verbose", {
   })
 
   it("delegates to get_verbose when NULL", {
-    withr::local_options(ggsegExtra.verbose = FALSE)
+    withr::local_options(ggseg.extra.verbose = FALSE)
     expect_false(is_verbose())
 
-    withr::local_options(ggsegExtra.verbose = TRUE)
+    withr::local_options(ggseg.extra.verbose = TRUE)
     expect_true(is_verbose())
   })
 })
@@ -77,28 +77,28 @@ describe("get_cleanup", {
   })
 
   it("reads from option when explicit value is NULL", {
-    withr::local_options(ggsegExtra.cleanup = FALSE)
+    withr::local_options(ggseg.extra.cleanup = FALSE)
     expect_false(get_cleanup())
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.cleanup = NULL)
-    withr::local_envvar(GGSEGEXTRA_CLEANUP = "false")
+    withr::local_options(ggseg.extra.cleanup = NULL)
+    withr::local_envvar(GGSEG_EXTRA_CLEANUP = "false")
     expect_false(get_cleanup())
 
-    withr::local_envvar(GGSEGEXTRA_CLEANUP = "true")
+    withr::local_envvar(GGSEG_EXTRA_CLEANUP = "true")
     expect_true(get_cleanup())
 
-    withr::local_envvar(GGSEGEXTRA_CLEANUP = "1")
+    withr::local_envvar(GGSEG_EXTRA_CLEANUP = "1")
     expect_true(get_cleanup())
 
-    withr::local_envvar(GGSEGEXTRA_CLEANUP = "0")
+    withr::local_envvar(GGSEG_EXTRA_CLEANUP = "0")
     expect_false(get_cleanup())
   })
 
   it("returns default of TRUE when nothing is set", {
-    withr::local_options(ggsegExtra.cleanup = NULL)
-    withr::local_envvar(GGSEGEXTRA_CLEANUP = NA)
+    withr::local_options(ggseg.extra.cleanup = NULL)
+    withr::local_envvar(GGSEG_EXTRA_CLEANUP = NA)
     expect_true(get_cleanup())
   })
 })
@@ -111,19 +111,19 @@ describe("get_skip_existing", {
   })
 
   it("reads from option when explicit value is NULL", {
-    withr::local_options(ggsegExtra.skip_existing = FALSE)
+    withr::local_options(ggseg.extra.skip_existing = FALSE)
     expect_false(get_skip_existing())
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.skip_existing = NULL)
-    withr::local_envvar(GGSEGEXTRA_SKIP_EXISTING = "false")
+    withr::local_options(ggseg.extra.skip_existing = NULL)
+    withr::local_envvar(GGSEG_EXTRA_SKIP_EXISTING = "false")
     expect_false(get_skip_existing())
   })
 
   it("returns default of TRUE when nothing is set", {
-    withr::local_options(ggsegExtra.skip_existing = NULL)
-    withr::local_envvar(GGSEGEXTRA_SKIP_EXISTING = NA)
+    withr::local_options(ggseg.extra.skip_existing = NULL)
+    withr::local_envvar(GGSEG_EXTRA_SKIP_EXISTING = NA)
     expect_true(get_skip_existing())
   })
 })
@@ -136,19 +136,19 @@ describe("get_tolerance", {
   })
 
   it("reads from option when explicit value is NULL", {
-    withr::local_options(ggsegExtra.tolerance = 0.75)
+    withr::local_options(ggseg.extra.tolerance = 0.75)
     expect_equal(get_tolerance(), 0.75)
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.tolerance = NULL)
-    withr::local_envvar(GGSEGEXTRA_TOLERANCE = "0.25")
+    withr::local_options(ggseg.extra.tolerance = NULL)
+    withr::local_envvar(GGSEG_EXTRA_TOLERANCE = "0.25")
     expect_equal(get_tolerance(), 0.25)
   })
 
   it("returns default of 1 when nothing is set", {
-    withr::local_options(ggsegExtra.tolerance = NULL)
-    withr::local_envvar(GGSEGEXTRA_TOLERANCE = NA)
+    withr::local_options(ggseg.extra.tolerance = NULL)
+    withr::local_envvar(GGSEG_EXTRA_TOLERANCE = NA)
     expect_equal(get_tolerance(), 1)
   })
 })
@@ -161,19 +161,19 @@ describe("get_smoothness", {
   })
 
   it("reads from option when explicit value is NULL", {
-    withr::local_options(ggsegExtra.smoothness = 15)
+    withr::local_options(ggseg.extra.smoothness = 15)
     expect_equal(get_smoothness(), 15)
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.smoothness = NULL)
-    withr::local_envvar(GGSEGEXTRA_SMOOTHNESS = "20")
+    withr::local_options(ggseg.extra.smoothness = NULL)
+    withr::local_envvar(GGSEG_EXTRA_SMOOTHNESS = "20")
     expect_equal(get_smoothness(), 20)
   })
 
   it("returns default of 5 when nothing is set", {
-    withr::local_options(ggsegExtra.smoothness = NULL)
-    withr::local_envvar(GGSEGEXTRA_SMOOTHNESS = NA)
+    withr::local_options(ggseg.extra.smoothness = NULL)
+    withr::local_envvar(GGSEG_EXTRA_SMOOTHNESS = NA)
     expect_equal(get_smoothness(), 5)
   })
 })
@@ -186,19 +186,19 @@ describe("get_snapshot_dim", {
   })
 
   it("reads from option when explicit value is NULL", {
-    withr::local_options(ggsegExtra.snapshot_dim = 512)
+    withr::local_options(ggseg.extra.snapshot_dim = 512)
     expect_equal(get_snapshot_dim(), 512)
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.snapshot_dim = NULL)
-    withr::local_envvar(GGSEGEXTRA_SNAPSHOT_DIM = "1200")
+    withr::local_options(ggseg.extra.snapshot_dim = NULL)
+    withr::local_envvar(GGSEG_EXTRA_SNAPSHOT_DIM = "1200")
     expect_equal(get_snapshot_dim(), 1200)
   })
 
   it("returns default of 800 when nothing is set", {
-    withr::local_options(ggsegExtra.snapshot_dim = NULL)
-    withr::local_envvar(GGSEGEXTRA_SNAPSHOT_DIM = NA)
+    withr::local_options(ggseg.extra.snapshot_dim = NULL)
+    withr::local_envvar(GGSEG_EXTRA_SNAPSHOT_DIM = NA)
     expect_equal(get_snapshot_dim(), 800)
   })
 })
@@ -341,7 +341,7 @@ describe("preview_atlas", {
       .package = "ggseg3d"
     )
 
-    result <- preview_atlas(atlas)
+    invisible(capture.output(result <- preview_atlas(atlas)))
     expect_identical(result, atlas)
     expect_length(prompts, 2)
     expect_match(prompts[1], "left")
@@ -368,7 +368,7 @@ describe("preview_atlas", {
       .package = "ggseg3d"
     )
 
-    result <- preview_atlas(atlas)
+    invisible(capture.output(result <- preview_atlas(atlas)))
     expect_identical(result, atlas)
     expect_length(prompts, 1)
     expect_match(prompts[1], "3D preview")
@@ -389,7 +389,7 @@ describe("preview_atlas", {
       .package = "ggseg3d"
     )
 
-    result <- preview_atlas(atlas)
+    invisible(capture.output(result <- preview_atlas(atlas)))
     expect_identical(result, atlas)
   })
 
@@ -515,19 +515,19 @@ describe("get_output_dir", {
   })
 
   it("reads from option when explicit value is NULL", {
-    withr::local_options(ggsegExtra.output_dir = "/opt/atlases")
+    withr::local_options(ggseg.extra.output_dir = "/opt/atlases")
     expect_equal(get_output_dir(), "/opt/atlases")
   })
 
   it("reads from environment variable when option is NULL", {
-    withr::local_options(ggsegExtra.output_dir = NULL)
-    withr::local_envvar(GGSEGEXTRA_OUTPUT_DIR = "/env/path")
+    withr::local_options(ggseg.extra.output_dir = NULL)
+    withr::local_envvar(GGSEG_EXTRA_OUTPUT_DIR = "/env/path")
     expect_equal(get_output_dir(), "/env/path")
   })
 
   it("returns tempdir when nothing is set", {
-    withr::local_options(ggsegExtra.output_dir = NULL)
-    withr::local_envvar(GGSEGEXTRA_OUTPUT_DIR = NA)
+    withr::local_options(ggseg.extra.output_dir = NULL)
+    withr::local_envvar(GGSEG_EXTRA_OUTPUT_DIR = NA)
     expect_equal(get_output_dir(), tempdir(check = TRUE))
   })
 })
@@ -535,8 +535,8 @@ describe("get_output_dir", {
 
 describe("get_numeric_option", {
   it("falls back to default when env var is not numeric", {
-    withr::local_options(ggsegExtra.tolerance = NULL)
-    withr::local_envvar(GGSEGEXTRA_TOLERANCE = "not_a_number")
+    withr::local_options(ggseg.extra.tolerance = NULL)
+    withr::local_envvar(GGSEG_EXTRA_TOLERANCE = "not_a_number")
     expect_equal(get_tolerance(), 1)
   })
 })

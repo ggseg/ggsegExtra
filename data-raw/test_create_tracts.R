@@ -7,7 +7,7 @@ library(ggplot2)
 
 # Tract atlas creation using TRACULA training data ----
 # Uses HCP training data from FreeSurfer installation@@
-future::plan(future::multisession(workers = 4))
+future::plan(future::multicore(workers = 4))
 progressr::handlers("cli")
 progressr::handlers(global = TRUE)
 
@@ -45,7 +45,7 @@ tract_names <- c(
 # Create complete tract atlas (3D + 2D) ----
 cli::cli_h1("Creating TRACULA tract atlas")
 
-atlas <- create_tract_atlas(
+atlas <- create_tract_from_tractography(
   tract_files = tract_files,
   tract_names = tract_names,
   tube_radius = 0.8,

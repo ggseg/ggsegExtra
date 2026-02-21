@@ -23,7 +23,7 @@ create_tract_geometry_volumetric(
 )
 }
 \arguments{
-\item{atlas}{A \code{ggseg_atlas} of type \code{"tract"} (from \code{\link[=create_tract_atlas]{create_tract_atlas()}}).}
+\item{atlas}{A \code{ggseg_atlas} of type \code{"tract"} (from \code{\link[=create_tract_from_tractography]{create_tract_from_tractography()}}).}
 
 \item{aseg_file}{Path to a segmentation volume (\code{.mgz}, \code{.nii}) used to
 draw cortex outlines for anatomical context.}
@@ -59,26 +59,26 @@ gaps between structures.}
 
 \item{tolerance}{Simplification tolerance for 2D polygons. Higher values
 produce simpler shapes with fewer vertices. Passed to \code{\link[sf:geos_unary]{sf::st_simplify()}}.
-If not specified, uses \code{options("ggsegExtra.tolerance")} or the
-\code{GGSEGEXTRA_TOLERANCE} environment variable. Default is 0 (no simplification).}
+If not specified, uses \code{options("ggseg.extra.tolerance")} or the
+\code{GGSEG_EXTRA_TOLERANCE} environment variable. Default is 0 (no simplification).}
 
 \item{smoothness}{Smoothing factor for 2D contours. Higher values produce
 smoother region boundaries. Passed to \code{\link[smoothr:smooth]{smoothr::smooth()}}. If not
-specified, uses \code{options("ggsegExtra.smoothness")} or the
-\code{GGSEGEXTRA_SMOOTHNESS} environment variable. Default is 5.}
+specified, uses \code{options("ggseg.extra.smoothness")} or the
+\code{GGSEG_EXTRA_SMOOTHNESS} environment variable. Default is 5.}
 
 \item{verbose}{Logical. If not specified, uses the value from
-\code{options("ggsegExtra.verbose")} or the \code{GGSEGEXTRA_VERBOSE}
+\code{options("ggseg.extra.verbose")} or the \code{GGSEG_EXTRA_VERBOSE}
 environment variable. Defaults to \code{TRUE}.
-Use \code{options(ggsegExtra.verbose = FALSE)} to suppress output globally.}
+Use \code{options(ggseg.extra.verbose = FALSE)} to suppress output globally.}
 
 \item{cleanup}{Remove intermediate files after atlas creation. If not
-specified, uses \code{options("ggsegExtra.cleanup")} or the \code{GGSEGEXTRA_CLEANUP}
+specified, uses \code{options("ggseg.extra.cleanup")} or the \code{GGSEG_EXTRA_CLEANUP}
 environment variable. Default is TRUE.}
 
 \item{skip_existing}{Skip generating output files that already exist,
 allowing interrupted atlas creation to resume. If not specified, uses
-\code{options("ggsegExtra.skip_existing")} or the \code{GGSEGEXTRA_SKIP_EXISTING}
+\code{options("ggseg.extra.skip_existing")} or the \code{GGSEG_EXTRA_SKIP_EXISTING}
 environment variable. Default is TRUE.}
 }
 \value{
@@ -91,7 +91,7 @@ projects tract centerlines onto slice views (coronal, axial) and extracts
 contours. Also creates cortex outlines for anatomical context.
 }
 \details{
-This is typically called automatically by \code{\link[=create_tract_atlas]{create_tract_atlas()}} when
+This is typically called automatically by \code{\link[=create_tract_from_tractography]{create_tract_from_tractography()}} when
 \code{include_geometry = TRUE}, but you can call it separately if you want
 custom views or need to regenerate geometry.
 }

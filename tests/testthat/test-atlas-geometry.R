@@ -301,11 +301,10 @@ describe("extract_contours", {
       .package = "furrr"
     )
 
-    msgs <- capture.output(
+    expect_message(
       extract_contours(input_dir, output_dir, verbose = TRUE),
-      type = "message"
+      "contour"
     )
-    expect_true(any(grepl("contour", msgs, ignore.case = TRUE)))
   })
 })
 
@@ -611,5 +610,53 @@ describe("make_multipolygon", {
     expect_s3_class(result, "sf")
     expect_equal(nrow(result), 2)
     expect_equal(result$filenm, c("region1", "region2"))
+  })
+})
+
+
+describe("smooth_contours verbose output", {
+  it("emits progress message when verbose is TRUE", {
+    outdir <- withr::local_tempdir("smooth_verbose_")
+
+    contours <- sf::st_sf(
+      region = "test",
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
+        )))
+      )
+    )
+    save(contours, file = file.path(outdir, "contours.rda"))
+
+    expect_message(
+      smooth_contours(outdir, smoothness = 5, step = "1/3", verbose = TRUE),
+      "Smoothing contours"
+    )
+  })
+})
+
+
+describe("reduce_vertex verbose output", {
+  it("emits progress message when verbose is TRUE", {
+    outdir <- withr::local_tempdir("reduce_verbose_")
+
+    contours <- sf::st_sf(
+      region = "test",
+      geometry = sf::st_sfc(
+        sf::st_polygon(list(matrix(
+          c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
+          ncol = 2,
+          byrow = TRUE
+        )))
+      )
+    )
+    save(contours, file = file.path(outdir, "contours_smoothed.rda"))
+
+    expect_message(
+      reduce_vertex(outdir, tolerance = 0.5, step = "2/3", verbose = TRUE),
+      "Reducing vertices"
+    )
   })
 })

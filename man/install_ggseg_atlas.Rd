@@ -6,7 +6,7 @@
 \usage{
 install_ggseg_atlas(
   package,
-  repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
+  repos = c(ggsegverse = "https://ggsegverse.r-universe.dev", getOption("repos")),
   ...
 )
 }

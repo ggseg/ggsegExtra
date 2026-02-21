@@ -12,7 +12,7 @@ can_run <- set_tutorial_options()
 Cortical parcellations divide the brain surface into labelled regions.
 They come from FreeSurfer annotation files, where each vertex on the cortical mesh is assigned to a region like "superior frontal gyrus" or "precuneus."
 
-This tutorial walks through the full pipeline for turning an annotation into a `brain_atlas` you can plot with ggseg and ggseg3d.
+This tutorial walks through the full pipeline for turning an annotation into a `ggseg_atlas` you can plot with ggseg and ggseg3d.
 We'll use the Yeo 7-network parcellation as a working example --- it has only 7 regions per hemisphere, so the pipeline runs quickly.
 
 ## What you need
@@ -24,7 +24,7 @@ We'll use the Yeo 7-network parcellation as a working example --- it has only 7 
 ```{r}
 #| label: load-libraries
 #| eval: !expr can_run
-library(ggsegExtra)
+library(ggseg.extra)
 library(ggseg.formats)
 library(dplyr)
 ```
@@ -57,7 +57,7 @@ This reads the annotation file, extracts vertex assignments, and returns in seco
 ```{r}
 #| label: 3d-only
 #| eval: !expr can_run
-yeo7_3d <- create_cortical_atlas(
+yeo7_3d <- create_cortical_from_annotation(
   input_annot = annot_files,
   atlas_name = "yeo7",
   steps = 1
@@ -79,7 +79,7 @@ This is the slow part --- it needs FreeSurfer, Chrome, and ImageMagick:
 #| eval: !expr can_run
 output_dir <- file.path(tempdir(), "yeo7_tutorial")
 
-yeo7_raw <- create_cortical_atlas(
+yeo7_raw <- create_cortical_from_annotation(
   input_annot = annot_files,
   atlas_name = "yeo7",
   output_dir = output_dir,
@@ -116,15 +116,6 @@ yeo7_raw <- yeo7_raw |>
   atlas_region_contextual("FreeSurfer_Defined_Medial_Wall", match_on = "label")
 ```
 
-Gather views into a compact layout:
-
-```{r}
-#| label: gather-views
-#| eval: !expr can_run
-yeo7_raw <- yeo7_raw |>
-  atlas_view_gather()
-```
-
 ## Step 4: Adding metadata
 
 The raw atlas has region names derived from the annotation file.
@@ -158,7 +149,7 @@ Construct the final atlas from the modified core:
 ```{r}
 #| label: rebuild
 #| eval: !expr can_run
-yeo7 <- brain_atlas(
+yeo7 <- ggseg_atlas(
   atlas = yeo7_raw$atlas,
   type = yeo7_raw$type,
   palette = yeo7_raw$palette,
@@ -175,6 +166,18 @@ yeo7
 brain_regions(yeo7) |> sort()
 ```
 
+
+```{r}
+#| label: plot
+#| eval: !expr can_run
+#| fig-cap: "Yeo 7-network cortical parcellation plotted with ggseg."
+#| fig-alt: "2D brain atlas plot showing the Yeo 7-network cortical parcellation with seven coloured regions across lateral, medial, inferior, and superior views."
+#| fig-width: 10
+#| fig-height: 6
+
+plot(yeo7)
+```
+
 ## Applying the same pattern to larger atlases
 
 The Yeo 7-network atlas runs in minutes because it has few regions.
@@ -185,7 +188,7 @@ Enable parallel processing before running:
 #| label: parallel
 #| eval: false
 library(future)
-plan(multisession, workers = 4)
+plan(multicore, workers = 4)
 
 library(progressr)
 handlers("cli")
@@ -196,7 +199,7 @@ dk_annots <- file.path(
   c("lh.aparc.annot", "rh.aparc.annot")
 )
 
-dk <- create_cortical_atlas(
+dk <- create_cortical_from_annotation(
   input_annot = dk_annots,
   atlas_name = "dk",
   output_dir = "data-raw"

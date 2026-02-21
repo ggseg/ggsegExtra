@@ -5,7 +5,7 @@ devtools::load_all(".")
 library(dplyr)
 library(ggplot2)
 
-future::plan(future::multisession(workers = 4))
+future::plan(future::multicore(workers = 4))
 progressr::handlers("cli")
 progressr::handlers(global = TRUE)
 
@@ -22,7 +22,7 @@ labels <- list.files(
 cat("Found", length(labels), "BA label files\n")
 
 # Option 1: Create 3D-only atlas (fast)
-ba_atlas <- create_atlas_from_labels(
+ba_atlas <- create_cortical_from_labels(
   labels,
   atlas_name = "brodmann_areas",
   include_geometry = FALSE
@@ -42,7 +42,7 @@ for (i in seq_len(min(5, nrow(vertices_df)))) {
 ggseg3d::ggseg3d(atlas = ba_atlas, hemisphere = "left")
 
 # Option 2: With custom colours
-ba_atlas_custom <- create_atlas_from_labels(
+ba_atlas_custom <- create_cortical_from_labels(
   labels[1:4],
   atlas_name = "ba_custom",
   colours = c("#E74C3C", "#3498DB", "#2ECC71", "#F39C12"),

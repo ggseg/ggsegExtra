@@ -1,44 +1,55 @@
-url: https://ggseg.github.io/ggsegExtra/
+url: https://ggsegverse.github.io/ggseg.extra/
 
 template:
-  bootstrap: 5
-  light-switch: true
-  bslib:
-    primary: "#29393e"
-    secondary: "#5e3c58"
-    success: "#478f76"
-    danger: "#CD6689"
-    bg: "#f2f0ef"
-    fg: "#1a2a2e"
-    base_font:
-      google: Inter
-    code_font:
-      google: JetBrains Mono
-    code-bg: "#cec4cc"
-    code-color: "#1a2a2e"
-    link-color: "#29393e"
-    link-hover-color: "#5e3c58"
-    border-color: "#a8c5cb"
-    navbar-bg: "#29393e"
-    navbar-light-color: "#f2f0ef"
+  package: ggseg.docs
 
 navbar:
-  bg: primary
-  type: dark
   structure:
     left: [intro, articles, reference, news]
     right: [search, github, lightswitch]
   components:
     github:
       icon: fa-github
-      href: https://github.com/ggseg/ggsegExtra
+      href: https://github.com/ggsegverse/ggseg.extra
       aria-label: GitHub
+    articles:
+      text: Articles
+      menu:
+        - text: Getting Started
+        - text: Introduction
+          href: articles/ggseg.extra.html
+        - text: System Setup
+          href: articles/system-setup.html
+        - text: -------
+        - text: How-To
+        - text: Pipeline Configuration
+          href: articles/pipeline-configuration.html
+        - text: Post-Processing
+          href: articles/post-processing.html
+        - text: -------
+        - text: "Tutorials: Creating Atlases"
+        - text: Cortical Atlas
+          href: articles/tutorial-cortical-atlas.html
+        - text: Neuromaps Atlas
+          href: articles/tutorial-neuromaps-atlas.html
+        - text: Subcortical Atlas
+          href: articles/tutorial-subcortical-atlas.html
+        - text: Tract Atlas
+          href: articles/tutorial-tract-atlas.html
+        - text: Label Atlas
+          href: articles/tutorial-label-atlas.html
+        - text: -------
+        - text: Legacy & Contributing
+        - text: Legacy Conversion
+          href: articles/legacy-conversion.html
+        - text: Contributing
+          href: articles/contributing.html
 
 articles:
   - title: Getting Started
     navbar: ~
     contents:
-      - ggsegExtra
+      - ggseg.extra
       - system-setup
 
   - title: How-To
@@ -51,6 +62,7 @@ articles:
     desc: Step-by-step atlas creation with full pipelines
     contents:
       - tutorial-cortical-atlas
+      - tutorial-neuromaps-atlas
       - tutorial-subcortical-atlas
       - tutorial-tract-atlas
       - tutorial-label-atlas
@@ -64,15 +76,12 @@ reference:
   - title: Create Brain Atlases
     desc: Functions to create brain atlases for ggseg and ggseg3d
     contents:
-      - create_cortical_atlas
-      - create_subcortical_atlas
-      - create_tract_atlas
-      - create_atlas_from_labels
+      - starts_with("create_")
 
   - title: Atlas Repository
     desc: Create and manage ggseg atlas packages
     contents:
-      - create_atlas_repo
+      - setup_atlas_repo
       - setup_sitrep
 
   - title: Atlas Discovery & Installation
@@ -94,6 +103,12 @@ reference:
     desc: General package utilities
     contents:
       - read_annotation_data
+      - read_cifti_annotation
+      - read_gifti_annotation
+      - read_neuromaps_annotation
+      - read_neuromaps_volume
       - convert_legacy_brain_atlas
       - read_tractography
       - mri_surf2surf_rereg
+      - get_verbose
+      - is_verbose

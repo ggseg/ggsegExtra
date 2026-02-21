@@ -1,8 +1,8 @@
-describe("create_atlas_repo", {
+describe("setup_atlas_repo", {
   it("creates package with explicit atlas name", {
     tmp <- withr::local_tempdir("atlas_test_")
 
-    result <- create_atlas_repo(tmp, "dkt", open = FALSE)
+    expect_message(result <- setup_atlas_repo(tmp, "dkt", open = FALSE))
 
     expect_true(dir.exists(result))
     expect_true(dir.exists(tmp))
@@ -13,7 +13,7 @@ describe("create_atlas_repo", {
     parent <- withr::local_tempdir()
     tmp <- file.path(parent, paste0("ggsegSchaefer", Sys.getpid()))
 
-    create_atlas_repo(tmp, open = FALSE)
+    expect_message(setup_atlas_repo(tmp, open = FALSE))
 
     desc <- readLines(file.path(tmp, "DESCRIPTION"))
     pkg_line <- desc[grep("^Package:", desc)]
@@ -25,7 +25,7 @@ describe("create_atlas_repo", {
     parent <- withr::local_tempdir()
     tmp <- file.path(parent, paste0("myatlas", Sys.getpid()))
 
-    create_atlas_repo(tmp, open = FALSE)
+    expect_message(setup_atlas_repo(tmp, open = FALSE))
 
     desc <- readLines(file.path(tmp, "DESCRIPTION"))
     pkg_line <- desc[grep("^Package:", desc)]
@@ -36,7 +36,7 @@ describe("create_atlas_repo", {
   it("cleans atlas name (lowercase, alphanumeric only)", {
     tmp <- withr::local_tempdir("atlas_test_")
 
-    create_atlas_repo(tmp, "My-Atlas_123!", open = FALSE)
+    expect_message(setup_atlas_repo(tmp, "My-Atlas_123!", open = FALSE))
 
     desc <- readLines(file.path(tmp, "DESCRIPTION"))
     pkg_line <- desc[grep("^Package:", desc)]
@@ -48,7 +48,7 @@ describe("create_atlas_repo", {
     tmp <- withr::local_tempdir("atlas_test_")
 
     expect_error(
-      create_atlas_repo(file.path(tmp, "newpkg"), "---", open = FALSE),
+      setup_atlas_repo(file.path(tmp, "newpkg"), "---", open = FALSE),
       "must contain at least one letter"
     )
   })
@@ -58,7 +58,7 @@ describe("create_atlas_repo", {
     writeLines("test", file.path(tmp, "existing.txt"))
 
     expect_error(
-      create_atlas_repo(tmp, "test", open = FALSE),
+      setup_atlas_repo(tmp, "test", open = FALSE),
       "not empty"
     )
   })
@@ -66,7 +66,7 @@ describe("create_atlas_repo", {
   it("creates .Rproj file when rstudio = TRUE", {
     tmp <- withr::local_tempdir("atlas_test_")
 
-    create_atlas_repo(tmp, "test", open = FALSE, rstudio = TRUE)
+    expect_message(setup_atlas_repo(tmp, "test", open = FALSE, rstudio = TRUE))
 
     rproj_files <- list.files(tmp, pattern = "\\.Rproj$")
     expect_length(rproj_files, 1)
@@ -76,7 +76,7 @@ describe("create_atlas_repo", {
   it("skips .Rproj file when rstudio = FALSE", {
     tmp <- withr::local_tempdir("atlas_test_")
 
-    create_atlas_repo(tmp, "test", open = FALSE, rstudio = FALSE)
+    expect_message(setup_atlas_repo(tmp, "test", open = FALSE, rstudio = FALSE))
 
     rproj_files <- list.files(tmp, pattern = "\\.Rproj$")
     expect_length(rproj_files, 0)
@@ -84,9 +84,9 @@ describe("create_atlas_repo", {
 })
 
 
-describe("create_atlas_repo template files", {
+describe("setup_atlas_repo template files", {
   tmp <- withr::local_tempdir("atlas_template_test_")
-  create_atlas_repo(tmp, "testatlas", open = FALSE)
+  expect_message(setup_atlas_repo(tmp, "testatlas", open = FALSE))
 
   it("creates all required directories", {
     expect_true(dir.exists(file.path(tmp, "R")))
@@ -185,11 +185,11 @@ describe("create_atlas_repo template files", {
 })
 
 
-describe("create_atlas_repo .Rproj file", {
+describe("setup_atlas_repo .Rproj file", {
   it("contains correct package build settings", {
     tmp <- withr::local_tempdir("atlas_rproj_test_")
 
-    create_atlas_repo(tmp, "test", open = FALSE)
+    expect_message(setup_atlas_repo(tmp, "test", open = FALSE))
 
     rproj <- readLines(file.path(tmp, "ggsegTest.Rproj"))
 
@@ -200,12 +200,12 @@ describe("create_atlas_repo .Rproj file", {
 })
 
 
-describe("create_atlas_repo lowercase ggseg prefix", {
+describe("setup_atlas_repo lowercase ggseg prefix", {
   it("derives atlas name from lowercase ggseg prefix path", {
     parent <- withr::local_tempdir()
     tmp <- file.path(parent, paste0("ggsegfoo", Sys.getpid()))
 
-    create_atlas_repo(tmp, open = FALSE)
+    expect_message(setup_atlas_repo(tmp, open = FALSE))
 
     desc <- readLines(file.path(tmp, "DESCRIPTION"))
     pkg_line <- desc[grep("^Package:", desc)]
@@ -224,7 +224,7 @@ describe("create_atlas_repo lowercase ggseg prefix", {
       }
     )
 
-    create_atlas_repo(tmp, "test", open = TRUE, rstudio = TRUE)
+    expect_message(setup_atlas_repo(tmp, "test", open = TRUE, rstudio = TRUE))
 
     expect_true(opened)
   })
@@ -317,13 +317,13 @@ describe("template_replace error handling", {
 })
 
 
-describe("new_project_create_atlas_repo", {
-  it("delegates to create_atlas_repo with correct parameters", {
+describe("new_project_setup_atlas_repo", {
+  it("delegates to setup_atlas_repo with correct parameters", {
     tmp <- withr::local_tempdir("wizard_test_")
     called_args <- NULL
 
     local_mocked_bindings(
-      create_atlas_repo = function(path, atlas_name, open, rstudio) {
+      setup_atlas_repo = function(path, atlas_name, open, rstudio) {
         called_args <<- list(
           path = path,
           atlas_name = atlas_name,
@@ -334,7 +334,7 @@ describe("new_project_create_atlas_repo", {
       }
     )
 
-    new_project_create_atlas_repo(tmp, atlas_name = "myatlas")
+    new_project_setup_atlas_repo(tmp, atlas_name = "myatlas")
 
     expect_equal(called_args$path, tmp)
     expect_equal(called_args$atlas_name, "myatlas")
@@ -347,13 +347,13 @@ describe("new_project_create_atlas_repo", {
     called_args <- NULL
 
     local_mocked_bindings(
-      create_atlas_repo = function(path, atlas_name, open, rstudio) {
+      setup_atlas_repo = function(path, atlas_name, open, rstudio) {
         called_args <<- list(atlas_name = atlas_name)
         invisible(path)
       }
     )
 
-    new_project_create_atlas_repo(tmp)
+    new_project_setup_atlas_repo(tmp)
 
     expect_null(called_args$atlas_name)
   })
@@ -367,7 +367,7 @@ describe("template_replace", {
       c(
         "Package: {REPO}",
         "Atlas: {GGSEG}",
-        "URL: https://github.com/ggseg/{REPO}"
+        "URL: https://github.com/ggsegverse/{REPO}"
       ),
       tmp
     )
@@ -377,7 +377,7 @@ describe("template_replace", {
     result <- readLines(tmp)
     expect_equal(result[1], "Package: ggsegMyatlas")
     expect_equal(result[2], "Atlas: myatlas")
-    expect_equal(result[3], "URL: https://github.com/ggseg/ggsegMyatlas")
+    expect_equal(result[3], "URL: https://github.com/ggsegverse/ggsegMyatlas")
   })
 
   it("handles files without placeholders", {

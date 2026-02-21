@@ -11,7 +11,7 @@
 ggseg_atlas_repos <- function(pattern = NULL, ...) {
   lifecycle::deprecate_warn(
     "2.0.0",
-    "ggsegExtra::ggseg_atlas_repos()",
+    "ggseg.extra::ggseg_atlas_repos()",
     "ggseg.hub::ggseg_atlas_repos()"
   )
   rlang::check_installed("ggseg.hub", reason = "for atlas discovery functions")
@@ -31,12 +31,12 @@ ggseg_atlas_repos <- function(pattern = NULL, ...) {
 #' @export
 install_ggseg_atlas <- function(
   package,
-  repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
+  repos = c(ggsegverse = "https://ggsegverse.r-universe.dev", getOption("repos")),
   ...
 ) {
   lifecycle::deprecate_warn(
     "2.0.0",
-    "ggsegExtra::install_ggseg_atlas()",
+    "ggseg.extra::install_ggseg_atlas()",
     "ggseg.hub::install_ggseg_atlas()"
   )
   rlang::check_installed("ggseg.hub", reason = "for atlas installation functions")
@@ -55,12 +55,12 @@ install_ggseg_atlas <- function(
 #' @inheritParams ggseg.hub::install_ggseg_atlas_all
 #' @export
 install_ggseg_atlas_all <- function(
-  repos = c(ggseg = "https://ggseg.r-universe.dev", getOption("repos")),
+  repos = c(ggsegverse = "https://ggsegverse.r-universe.dev", getOption("repos")),
   ...
 ) {
   lifecycle::deprecate_warn(
     "2.0.0",
-    "ggsegExtra::install_ggseg_atlas_all()",
+    "ggseg.extra::install_ggseg_atlas_all()",
     "ggseg.hub::install_ggseg_atlas_all()"
   )
   rlang::check_installed("ggseg.hub", reason = "for atlas installation functions")

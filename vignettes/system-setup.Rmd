@@ -10,7 +10,7 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-library(ggsegExtra)
+library(ggseg.extra)
 ```
 
 Using pre-built atlases requires nothing beyond R.
@@ -50,14 +50,14 @@ sudo apt-get install imagemagick
 
 ## Chrome / Chromium
 
-ggsegExtra takes screenshots of 3D plotly visualisations using the chromote package, which needs Google Chrome or Chromium.
+ggseg.extra takes screenshots of 3D visualisations using the webshot2 package, which needs Google Chrome or Chromium.
 Chrome is typically already installed.
 If not, chromote will attempt to download a suitable version automatically.
 
 ## Parallel processing
 
 Atlas creation can be slow, especially for cortical atlases with many regions.
-ggsegExtra uses the [furrr](https://furrr.futureverse.org/) package for parallel processing.
+ggseg.extra uses the [furrr](https://furrr.futureverse.org/) package for parallel processing.
 By default, processing runs sequentially.
 
 To enable parallel processing, set up a `future` plan before running atlas creation functions:
@@ -67,8 +67,12 @@ To enable parallel processing, set up a `future` plan before running atlas creat
 #| eval: false
 library(future)
 
-plan(multisession, workers = 4)
+plan(multicore, workers = 4)
 ```
+
+`multicore` uses forking, which shares memory and avoids serializing large
+volumes to each worker.
+On Windows where forking is not supported, use `plan(multisession)` instead.
 
 To return to sequential processing:
 
@@ -80,7 +84,7 @@ plan(sequential)
 
 ## Progress bars
 
-ggsegExtra uses [progressr](https://progressr.futureverse.org/) to report progress during long-running operations.
+ggseg.extra uses [progressr](https://progressr.futureverse.org/) to report progress during long-running operations.
 Progress reporting is disabled by default.
 
 To enable progress bars:

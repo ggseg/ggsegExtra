@@ -7,7 +7,7 @@ library(ggplot2)
 options(freesurfer.verbose = FALSE)
 
 # Use sequential for small test data (faster startup, no worker overhead)
-future::plan(future::multisession(workers = 4))
+future::plan(future::multicore(workers = 4))
 progressr::handlers("cli")
 progressr::handlers(global = TRUE)
 
@@ -29,9 +29,9 @@ test_slices <- data.frame(
 )
 
 # Test 1: Subcortical 3D-only atlas ----
-cli::cli_h1("Testing create_subcortical_atlas (3D only)")
+cli::cli_h1("Testing create_subcortical_from_volume (3D only)")
 
-aseg_3d <- create_subcortical_atlas(
+aseg_3d <- create_subcortical_from_volume(
   volume_file = file.path(folder, "aseg.mgz"),
   color_lut = file.path(folder, "lut.txt"),
   output_dir = file.path(output_dir, "subcortical_3d"),
@@ -47,9 +47,9 @@ p3d <- ggseg3d(atlas = aseg_3d, hemisphere = "subcort")
 cli::cli_alert_success("3D rendering successful")
 
 # Test 2: Subcortical full atlas (3D + 2D) ----
-cli::cli_h1("Testing create_subcortical_atlas (3D + 2D)")
+cli::cli_h1("Testing create_subcortical_from_volume (3D + 2D)")
 
-aseg_full <- create_subcortical_atlas(
+aseg_full <- create_subcortical_from_volume(
   volume_file = file.path(folder, "aseg.mgz"),
   color_lut = file.path(folder, "lut.txt"),
   output_dir = file.path(output_dir, "subcortical_full"),

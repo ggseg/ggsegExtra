@@ -571,7 +571,7 @@ describe("default_tract_views", {
 
 describe("validate_tract_config", {
   it("returns list with all expected fields", {
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     result <- validate_tract_config(
       output_dir = NULL, verbose = FALSE, cleanup = FALSE,
@@ -591,7 +591,7 @@ describe("validate_tract_config", {
   })
 
   it("defaults steps to 1:7", {
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     result <- validate_tract_config(
       output_dir = NULL, verbose = FALSE, cleanup = FALSE,
@@ -604,7 +604,7 @@ describe("validate_tract_config", {
   })
 
   it("validates centerline_method via match.arg", {
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     expect_no_error(
       validate_tract_config(
@@ -627,7 +627,7 @@ describe("validate_tract_config", {
   })
 
   it("sets density_radius_range and tract_radius defaults", {
-    withr::local_options(ggsegExtra.output_dir = tempdir())
+    withr::local_options(ggseg.extra.output_dir = tempdir())
 
     result <- validate_tract_config(
       output_dir = NULL, verbose = FALSE, cleanup = FALSE,
@@ -646,10 +646,7 @@ describe("tract_log_header", {
   it("prints info when verbose", {
     config <- list(verbose = TRUE)
 
-    expect_message(
-      tract_log_header(config, "tract.trk", "aseg.mgz"),
-      "tractography"
-    )
+    expect_message(tract_log_header(config, "tract.trk", "aseg.mgz"), "tractography")
   })
 
   it("is silent when verbose is FALSE", {

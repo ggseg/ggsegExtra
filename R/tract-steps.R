@@ -77,7 +77,7 @@ tract_create_meshes <- function(
       mesh
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c(
         "centerline_method",
         "n_points",
@@ -187,7 +187,7 @@ tract_create_snapshots <- function(
       vol
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c(
         "streamlines_data",
         "input_aseg",
@@ -244,7 +244,7 @@ tract_create_snapshots <- function(
       NULL
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c("tract_volumes", "dirs", "skip_existing", "p")
     )
   ))
@@ -280,7 +280,7 @@ tract_create_snapshots <- function(
       NULL
     },
     .options = furrr_options(
-      packages = "ggsegExtra",
+      packages = "ggseg.extra",
       globals = c("cortex_vol", "dirs", "skip_existing", "p2")
     )
   ))

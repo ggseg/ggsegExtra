@@ -17,6 +17,20 @@
 #'
 #' Requires FreeSurfer.
 #'
+#' @section Human oversight:
+#' This is the most complex pipeline in ggsegExtra and the one most likely
+#' to need manual correction. Recommended workflow:
+#'
+#' 1. Run `steps = 1:2` first to project the volume and classify labels.
+#' 2. Inspect `result$cortical_labels` and `result$subcortical_labels`.
+#'    Override with `cortical_labels` / `subcortical_labels` if needed.
+#' 3. Run the full pipeline once you are satisfied with the split.
+#' 4. Visually inspect the resulting atlas with `ggseg()` / `ggseg3d()`.
+#'
+#' The cortical surface projection uses FreeSurfer's cortex label
+#' (`{hemi}.cortex.label`) to prevent label dilation into the medial wall.
+#' This file ships with fsaverage5 and is always required.
+#'
 #' @param input_volume Path to volumetric parcellation in MNI152 space
 #'   (.mgz, .nii, .nii.gz).
 #' @param input_lut Path to FreeSurfer-style colour lookup table, or a
@@ -73,7 +87,7 @@
 #' @examples
 #' \dontrun{
 #' # Create from MNI152-space NIfTI with LUT
-#' result <- create_wholebrain_atlas(
+#' result <- create_wholebrain_from_volume(
 #'   input_volume = "shen_268.nii.gz",
 #'   input_lut = "shen_268_LUT.txt",
 #'   atlas_name = "shen268"
@@ -82,13 +96,13 @@
 #' result$subcortical # mesh-based subcortical atlas
 #'
 #' # Projection + split only (inspect classification)
-#' result <- create_wholebrain_atlas(
+#' result <- create_wholebrain_from_volume(
 #'   input_volume = "atlas.nii.gz",
 #'   input_lut = "atlas_LUT.txt",
 #'   steps = 1:2
 #' )
 #' }
-create_wholebrain_atlas <- function(
+create_wholebrain_from_volume <- function(
   input_volume,
   input_lut = NULL,
   atlas_name = NULL,
@@ -134,6 +148,12 @@ create_wholebrain_atlas <- function(
 
   if (config$verbose) {
     cli::cli_h1("Creating whole-brain atlas {.val {config$atlas_name}}")
+    cli::cli_alert_warning(paste(
+      "This pipeline combines volume-to-surface projection with automatic",
+      "cortical/subcortical classification. Both steps are heuristic and",
+      "require manual validation. Run with {.code steps = 1:2} first to",
+      "inspect the label split before committing to the full pipeline."
+    ))
     cli::cli_alert_info("Volume: {.path {config$input_volume}}")
     if (!is.null(config$input_lut)) {
       cli::cli_alert_info("Color LUT: {.path {config$input_lut}}")
@@ -153,6 +173,12 @@ create_wholebrain_atlas <- function(
 
   if (max(config$steps) <= 2L) {
     if (config$verbose) {
+      cli::cli_alert_info(paste(
+        "Inspect {.code split$cortical_labels} and",
+        "{.code split$subcortical_labels}.",
+        "Override with {.arg cortical_labels}/{.arg subcortical_labels}",
+        "if needed, then re-run with all steps."
+      ))
       log_elapsed(start_time)
     }
     return(invisible(split))
@@ -351,8 +377,10 @@ wholebrain_project_to_surface <- function(
     overlay <- fill_surface_labels(overlay, hemi_short, subject)
     if (verbose) {
       n_after <- sum(overlay != 0L)
+      n_total <- length(overlay)
+      n_medial <- n_total - n_after
       cli::cli_alert(
-        "{hemi_short}: {n_before} -> {n_after} labeled vertices ({sprintf('%.0f%%', 100 * n_after / length(overlay))})"
+        "{hemi_short}: {n_before} -> {n_after} labeled vertices ({sprintf('%.0f%%', 100 * n_after / n_total)} cortex, {n_medial} medial wall)"
       )
     }
 
@@ -600,7 +628,7 @@ wholebrain_run_subcortical <- function(
 
   subcort_name <- paste0(config$atlas_name, "_subcortical")
 
-  atlas <- create_subcortical_atlas(
+  atlas <- create_subcortical_from_volume(
     input_volume = filtered_vol,
     input_lut = subcort_lut,
     atlas_name = subcort_name,
@@ -632,6 +660,38 @@ wholebrain_filter_volume <- function(input_volume, keep_labels, output_file) {
 
 # Surface label dilation ----
 
+#' Load cortex mask from FreeSurfer cortex.label file
+#'
+#' Reads `{subject}/label/{hemi}.cortex.label` and converts the vertex
+#' indices to a logical mask. Vertices inside the cortex are TRUE; medial
+#' wall vertices are FALSE. Errors if the label file is missing since
+#' fsaverage5 (the default subject) always ships with cortex labels.
+#'
+#' @param hemi Hemisphere code ("lh" or "rh").
+#' @param subject FreeSurfer subject name. Default "fsaverage5".
+#' @param n_vertices Total vertex count for the surface.
+#' @return Logical vector of length `n_vertices`.
+#' @noRd
+load_cortex_mask <- function(hemi, subject = "fsaverage5", n_vertices) {
+  label_file <- file.path(
+    freesurfer::fs_subj_dir(), subject, "label",
+    paste0(hemi, ".cortex.label")
+  )
+  if (!file.exists(label_file)) {
+    cli::cli_abort(c(
+      "Cortex label not found: {.path {label_file}}",
+      "i" = "This file is required to prevent label dilation into the medial wall.",
+      "i" = "It should exist for {.val {subject}}. Check your FreeSurfer installation."
+    ))
+  }
+
+  cortex_vertices <- read_label_vertices(label_file)
+  mask <- logical(n_vertices)
+  mask[cortex_vertices + 1L] <- TRUE
+  mask
+}
+
+
 #' Fill unlabeled surface vertices via mesh-neighbor dilation
 #'
 #' After vol2surf projection, many surface vertices remain unlabeled (value 0)
@@ -639,6 +699,9 @@ wholebrain_filter_volume <- function(input_volume, keep_labels, output_file) {
 #' vertex the most common label among its mesh neighbors, using the surface
 #' topology (face adjacency) to propagate labels outward until all reachable
 #' vertices are filled.
+#'
+#' Dilation is restricted to cortex vertices (from `{hemi}.cortex.label`)
+#' so labels do not bleed into the medial wall.
 #'
 #' @param overlay Integer vector of label values (0 = unlabeled), one per vertex.
 #' @param hemi Hemisphere code ("lh" or "rh").
@@ -658,8 +721,10 @@ fill_surface_labels <- function(overlay, hemi, subject = "fsaverage5") {
   surf <- freesurferformats::read.fs.surface(surf_file)
   adj <- build_adjacency(surf$faces, nrow(surf$vertices))
 
+  cortex_mask <- load_cortex_mask(hemi, subject, length(overlay))
+
   result <- overlay
-  unlabeled <- which(result == 0L)
+  unlabeled <- intersect(which(result == 0L), which(cortex_mask))
 
   while (length(unlabeled) > 0L) {
     newly_labeled <- integer(0)

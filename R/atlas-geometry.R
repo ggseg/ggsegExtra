@@ -24,7 +24,7 @@ extract_contours <- function(
 
   maks <- 0
   for (f in regions[seq_len(min(10, length(regions)))]) {
-    r <- rast(f)
+    r <- suppressWarnings(rast(f))
     m <- global(r, fun = "max", na.rm = TRUE)[1, 1]
     if (m > maks) {
       maks <- m
@@ -42,7 +42,7 @@ extract_contours <- function(
   contourobjs <- furrr::future_map(
     regions,
     function(region_file) {
-      r <- rast(region_file)
+      r <- suppressWarnings(rast(region_file))
       result <- get_contours(
         r,
         max_val = maks,
@@ -53,7 +53,7 @@ extract_contours <- function(
       result
     },
     .options = furrr::furrr_options(
-      packages = c("terra", "ggsegExtra"),
+      packages = c("terra", "ggseg.extra"),
       globals = c("maks", "vertex_size_limits", "p")
     )
   )

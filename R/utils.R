@@ -7,7 +7,7 @@ mkdir <- function(path, ...) {
 
 # Interactive preview ----
 
-is_interactive <- function() interactive()
+is_interactive <- function() rlang::is_interactive()
 prompt_user <- function(msg) readline(msg)
 
 #' Preview atlas plots interactively
@@ -92,19 +92,19 @@ preview_atlas <- function(atlas) {
 #' Get verbose setting
 #'
 #' Returns the verbose setting from option, environment variable, or default.
-#' Checks in order: `ggsegExtra.verbose` option, `GGSEGEXTRA_VERBOSE` env var,
+#' Checks in order: `ggseg.extra.verbose` option, `GGSEG_EXTRA_VERBOSE` env var,
 #' then defaults to TRUE.
 #'
 #' Used as default argument in verbose parameters throughout the package.
-#' Set `options(ggsegExtra.verbose = FALSE)` or
-#' `Sys.setenv(GGSEGEXTRA_VERBOSE = "false")` to suppress output globally.
+#' Set `options(ggseg.extra.verbose = FALSE)` or
+#' `Sys.setenv(GGSEG_EXTRA_VERBOSE = "false")` to suppress output globally.
 #'
 #' @return Logical TRUE/FALSE
 #' @export
 #' @examples
 #' get_verbose()
 get_verbose <- function() {
-  get_bool_option(NULL, "ggsegExtra.verbose", "GGSEGEXTRA_VERBOSE", TRUE)
+  get_bool_option(NULL, "ggseg.extra.verbose", "GGSEG_EXTRA_VERBOSE", TRUE)
 }
 
 #' Check if verbose output is enabled
@@ -205,7 +205,7 @@ load_or_run_step <- function(
 #' @return Logical TRUE to remove intermediate files
 #' @noRd
 get_cleanup <- function(cleanup = NULL) {
-  get_bool_option(cleanup, "ggsegExtra.cleanup", "GGSEGEXTRA_CLEANUP", TRUE)
+  get_bool_option(cleanup, "ggseg.extra.cleanup", "GGSEG_EXTRA_CLEANUP", TRUE)
 }
 
 #' Get skip_existing setting
@@ -220,8 +220,8 @@ get_cleanup <- function(cleanup = NULL) {
 get_skip_existing <- function(skip_existing = NULL) {
   get_bool_option(
     skip_existing,
-    "ggsegExtra.skip_existing",
-    "GGSEGEXTRA_SKIP_EXISTING",
+    "ggseg.extra.skip_existing",
+    "GGSEG_EXTRA_SKIP_EXISTING",
     TRUE
   )
 }
@@ -237,8 +237,8 @@ get_skip_existing <- function(skip_existing = NULL) {
 get_tolerance <- function(tolerance = NULL) {
   get_numeric_option(
     tolerance,
-    "ggsegExtra.tolerance",
-    "GGSEGEXTRA_TOLERANCE",
+    "ggseg.extra.tolerance",
+    "GGSEG_EXTRA_TOLERANCE",
     1
   )
 }
@@ -254,8 +254,8 @@ get_tolerance <- function(tolerance = NULL) {
 get_smoothness <- function(smoothness = NULL) {
   get_numeric_option(
     smoothness,
-    "ggsegExtra.smoothness",
-    "GGSEGEXTRA_SMOOTHNESS",
+    "ggseg.extra.smoothness",
+    "GGSEG_EXTRA_SMOOTHNESS",
     5
   )
 }
@@ -271,8 +271,8 @@ get_smoothness <- function(smoothness = NULL) {
 get_snapshot_dim <- function(snapshot_dim = NULL) {
   get_numeric_option(
     snapshot_dim,
-    "ggsegExtra.snapshot_dim",
-    "GGSEGEXTRA_SNAPSHOT_DIM",
+    "ggseg.extra.snapshot_dim",
+    "GGSEG_EXTRA_SNAPSHOT_DIM",
     800
   )
 }
@@ -351,8 +351,8 @@ get_string_option <- function(explicit, option_name, env_name, default) {
 get_output_dir <- function(output_dir = NULL) {
   get_string_option(
     output_dir,
-    "ggsegExtra.output_dir",
-    "GGSEGEXTRA_OUTPUT_DIR",
+    "ggseg.extra.output_dir",
+    "GGSEG_EXTRA_OUTPUT_DIR",
     tempdir(check = TRUE)
   )
 }

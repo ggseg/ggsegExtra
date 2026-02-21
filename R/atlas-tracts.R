@@ -75,12 +75,12 @@
 #' @examples
 #' \dontrun{
 #' # From TRK files (names derived from filenames)
-#' atlas <- create_tract_atlas(
+#' atlas <- create_tract_from_tractography(
 #'   input_tracts = c("cst_left.trk", "cst_right.trk")
 #' )
 #'
 #' # With custom names and colours via LUT
-#' atlas <- create_tract_atlas(
+#' atlas <- create_tract_from_tractography(
 #'   input_tracts = c("cst_left.trk", "cst_right.trk"),
 #'   input_lut = "tract_colors.txt"
 #' )
@@ -88,7 +88,7 @@
 #' # View with ggseg3d
 #' ggseg3d(atlas = atlas)
 #' }
-create_tract_atlas <- function(
+create_tract_from_tractography <- function(
   input_tracts,
   input_aseg = NULL,
   atlas_name = NULL,

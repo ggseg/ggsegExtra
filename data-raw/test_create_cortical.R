@@ -1,9 +1,9 @@
-library(ggsegExtra)
+library(ggseg.extra)
 library(dplyr)
 library(ggplot2)
 
 # Use sequential for faster startup on test data
-future::plan(future::multisession(workers = 4))
+future::plan(future::multicore(workers = 4))
 progressr::handlers("cli")
 progressr::handlers(global = TRUE)
 
@@ -26,7 +26,7 @@ annots <- list.files(
   "Yeo2011_7Networks_N1000",
   full.names = TRUE
 )
-atlas <- create_cortical_atlas(
+atlas <- create_cortical_from_annotation(
   annots,
   atlas_name = atlas,
   output_dir = "data-raw",

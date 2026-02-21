@@ -505,23 +505,19 @@ describe("snapshot_brain_helper", {
     expect_null(result)
   })
 
-  it("calls rgl pipeline when file doesn't exist", {
+  it("calls ggseg3d pipeline when file doesn't exist", {
     snapshot_called <- FALSE
-    close_called <- FALSE
     local_mocked_bindings(
-      ggsegray = function(...) structure(list(device = 1L), class = "ggsegray"),
+      ggseg3d = function(...) structure(list(), class = "ggseg3d"),
+      set_flat_shading = function(x, ...) x,
+      set_orthographic = function(x, ...) x,
       pan_camera = function(x, ...) x,
-      set_background = function(x, ...) x
-    )
-    local_mocked_bindings(
-      snapshot3d = function(file, ...) {
+      set_background = function(x, ...) x,
+      set_legend = function(x, ...) x,
+      snapshot_brain = function(p, file, ...) {
         snapshot_called <<- TRUE
         file.create(file)
-      },
-      close3d = function(...) {
-        close_called <<- TRUE
-      },
-      .package = "rgl"
+      }
     )
 
     tmp <- withr::local_tempfile(fileext = ".png")
@@ -533,12 +529,11 @@ describe("snapshot_brain_helper", {
       outfile = tmp
     )
     expect_true(snapshot_called)
-    expect_true(close_called)
   })
 })
 
 
-describe("snapshot_brain (full brain)", {
+describe("snapshot_brain_full (full brain)", {
   it("constructs correct output filename", {
     captured_outfile <- NULL
     local_mocked_bindings(
@@ -556,7 +551,7 @@ describe("snapshot_brain (full brain)", {
     )
 
     tmp_dir <- withr::local_tempdir()
-    ggsegExtra:::snapshot_brain(
+    ggseg.extra:::snapshot_brain_full(
       atlas = NULL,
       hemisphere = "lh",
       view = "lateral",

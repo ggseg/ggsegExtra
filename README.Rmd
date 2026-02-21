@@ -13,49 +13,51 @@ knitr::opts_chunk$set(
   out.width = "100%",
   echo = TRUE
 )
-library(ggsegExtra)
+library(ggseg.extra)
 atlases <- ggseg_atlas_repos()
 atlases <- atlases[
-  grep("ggseg$|ggsegExtra$|ggseg3d$", atlases$Package, invert = TRUE),
+  grep("ggseg$|ggseg.extra$|ggseg3d$", atlases$Package, invert = TRUE),
 ]
 ```
 
 
-# ggsegExtra <img src="man/figures/logo.png" align="right" alt="" width="120" />  
+# ggseg.extra <img src="man/figures/logo.png" align="right" alt="" width="120" />  
 
 <!-- badges: start -->
-[![Coverage Status](https://raw.githubusercontent.com/ggseg/ggsegExtra/coverage/badges/coverage.svg)](https://github.com/ggseg/ggsegExtra/actions/workflows/test-coverage.yaml)
-[![CRAN status](https://www.r-pkg.org/badges/version/ggsegExtra)](https://CRAN.R-project.org/package=ggsegExtra)
+[![Coverage Status](https://raw.githubusercontent.com/ggsegverse/ggseg.extra/coverage/badges/coverage.svg)](https://github.com/ggsegverse/ggseg.extra/actions/workflows/test-coverage.yaml)
+[![CRAN status](https://www.r-pkg.org/badges/version/ggseg.extra)](https://CRAN.R-project.org/package=ggseg.extra)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![R-CMD-check](https://github.com/ggseg/ggsegExtra/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggsegExtra/actions)
+[![R-CMD-check](https://github.com/ggsegverse/ggseg.extra/workflows/R-CMD-check/badge.svg)](https://github.com/ggsegverse/ggseg.extra/actions)
+[![code-quality](https://github.com/ggsegverse/ggseg.extra/actions/workflows/code-quality.yaml/badge.svg)](https://github.com/ggsegverse/ggseg.extra/actions/workflows/code-quality.yaml)
+[![pkgcheck](https://github.com/ggsegverse/ggseg.extra/workflows/pkgcheck/badge.svg)](https://github.com/ggsegverse/ggseg.extra/actions?query=workflow%3Apkgcheck)
 <!-- badges: end -->
 
 
-This package contains information on verified atlases compatible for use in [ggseg](https://ggseg.github.io/ggseg) and [ggseg3d](https://ggseg.github.io/ggseg3d) plotting packages in R.
+This package contains information on verified atlases compatible for use in [ggseg](https://ggsegverse.github.io/ggseg) and [ggseg3d](https://ggsegverse.github.io/ggseg3d) plotting packages in R.
 It also contains functions and pipelines to create custom atlases.
 
 ## Installing 
 
-We recommend installing this package from its [r-universe](https://ggseg.r-universe.dev/#builds) build:
+We recommend installing this package from its [r-universe](https://ggsegverse.r-universe.dev/#builds) build:
 
 ```{r, eval = FALSE}
 # Enable this universe
 options(
   repos = c(
-    ggseg = "https://ggseg.r-universe.dev",
+    ggsegverse = "https://ggsegverse.r-universe.dev",
     CRAN = "https://cloud.r-project.org"
   )
 )
 
 # Install some packages
-install.packages("ggsegExtra")
+install.packages("ggseg.extra")
 ```
 
 Alternatively, install the package with the remotes package from github.
 
 ```{r, eval = FALSE}
 # install.packages("remotes")
-remotes::install_github("ggseg/ggsegExtra")
+remotes::install_github("ggsegverse/ggseg.extra")
 ```
 
 ### Development version of freesurfer
@@ -68,7 +70,7 @@ pak::pak("drmowinckels/freesurfer@refactor")
 ```
 
 ## Create custom atlases
-We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://ggseg.github.io/ggsegExtra/). 
+We have tutorials on how to make atlases available in the `Articles` of the [package documentation page](https://ggsegverse.github.io/ggseg.extra/). 
 Currently, the pipeline for making 3d atlases needs FreeSurfer to be installed on your system and a ready `.annot` file to use for the conversions.
 Improvements to the pipeline in creating cortical atlases both for ggseg and ggseg3d is still being developed.
 Pipelines for creating sub-cortical atlases of any kind are still in their infancy, and we do not yet have good solutions for their creation. 
@@ -84,12 +86,12 @@ for (i in 1:nrow(atlases)) {
 
   # find doi
   readmeurl <- sprintf(
-    "https://raw.githubusercontent.com/ggseg/%s/main/README.Rmd",
+    "https://raw.githubusercontent.com/ggsegverse/%s/main/README.Rmd",
     atl
   )
   if (httr::http_error(readmeurl)) {
     readmeurl <- sprintf(
-      "https://raw.githubusercontent.com/ggseg/%s/master/README.Rmd",
+      "https://raw.githubusercontent.com/ggsegverse/%s/master/README.Rmd",
       atl
     )
   }
@@ -118,10 +120,10 @@ for (i in 1:nrow(atlases)) {
 
 ## Code of Conduct
 
-Please note that the ggsegExtra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
+Please note that the ggseg.extra project is released with a [Contributor Code of Conduct](https://www.contributor-covenant.org/version/1/0/0/code-of-conduct.html). By contributing to this project, you agree to abide by its terms.
 
 ### Report bugs or requests  
-Don't hesitate to ask for support using [github issues](https://github.com/ggseg/ggsegExtra/issues), or requesting new atlases. 
+Don't hesitate to ask for support using [github issues](https://github.com/ggsegverse/ggseg.extra/issues), or requesting new atlases. 
 While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
 
 # Funding

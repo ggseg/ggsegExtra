@@ -1,11 +1,11 @@
-describe("create_tract_atlas", {
+describe("create_tract_from_tractography", {
   it("creates atlas from coordinate matrices", {
     tracts <- list(
       cst_left = matrix(c(1:20, rep(0, 40)), ncol = 3),
       cst_right = matrix(c(1:20, rep(1, 40)), ncol = 3)
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       steps = 1,
       verbose = FALSE
@@ -23,7 +23,7 @@ describe("create_tract_atlas", {
       cst_right = matrix(c(1:20, rep(1, 40)), ncol = 3)
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       steps = 1,
       verbose = FALSE
@@ -44,7 +44,7 @@ describe("create_tract_atlas", {
       hex = c("#FF0000", "#00FF00")
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       input_lut = custom_lut,
       steps = 1,
@@ -62,7 +62,7 @@ describe("create_tract_atlas", {
       tract1 = matrix(c(1:20, rep(0, 40)), ncol = 3)
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       steps = 1,
       verbose = FALSE
@@ -78,7 +78,7 @@ describe("create_tract_atlas", {
       tract1 = matrix(c(1:10, rep(0, 20)), ncol = 3)
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       tract,
       tube_radius = 3.5,
       tube_segments = 12,
@@ -96,7 +96,7 @@ describe("create_tract_atlas", {
       cst_right = matrix(c(1:20, rep(1, 40)), ncol = 3)
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       steps = 1,
       verbose = FALSE
@@ -109,7 +109,7 @@ describe("create_tract_atlas", {
 })
 
 
-describe("create_tract_atlas pipeline flow", {
+describe("create_tract_from_tractography pipeline flow", {
   it("step 1 calls tract_read_input and tract_create_meshes", {
     read_called <- FALSE
     mesh_called <- FALSE
@@ -167,9 +167,9 @@ describe("create_tract_atlas pipeline flow", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = list(t1 = matrix(1:30, ncol = 3)),
       steps = 1,
       verbose = FALSE
@@ -214,10 +214,10 @@ describe("create_tract_atlas pipeline flow", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
 
     expect_error(
-      create_tract_atlas(
+      create_tract_from_tractography(
         input_tracts = list(t1 = matrix(1:30, ncol = 3)),
         input_aseg = NULL,
         steps = 2,
@@ -239,7 +239,7 @@ describe("create_tract_atlas pipeline flow", {
       B = 128
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       input_lut = custom_lut,
       steps = 1,
@@ -258,7 +258,7 @@ describe("create_tract_atlas pipeline flow", {
       region = "Tract A"
     )
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tracts,
       input_lut = custom_lut,
       steps = 1,
@@ -320,12 +320,12 @@ describe("create_tract_atlas pipeline flow", {
       reduce_vertex = function(...) invisible(NULL)
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
     expect_no_error(
-      create_tract_atlas(
+      create_tract_from_tractography(
         input_tracts = list(t1 = matrix(1:30, ncol = 3)),
         input_aseg = aseg_file,
         steps = 2:6,
@@ -390,9 +390,9 @@ describe("create_tract_atlas pipeline flow", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tract_file,
       steps = 1,
       verbose = TRUE
@@ -457,9 +457,9 @@ describe("create_tract_atlas pipeline flow", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = withr::local_tempdir())
+    withr::local_options(ggseg.extra.output_dir = withr::local_tempdir())
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tract_file,
       steps = 1,
       verbose = TRUE,
@@ -523,11 +523,11 @@ describe("create_tract_atlas pipeline flow", {
       reduce_vertex = function(...) invisible(NULL)
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
-    result <- create_tract_atlas(
+    result <- create_tract_from_tractography(
       input_tracts = tract_file,
       input_aseg = aseg_file,
       steps = 2:6,
@@ -592,11 +592,11 @@ describe("create_tract_atlas pipeline flow", {
       reduce_vertex = function(...) invisible(NULL)
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
-    result <- create_tract_atlas(
+    result <- create_tract_from_tractography(
       input_tracts = tract_file,
       input_aseg = aseg_file,
       steps = 3:6,
@@ -676,11 +676,11 @@ describe("create_tract_atlas pipeline flow", {
       preview_atlas = function(...) invisible(NULL)
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tract_file,
       input_aseg = aseg_file,
       steps = 7,
@@ -755,11 +755,11 @@ describe("create_tract_atlas pipeline flow", {
       preview_atlas = function(...) invisible(NULL)
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
-    atlas <- create_tract_atlas(
+    atlas <- create_tract_from_tractography(
       input_tracts = tract_file,
       input_aseg = aseg_file,
       steps = 7,
@@ -818,12 +818,12 @@ describe("create_tract_atlas pipeline flow", {
       }
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
     expect_error(
-      create_tract_atlas(
+      create_tract_from_tractography(
         input_tracts = list(t1 = matrix(1:30, ncol = 3)),
         input_aseg = aseg_file,
         steps = 7,
@@ -888,11 +888,11 @@ describe("create_tract_atlas pipeline flow", {
       reduce_vertex = function(...) invisible(NULL)
     )
 
-    withr::local_options(ggsegExtra.output_dir = test_dir)
+    withr::local_options(ggseg.extra.output_dir = test_dir)
     aseg_file <- withr::local_tempfile(fileext = ".mgz")
     file.create(aseg_file)
 
-    result <- create_tract_atlas(
+    result <- create_tract_from_tractography(
       input_tracts = tract_file,
       input_aseg = aseg_file,
       steps = 3:6,
@@ -900,5 +900,147 @@ describe("create_tract_atlas pipeline flow", {
     )
 
     expect_null(result)
+  })
+})
+
+
+describe("extract_centerline", {
+  it("returns NULL when all resampled streamlines are invalid", {
+    bad_streamlines <- list(
+      matrix(c(0, 0, 0), nrow = 1, ncol = 3),
+      matrix(c(1, 1, 1), nrow = 1, ncol = 3)
+    )
+
+    result <- extract_centerline(bad_streamlines, method = "mean", n_points = 50)
+    expect_null(result)
+  })
+
+  it("returns NULL for empty list input", {
+    result <- extract_centerline(list(), method = "mean", n_points = 50)
+    expect_null(result)
+  })
+})
+
+
+describe("create_tract_geometry_volumetric mask extraction loop", {
+  it("processes snapshots and extracts masks", {
+    tmp_dir <- withr::local_tempdir()
+    snap_dir <- file.path(tmp_dir, "snapshots")
+    proc_dir <- file.path(tmp_dir, "processed")
+    mask_dir <- file.path(tmp_dir, "masks")
+    dir.create(snap_dir, recursive = TRUE)
+    dir.create(proc_dir, recursive = TRUE)
+    dir.create(mask_dir, recursive = TRUE)
+
+    png_file <- file.path(snap_dir, "view1_tract1.png")
+    file.create(png_file)
+
+    process_called <- FALSE
+    mask_called <- FALSE
+
+    fake_geom <- sf::st_polygon(list(matrix(
+      c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0), ncol = 2, byrow = TRUE
+    )))
+    fake_sf <- sf::st_sf(
+      filenm = "view1_tract1.png",
+      geometry = sf::st_sfc(fake_geom)
+    )
+    fake_sf$view <- "view1"
+
+    fake_atlas <- structure(
+      list(
+        type = "tract",
+        data = list(
+          centerlines = data.frame(label = "tract1", stringsAsFactors = FALSE)
+        )
+      ),
+      class = "ggseg_atlas"
+    )
+
+    local_mocked_bindings(
+      is_verbose = function(...) FALSE,
+      get_cleanup = function(...) FALSE,
+      get_skip_existing = function(...) FALSE,
+      get_tolerance = function(...) 0.01,
+      get_smoothness = function(...) 1,
+      get_output_dir = function(...) tmp_dir,
+      setup_atlas_dirs = function(...) {
+        list(
+          base = tmp_dir, snapshots = snap_dir, processed = proc_dir,
+          masks = mask_dir, volumes = tmp_dir
+        )
+      },
+      detect_coords_are_voxels = function(...) TRUE,
+      read_volume = function(f, ...) array(0L, dim = c(10, 10, 10)),
+      detect_cortex_labels = function(vol) list(left = 3L, right = 42L),
+      default_tract_views = function(...) {
+        data.frame(
+          name = "view1", type = "axial", start = 1, end = 10,
+          stringsAsFactors = FALSE
+        )
+      },
+      create_cortex_slices = function(...) {
+        data.frame(
+          x = NA, y = NA, z = 5, view = "axial", name = "view1",
+          stringsAsFactors = FALSE
+        )
+      },
+      extract_centerline = function(...) matrix(1:15, ncol = 3),
+      streamlines_to_volume = function(...) array(1L, dim = c(10, 10, 10)),
+      progressor = function(...) function(...) NULL,
+      future_pmap = mock_future_pmap,
+      furrr_options = function(...) list(),
+      snapshot_partial_projection = function(...) invisible(NULL),
+      snapshot_cortex_slice = function(...) invisible(NULL),
+      extract_hemi_from_view = function(...) "left",
+      process_snapshot_image = function(...) {
+        process_called <<- TRUE
+        file.create(file.path(proc_dir, "view1_tract1.png"))
+        invisible(NULL)
+      },
+      extract_alpha_mask = function(...) {
+        mask_called <<- TRUE
+        invisible(NULL)
+      },
+      extract_contours = function(...) invisible(NULL),
+      smooth_contours = function(...) invisible(NULL),
+      reduce_vertex = function(...) invisible(NULL),
+      make_multipolygon = function(...) fake_sf,
+      layout_volumetric_views = function(df) df
+    )
+
+    aseg_file <- withr::local_tempfile(fileext = ".mgz")
+    file.create(aseg_file)
+
+    result <- create_tract_geometry_volumetric(
+      atlas = fake_atlas,
+      aseg_file = aseg_file,
+      streamlines = list(tract1 = matrix(1:15, ncol = 3))
+    )
+
+    expect_true(process_called)
+    expect_true(mask_called)
+    expect_s3_class(result, "sf")
+  })
+})
+
+
+describe("tract_resolve_snapshots early-return NULL", {
+  it("returns NULL views and cortex_slices when step not run and no future steps", {
+    local_mocked_bindings(
+      load_or_run_step = function(step, steps, ...) {
+        list(
+          run = FALSE,
+          data = list("views.rds" = NULL, "cortex_slices.rds" = NULL)
+        )
+      }
+    )
+
+    config <- list(steps = 1L, verbose = FALSE)
+    dirs <- list(base = withr::local_tempdir())
+
+    result <- tract_resolve_snapshots(config, dirs, step1 = list(), input_aseg = NULL, views = "axial")
+    expect_null(result$views)
+    expect_null(result$cortex_slices)
   })
 })

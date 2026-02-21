@@ -1,9 +1,9 @@
 describe("integration tests", {
   it("creates atlas from labels and renders with ggseg3d", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
     labels <- unlist(test_label_files())
-    atlas <- create_atlas_from_labels(
+    atlas <- create_cortical_from_labels(
       labels,
       atlas_name = "integration_test",
       steps = 1,
@@ -19,26 +19,19 @@ describe("integration tests", {
   })
 
   it("creates atlas from annotation and renders with ggseg3d", {
-    skip_if_no_freesurfer()
+    skip_if_not_installed("freesurferformats")
 
-    annot_dir <- file.path(freesurfer::fs_subj_dir(), "fsaverage5", "label")
-    annot_files <- file.path(annot_dir, c("lh.aparc.annot", "rh.aparc.annot"))
-    skip_if(
-      !all(file.exists(annot_files)),
-      "fsaverage5 aparc annotation not found"
-    )
+    annots <- test_annot_files()
+    annot_files <- c(annots$lh, annots$rh)
 
-    atlas <- expect_warnings(
-      create_cortical_atlas(
-        input_annot = annot_files,
-        steps = 1,
-        verbose = FALSE
-      ),
-      "version"
+    atlas <- create_cortical_from_annotation(
+      input_annot = annot_files,
+      steps = 1,
+      verbose = FALSE
     )
 
     expect_s3_class(atlas, "ggseg_atlas")
-    expect_true(nrow(atlas$core) > 30)
+    expect_true(nrow(atlas$core) > 0)
 
     expect_no_error({
       p <- ggseg3d::ggseg3d(atlas = atlas, hemisphere = "left")

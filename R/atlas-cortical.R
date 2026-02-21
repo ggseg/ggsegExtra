@@ -61,26 +61,26 @@
 #' @examples
 #' \dontrun{
 #' # Create 3D-only atlas from annotation files
-#' atlas <- create_cortical_atlas(
+#' atlas <- create_cortical_from_annotation(
 #'   input_annot = c("lh.yeo7.annot", "rh.yeo7.annot"),
 #'   steps = 1
 #' )
 #'
 #' # Create full atlas with 2D geometry (requires FreeSurfer for rendering)
-#' atlas <- create_cortical_atlas(
+#' atlas <- create_cortical_from_annotation(
 #'   input_annot = c("lh.aparc.DKTatlas.annot", "rh.aparc.DKTatlas.annot")
 #' )
 #' ggseg(atlas = atlas)
 #'
 #' # Iterate on smoothing parameters
-#' atlas <- create_cortical_atlas(
+#' atlas <- create_cortical_from_annotation(
 #'   input_annot = c("lh.aparc.annot", "rh.aparc.annot"),
 #'   steps = 6:8,
 #'   smoothness = 10,
 #'   tolerance = 0.5
 #' )
 #' }
-create_cortical_atlas <- function(
+create_cortical_from_annotation <- function(
   input_annot,
   atlas_name = NULL,
   output_dir = NULL,
@@ -401,16 +401,16 @@ cortical_finalize <- function(
 #' \dontrun{
 #' # Create 3D-only atlas from label files
 #' labels <- c("lh.region1.label", "lh.region2.label", "rh.region1.label")
-#' atlas <- create_atlas_from_labels(labels, steps = 1)
+#' atlas <- create_cortical_from_labels(labels, steps = 1)
 #' ggseg3d(atlas = atlas)
 #'
 #' # Full atlas with 2D geometry
-#' atlas <- create_atlas_from_labels(labels)
+#' atlas <- create_cortical_from_labels(labels)
 #'
 #' # Iterate on smoothing parameters
-#' atlas <- create_atlas_from_labels(labels, steps = 6:8, smoothness = 10)
+#' atlas <- create_cortical_from_labels(labels, steps = 6:8, smoothness = 10)
 #' }
-create_atlas_from_labels <- function(
+create_cortical_from_labels <- function(
   label_files,
   atlas_name = NULL,
   input_lut = NULL,
@@ -535,7 +535,7 @@ create_atlas_from_labels <- function(
 #' @template cleanup
 #' @template verbose
 #' @template skip_existing
-#' @param steps Which pipeline steps to run. See [create_cortical_atlas()]
+#' @param steps Which pipeline steps to run. See [create_cortical_from_annotation()]
 #'   for step descriptions. Use `steps = 1` for 3D-only atlas.
 #'
 #' @return A `ggseg_atlas` object.
@@ -543,13 +543,13 @@ create_atlas_from_labels <- function(
 #'
 #' @examples
 #' \dontrun{
-#' atlas <- create_atlas_from_gifti(
+#' atlas <- create_cortical_from_gifti(
 #'   gifti_files = c("lh.aparc.label.gii", "rh.aparc.label.gii"),
 #'   steps = 1
 #' )
 #' ggseg3d::ggseg3d(atlas = atlas)
 #' }
-create_atlas_from_gifti <- function(
+create_cortical_from_gifti <- function(
   gifti_files,
   atlas_name = NULL,
   output_dir = NULL,
@@ -643,7 +643,7 @@ create_atlas_from_gifti <- function(
 #' @template cleanup
 #' @template verbose
 #' @template skip_existing
-#' @param steps Which pipeline steps to run. See [create_cortical_atlas()]
+#' @param steps Which pipeline steps to run. See [create_cortical_from_annotation()]
 #'   for step descriptions. Use `steps = 1` for 3D-only atlas.
 #'
 #' @return A `ggseg_atlas` object.
@@ -651,13 +651,13 @@ create_atlas_from_gifti <- function(
 #'
 #' @examples
 #' \dontrun{
-#' atlas <- create_atlas_from_cifti(
+#' atlas <- create_cortical_from_cifti(
 #'   cifti_file = "parcellation.dlabel.nii",
 #'   steps = 1
 #' )
 #' ggseg3d::ggseg3d(atlas = atlas)
 #' }
-create_atlas_from_cifti <- function(
+create_cortical_from_cifti <- function(
   cifti_file,
   atlas_name = NULL,
   output_dir = NULL,
@@ -734,16 +734,23 @@ create_atlas_from_cifti <- function(
 #'
 #' Build a brain atlas directly from a [neuromaps](
 #' https://github.com/netneurolab/neuromaps) annotation. The annotation
-#' is downloaded via [ggseg.hub::fetch_neuromaps_annotation()] and must
-#' contain integer parcel IDs (parcellation map). Vertex value 0 is
-#' treated as medial wall.
+#' is downloaded via [neuromapr::fetch_neuromaps_annotation()].
+#'
+#' Supports both surface (`.func.gii`) and volume (`.nii`/`.nii.gz`)
+#' annotations. Volume annotations in MNI152 space are automatically
+#' projected to fsaverage5 via FreeSurfer's `mri_vol2surf`.
+#'
+#' Continuous brain maps (PET, gene expression, etc.) are discretized
+#' into quantile bins via `n_bins`. Integer parcellation maps use
+#' vertex value 0 as medial wall.
 #'
 #' Defaults to fsaverage5 surface space (`space = "fsaverage"`,
-#' `density = "10k"`, 10,242 vertices per hemisphere). No FreeSurfer
-#' installation is needed for 3D-only atlases (`steps = 1`).
+#' `density = "10k"`, 10,242 vertices per hemisphere). Surface
+#' annotations need no FreeSurfer for 3D-only atlases (`steps = 1`);
+#' volume annotations always require FreeSurfer.
 #'
 #' @param source Neuromaps source identifier (e.g., `"schaefer"`).
-#'   See [ggseg.hub::neuromaps_available()] for options.
+#'   See [neuromapr::neuromaps_available()] for options.
 #' @param desc Neuromaps descriptor key (e.g., `"400Parcels7Networks"`).
 #' @param space Coordinate space. Defaults to `"fsaverage"`.
 #' @param density Surface vertex density. Defaults to `"10k"`
@@ -751,7 +758,11 @@ create_atlas_from_cifti <- function(
 #' @param label_table Optional data.frame mapping parcel IDs to region
 #'   names. Must have columns `id` (integer) and `region` (character).
 #'   Optionally include `colour` (hex string). When `NULL`, regions are
-#'   named `parcel_1`, `parcel_2`, etc.
+#'   auto-named.
+#' @param n_bins Number of quantile bins for continuous brain maps.
+#'   When `NULL` (default), auto-detected via Sturges' rule
+#'   (`1 + log2(n)`, clamped to 5–20). Ignored for integer parcellation
+#'   data. See [read_neuromaps_annotation()].
 #' @template atlas_name
 #' @template output_dir
 #' @param hemisphere Which hemispheres to include: "lh", "rh", or both.
@@ -763,7 +774,7 @@ create_atlas_from_cifti <- function(
 #' @template cleanup
 #' @template verbose
 #' @template skip_existing
-#' @param steps Which pipeline steps to run. See [create_cortical_atlas()]
+#' @param steps Which pipeline steps to run. See [create_cortical_from_annotation()]
 #'   for step descriptions. Use `steps = 1` for 3D-only atlas.
 #'
 #' @return A `ggseg_atlas` object.
@@ -771,19 +782,21 @@ create_atlas_from_cifti <- function(
 #'
 #' @examples
 #' \dontrun{
-#' atlas <- create_atlas_from_neuromaps(
-#'   source = "schaefer",
-#'   desc = "400Parcels7Networks",
+#' atlas <- create_cortical_from_neuromaps(
+#'   source = "abagen",
+#'   desc = "genepc1",
+#'   n_bins = 7,
 #'   steps = 1
 #' )
 #' ggseg3d::ggseg3d(atlas = atlas)
 #' }
-create_atlas_from_neuromaps <- function(
+create_cortical_from_neuromaps <- function(
   source,
   desc,
   space = "fsaverage",
   density = "10k",
   label_table = NULL,
+  n_bins = NULL,
   atlas_name = NULL,
   output_dir = NULL,
   hemisphere = c("rh", "lh"),
@@ -797,7 +810,7 @@ create_atlas_from_neuromaps <- function(
   steps = NULL
 ) {
   rlang::check_installed(
-    "ggseg.hub",
+    "neuromapr",
     reason = "to download neuromaps annotations"
   )
 
@@ -830,7 +843,7 @@ create_atlas_from_neuromaps <- function(
     )
   }
 
-  gifti_files <- ggseg.hub::fetch_neuromaps_annotation(
+  gifti_files <- neuromapr::fetch_neuromaps_annotation(
     source = source,
     desc = desc,
     space = space,
@@ -838,19 +851,17 @@ create_atlas_from_neuromaps <- function(
     verbose = config$verbose
   )
 
-  if (any(grepl("\\.(nii|nii\\.gz)$", gifti_files, ignore.case = TRUE))) {
-    cli::cli_abort(c(
-      "The requested annotation is in volume format, which is not supported.",
-      "i" = paste(
-        "Only surface annotations (.func.gii) can be",
-        "used for cortical atlas creation."
-      ),
-      "i" = paste(
-        "Check {.code ggseg.hub::neuromaps_available(",
-        "source = '{source}', desc = '{desc}',",
-        "format = 'surface')} for surface versions."
+  is_volume <- any(grepl(
+    "\\.(nii|nii\\.gz)$", gifti_files, ignore.case = TRUE
+  ))
+
+  if (is_volume) {
+    check_fs(abort = TRUE)
+    if (config$verbose) {
+      cli::cli_alert_info(
+        "Volume annotation detected — projecting to fsaverage5 surface via mri_vol2surf"
       )
-    ))
+    }
   }
 
   if (is.null(atlas_name)) {
@@ -864,9 +875,15 @@ create_atlas_from_neuromaps <- function(
     cli::cli_alert_info("Input files: {.path {gifti_files}}")
   }
 
+  read_fn <- if (is_volume) {
+    function() read_neuromaps_volume(gifti_files[1], n_bins, dirs$base)
+  } else {
+    function() read_neuromaps_annotation(gifti_files, label_table, n_bins)
+  }
+
   step1 <- cortical_resolve_step1(
     config, dirs, atlas_name,
-    read_fn = function() read_neuromaps_annotation(gifti_files, label_table),
+    read_fn = read_fn,
     step_label = "1/8 Reading neuromaps annotation",
     cache_label = "Step 1 (Read neuromaps)"
   )

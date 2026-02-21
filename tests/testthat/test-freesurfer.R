@@ -671,7 +671,7 @@ describe("surf2ply", {
   })
 
   it("executes body lines with mocked intermediate functions", {
-    pkg_ns <- asNamespace("ggsegExtra")
+    pkg_ns <- asNamespace("ggseg.extra")
     orig_surf2asc <- pkg_ns$surf2asc
     orig_asc2ply <- pkg_ns$asc2ply
 
@@ -727,7 +727,7 @@ describe("curv2ply", {
   })
 
   it("executes body lines with mocked intermediate functions", {
-    pkg_ns <- asNamespace("ggsegExtra")
+    pkg_ns <- asNamespace("ggseg.extra")
     orig_curv2asc <- pkg_ns$curv2asc
     orig_asc2ply <- pkg_ns$asc2ply
 

@@ -37,7 +37,7 @@ read_volume <- function(file, reorient = TRUE) {
 
   vol <- switch(
     ext,
-    "mgz" = freesurfer::read_mgz(file),
+    "mgz" = freesurferformats::read.fs.mgh(file),
     "nii" = RNifti::readNifti(file),
     cli::cli_abort(c(
       "Unsupported volume format: {.file {basename(file)}}",
@@ -45,16 +45,14 @@ read_volume <- function(file, reorient = TRUE) {
     ))
   )
 
-  nii <- RNifti::asNifti(vol)
-
-  if (reorient) {
-    if (RNifti::orientation(nii) != "RAS") {
-      RNifti::orientation(nii) <- "RAS"
+  if (reorient && inherits(vol, "niftiImage")) {
+    if (RNifti::orientation(vol) != "RAS") {
+      RNifti::orientation(vol) <- "RAS"
     }
-    return(as.array(nii))
   }
 
-  nii
+  vol <- as.array(vol)
+  drop(vol)
 }
 
 #' Read mesh data from PLY file
@@ -602,10 +600,14 @@ read_cifti_annotation <- function(cifti_file) {
 
 #' Read neuromaps annotation files
 #'
-#' Reads neuromaps GIFTI metric files (`.func.gii`) containing integer
-#' parcel IDs and converts them to the standard annotation format used by
-#' the cortical atlas pipeline. Vertex value 0 is treated as medial
-#' wall / background.
+#' Reads neuromaps GIFTI metric files (`.func.gii`) and converts them to
+#' the standard annotation format used by the cortical atlas pipeline.
+#'
+#' Automatically detects whether data contains integer parcel IDs
+#' (parcellation) or continuous values (brain map). For parcellations,
+#' vertex value 0 is treated as medial wall. For continuous data, NaN
+#' vertices are medial wall and values are discretized into quantile
+#' bins via `n_bins`.
 #'
 #' Files must be in fsaverage5 space (10,242 vertices per hemisphere).
 #' Use `space = "fsaverage"` with `density = "10k"` when fetching from
@@ -616,7 +618,11 @@ read_cifti_annotation <- function(cifti_file) {
 #' @param label_table Optional data.frame mapping integer parcel IDs to
 #'   region names. Must have columns `id` (integer) and `region` (character).
 #'   Optionally include `colour` (hex string). When `NULL`, regions are
-#'   named `parcel_1`, `parcel_2`, etc.
+#'   named `parcel_1`, `parcel_2`, etc. (parcellation) or
+#'   `bin_1`, `bin_2`, etc. (continuous).
+#' @param n_bins Number of quantile bins for continuous data. When `NULL`
+#'   (default), auto-detected via Sturges' rule (`1 + log2(n)`, clamped
+#'   to 5–20). Ignored for integer parcellation data.
 #'
 #' @return A tibble with columns: hemi, region, label, colour, vertices
 #' @export
@@ -625,12 +631,16 @@ read_cifti_annotation <- function(cifti_file) {
 #'
 #' @examples
 #' \dontrun{
-#' files <- ggseg.hub::fetch_neuromaps_annotation(
-#'   "schaefer", "400parcels", "fsaverage", density = "10k"
+#' files <- neuromapr::fetch_neuromaps_annotation(
+#'   "abagen", "genepc1", "fsaverage", density = "10k"
 #' )
-#' atlas_data <- read_neuromaps_annotation(files)
+#' atlas_data <- read_neuromaps_annotation(files, n_bins = 7)
 #' }
-read_neuromaps_annotation <- function(gifti_files, label_table = NULL) {
+read_neuromaps_annotation <- function(
+  gifti_files,
+  label_table = NULL,
+  n_bins = NULL
+) {
   rlang::check_installed("gifti", reason = "to read GIFTI metric files")
 
   if (!all(file.exists(gifti_files))) {
@@ -688,46 +698,19 @@ read_neuromaps_annotation <- function(gifti_files, label_table = NULL) {
       ))
     }
 
-    parcel_ids <- round(values)
-    unique_ids <- sort(unique(parcel_ids))
-    labeled_vertices <- integer(0)
+    is_parcellation <- is_integer_valued(values)
 
-    for (pid in unique_ids) {
-      if (pid == 0) next
-
-      region_vertices <- which(parcel_ids == pid) - 1L
-      if (length(region_vertices) == 0) next
-
-      labeled_vertices <- c(labeled_vertices, region_vertices)
-
-      if (!is.null(label_table) && pid %in% label_table$id) {
-        row <- label_table[label_table$id == pid, ]
-        region_name <- row$region[1]
-        colour <- if ("colour" %in% names(row)) row$colour[1] else NA_character_
-      } else {
-        region_name <- paste0("parcel_", pid)
-        colour <- NA_character_
-      }
-
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = region_name,
-        label = paste(hemi_short, region_name, sep = "_"),
-        colour = colour,
-        vertices = list(region_vertices)
+    if (is_parcellation) {
+      hemi_data <- parse_parcellation_values(
+        values, hemi, hemi_short, label_table
+      )
+    } else {
+      hemi_data <- parse_continuous_values(
+        values, hemi, hemi_short, n_bins
       )
     }
 
-    unlabeled_vertices <- which(parcel_ids == 0) - 1L
-    if (length(unlabeled_vertices) > 0) {
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = "unknown",
-        label = paste(hemi_short, "unknown", sep = "_"),
-        colour = "#BEBEBE",
-        vertices = list(unlabeled_vertices)
-      )
-    }
+    all_data <- c(all_data, hemi_data)
   }
 
   result <- bind_rows(all_data)
@@ -739,6 +722,187 @@ read_neuromaps_annotation <- function(gifti_files, label_table = NULL) {
     n_missing <- sum(needs_colour)
     generated <- hcl.colors(n_missing, palette = "Set2")
     result$colour[needs_colour] <- generated
+  }
+
+  result
+}
+
+
+#' @noRd
+is_integer_valued <- function(values) {
+  finite <- values[is.finite(values)]
+  if (length(finite) == 0) return(TRUE)
+  all(finite == round(finite))
+}
+
+
+#' @noRd
+parse_parcellation_values <- function(values, hemi, hemi_short, label_table) {
+  parcel_ids <- round(values)
+  parcel_ids[!is.finite(parcel_ids)] <- 0L
+  unique_ids <- sort(unique(parcel_ids))
+  data <- list()
+
+  for (pid in unique_ids) {
+    if (pid == 0) next
+
+    region_vertices <- which(parcel_ids == pid) - 1L
+    if (length(region_vertices) == 0) next
+
+    if (!is.null(label_table) && pid %in% label_table$id) {
+      row <- label_table[label_table$id == pid, ]
+      region_name <- row$region[1]
+      colour <- if ("colour" %in% names(row)) row$colour[1] else NA_character_
+    } else {
+      region_name <- paste0("parcel_", pid)
+      colour <- NA_character_
+    }
+
+    data[[length(data) + 1]] <- tibble(
+      hemi = hemi,
+      region = region_name,
+      label = paste(hemi_short, region_name, sep = "_"),
+      colour = colour,
+      vertices = list(region_vertices)
+    )
+  }
+
+  medial_wall <- which(parcel_ids == 0) - 1L
+  if (length(medial_wall) > 0) {
+    data[[length(data) + 1]] <- tibble(
+      hemi = hemi,
+      region = "unknown",
+      label = paste(hemi_short, "unknown", sep = "_"),
+      colour = "#BEBEBE",
+      vertices = list(medial_wall)
+    )
+  }
+
+  data
+}
+
+
+#' @noRd
+parse_continuous_values <- function(values, hemi, hemi_short, n_bins) {
+  medial_wall <- !is.finite(values)
+  valid <- values[!medial_wall]
+
+  if (is.null(n_bins)) {
+    n_bins <- as.integer(nclass.Sturges(valid))
+    n_bins <- max(5L, min(n_bins, 20L))
+  }
+
+  breaks <- stats::quantile(valid, probs = seq(0, 1, length.out = n_bins + 1))
+  breaks[1] <- breaks[1] - 1
+  bin_ids <- cut(values, breaks = breaks, labels = FALSE)
+  bin_ids[medial_wall] <- NA_integer_
+
+  palette <- hcl.colors(n_bins, palette = "Spectral")
+  data <- list()
+
+  for (bid in seq_len(n_bins)) {
+    region_vertices <- which(bin_ids == bid) - 1L
+    if (length(region_vertices) == 0) next
+
+    region_name <- paste0("bin_", bid)
+    data[[length(data) + 1]] <- tibble(
+      hemi = hemi,
+      region = region_name,
+      label = paste(hemi_short, region_name, sep = "_"),
+      colour = palette[bid],
+      vertices = list(region_vertices)
+    )
+  }
+
+  wall_vertices <- which(medial_wall) - 1L
+  if (length(wall_vertices) > 0) {
+    data[[length(data) + 1]] <- tibble(
+      hemi = hemi,
+      region = "unknown",
+      label = paste(hemi_short, "unknown", sep = "_"),
+      colour = "#BEBEBE",
+      vertices = list(wall_vertices)
+    )
+  }
+
+  data
+}
+
+
+#' Read neuromaps volume annotation via surface projection
+#'
+#' Projects an MNI152-space NIfTI volume onto the fsaverage5 surface via
+#' FreeSurfer's `mri_vol2surf`, then discretizes the projected per-vertex
+#' values using the same binning logic as [read_neuromaps_annotation()].
+#'
+#' @param nifti_file Path to a `.nii` or `.nii.gz` file in MNI152 space.
+#' @param n_bins Number of quantile bins for continuous data. When `NULL`
+#'   (default), auto-detected via Sturges' rule. Ignored for integer data.
+#' @param output_dir Directory for intermediate surface overlay files.
+#'
+#' @return A tibble with columns: hemi, region, label, colour, vertices
+#' @export
+#' @importFrom dplyr tibble bind_rows
+#' @importFrom grDevices hcl.colors
+read_neuromaps_volume <- function(
+  nifti_file,
+  n_bins = NULL,
+  output_dir = tempdir()
+) {
+  check_fs(abort = TRUE)
+  rlang::check_installed("RNifti", reason = "to read NIfTI volume files")
+
+  surf_dir <- file.path(output_dir, "surface_overlays")
+  mkdir(surf_dir)
+
+  fsaverage5_nverts <- 10242L
+  all_data <- list()
+
+  for (hemi_short in c("lh", "rh")) {
+    hemi <- if (hemi_short == "lh") "left" else "right"
+    output_nii <- file.path(surf_dir, paste0(hemi_short, "_overlay.nii.gz"))
+
+    mri_vol2surf(
+      input_file = nifti_file,
+      output_file = output_nii,
+      hemisphere = hemi_short,
+      projfrac_range = c(0, 1, 0.1),
+      mni152reg = TRUE,
+      opts = paste("--interp trilinear --trgsubject fsaverage5")
+    )
+
+    if (!file.exists(output_nii)) {
+      cli::cli_abort(c(
+        "mri_vol2surf failed to produce output for {hemi_short}",
+        "i" = "Expected: {.path {output_nii}}"
+      ))
+    }
+
+    values <- as.numeric(c(RNifti::readNifti(output_nii)))
+    values[values == 0] <- NaN
+
+    if (length(values) != fsaverage5_nverts) {
+      cli::cli_abort(c(
+        paste(
+          "{hemi} hemisphere has {length(values)} vertices,",
+          "expected {fsaverage5_nverts} (fsaverage5)"
+        )
+      ))
+    }
+
+    hemi_data <- if (is_integer_valued(values)) {
+      parse_parcellation_values(values, hemi, hemi_short, label_table = NULL)
+    } else {
+      parse_continuous_values(values, hemi, hemi_short, n_bins)
+    }
+    all_data <- c(all_data, hemi_data)
+  }
+
+  result <- bind_rows(all_data)
+
+  needs_colour <- is.na(result$colour) & result$region != "unknown"
+  if (any(needs_colour)) {
+    result$colour[needs_colour] <- hcl.colors(sum(needs_colour), "Set2")
   }
 
   result

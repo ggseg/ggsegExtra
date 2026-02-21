@@ -1,8 +1,8 @@
 describe("cortical_brain_snapshots", {
-  it("dispatches snapshot_brain for each hemi x view combination", {
+  it("dispatches snapshot_brain_full for each hemi x view combination", {
     captured <- list()
     local_mocked_bindings(
-      snapshot_brain = function(atlas, hemisphere, view, ...) {
+      snapshot_brain_full = function(atlas, hemisphere, view, ...) {
         captured[[length(captured) + 1]] <<- list(
           hemisphere = hemisphere,
           view = view

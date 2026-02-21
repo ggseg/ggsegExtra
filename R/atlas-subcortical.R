@@ -65,7 +65,7 @@
 #' @examples
 #' \dontrun{
 #' # Create 3D-only subcortical atlas from aseg
-#' atlas <- create_subcortical_atlas(
+#' atlas <- create_subcortical_from_volume(
 #'   input_volume = "path/to/aseg.mgz",
 #'   input_lut = "path/to/FreeSurferColorLUT.txt",
 #'   steps = 1:3
@@ -75,7 +75,7 @@
 #' ggseg3d(atlas = atlas, hemisphere = "subcort")
 #'
 #' # Full atlas with 2D slices
-#' atlas <- create_subcortical_atlas(
+#' atlas <- create_subcortical_from_volume(
 #'   input_volume = "path/to/aseg.mgz",
 #'   input_lut = "path/to/ASegStatsLUT.txt"
 #' )
@@ -85,7 +85,7 @@
 #'   atlas_remove_regions("White-Matter") |>
 #'   atlas_set_context("Cortex")
 #' }
-create_subcortical_atlas <- function(
+create_subcortical_from_volume <- function(
   input_volume,
   input_lut = NULL,
   atlas_name = NULL,

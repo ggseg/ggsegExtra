@@ -1,7 +1,7 @@
-#' Check ggsegExtra setup status
+#' Check ggseg.extra setup status
 #'
 #' Performs diagnostic checks to verify that system dependencies
-#' and environment variables required by ggsegExtra are properly
+#' and environment variables required by ggseg.extra are properly
 #' configured.
 #'
 #' @param detail Character. Level of detail to display:
@@ -128,8 +128,8 @@ check_pipeline_options <- function(detail = "simple") {
     cli::cli_text("")
     cli::cli_bullets(c(
       "i" = paste(
-        "Set via {.code options(ggsegExtra.<name> = value)} or",
-        "environment variables {.envvar GGSEGEXTRA_<NAME>}"
+        "Set via {.code options(ggseg.extra.<name> = value)} or",
+        "environment variables {.envvar GGSEG_EXTRA_<NAME>}"
       ),
       "i" = "See {.code vignette(\"pipeline-configuration\")} for details"
     ))

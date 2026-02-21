@@ -1,4 +1,4 @@
 #' @param verbose Logical. If not specified, uses the value from
-#'   `options("ggsegExtra.verbose")` or the `GGSEGEXTRA_VERBOSE`
+#'   `options("ggseg.extra.verbose")` or the `GGSEG_EXTRA_VERBOSE`
 #'   environment variable. Defaults to `TRUE`.
-#'   Use `options(ggsegExtra.verbose = FALSE)` to suppress output globally.
+#'   Use `options(ggseg.extra.verbose = FALSE)` to suppress output globally.
