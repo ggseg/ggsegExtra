@@ -144,7 +144,9 @@ create_wholebrain_from_volume <- function(
     steps = steps
   )
 
-  dirs <- setup_atlas_dirs(config$output_dir, config$atlas_name, type = "cortical")
+  dirs <- setup_atlas_dirs(
+    config$output_dir, config$atlas_name, type = "cortical"
+  )
 
   if (config$verbose) {
     cli::cli_h1("Creating whole-brain atlas {.val {config$atlas_name}}")
@@ -214,8 +216,12 @@ create_wholebrain_from_volume <- function(
   }
 
   if (config$verbose) {
-    n_cort <- if (!is.null(cortical_atlas)) nrow(cortical_atlas$core) else 0L
-    n_sub <- if (!is.null(subcortical_atlas)) {
+    n_cort <- if (!is.null(cortical_atlas)) { # nolint: object_usage_linter.
+      nrow(cortical_atlas$core)
+    } else {
+      0L
+    }
+    n_sub <- if (!is.null(subcortical_atlas)) { # nolint: object_usage_linter.
       nrow(subcortical_atlas$core)
     } else {
       0L
@@ -250,7 +256,7 @@ validate_wholebrain_config <- function(
     cli::cli_abort("Volume file not found: {.path {input_volume}}")
   }
   if (!is.null(input_lut) && is.character(input_lut) &&
-      !file.exists(input_lut)) {
+        !file.exists(input_lut)) {
     cli::cli_abort("Color lookup table not found: {.path {input_lut}}")
   }
 
@@ -258,8 +264,10 @@ validate_wholebrain_config <- function(
 
   if (is.null(atlas_name)) {
     atlas_name <- basename(input_volume)
-    atlas_name <- sub("\\.(nii\\.gz|nii|mgz)$", "", atlas_name,
-                       ignore.case = TRUE)
+    atlas_name <- sub(
+      "\\.(nii\\.gz|nii|mgz)$", "", atlas_name,
+      ignore.case = TRUE
+    )
   }
 
   config$input_volume <- input_volume
@@ -373,14 +381,21 @@ wholebrain_project_to_surface <- function(
 
     overlay <- as.integer(c(RNifti::readNifti(output_mgz)))
 
-    n_before <- sum(overlay != 0L)
+    n_before <- sum(overlay != 0L) # nolint: object_usage_linter.
     overlay <- fill_surface_labels(overlay, hemi_short, subject)
     if (verbose) {
-      n_after <- sum(overlay != 0L)
+      n_after <- sum(overlay != 0L) # nolint: object_usage_linter.
       n_total <- length(overlay)
-      n_medial <- n_total - n_after
+      n_medial <- n_total - n_after # nolint: object_usage_linter.
+      pct <- sprintf( # nolint: object_usage_linter.
+        "%.0f%%", 100 * n_after / n_total
+      )
       cli::cli_alert(
-        "{hemi_short}: {n_before} -> {n_after} labeled vertices ({sprintf('%.0f%%', 100 * n_after / n_total)} cortex, {n_medial} medial wall)"
+        paste(
+          "{hemi_short}: {n_before} -> {n_after}",
+          "labeled vertices ({pct} cortex,",
+          "{n_medial} medial wall)"
+        )
       )
     }
 
@@ -496,7 +511,7 @@ wholebrain_classify_labels <- function(
     classified_cortical <- intersect(cortical_labels, all_labels)
   }
   if (!is.null(subcortical_labels)) {
-    classified_subcortical <- intersect(subcortical_labels, all_labels)
+    classified_subcortical <- subcortical_labels
   }
 
   remaining <- setdiff(
@@ -512,10 +527,13 @@ wholebrain_classify_labels <- function(
 
   if (verbose) {
     cli::cli_alert_info(
-      "{length(classified_cortical)} cortical, {length(classified_subcortical)} subcortical labels"
+      paste(
+        "{length(classified_cortical)} cortical,",
+        "{length(classified_subcortical)} subcortical labels"
+      )
     )
     if (length(classified_subcortical) > 0) {
-      sub_info <- paste(
+      sub_info <- paste( # nolint: object_usage_linter.
         classified_subcortical,
         paste0("(", vertex_counts[classified_subcortical], "v)"),
         collapse = ", "
@@ -580,8 +598,10 @@ wholebrain_run_cortical <- function(
   }
 
   hemisphere <- unique(cortical_data$hemi)
-  hemi_short <- vapply(hemisphere, hemi_to_short, character(1),
-                        USE.NAMES = FALSE)
+  hemi_short <- vapply(
+    hemisphere, hemi_to_short, character(1),
+    USE.NAMES = FALSE
+  )
 
   atlas <- cortical_pipeline(
     atlas_3d = step1$atlas_3d,
@@ -608,7 +628,10 @@ wholebrain_run_subcortical <- function(
 ) {
   if (config$verbose) {
     cli::cli_progress_step(
-      "4/4 Running subcortical pipeline ({length(split$subcortical_labels)} regions)"
+      paste(
+        "4/4 Running subcortical pipeline",
+        "({length(split$subcortical_labels)} regions)"
+      )
     )
   }
 
@@ -680,8 +703,14 @@ load_cortex_mask <- function(hemi, subject = "fsaverage5", n_vertices) {
   if (!file.exists(label_file)) {
     cli::cli_abort(c(
       "Cortex label not found: {.path {label_file}}",
-      "i" = "This file is required to prevent label dilation into the medial wall.",
-      "i" = "It should exist for {.val {subject}}. Check your FreeSurfer installation."
+      "i" = paste(
+        "This file is required to prevent",
+        "label dilation into the medial wall."
+      ),
+      "i" = paste(
+        "It should exist for {.val {subject}}.",
+        "Check your FreeSurfer installation."
+      )
     ))
   }
 
@@ -703,7 +732,8 @@ load_cortex_mask <- function(hemi, subject = "fsaverage5", n_vertices) {
 #' Dilation is restricted to cortex vertices (from `{hemi}.cortex.label`)
 #' so labels do not bleed into the medial wall.
 #'
-#' @param overlay Integer vector of label values (0 = unlabeled), one per vertex.
+#' @param overlay Integer vector of label values
+#'   (0 = unlabeled), one per vertex.
 #' @param hemi Hemisphere code ("lh" or "rh").
 #' @param subject FreeSurfer subject for surface mesh. Default "fsaverage5".
 #' @return Integer vector of same length with gaps filled.
@@ -714,7 +744,9 @@ fill_surface_labels <- function(overlay, hemi, subject = "fsaverage5") {
     paste0(hemi, ".white")
   )
   if (!file.exists(surf_file)) {
-    cli::cli_warn("Surface file not found: {.path {surf_file}}, skipping dilation")
+    cli::cli_warn(
+      "Surface file not found: {.path {surf_file}}, skipping dilation"
+    )
     return(overlay)
   }
 

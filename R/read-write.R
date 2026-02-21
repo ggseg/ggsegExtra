@@ -143,7 +143,9 @@ annot_to_atlas_data <- function(annot, hemi, hemi_short) {
     region_code <- ct$code[i]
 
     region_vertices <- which(annot$label_codes == region_code) - 1L
-    if (length(region_vertices) == 0) next
+    if (length(region_vertices) == 0) {
+      next
+    }
 
     labeled_vertices <- c(labeled_vertices, region_vertices)
 
@@ -323,9 +325,25 @@ read_dpv <- function(path) {
 #' @export
 #' @importFrom utils read.table
 read_ctab <- function(path) {
-  x <- read.table(path)
-  names(x) <- c("idx", "label", "R", "G", "B", "A")
-  x
+  lines <- trimws(readLines(path))
+  lines <- lines[nzchar(lines)]
+  parsed <- regmatches(
+    lines,
+    regexec("^\\s*(\\d+)\\s+(.+?)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\d+)\\s*$", lines)
+  )
+  rows <- lapply(parsed, function(m) {
+    if (length(m) == 0) return(NULL)
+    data.frame(
+      idx = as.integer(m[2]),
+      label = trimws(m[3]),
+      R = as.integer(m[4]),
+      G = as.integer(m[5]),
+      B = as.integer(m[6]),
+      A = as.integer(m[7]),
+      stringsAsFactors = FALSE
+    )
+  })
+  do.call(rbind, Filter(Negate(is.null), rows))
 }
 
 
@@ -404,6 +422,7 @@ get_ctab <- function(color_lut) {
 #' @param filename Basename of the GIFTI file
 #' @return "lh" or "rh", or NA if undetectable
 #' @keywords internal
+# nolint next: object_length_linter.
 detect_hemi_from_gifti_filename <- function(filename) {
   if (grepl("^lh\\.|[._]lh[._]|\\.L\\.", filename)) {
     return("lh")
@@ -416,9 +435,14 @@ detect_hemi_from_gifti_filename <- function(filename) {
 
 
 #' @noRd
+# nolint next: object_length_linter.
 detect_hemi_from_neuromaps_filename <- function(filename) {
-  if (grepl("hemi-L", filename, fixed = TRUE)) return("lh")
-  if (grepl("hemi-R", filename, fixed = TRUE)) return("rh")
+  if (grepl("hemi-L", filename, fixed = TRUE)) {
+    return("lh")
+  }
+  if (grepl("hemi-R", filename, fixed = TRUE)) {
+    return("rh")
+  }
   detect_hemi_from_gifti_filename(filename)
 }
 
@@ -453,8 +477,12 @@ read_gifti_annotation <- function(gifti_files) {
   )
 
   if (!all(file.exists(gifti_files))) {
-    missing <- gifti_files[!file.exists(gifti_files)]
-    cli::cli_abort("GIFTI file{?s} not found: {.path {missing}}")
+    missing <- gifti_files[ # nolint: object_usage_linter.
+      !file.exists(gifti_files)
+    ]
+    cli::cli_abort(
+      "GIFTI file{?s} not found: {.path {missing}}"
+    )
   }
 
   all_data <- list()
@@ -535,7 +563,9 @@ read_cifti_annotation <- function(cifti_file) {
   label_table <- cii$meta$cifti$labels[[1]]
 
   for (hi in hemi_info) {
-    if (is.null(hi$data)) next
+    if (is.null(hi$data)) {
+      next
+    }
 
     vertex_labels <- as.integer(hi$data[, 1])
     n_verts <- length(vertex_labels)
@@ -560,7 +590,9 @@ read_cifti_annotation <- function(cifti_file) {
       region_name <- label_table$Label[i]
 
       region_vertices <- which(vertex_labels == region_key) - 1L
-      if (length(region_vertices) == 0) next
+      if (length(region_vertices) == 0) {
+        next
+      }
 
       labeled_vertices <- c(labeled_vertices, region_vertices)
 
@@ -622,7 +654,7 @@ read_cifti_annotation <- function(cifti_file) {
 #'   `bin_1`, `bin_2`, etc. (continuous).
 #' @param n_bins Number of quantile bins for continuous data. When `NULL`
 #'   (default), auto-detected via Sturges' rule (`1 + log2(n)`, clamped
-#'   to 5–20). Ignored for integer parcellation data.
+#'   to 5--20). Ignored for integer parcellation data.
 #'
 #' @return A tibble with columns: hemi, region, label, colour, vertices
 #' @export
@@ -644,8 +676,12 @@ read_neuromaps_annotation <- function(
   rlang::check_installed("gifti", reason = "to read GIFTI metric files")
 
   if (!all(file.exists(gifti_files))) {
-    missing <- gifti_files[!file.exists(gifti_files)]
-    cli::cli_abort("GIFTI file{?s} not found: {.path {missing}}")
+    missing <- gifti_files[ # nolint: object_usage_linter.
+      !file.exists(gifti_files)
+    ]
+    cli::cli_abort(
+      "GIFTI file{?s} not found: {.path {missing}}"
+    )
   }
 
   volume_files <- grepl("\\.(nii|nii\\.gz)$", gifti_files, ignore.case = TRUE)
@@ -661,7 +697,10 @@ read_neuromaps_annotation <- function(
     if (!all(c("id", "region") %in% names(label_table))) {
       cli::cli_abort(c(
         "{.arg label_table} must have columns {.field id} and {.field region}",
-        "i" = "Optionally include a {.field colour} column with hex colour codes."
+        "i" = paste(
+          "Optionally include a {.field colour}",
+          "column with hex colour codes."
+        )
       ))
     }
   }
@@ -702,11 +741,17 @@ read_neuromaps_annotation <- function(
 
     if (is_parcellation) {
       hemi_data <- parse_parcellation_values(
-        values, hemi, hemi_short, label_table
+        values,
+        hemi,
+        hemi_short,
+        label_table
       )
     } else {
       hemi_data <- parse_continuous_values(
-        values, hemi, hemi_short, n_bins
+        values,
+        hemi,
+        hemi_short,
+        n_bins
       )
     }
 
@@ -715,7 +760,9 @@ read_neuromaps_annotation <- function(
 
   result <- bind_rows(all_data)
 
-  if (nrow(result) == 0) return(result)
+  if (nrow(result) == 0) {
+    return(result)
+  }
 
   needs_colour <- is.na(result$colour) & result$region != "unknown"
   if (any(needs_colour)) {
@@ -731,7 +778,9 @@ read_neuromaps_annotation <- function(
 #' @noRd
 is_integer_valued <- function(values) {
   finite <- values[is.finite(values)]
-  if (length(finite) == 0) return(TRUE)
+  if (length(finite) == 0) {
+    return(TRUE)
+  }
   all(finite == round(finite))
 }
 
@@ -744,10 +793,14 @@ parse_parcellation_values <- function(values, hemi, hemi_short, label_table) {
   data <- list()
 
   for (pid in unique_ids) {
-    if (pid == 0) next
+    if (pid == 0) {
+      next
+    }
 
     region_vertices <- which(parcel_ids == pid) - 1L
-    if (length(region_vertices) == 0) next
+    if (length(region_vertices) == 0) {
+      next
+    }
 
     if (!is.null(label_table) && pid %in% label_table$id) {
       row <- label_table[label_table$id == pid, ]
@@ -788,7 +841,7 @@ parse_continuous_values <- function(values, hemi, hemi_short, n_bins) {
   valid <- values[!medial_wall]
 
   if (is.null(n_bins)) {
-    n_bins <- as.integer(nclass.Sturges(valid))
+    n_bins <- as.integer(grDevices::nclass.Sturges(valid))
     n_bins <- max(5L, min(n_bins, 20L))
   }
 
@@ -802,7 +855,9 @@ parse_continuous_values <- function(values, hemi, hemi_short, n_bins) {
 
   for (bid in seq_len(n_bins)) {
     region_vertices <- which(bin_ids == bid) - 1L
-    if (length(region_vertices) == 0) next
+    if (length(region_vertices) == 0) {
+      next
+    }
 
     region_name <- paste0("bin_", bid)
     data[[length(data) + 1]] <- tibble(
