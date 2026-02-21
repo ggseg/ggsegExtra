@@ -190,8 +190,11 @@ create_wholebrain_from_volume <- function(
   subcortical_atlas <- NULL
 
   if (3L %in% config$steps && length(split$cortical_labels) > 0) {
+    refined <- wholebrain_refine_cortical_projection(
+      config, dirs, projection, split
+    )
     cortical_atlas <- wholebrain_run_cortical(
-      config, dirs, projection, split,
+      config, dirs, refined, split,
       views = cortical_views
     )
   }
@@ -339,6 +342,43 @@ wholebrain_resolve_projection <- function(config, dirs) {
 }
 
 
+#' Convert a filled overlay vector to atlas_data rows for one hemisphere
+#' @noRd
+overlay_to_atlas_data <- function(overlay, hemi_short, colortable) {
+  hemi <- hemi_to_long(hemi_short)
+  unique_labels <- sort(unique(overlay[overlay != 0L]))
+
+  rows <- lapply(unique_labels, function(label_val) {
+    ct_row <- colortable[colortable$idx == label_val, ]
+    if (nrow(ct_row) == 0) return(NULL)
+
+    label_name <- ct_row$label[1]
+    safe_name <- gsub("\\(", "_", label_name)
+    safe_name <- gsub(")", "", safe_name)
+    safe_name <- gsub("/", "-", safe_name)
+    colour <- if ("color" %in% names(ct_row)) {
+      ct_row$color[1]
+    } else if (all(c("R", "G", "B") %in% names(ct_row))) {
+      rgb(ct_row$R[1], ct_row$G[1], ct_row$B[1], maxColorValue = 255)
+    } else {
+      NA_character_
+    }
+
+    tibble(
+      hemi = hemi,
+      region = clean_region_name(label_name),
+      label = paste(hemi_short, safe_name, sep = "_"),
+      colour = colour,
+      vertices = list(which(overlay == label_val) - 1L),
+      source_label = label_name,
+      source_idx = label_val
+    )
+  })
+
+  bind_rows(Filter(Negate(is.null), rows))
+}
+
+
 #' @noRd
 wholebrain_project_to_surface <- function(
   input_volume, colortable, subject, projfrac,
@@ -399,36 +439,9 @@ wholebrain_project_to_surface <- function(
       )
     }
 
-    unique_labels <- sort(unique(overlay[overlay != 0L]))
-
-    for (label_val in unique_labels) {
-      vertex_indices <- which(overlay == label_val) - 1L
-
-      ct_row <- colortable[colortable$idx == label_val, ]
-      if (nrow(ct_row) == 0) next
-
-      label_name <- ct_row$label[1]
-      safe_name <- gsub("\\(", "_", label_name)
-      safe_name <- gsub(")", "", safe_name)
-      safe_name <- gsub("/", "-", safe_name)
-      colour <- if ("color" %in% names(ct_row)) {
-        ct_row$color[1]
-      } else if (all(c("R", "G", "B") %in% names(ct_row))) {
-        rgb(ct_row$R[1], ct_row$G[1], ct_row$B[1], maxColorValue = 255)
-      } else {
-        NA_character_
-      }
-
-      all_data[[length(all_data) + 1]] <- tibble(
-        hemi = hemi,
-        region = clean_region_name(label_name),
-        label = paste(hemi_short, safe_name, sep = "_"),
-        colour = colour,
-        vertices = list(vertex_indices),
-        source_label = label_name,
-        source_idx = label_val
-      )
-    }
+    all_data[[hemi_short]] <- overlay_to_atlas_data(
+      overlay, hemi_short, colortable
+    )
   }
 
   bind_rows(all_data)
@@ -546,6 +559,60 @@ wholebrain_classify_labels <- function(
     cortical_labels = classified_cortical,
     subcortical_labels = classified_subcortical,
     vertex_counts = vertex_counts
+  )
+}
+
+
+# Step 2.5: Refine cortical projection ----
+
+#' Remove subcortical labels from surface projection and re-fill
+#'
+#' When projecting a combined volume, subcortical voxels near the cortical
+#' surface can "steal" vertices that should be cortical. This function reloads
+#' the raw vol2surf overlays, zeros out subcortical label values, and re-runs
+#' fill_surface_labels so dilation only spreads cortical labels.
+#'
+#' @param config Pipeline config.
+#' @param dirs Pipeline directory structure.
+#' @param projection Original projection from step 1 (needs `colortable`).
+#' @param split Classification result from step 2 (needs `subcortical_labels`).
+#' @return A list with `atlas_data` (refined) and `colortable` (unchanged).
+#' @noRd
+wholebrain_refine_cortical_projection <- function(
+  config, dirs, projection, split
+) {
+  if (length(split$subcortical_labels) == 0) return(projection)
+
+  subcort_idx <- projection$colortable$idx[
+    projection$colortable$label %in% split$subcortical_labels
+  ]
+  if (length(subcort_idx) == 0) return(projection)
+
+  surf_dir <- file.path(dirs$base, "surface_overlays")
+  colortable <- projection$colortable
+
+  if (config$verbose) {
+    cli::cli_progress_step(
+      paste(
+        "Refining cortical projection",
+        "(removing {length(subcort_idx)} subcortical labels from surface)"
+      )
+    )
+  }
+
+  all_data <- lapply(c("lh", "rh"), function(hemi_short) {
+    overlay_file <- file.path(surf_dir, paste0(hemi_short, "_overlay.nii.gz"))
+    overlay <- as.integer(c(RNifti::readNifti(overlay_file)))
+    overlay[overlay %in% subcort_idx] <- 0L
+    overlay <- fill_surface_labels(overlay, hemi_short, config$subject)
+    overlay_to_atlas_data(overlay, hemi_short, colortable)
+  })
+
+  if (config$verbose) cli::cli_progress_done()
+
+  list(
+    atlas_data = bind_rows(all_data),
+    colortable = colortable
   )
 }
 

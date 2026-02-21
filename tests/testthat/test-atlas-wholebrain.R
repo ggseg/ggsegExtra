@@ -577,14 +577,21 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
       check_fs = function(...) TRUE,
       check_magick = function(...) TRUE,
       setup_atlas_dirs = function(...) {
-        list(base = sub_dir, snapshots = sub_dir, processed = sub_dir, masks = sub_dir)
+        list(
+          base = sub_dir, snapshots = sub_dir,
+          processed = sub_dir, masks = sub_dir
+        )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       generate_colortable_from_volume = function(...) {
-        data.frame(idx = 1L, label = "a", R = 255L, G = 0L, B = 0L, A = 0L,
-          roi = "0001", color = "#FF0000", stringsAsFactors = FALSE)
+        data.frame(
+          idx = 1L, label = "a",
+          R = 255L, G = 0L, B = 0L, A = 0L,
+          roi = "0001", color = "#FF0000",
+          stringsAsFactors = FALSE
+        )
       },
       wholebrain_project_to_surface = function(...) {
         tibble(
@@ -594,7 +601,10 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
         )
       },
       wholebrain_run_cortical = function(...) {
-        structure(list(core = data.frame(hemi = "left", region = "a")), class = "ggseg_atlas")
+        structure(
+          list(core = data.frame(hemi = "left", region = "a")),
+          class = "ggseg_atlas"
+        )
       },
       wholebrain_run_subcortical = function(...) NULL,
       log_elapsed = function(...) NULL
@@ -623,14 +633,21 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
     local_mocked_bindings(
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
-        list(base = sub_dir, snapshots = sub_dir, processed = sub_dir, masks = sub_dir)
+        list(
+          base = sub_dir, snapshots = sub_dir,
+          processed = sub_dir, masks = sub_dir
+        )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       generate_colortable_from_volume = function(...) {
-        data.frame(idx = 1L, label = "a", R = 255L, G = 0L, B = 0L, A = 0L,
-          roi = "0001", color = "#FF0000", stringsAsFactors = FALSE)
+        data.frame(
+          idx = 1L, label = "a",
+          R = 255L, G = 0L, B = 0L, A = 0L,
+          roi = "0001", color = "#FF0000",
+          stringsAsFactors = FALSE
+        )
       },
       wholebrain_project_to_surface = function(...) {
         tibble(
@@ -640,7 +657,10 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
         )
       },
       wholebrain_run_cortical = function(...) {
-        structure(list(core = data.frame(hemi = "left", region = "a")), class = "ggseg_atlas")
+        structure(
+          list(core = data.frame(hemi = "left", region = "a")),
+          class = "ggseg_atlas"
+        )
       },
       wholebrain_run_subcortical = function(...) NULL,
       log_elapsed = function(...) NULL
@@ -670,16 +690,23 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
       check_fs = function(...) TRUE,
       check_magick = function(...) TRUE,
       setup_atlas_dirs = function(...) {
-        list(base = sub_dir, snapshots = sub_dir, processed = sub_dir, masks = sub_dir)
+        list(
+          base = sub_dir, snapshots = sub_dir,
+          processed = sub_dir, masks = sub_dir
+        )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       generate_colortable_from_volume = function(...) {
-        data.frame(idx = c(1L, 2L), label = c("a", "b"),
-          R = c(255L, 0L), G = c(0L, 255L), B = c(0L, 0L), A = c(0L, 0L),
-          roi = c("0001", "0002"), color = c("#FF0000", "#00FF00"),
-          stringsAsFactors = FALSE)
+        data.frame(
+          idx = c(1L, 2L), label = c("a", "b"),
+          R = c(255L, 0L), G = c(0L, 255L),
+          B = c(0L, 0L), A = c(0L, 0L),
+          roi = c("0001", "0002"),
+          color = c("#FF0000", "#00FF00"),
+          stringsAsFactors = FALSE
+        )
       },
       wholebrain_project_to_surface = function(...) {
         bind_rows(
@@ -694,6 +721,11 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
             source_label = "b", source_idx = 2L
           )
         )
+      },
+      wholebrain_refine_cortical_projection = function(
+        config, dirs, projection, split
+      ) {
+        projection
       },
       wholebrain_run_cortical = function(...) {
         structure(
@@ -734,14 +766,21 @@ describe("create_wholebrain_from_volume verbose and cleanup", {
     local_mocked_bindings(
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
-        list(base = sub_dir, snapshots = sub_dir, processed = sub_dir, masks = sub_dir)
+        list(
+          base = sub_dir, snapshots = sub_dir,
+          processed = sub_dir, masks = sub_dir
+        )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       generate_colortable_from_volume = function(...) {
-        data.frame(idx = 1L, label = "a", R = 255L, G = 0L, B = 0L, A = 0L,
-          roi = "0001", color = "#FF0000", stringsAsFactors = FALSE)
+        data.frame(
+          idx = 1L, label = "a",
+          R = 255L, G = 0L, B = 0L, A = 0L,
+          roi = "0001", color = "#FF0000",
+          stringsAsFactors = FALSE
+        )
       },
       wholebrain_project_to_surface = function(...) {
         tibble(
@@ -838,8 +877,13 @@ describe("wholebrain_resolve_split cached path", {
       }
     )
 
-    config <- list(steps = 2L, skip_existing = TRUE, verbose = TRUE, min_vertices = 50L)
-    projection <- list(atlas_data = tibble(), colortable = data.frame())
+    config <- list(
+      steps = 2L, skip_existing = TRUE,
+      verbose = TRUE, min_vertices = 50L
+    )
+    projection <- list(
+      atlas_data = tibble(), colortable = data.frame()
+    )
 
     expect_message(
       result <- wholebrain_resolve_split(config, dirs, projection),
@@ -894,7 +938,9 @@ describe("wholebrain_run_cortical verbose logging", {
     split <- list(cortical_labels = "a")
 
     expect_message(
-      wholebrain_run_cortical(config, dirs, projection, split, views = "lateral"),
+      wholebrain_run_cortical(
+        config, dirs, projection, split, views = "lateral"
+      ),
       "cortical pipeline"
     )
   })
@@ -1172,14 +1218,21 @@ describe("create_wholebrain_from_volume oversight warning", {
     local_mocked_bindings(
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
-        list(base = sub_dir, snapshots = sub_dir, processed = sub_dir, masks = sub_dir)
+        list(
+          base = sub_dir, snapshots = sub_dir,
+          processed = sub_dir, masks = sub_dir
+        )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
       },
       generate_colortable_from_volume = function(...) {
-        data.frame(idx = 1L, label = "a", R = 255L, G = 0L, B = 0L, A = 0L,
-          roi = "0001", color = "#FF0000", stringsAsFactors = FALSE)
+        data.frame(
+          idx = 1L, label = "a",
+          R = 255L, G = 0L, B = 0L, A = 0L,
+          roi = "0001", color = "#FF0000",
+          stringsAsFactors = FALSE
+        )
       },
       wholebrain_project_to_surface = function(...) {
         tibble(
@@ -1222,7 +1275,10 @@ describe("create_wholebrain_from_volume verbose LUT path", {
     local_mocked_bindings(
       check_fs = function(...) TRUE,
       setup_atlas_dirs = function(...) {
-        list(base = sub_dir, snapshots = sub_dir, processed = sub_dir, masks = sub_dir)
+        list(
+          base = sub_dir, snapshots = sub_dir,
+          processed = sub_dir, masks = sub_dir
+        )
       },
       load_or_run_step = function(step, steps, ...) {
         list(run = step %in% steps, data = list())
