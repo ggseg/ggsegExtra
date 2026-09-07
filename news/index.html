@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg.extra</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9.9015</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9.9016</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,14 +64,23 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.9.9.9015" id="ggsegextra-1999015">ggseg.extra 1.9.9.9015<a class="anchor" aria-label="anchor" href="#ggsegextra-1999015"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.9.9.9016" id="ggsegextra-1999016">ggseg.extra 1.9.9.9016<a class="anchor" aria-label="anchor" href="#ggsegextra-1999016"></a></h2>
 <div class="section level3">
-<h3 id="minor-improvements-and-fixes-1-9-9-9015">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-1-9-9-9015"></a></h3>
-<ul><li>
-<code><a href="../reference/create_tract_from_volume.html">create_tract_from_volume()</a></code> no longer sweeps the whole label volume once per tract. It collected each tract’s voxels with <code>which(arr == label)</code>, so a 35-tract atlas made 35 full passes over the array; the voxels are now gathered in a single pass and grouped by label, and the voxel-to-world affine is applied after thinning rather than before, so it transforms at most <code>4000</code> points per tract instead of every voxel. Output is unchanged.</li>
+<h3 id="post-creation-geometry-1-9-9-9016">Post-creation geometry<a class="anchor" aria-label="anchor" href="#post-creation-geometry-1-9-9-9016"></a></h3>
+<p>Smoothing, dilation and vertex reduction are steps you apply to a finished atlas, not settings baked into a build - retuning one should not cost a rebuild.</p>
+<ul><li><p>New <code><a href="../reference/atlas_dilate.html">atlas_dilate()</a></code> grows or shrinks region geometry, the post-creation counterpart of the snapshot-stage dilation the pipelines applied. Dilate the structures and leave the context alone: a grey brain grown by even a little closes its sulci and flattens into a blob.</p></li>
+<li><p><code>dilate</code> on the <code>create_*()</code> functions is deprecated in favour of <code><a href="../reference/atlas_dilate.html">atlas_dilate()</a></code>. It is still honoured for now, so no atlas changes underfoot.</p></li>
+<li><p><code>dilate</code>, <code>smoothness</code>, <code>tolerance</code> and <code>smooth_refinements</code> are no longer formals of the <code>create_*()</code> functions: they are caught in <code>...</code> instead, so they no longer appear in a signature or a help page while a call that still passes one keeps working and says so. Anything else in <code>...</code> is an error, as an unused argument always was. The notice for the smoothing arguments is the one they already had; only <code>dilate</code>’s is new.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-1-9-9-9015">New features<a class="anchor" aria-label="anchor" href="#new-features-1-9-9-9015"></a></h3>
+<h3 id="minor-improvements-and-fixes-1-9-9-9016">Minor improvements and fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-fixes-1-9-9-9016"></a></h3>
+<ul><li><p>The sagittal context slice is now the <em>thinnest</em> section of cortex in the slab, not the densest. Sagittal is the one view where picking the slice with the most cortex is actively wrong: area peaks at both tangential extremes - the medial wall by the midline, and the lateral surface - where the slice skims along the sheet and returns a solid blob. A true cross-section, the one that reads as a gyrified ribbon, is where the area is lowest. The ends of the slab are trimmed before the search so it cannot fall into the midline gap. Axial and coronal still take the densest slice, where the reasoning does not apply.</p></li>
+<li><p>The anatomical context silhouette is no longer dilated. <code>dilate</code> exists to keep small deep structures from vanishing, but it was applied to every snapshot in the directory, including the grey brain, where a two-pixel dilation closes the sulci and flattens the mantle. Structures are dilated as before. The exclusion is deliberately case-sensitive so a <code>Cerebellar_Cortex_*</code> parcel, which is a structure in its own right in some atlases, still gets dilated.</p></li>
+<li><p>The anatomical context silhouette is now taken from a single slice for every view, never projected through the slab. Projecting it unions every sulcus the slab passes through and fills them in, so the grey brain came out as a smooth blob rather than a gyrified mantle; the deeper the slab, the worse it got. <code>cortex_slice_for_slab()</code> already chose a representative slice - the densest cortex slice within the slab - for axial and coronal views as well as sagittal, but only the sagittal branch used it. Structures are still projected through the slab, so small deep ones continue to show up in every view that passes through them.</p></li>
+<li><p><code><a href="../reference/create_tract_from_volume.html">create_tract_from_volume()</a></code> no longer sweeps the whole label volume once per tract. It collected each tract’s voxels with <code>which(arr == label)</code>, so a 35-tract atlas made 35 full passes over the array; the voxels are now gathered in a single pass and grouped by label, and the voxel-to-world affine is applied after thinning rather than before, so it transforms at most <code>4000</code> points per tract instead of every voxel. Output is unchanged.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-1-9-9-9016">New features<a class="anchor" aria-label="anchor" href="#new-features-1-9-9-9016"></a></h3>
 <ul><li>The grey anatomical silhouette behind a 2D view is now taken from the slice in the slab holding the most cortex, rather than from the slab midpoint. The silhouette is context, so it should be chosen for legibility — and a midpoint can land somewhere with almost nothing to draw. A mid-sagittal slab centred on the midline cuts the interhemispheric fissure: <code>cvs_avg35_inMNI152</code> has 797 cortical voxels at x=128 against 6703 four voxels away, so the outline came out in fragments while the structures in front of it were fine. Widening the slab could not fix it, since only the structures project through the slab. Ties are broken toward the midpoint, so a slab whose slices are equally informative keeps the position it had before.</li>
 </ul></div>
 </div>

@@ -21,7 +21,7 @@ Requires FreeSurfer for mesh generation."><meta property="og:image" content="htt
 
     <a class="navbar-brand me-2" href="../index.html">ggseg.extra</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9.9015</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9.9016</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,16 +95,14 @@ snapshots at specified coordinates and extracting contours.</p>
 <span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  slabs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  vertex_size_limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  dilate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  decimate <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  tolerance <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  smoothness <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cleanup <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="get_verbose.html">get_verbose</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  skip_existing <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  steps <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  context <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  views <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  views <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -158,30 +156,11 @@ maximum vertex count for polygons. Polygons outside this range are
 filtered out. Default NULL applies no limits.</p></dd>
 
 
-<dt id="arg-dilate">dilate<a class="anchor" aria-label="anchor" href="#arg-dilate"></a></dt>
-<dd><p>Dilation iterations for 2D polygons. Useful for filling small
-gaps between structures.</p></dd>
-
-
 <dt id="arg-decimate">decimate<a class="anchor" aria-label="anchor" href="#arg-decimate"></a></dt>
 <dd><p>Mesh decimation factor between 0 and 1. Reduces the number
 of faces in 3D meshes using quadric edge decimation (via
 <code><a href="https://rdrr.io/pkg/Rvcg/man/vcgQEdecim.html" class="external-link">Rvcg::vcgQEdecim()</a></code>). A value of 0.5 reduces faces by 50%. Set to NULL
 to skip decimation. Requires the Rvcg package. Default is 0.5.</p></dd>
-
-
-<dt id="arg-tolerance">tolerance<a class="anchor" aria-label="anchor" href="#arg-tolerance"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> sf simplification is
-no longer applied during atlas creation. Use <code><a href="atlas_smooth.html">atlas_smooth()</a></code> on the
-returned atlas instead. Supplying a value emits a lifecycle warning
-and is otherwise ignored.</p></dd>
-
-
-<dt id="arg-smoothness">smoothness<a class="anchor" aria-label="anchor" href="#arg-smoothness"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> sf contour smoothing
-is no longer applied during atlas creation. Use <code><a href="atlas_smooth.html">atlas_smooth()</a></code> on the
-returned atlas instead. Supplying a value emits a lifecycle warning
-and is otherwise ignored.</p></dd>
 
 
 <dt id="arg-cleanup">cleanup<a class="anchor" aria-label="anchor" href="#arg-cleanup"></a></dt>
@@ -230,6 +209,14 @@ to keep the focus regions coloured on grey anatomical context. <code>NULL</code>
 
 <dt id="arg-views">views<a class="anchor" aria-label="anchor" href="#arg-views"></a></dt>
 <dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Use <code>slabs</code> instead.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Catches the retired <code>dilate</code>, <code>smoothness</code> and <code>tolerance</code>
+arguments, so a call that still passes one keeps working and says so.
+These are post-creation steps now: see <code><a href="atlas_dilate.html">atlas_dilate()</a></code>,
+<code><a href="atlas_smooth.html">atlas_smooth()</a></code> and <code><a href="atlas_smooth.html">atlas_simplify()</a></code>. Anything else in <code>...</code> is an
+error, as an unused argument always was.</p></dd>
 
 </dl></div>
     <div class="section level2">

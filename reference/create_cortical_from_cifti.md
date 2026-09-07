@@ -14,11 +14,11 @@ create_cortical_from_cifti(
   output_dir = NULL,
   hemisphere = c("rh", "lh"),
   views = c("lateral", "medial", "superior", "inferior"),
-  tolerance = NULL,
   smooth_refinements = NULL,
   cleanup = NULL,
   verbose = get_verbose(),
-  skip_existing = NULL
+  skip_existing = NULL,
+  ...
 )
 ```
 
@@ -44,14 +44,6 @@ create_cortical_from_cifti(
 - views:
 
   Which views to include: "lateral", "medial", "superior", "inferior".
-
-- tolerance:
-
-  **\[deprecated\]** sf simplification is no longer applied during atlas
-  creation. Use
-  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-  on the returned atlas instead. Supplying a value emits a lifecycle
-  warning and is otherwise ignored.
 
 - smooth_refinements:
 
@@ -81,6 +73,17 @@ create_cortical_from_cifti(
   atlas creation to resume. If not specified, uses
   `options("ggseg.extra.skip_existing")` or the
   `GGSEG_EXTRA_SKIP_EXISTING` environment variable. Default is TRUE.
+
+- ...:
+
+  Catches the retired `dilate`, `smoothness` and `tolerance` arguments,
+  so a call that still passes one keeps working and says so. These are
+  post-creation steps now: see
+  [`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md),
+  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
+  and
+  [`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md).
+  Anything else in `...` is an error, as an unused argument always was.
 
 ## Value
 

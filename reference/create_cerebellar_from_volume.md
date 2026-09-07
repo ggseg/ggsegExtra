@@ -16,12 +16,12 @@ create_cerebellar_from_volume(
   atlas_name = NULL,
   output_dir = NULL,
   decimate = 0.5,
-  tolerance = NULL,
   smooth_refinements = NULL,
   cleanup = NULL,
   verbose = get_verbose(),
   skip_existing = NULL,
-  volume = lifecycle::deprecated()
+  volume = lifecycle::deprecated(),
+  ...
 )
 ```
 
@@ -53,14 +53,6 @@ create_cerebellar_from_volume(
   [`Rvcg::vcgQEdecim()`](https://rdrr.io/pkg/Rvcg/man/vcgQEdecim.html)).
   A value of 0.5 reduces faces by 50%. Set to NULL to skip decimation.
   Requires the Rvcg package. Default is 0.5.
-
-- tolerance:
-
-  **\[deprecated\]** sf simplification is no longer applied during atlas
-  creation. Use
-  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-  on the returned atlas instead. Supplying a value emits a lifecycle
-  warning and is otherwise ignored.
 
 - smooth_refinements:
 
@@ -94,6 +86,17 @@ create_cerebellar_from_volume(
 - volume:
 
   **\[deprecated\]** Use `input_volume` instead.
+
+- ...:
+
+  Catches the retired `dilate`, `smoothness` and `tolerance` arguments,
+  so a call that still passes one keeps working and says so. These are
+  post-creation steps now: see
+  [`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md),
+  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
+  and
+  [`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md).
+  Anything else in `...` is an error, as an unused argument always was.
 
 ## Value
 

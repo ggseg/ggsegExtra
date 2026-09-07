@@ -21,16 +21,14 @@ create_subcortical_from_volume(
   output_dir = NULL,
   slabs = NULL,
   vertex_size_limits = NULL,
-  dilate = NULL,
   decimate = 0.5,
-  tolerance = NULL,
-  smoothness = NULL,
   cleanup = NULL,
   verbose = get_verbose(),
   skip_existing = NULL,
   steps = NULL,
   context = NULL,
-  views = lifecycle::deprecated()
+  views = lifecycle::deprecated(),
+  ...
 )
 ```
 
@@ -84,11 +82,6 @@ create_subcortical_from_volume(
   for polygons. Polygons outside this range are filtered out. Default
   NULL applies no limits.
 
-- dilate:
-
-  Dilation iterations for 2D polygons. Useful for filling small gaps
-  between structures.
-
 - decimate:
 
   Mesh decimation factor between 0 and 1. Reduces the number of faces in
@@ -96,22 +89,6 @@ create_subcortical_from_volume(
   [`Rvcg::vcgQEdecim()`](https://rdrr.io/pkg/Rvcg/man/vcgQEdecim.html)).
   A value of 0.5 reduces faces by 50%. Set to NULL to skip decimation.
   Requires the Rvcg package. Default is 0.5.
-
-- tolerance:
-
-  **\[deprecated\]** sf simplification is no longer applied during atlas
-  creation. Use
-  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-  on the returned atlas instead. Supplying a value emits a lifecycle
-  warning and is otherwise ignored.
-
-- smoothness:
-
-  **\[deprecated\]** sf contour smoothing is no longer applied during
-  atlas creation. Use
-  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-  on the returned atlas instead. Supplying a value emits a lifecycle
-  warning and is otherwise ignored.
 
 - cleanup:
 
@@ -171,6 +148,17 @@ create_subcortical_from_volume(
 - views:
 
   **\[deprecated\]** Use `slabs` instead.
+
+- ...:
+
+  Catches the retired `dilate`, `smoothness` and `tolerance` arguments,
+  so a call that still passes one keeps working and says so. These are
+  post-creation steps now: see
+  [`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md),
+  [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
+  and
+  [`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md).
+  Anything else in `...` is an error, as an unused argument always was.
 
 ## Value
 
