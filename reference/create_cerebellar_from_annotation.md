@@ -88,7 +88,7 @@ create_cerebellar_from_annotation(
   [`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md),
   [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
   and
-  [`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md).
+  [`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_simplify.md).
   Anything else in `...` is an error, as an unused argument always was.
 
 ## Value

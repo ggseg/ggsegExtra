@@ -8,8 +8,9 @@ atlas without rebuilding from scratch.
 Most of the functions in this vignette come from ggseg.formats and are
 re-exported by ggseg.extra for convenience. The geometry adjustment
 functions
-([`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md),
-[`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md))
+([`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_simplify.md),
+[`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md),
+[`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md))
 are native to ggseg.extra.
 
 ## Inspecting an atlas
@@ -232,51 +233,79 @@ This is typically the last step before saving.
 
 ## Adjusting geometry after the fact
 
-The atlas creation pipeline now returns raw, unsmoothed sf geometry.
-Simplifying contours is a separate post-processing step you control
-after the atlas exists, so you can iterate on the result without
-re-running the (slow) creation pipeline.
+The creation pipelines return raw geometry: whatever the contours
+traced, at full vertex count and with the voxel staircase intact.
+Shaping it is a separate step you run on the finished atlas, so retuning
+a value costs a second rather than another pass through snapshots and
+contours.
 
-[`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-is the single entry point for sf simplification.
+Three functions, each answering one question:
 
-### Smoothing rough contours
+| Function | Question | Typical values |
+|----|----|----|
+| [`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_simplify.md) | How many vertices does this cost? | `keep = 0.05`–`0.5` |
+| [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md) | How round is the outline? | `smoothness = 0.4`–`0.6` |
+| [`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md) | How big is the region? | `0.5`–`1` voxels |
 
-Region boundaries from volumetric or surface-based extraction tend to
-have staircase artefacts.
-[`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-applies topology-preserving simplification via
+### Order matters
+
+Simplify first, smooth second. Dropping vertices from an outline that
+has already been rounded replaces its curves with straight chords, which
+puts back the stair-step the smoothing removed:
+
+``` r
+
+atlas <- atlas |>
+  atlas_simplify(keep = 0.3) |>
+  atlas_smooth(smoothness = 0.4)
+```
+
+### Reducing the vertex count
+
+Region boundaries traced from volumes carry far more vertices than a
+plot needs.
+[`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_simplify.md)
+drops them while preserving topology, via
 [`rmapshaper::ms_simplify()`](http://andyteucher.ca/rmapshaper/reference/ms_simplify.md):
 
 ``` r
 
-atlas <- atlas |>
-  atlas_smooth(keep = 0.2)
+atlas <- atlas_simplify(atlas, keep = 0.3)
 ```
 
-The `keep` parameter is the proportion of vertices to retain (0–1).
-Lower values produce simpler, smoother polygons. Start around 0.2 and
-reduce further if the polygons still look noisy.
-
-### Keeping the brain outline crisp
-
-The cortex outline geometry doesn’t usually want the same level of
-simplification as the labelled regions. `exclude` matches labels that
-should be left untouched:
+`keep` is the proportion of vertices retained. The brain silhouette
+drawn behind the structures usually holds most of an atlas’s vertices,
+so it is the part worth simplifying; small deep structures have few to
+spare. `labels` and `exclude` say which:
 
 ``` r
 
-atlas <- atlas |>
-  atlas_smooth(keep = 0.2, exclude = "cortex_")
+atlas <- atlas_simplify(atlas, keep = 0.3, labels = "^cortex")
 ```
 
-Or use `labels` to simplify only matching labels and leave the rest
-alone. Only one of `labels` or `exclude` may be supplied.
+### Rounding off the staircase
 
 [`atlas_smooth()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_smooth.md)
-returns a modified `ggseg_atlas`, so you can inspect the result with
-`plot(atlas)` and adjust `keep` before committing. The goal is an atlas
-that plots fast, looks neat, and shows regions correctly.
+rounds voxel-edge stair-steps. Its default `method = "close"` is a
+morphological closing, which rounds solid shapes well but **fills holes
+narrower than the smoothing distance** — on a thin cortical ribbon that
+erases the sulci. Use `"chaikin"` when the geometry has holes worth
+keeping:
+
+``` r
+
+atlas <- atlas_smooth(atlas, smoothness = 0.4)
+
+atlas <- atlas_smooth(atlas, smoothness = 0.4, method = "chaikin",
+                      labels = "^cortex")
+```
+
+`smoothness` runs 0–1 on a scale shared by every method, so switching
+method does not mean re-finding the value.
+
+All three return a modified `ggseg_atlas`, so you can
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) the result and
+adjust before committing.
 
 ## Rebuilding the atlas
 
@@ -310,8 +339,10 @@ atlas <- atlas_raw |>
   atlas_region_contextual("Cortex", match_on = "label") |>
   atlas_view_keep("axial_3|axial_5|coronal_3|sagittal") |>
   atlas_view_remove_region_small(min_area = 100) |>
-  atlas_smooth(keep = 0.2, exclude = "cortex_") |>
-  atlas_view_gather()
+  atlas_view_gather() |>
+  atlas_dilate(0.6, exclude = "^cortex") |>
+  atlas_simplify(keep = 0.3, labels = "^cortex") |>
+  atlas_smooth(smoothness = 0.4)
 ```
 
 Each step is a pure transformation — pipe them together, inspect the

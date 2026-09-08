@@ -163,9 +163,10 @@ options(
 
 ### Iterating on simplification level
 
-`atlas_smooth(keep = ...)` is the single tuning knob for sf
-simplification. Higher `keep` retains more vertices (more detail, larger
-file). Try a few values without re-running the slow creation pipeline:
+`atlas_simplify(keep = ...)` is the tuning knob for vertex count;
+`atlas_smooth(smoothness = ...)` is the one for shape. Higher `keep`
+retains more vertices (more detail, larger file). Try a few values
+without re-running the slow creation pipeline:
 
 ``` r
 
@@ -177,8 +178,8 @@ atlas_raw <- create_cortical_from_annotation(
 )
 
 # High fidelity
-atlas <- atlas_raw |> atlas_smooth(keep = 0.5)
+atlas <- atlas_raw |> atlas_simplify(keep = 0.5)
 
 # Compact
-atlas <- atlas_raw |> atlas_smooth(keep = 0.05, exclude = "cortex_")
+atlas <- atlas_raw |> atlas_simplify(keep = 0.05, exclude = "cortex_")
 ```

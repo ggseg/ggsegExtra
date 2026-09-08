@@ -273,10 +273,11 @@ or settings that should persist across R sessions.</p>
 <div class="section level3">
 <h3 id="iterating-on-simplification-level">Iterating on simplification level<a class="anchor" aria-label="anchor" href="#iterating-on-simplification-level"></a>
 </h3>
-<p><code>atlas_smooth(keep = ...)</code> is the single tuning knob for
-sf simplification. Higher <code>keep</code> retains more vertices (more
-detail, larger file). Try a few values without re-running the slow
-creation pipeline:</p>
+<p><code>atlas_simplify(keep = ...)</code> is the tuning knob for vertex
+count; <code>atlas_smooth(smoothness = ...)</code> is the one for shape.
+Higher <code>keep</code> retains more vertices (more detail, larger
+file). Try a few values without re-running the slow creation
+pipeline:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annot_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lh.myatlas.annot"</span>, <span class="st">"rh.myatlas.annot"</span><span class="op">)</span></span>
 <span></span>
@@ -286,10 +287,10 @@ creation pipeline:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># High fidelity</span></span>
-<span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas_raw</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas_raw</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/atlas_simplify.html">atlas_simplify</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Compact</span></span>
-<span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas_raw</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.05</span>, exclude <span class="op">=</span> <span class="st">"cortex_"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas_raw</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/atlas_simplify.html">atlas_simplify</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.05</span>, exclude <span class="op">=</span> <span class="st">"cortex_"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

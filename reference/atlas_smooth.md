@@ -11,14 +11,11 @@ regions are simplified together, preventing gaps.
 ``` r
 atlas_smooth(
   atlas,
-  keep = 0.05,
-  smoothness = 0,
+  smoothness = 0.4,
   labels = NULL,
   exclude = NULL,
   method = c("close", "chaikin", "ksmooth", "spline")
 )
-
-atlas_simplify(atlas, keep = 0.05)
 ```
 
 ## Arguments
@@ -27,21 +24,14 @@ atlas_simplify(atlas, keep = 0.05)
 
   A `ggseg_atlas` object with sf data.
 
-- keep:
-
-  Proportion of vertices to retain (0–1), or `NULL` to skip vertex
-  simplification. Lower values produce simpler shapes; values near 1 are
-  an effective no-op. Default 0.05.
-
 - smoothness:
 
-  Smoothing strength between 0 and 1, applied after simplification. 0
-  (the default) skips smoothing. The scale is shared by every `method`,
-  so the same value means a comparable amount of smoothing whichever one
-  you pick; each method's native parameter is derived from it. Around
-  0.4–0.6 rounds off voxel-edge stair-steps on millimetre voxel grids
-  without distorting shapes; 1 is the most smoothing a method applies
-  before shapes stop resembling their input.
+  Smoothing strength between 0 and 1. The scale is shared by every
+  `method`, so the same value means a comparable amount of smoothing
+  whichever one you pick; each method's native parameter is derived from
+  it. Around 0.4–0.6, the default, rounds off voxel-edge stair-steps on
+  millimetre voxel grids without distorting shapes; 1 is the most
+  smoothing a method applies before shapes stop resembling their input.
 
 - labels:
 
@@ -70,7 +60,7 @@ atlas_simplify(atlas, keep = 0.05)
 
 ## Value
 
-A modified `ggseg_atlas` with simplified sf geometry.
+The `ggseg_atlas`, with its geometry rounded off.
 
 ## Details
 
@@ -81,36 +71,37 @@ By default all labels are smoothed equally. Use `labels` to smooth only
 matching labels, or `exclude` to smooth everything except matching
 labels. Only one of `labels` or `exclude` may be specified.
 
+## See also
+
+[`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_simplify.md)
+to reduce the vertex count, and
+[`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md)
+to grow or shrink regions. Each does one thing: how round a shape is,
+how many vertices it costs, and how big it is, are separate questions
+and get tuned at separate times. Simplify before smoothing, not after -
+dropping vertices from a rounded outline replaces its curves with
+straight chords, putting the stair-step back.
+
+Other atlas geometry:
+[`atlas_dilate()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_dilate.md),
+[`atlas_simplify()`](https://ggsegverse.github.io/ggseg.extra/reference/atlas_simplify.md)
+
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# Vertex reduction only (legacy behaviour).
-atlas <- atlas_smooth(my_atlas, keep = 0.05)
+# Round off the voxel staircase.
+atlas <- atlas_smooth(my_atlas, smoothness = 0.4)
 
-# Keep cortex outline detailed, simplify everything else.
-atlas <- atlas_smooth(my_atlas, keep = 0.2, exclude = "cortex_|Cortex")
-
-# Round off jagged voxel edges without dropping vertices.
-atlas <- atlas_smooth(my_atlas, keep = NULL, smoothness = 0.6)
-
-# Per-region tuning: hard simplification for tiny nuclei, gentle
-# closing for the brain outline.
-atlas <- atlas_smooth(my_atlas, keep = 0.05, exclude = "cortex_")
-atlas <- atlas_smooth(
-  atlas,
-  keep = NULL,
-  smoothness = 0.6,
-  labels = "cortex_"
-)
+# Leave the brain outline alone.
+atlas <- atlas_smooth(my_atlas, smoothness = 0.4, exclude = "^cortex")
 
 # Round a cortical ribbon without closing its sulci.
 atlas <- atlas_smooth(
   my_atlas,
-  keep = NULL,
   smoothness = 0.4,
   method = "chaikin",
-  labels = "cortex_"
+  labels = "^cortex"
 )
 } # }
 ```

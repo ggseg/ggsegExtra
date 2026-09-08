@@ -103,8 +103,8 @@ well. The <code>atlas_region_*</code> and <code>atlas_view_*</code>
 families let you curate an atlas without rebuilding from scratch.</p>
 <p>Most of the functions in this vignette come from ggseg.formats and
 are re-exported by ggseg.extra for convenience. The geometry adjustment
-functions (<code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code>, <code><a href="../reference/atlas_smooth.html">atlas_simplify()</a></code>)
-are native to ggseg.extra.</p>
+functions (<code><a href="../reference/atlas_simplify.html">atlas_simplify()</a></code>, <code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code>,
+<code><a href="../reference/atlas_dilate.html">atlas_dilate()</a></code>) are native to ggseg.extra.</p>
 <div class="section level2">
 <h2 id="inspecting-an-atlas">Inspecting an atlas<a class="anchor" aria-label="anchor" href="#inspecting-an-atlas"></a>
 </h2>
@@ -295,43 +295,91 @@ layout:</p>
 <div class="section level2">
 <h2 id="adjusting-geometry-after-the-fact">Adjusting geometry after the fact<a class="anchor" aria-label="anchor" href="#adjusting-geometry-after-the-fact"></a>
 </h2>
-<p>The atlas creation pipeline now returns raw, unsmoothed sf geometry.
-Simplifying contours is a separate post-processing step you control
-after the atlas exists, so you can iterate on the result without
-re-running the (slow) creation pipeline.</p>
-<p><code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code> is the single entry point for sf
-simplification.</p>
+<p>The creation pipelines return raw geometry: whatever the contours
+traced, at full vertex count and with the voxel staircase intact.
+Shaping it is a separate step you run on the finished atlas, so retuning
+a value costs a second rather than another pass through snapshots and
+contours.</p>
+<p>Three functions, each answering one question:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Function</th>
+<th>Question</th>
+<th>Typical values</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/atlas_simplify.html">atlas_simplify()</a></code></td>
+<td>How many vertices does this cost?</td>
+<td>
+<code>keep = 0.05</code>–<code>0.5</code>
+</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code></td>
+<td>How round is the outline?</td>
+<td>
+<code>smoothness = 0.4</code>–<code>0.6</code>
+</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/atlas_dilate.html">atlas_dilate()</a></code></td>
+<td>How big is the region?</td>
+<td>
+<code>0.5</code>–<code>1</code> voxels</td>
+</tr>
+</tbody>
+</table>
 <div class="section level3">
-<h3 id="smoothing-rough-contours">Smoothing rough contours<a class="anchor" aria-label="anchor" href="#smoothing-rough-contours"></a>
+<h3 id="order-matters">Order matters<a class="anchor" aria-label="anchor" href="#order-matters"></a>
 </h3>
-<p>Region boundaries from volumetric or surface-based extraction tend to
-have staircase artefacts. <code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code> applies
-topology-preserving simplification via
-<code><a href="http://andyteucher.ca/rmapshaper/reference/ms_simplify.html" class="external-link">rmapshaper::ms_simplify()</a></code>:</p>
+<p>Simplify first, smooth second. Dropping vertices from an outline that
+has already been rounded replaces its curves with straight chords, which
+puts back the stair-step the smoothing removed:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>keep</code> parameter is the proportion of vertices to
-retain (0–1). Lower values produce simpler, smoother polygons. Start
-around 0.2 and reduce further if the polygons still look noisy.</p>
+<span>  <span class="fu"><a href="../reference/atlas_simplify.html">atlas_simplify</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>smoothness <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="keeping-the-brain-outline-crisp">Keeping the brain outline crisp<a class="anchor" aria-label="anchor" href="#keeping-the-brain-outline-crisp"></a>
+<h3 id="reducing-the-vertex-count">Reducing the vertex count<a class="anchor" aria-label="anchor" href="#reducing-the-vertex-count"></a>
 </h3>
-<p>The cortex outline geometry doesn’t usually want the same level of
-simplification as the labelled regions. <code>exclude</code> matches
-labels that should be left untouched:</p>
+<p>Region boundaries traced from volumes carry far more vertices than a
+plot needs. <code><a href="../reference/atlas_simplify.html">atlas_simplify()</a></code> drops them while preserving
+topology, via <code><a href="http://andyteucher.ca/rmapshaper/reference/ms_simplify.html" class="external-link">rmapshaper::ms_simplify()</a></code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.2</span>, exclude <span class="op">=</span> <span class="st">"cortex_"</span><span class="op">)</span></span></code></pre></div>
-<p>Or use <code>labels</code> to simplify only matching labels and leave
-the rest alone. Only one of <code>labels</code> or <code>exclude</code>
-may be supplied.</p>
-<p><code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code> returns a modified
-<code>ggseg_atlas</code>, so you can inspect the result with
-<code>plot(atlas)</code> and adjust <code>keep</code> before committing.
-The goal is an atlas that plots fast, looks neat, and shows regions
-correctly.</p>
+<code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/atlas_simplify.html">atlas_simplify</a></span><span class="op">(</span><span class="va">atlas</span>, keep <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
+<p><code>keep</code> is the proportion of vertices retained. The brain
+silhouette drawn behind the structures usually holds most of an atlas’s
+vertices, so it is the part worth simplifying; small deep structures
+have few to spare. <code>labels</code> and <code>exclude</code> say
+which:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/atlas_simplify.html">atlas_simplify</a></span><span class="op">(</span><span class="va">atlas</span>, keep <span class="op">=</span> <span class="fl">0.3</span>, labels <span class="op">=</span> <span class="st">"^cortex"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="rounding-off-the-staircase">Rounding off the staircase<a class="anchor" aria-label="anchor" href="#rounding-off-the-staircase"></a>
+</h3>
+<p><code><a href="../reference/atlas_smooth.html">atlas_smooth()</a></code> rounds voxel-edge stair-steps. Its
+default <code>method = "close"</code> is a morphological closing, which
+rounds solid shapes well but <strong>fills holes narrower than the
+smoothing distance</strong> — on a thin cortical ribbon that erases the
+sulci. Use <code>"chaikin"</code> when the geometry has holes worth
+keeping:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span><span class="va">atlas</span>, smoothness <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span><span class="va">atlas</span>, smoothness <span class="op">=</span> <span class="fl">0.4</span>, method <span class="op">=</span> <span class="st">"chaikin"</span>,</span>
+<span>                      labels <span class="op">=</span> <span class="st">"^cortex"</span><span class="op">)</span></span></code></pre></div>
+<p><code>smoothness</code> runs 0–1 on a scale shared by every method,
+so switching method does not mean re-finding the value.</p>
+<p>All three return a modified <code>ggseg_atlas</code>, so you can
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> the result and adjust before committing.</p>
 </div>
 </div>
 <div class="section level2">
@@ -339,7 +387,7 @@ correctly.</p>
 </h2>
 <p>After modifying components directly (e.g., editing <code>$core</code>
 by hand), reconstruct the atlas to ensure consistency:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/ggseg_atlas.html" class="external-link">ggseg_atlas</a></span><span class="op">(</span></span>
 <span>  atlas <span class="op">=</span> <span class="va">atlas</span><span class="op">$</span><span class="va">atlas</span>,</span>
 <span>  type <span class="op">=</span> <span class="va">atlas</span><span class="op">$</span><span class="va">type</span>,</span>
@@ -354,7 +402,7 @@ consistent.</p>
 <h2 id="putting-it-together">Putting it together<a class="anchor" aria-label="anchor" href="#putting-it-together"></a>
 </h2>
 <p>A typical post-processing pipeline for a subcortical atlas:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">atlas</span> <span class="op">&lt;-</span> <span class="va">atlas_raw</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_manipulation.html" class="external-link">atlas_region_remove</a></span><span class="op">(</span><span class="st">"White-Matter"</span>, match_on <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_manipulation.html" class="external-link">atlas_region_remove</a></span><span class="op">(</span><span class="st">"-Ventricle"</span>, match_on <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -362,8 +410,10 @@ consistent.</p>
 <span>  <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_manipulation.html" class="external-link">atlas_region_contextual</a></span><span class="op">(</span><span class="st">"Cortex"</span>, match_on <span class="op">=</span> <span class="st">"label"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_manipulation.html" class="external-link">atlas_view_keep</a></span><span class="op">(</span><span class="st">"axial_3|axial_5|coronal_3|sagittal"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">atlas_view_remove_region_small</span><span class="op">(</span>min_area <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.2</span>, exclude <span class="op">=</span> <span class="st">"cortex_"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_manipulation.html" class="external-link">atlas_view_gather</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_manipulation.html" class="external-link">atlas_view_gather</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/atlas_dilate.html">atlas_dilate</a></span><span class="op">(</span><span class="fl">0.6</span>, exclude <span class="op">=</span> <span class="st">"^cortex"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/atlas_simplify.html">atlas_simplify</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="fl">0.3</span>, labels <span class="op">=</span> <span class="st">"^cortex"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/atlas_smooth.html">atlas_smooth</a></span><span class="op">(</span>smoothness <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span></code></pre></div>
 <p>Each step is a pure transformation — pipe them together, inspect the
 result, adjust as needed.</p>
 </div>
