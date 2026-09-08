@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("setup_sitrep", {
+testthat::describe("setup_sitrep", {
   it("returns list of results invisibly", {
     local_mocked_bindings(
       have_fs = function() TRUE,
@@ -35,7 +35,7 @@ describe("setup_sitrep", {
 })
 
 
-describe("check_freesurfer", {
+testthat::describe("check_freesurfer", {
   it("returns list with available field", {
     local_mocked_bindings(
       have_fs = function() TRUE,
@@ -53,7 +53,7 @@ describe("check_freesurfer", {
 })
 
 
-describe("check_other_system_deps", {
+testthat::describe("check_other_system_deps", {
   it("returns list with imagemagick and chrome fields", {
     expect_messages({
       result <- check_other_system_deps("simple")
@@ -68,7 +68,7 @@ describe("check_other_system_deps", {
 })
 
 
-describe("check_fsaverage", {
+testthat::describe("check_fsaverage", {
   it("returns list with fsaverage5 field", {
     expect_messages({
       result <- check_fsaverage("simple")
@@ -81,7 +81,7 @@ describe("check_fsaverage", {
 })
 
 
-describe("check_freesurfer", {
+testthat::describe("check_freesurfer", {
   it("alerts danger when FreeSurfer not configured in simple mode", {
     local_mocked_bindings(
       have_fs = function() FALSE,
@@ -102,7 +102,7 @@ describe("check_freesurfer", {
 })
 
 
-describe("check_other_system_deps", {
+testthat::describe("check_other_system_deps", {
   it("shows install URL when ImageMagick missing in full detail", {
     local_mocked_bindings(
       has_magick = function() FALSE
@@ -123,7 +123,7 @@ describe("check_other_system_deps", {
 })
 
 
-describe("check_fsaverage", {
+testthat::describe("check_fsaverage", {
   it("alerts when fsaverage5 not found", {
     local_mocked_bindings(
       fs_subj_dir = function() "/nonexistent/path",
@@ -134,7 +134,7 @@ describe("check_fsaverage", {
 })
 
 
-describe("summarize_pipelines", {
+testthat::describe("summarize_pipelines", {
   make_results <- function(
     fs = TRUE,
     fsavg = TRUE,
@@ -200,7 +200,7 @@ describe("summarize_pipelines", {
 })
 
 
-describe("check_freesurfer when freesurfer package absent", {
+testthat::describe("check_freesurfer when freesurfer package absent", {
   it("returns available=FALSE in minimal detail silently", {
     local_mocked_bindings(
       is_installed = function(pkg, ...) FALSE,
@@ -245,7 +245,7 @@ describe("check_freesurfer when freesurfer package absent", {
 })
 
 
-describe("check_fsaverage additional branches", {
+testthat::describe("check_fsaverage additional branches", {
   it("handles missing freesurfer package gracefully", {
     local_mocked_bindings(
       is_installed = function(pkg, ...) FALSE,
@@ -286,7 +286,7 @@ describe("check_fsaverage additional branches", {
 })
 
 
-describe("check_optional_packages additional branches", {
+testthat::describe("check_optional_packages additional branches", {
   it("returns results silently in minimal detail", {
     .cap$msgs <- character()
     result <- withCallingHandlers(
@@ -313,7 +313,7 @@ describe("check_optional_packages additional branches", {
 })
 
 
-describe("check_suit_surfaces additional branches", {
+testthat::describe("check_suit_surfaces additional branches", {
   it("runs silently in minimal detail", {
     .cap$msgs <- character()
     withCallingHandlers(
@@ -373,7 +373,7 @@ describe("check_suit_surfaces additional branches", {
 })
 
 
-describe("summarize_pipelines additional branches", {
+testthat::describe("summarize_pipelines additional branches", {
   make_results <- function(
     fs = TRUE,
     fsavg = TRUE,
@@ -431,7 +431,7 @@ describe("summarize_pipelines additional branches", {
 })
 
 
-describe("find_chrome_path", {
+testthat::describe("find_chrome_path", {
   it("returns path from Sys.which when chrome is found", {
     local_mocked_bindings(
       Sys.which = function(name) {

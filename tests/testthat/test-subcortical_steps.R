@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("subcort_build_components", {
+testthat::describe("subcort_build_components", {
   it("builds components from colortable and meshes", {
     meshes_list <- list(
       "Left-Putamen" = list(
@@ -29,7 +29,7 @@ describe("subcort_build_components", {
 })
 
 
-describe("subcort_create_meshes", {
+testthat::describe("subcort_create_meshes", {
   it("errors when no meshes are created", {
     local_mocked_bindings(
       tessellate_label = function(...) NULL,
@@ -191,7 +191,7 @@ describe("subcort_create_meshes", {
 })
 
 
-describe("subcort_decimate_meshes", {
+testthat::describe("subcort_decimate_meshes", {
   it("reports NA%, not NaN%, when all meshes have zero faces", {
     empty_meshes <- list(
       a = list(
@@ -212,7 +212,7 @@ describe("subcort_decimate_meshes", {
 })
 
 
-describe("subcort_create_snapshots", {
+testthat::describe("subcort_create_snapshots", {
   it("creates snapshots for structures and cortex slices", {
     .cap$snapshot_calls <- 0L
     .cap$cortex_calls <- 0L
@@ -416,7 +416,7 @@ describe("subcort_create_snapshots", {
 })
 
 
-describe("subcort_snapshot_cortex", {
+testthat::describe("subcort_snapshot_cortex", {
   it("takes one slice per view, never a projection", {
     .cap$pp <- 0L
     .cap$cs <- 0L
@@ -454,7 +454,7 @@ describe("subcort_snapshot_cortex", {
 })
 
 
-describe("default_subcortical_slabs", {
+testthat::describe("default_subcortical_slabs", {
   it("creates slabs for standard 256 brain", {
     dims <- c(256, 256, 256)
     result <- default_subcortical_slabs(dims)
@@ -493,7 +493,7 @@ describe("default_subcortical_slabs", {
 
 # Orchestration helper tests ----
 
-describe("validate_subcort_config", {
+testthat::describe("validate_subcort_config", {
   it("returns a list with all expected fields", {
     local_mocked_bindings(check_fs = function(...) TRUE)
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -617,7 +617,7 @@ describe("validate_subcort_config", {
 })
 
 
-describe("subcort_log_header", {
+testthat::describe("subcort_log_header", {
   it("prints volume path when verbose", {
     config <- list(
       verbose = TRUE,
@@ -644,7 +644,7 @@ describe("subcort_log_header", {
 })
 
 
-describe("subcort_resolve_labels", {
+testthat::describe("subcort_resolve_labels", {
   it("loads cached labels when skip_existing", {
     cached_ct <- data.frame(
       idx = 10,
@@ -716,7 +716,7 @@ describe("subcort_resolve_labels", {
 })
 
 
-describe("subcort_resolve_meshes", {
+testthat::describe("subcort_resolve_meshes", {
   it("loads cached meshes when skip_existing", {
     cached_meshes <- list(
       "Left-Putamen" = list(
@@ -755,7 +755,7 @@ describe("subcort_resolve_meshes", {
 })
 
 
-describe("subcort_resolve_components", {
+testthat::describe("subcort_resolve_components", {
   it("loads cached components when skip_existing", {
     cached_components <- list(
       core = data.frame(
@@ -802,7 +802,7 @@ describe("subcort_resolve_components", {
 })
 
 
-describe("subcort_assemble_3d", {
+testthat::describe("subcort_assemble_3d", {
   it("returns a ggseg_atlas", {
     mock_atlas <- structure(
       list(type = "subcortical"),
@@ -831,7 +831,7 @@ describe("subcort_assemble_3d", {
 })
 
 
-describe("finalize_atlas (subcort parameters)", {
+testthat::describe("finalize_atlas (subcort parameters)", {
   it("cleanup deletes directory", {
     test_dir <- withr::local_tempdir()
     sub_dir <- file.path(test_dir, "atlas_work")
@@ -922,7 +922,7 @@ describe("finalize_atlas (subcort parameters)", {
 })
 
 
-describe("run_image_steps (subcort step_map)", {
+testthat::describe("run_image_steps (subcort step_map)", {
   subcort_step_map <- list(process = 5L, extract = 6L, smooth = 7L, reduce = 8L)
 
   it("calls the right functions for the right steps", {
@@ -1021,7 +1021,7 @@ describe("run_image_steps (subcort step_map)", {
 })
 
 
-describe("subcort_create_meshes", {
+testthat::describe("subcort_create_meshes", {
   it("logs decimation stats when verbose and decimate < 1", {
     mock_mesh <- list(
       vertices = data.frame(x = 1:10, y = 1:10, z = 1:10),

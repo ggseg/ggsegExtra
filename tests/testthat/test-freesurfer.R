@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("check_fs", {
+testthat::describe("check_fs", {
   it("returns logical", {
     result <- check_fs()
     expect_type(result, "logical")
@@ -37,7 +37,7 @@ describe("check_fs", {
 })
 
 
-describe("mri_vol2surf", {
+testthat::describe("mri_vol2surf", {
   it("constructs correct command", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -64,7 +64,7 @@ describe("mri_vol2surf", {
 })
 
 
-describe("mri_pretess", {
+testthat::describe("mri_pretess", {
   it("constructs correct command", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -111,7 +111,7 @@ describe("mri_pretess", {
 })
 
 
-describe("mri_tessellate", {
+testthat::describe("mri_tessellate", {
   it("constructs correct command", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -158,7 +158,7 @@ describe("mri_tessellate", {
 })
 
 
-describe("mri_smooth", {
+testthat::describe("mri_smooth", {
   it("constructs correct command", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -201,7 +201,7 @@ describe("mri_smooth", {
 })
 
 
-describe("mri_vol2surf with opts", {
+testthat::describe("mri_vol2surf with opts", {
   it("appends opts to command", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -225,7 +225,7 @@ describe("mri_vol2surf with opts", {
 })
 
 
-describe("mri_vol2surf with projfrac_range", {
+testthat::describe("mri_vol2surf with projfrac_range", {
   it("uses --projfrac-max for multi-depth projection", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -252,7 +252,7 @@ describe("mri_vol2surf with projfrac_range", {
 })
 
 
-describe("mri_surf2surf_rereg", {
+testthat::describe("mri_surf2surf_rereg", {
   it("constructs correct command", {
     .cap$captured_cmd <- NULL
     local_mocked_bindings(
@@ -309,7 +309,7 @@ describe("mri_surf2surf_rereg", {
 })
 
 
-describe("surf2asc", {
+testthat::describe("surf2asc", {
   it("errors when output_file doesn't end with dpv", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) invisible(TRUE)

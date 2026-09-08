@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("detect_hemi_from_neuromaps_filename", {
+testthat::describe("detect_hemi_from_neuromaps_filename", {
   it("detects left from hemi-L BIDS pattern", {
     expect_identical(
       detect_hemi_from_neuromaps_filename(
@@ -40,7 +40,7 @@ describe("detect_hemi_from_neuromaps_filename", {
 })
 
 
-describe("read_neuromaps_annotation", {
+testthat::describe("read_neuromaps_annotation", {
   it("errors when file does not exist", {
     expect_error(
       read_neuromaps_annotation("nonexistent.func.gii"),
@@ -211,7 +211,7 @@ describe("read_neuromaps_annotation", {
 })
 
 
-describe("create_cortical_from_neuromaps", {
+testthat::describe("create_cortical_from_neuromaps", {
   it("creates ggseg_atlas from neuromaps", {
     skip_if_not_installed("neuromapr")
     skip_if_not(

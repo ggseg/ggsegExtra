@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("extract_slice_2d", {
+testthat::describe("extract_slice_2d", {
   it("extracts axial slice", {
     vol <- array(0, dim = c(10, 10, 10))
     vol[5, 5, 5] <- 1
@@ -36,7 +36,7 @@ describe("extract_slice_2d", {
 })
 
 
-describe("extract_slice_2d edge cases", {
+testthat::describe("extract_slice_2d edge cases", {
   it("returns NULL for empty slice", {
     vol <- array(0, dim = c(10, 10, 10))
     result <- extract_slice_2d(vol, "axial", 1)
@@ -52,7 +52,7 @@ describe("extract_slice_2d edge cases", {
 })
 
 
-describe("orient_slice_2d", {
+testthat::describe("orient_slice_2d", {
   it("flips left sagittal horizontally", {
     slice <- matrix(c(1, 2, 3, 4), nrow = 2)
 
@@ -79,7 +79,7 @@ describe("orient_slice_2d", {
 })
 
 
-describe("snapshot_partial_projection", {
+testthat::describe("snapshot_partial_projection", {
   it("creates PNG for synthetic volume", {
     vol <- array(0L, dim = c(10, 10, 10))
     vol[4:6, 4:6, 4:6] <- 1L
@@ -104,7 +104,7 @@ describe("snapshot_partial_projection", {
 })
 
 
-describe("snapshot_cortex_slice", {
+testthat::describe("snapshot_cortex_slice", {
   it("creates PNG for valid slice", {
     vol <- array(0L, dim = c(10, 10, 10))
     vol[4:6, 4:6, 5] <- 1L
@@ -172,7 +172,7 @@ describe("snapshot_cortex_slice", {
 })
 
 
-describe("volume_projection", {
+testthat::describe("volume_projection", {
   it("creates axial projection", {
     vol <- array(0, dim = c(10, 10, 10))
     vol[5, 5, 1:10] <- 1:10
@@ -203,7 +203,7 @@ describe("volume_projection", {
 })
 
 
-describe("volume_projection with start/end", {
+testthat::describe("volume_projection with start/end", {
   it("creates partial axial projection", {
     vol <- array(0, dim = c(10, 10, 10))
     vol[5, 5, 3:7] <- 1
@@ -235,7 +235,7 @@ describe("volume_projection with start/end", {
 })
 
 
-describe("extract_slice_2d with invalid view", {
+testthat::describe("extract_slice_2d with invalid view", {
   it("returns NULL for unrecognized view name", {
     vol <- array(1, dim = c(10, 10, 10))
     result <- extract_slice_2d(vol, "invalid_view", 5)
@@ -244,7 +244,7 @@ describe("extract_slice_2d with invalid view", {
 })
 
 
-describe("snapshot_cortex_slice when extract_slice_2d returns NULL", {
+testthat::describe("snapshot_cortex_slice when extract_slice_2d returns NULL", {
   it("returns NULL when slice extraction fails", {
     local_mocked_bindings(
       extract_slice_2d = function(...) NULL
@@ -269,7 +269,7 @@ describe("snapshot_cortex_slice when extract_slice_2d returns NULL", {
 })
 
 
-describe("snapshot_partial_projection skip and zero paths", {
+testthat::describe("snapshot_partial_projection skip and zero paths", {
   it("returns outfile when skip_existing is TRUE and file exists", {
     outdir <- withr::local_tempdir("partial_skip_")
     outfile <- as.character(fs::path(outdir, "axial_1_test.png"))
@@ -310,7 +310,7 @@ describe("snapshot_partial_projection skip and zero paths", {
 })
 
 
-describe("render_slice_png aspect ratio", {
+testthat::describe("render_slice_png aspect ratio", {
   # Bounding box of the non-black ink in a rendered snapshot, in pixels.
   ink_bbox <- function(file) {
     px <- magick::image_read(file) |>

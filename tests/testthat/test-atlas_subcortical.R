@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("default_atlas_name_from_volume", {
+testthat::describe("default_atlas_name_from_volume", {
   it("strips the full .nii.gz compression suffix", {
     expect_identical(
       default_atlas_name_from_volume("path/to/aseg.nii.gz"),
@@ -17,7 +17,7 @@ describe("default_atlas_name_from_volume", {
   })
 })
 
-describe("create_subcortical_from_volume decimate validation", {
+testthat::describe("create_subcortical_from_volume decimate validation", {
   it("errors for values outside (0, 1)", {
     local_mocked_bindings(check_fs = function(...) TRUE)
     vol_file <- withr::local_tempfile(fileext = ".mgz")
@@ -95,7 +95,7 @@ describe("create_subcortical_from_volume decimate validation", {
 })
 
 
-describe("create_subcortical_from_volume", {
+testthat::describe("create_subcortical_from_volume", {
   it("requires FreeSurfer to be available", {
     local_mocked_bindings(
       check_fs = function(abort = FALSE) {
@@ -196,7 +196,7 @@ describe("create_subcortical_from_volume", {
 })
 
 
-describe("create_subcortical_from_volume with meshes", {
+testthat::describe("create_subcortical_from_volume with meshes", {
   skip_if_no_freesurfer()
 
   vol_file <- test_mgz_file()
@@ -254,7 +254,7 @@ describe("create_subcortical_from_volume with meshes", {
 })
 
 
-describe("create_subcortical_from_volume pipeline flow", {
+testthat::describe("create_subcortical_from_volume pipeline flow", {
   it("passes correct volume path to generate_colortable_from_volume", {
     .cap$captured_gen_args <- NULL
     dirs <- mock_subcort_dirs()
@@ -832,7 +832,7 @@ describe("create_subcortical_from_volume pipeline flow", {
 })
 
 
-describe("subcort_resolve_meshes early-return NULL", {
+testthat::describe("subcort_resolve_meshes early-return NULL", {
   it("returns NULL when step not run and no future steps", {
     local_mocked_bindings(
       load_or_run_step = function(step, steps, ...) {
@@ -850,7 +850,7 @@ describe("subcort_resolve_meshes early-return NULL", {
 })
 
 
-describe("subcort_resolve_components early-return NULL", {
+testthat::describe("subcort_resolve_components early-return NULL", {
   it("returns NULL when step not run and no future steps", {
     local_mocked_bindings(
       load_or_run_step = function(step, steps, ...) {
@@ -869,7 +869,7 @@ describe("subcort_resolve_components early-return NULL", {
 })
 
 
-describe("subcort_assemble_full sf_data as data.frame", {
+testthat::describe("subcort_assemble_full sf_data as data.frame", {
   it("extracts labels from sf_data when build_contour_sf returns a df", {
     test_dir <- withr::local_tempdir()
     save(
@@ -927,7 +927,7 @@ describe("subcort_assemble_full sf_data as data.frame", {
 })
 
 
-describe("subcort_resolve_snapshots early-return NULL", {
+testthat::describe("subcort_resolve_snapshots early-return NULL", {
   it("returns NULL slabs and cortex_slices when step skipped", {
     local_mocked_bindings(
       load_or_run_step = function(step, steps, ...) {
@@ -1025,7 +1025,7 @@ describe("subcort_resolve_snapshots early-return NULL", {
 })
 
 
-describe("validate_subcort_inputs", {
+testthat::describe("validate_subcort_inputs", {
   it("errors when the volume file does not exist", {
     expect_error(
       validate_subcort_inputs("/no/such/volume.mgz", NULL),
@@ -1051,7 +1051,7 @@ describe("validate_subcort_inputs", {
 })
 
 
-describe("subcort_drop_missing_labels", {
+testthat::describe("subcort_drop_missing_labels", {
   make_components <- function() {
     list(
       core = data.frame(

@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("mkdir", {
+testthat::describe("mkdir", {
   it("creates directory", {
     tmp <- withr::local_tempdir()
     new_dir <- file.path(tmp, "test_subdir")
@@ -25,7 +25,7 @@ describe("mkdir", {
 })
 
 
-describe("as_verbosity", {
+testthat::describe("as_verbosity", {
   it("converts logical to integer", {
     expect_identical(as_verbosity(FALSE), 0L)
     expect_identical(as_verbosity(TRUE), 1L)
@@ -58,7 +58,7 @@ describe("as_verbosity", {
   })
 })
 
-describe("get_verbose", {
+testthat::describe("get_verbose", {
   it("returns 1L by default", {
     withr::local_options(ggseg.extra.verbose = NULL)
     withr::local_envvar(GGSEG_EXTRA_VERBOSE = NA)
@@ -96,7 +96,7 @@ describe("get_verbose", {
 })
 
 
-describe("is_verbose", {
+testthat::describe("is_verbose", {
   it("returns integer levels", {
     expect_identical(is_verbose(1), 1L)
     expect_identical(is_verbose(TRUE), 1L)
@@ -121,7 +121,7 @@ describe("is_verbose", {
 })
 
 
-describe("get_cleanup", {
+testthat::describe("get_cleanup", {
   it("returns explicit value when provided", {
     expect_true(get_cleanup(TRUE))
     expect_false(get_cleanup(FALSE))
@@ -166,7 +166,7 @@ describe("get_cleanup", {
 })
 
 
-describe("get_skip_existing", {
+testthat::describe("get_skip_existing", {
   it("returns explicit value when provided", {
     expect_true(get_skip_existing(TRUE))
     expect_false(get_skip_existing(FALSE))
@@ -191,7 +191,7 @@ describe("get_skip_existing", {
 })
 
 
-describe("get_tolerance", {
+testthat::describe("get_tolerance", {
   it("returns explicit value when provided", {
     expect_identical(get_tolerance(0.5), 0.5)
     expect_identical(get_tolerance(1), 1)
@@ -216,7 +216,7 @@ describe("get_tolerance", {
 })
 
 
-describe("get_smoothness", {
+testthat::describe("get_smoothness", {
   it("returns explicit value when provided", {
     expect_identical(get_smoothness(10), 10)
     expect_identical(get_smoothness(2.5), 2.5)
@@ -241,7 +241,7 @@ describe("get_smoothness", {
 })
 
 
-describe("load_or_run_step", {
+testthat::describe("load_or_run_step", {
   it("returns run=TRUE when step is requested and files don't exist", {
     result <- load_or_run_step(
       1L,
@@ -302,7 +302,7 @@ describe("load_or_run_step", {
 })
 
 
-describe("warn_if_large_atlas", {
+testthat::describe("warn_if_large_atlas", {
   it("warns when atlas has many vertices", {
     coords <- matrix(runif(200), ncol = 2)
     coords <- rbind(coords, coords[1, ])
@@ -437,7 +437,7 @@ describe("warn_if_large_atlas", {
 })
 
 
-describe("preview_atlas", {
+testthat::describe("preview_atlas", {
   it("returns invisible atlas in non-interactive sessions", {
     atlas <- list(data = list(sf = TRUE))
     local_mocked_bindings(is_interactive = function() FALSE)
@@ -574,7 +574,7 @@ describe("preview_atlas", {
 })
 
 
-describe("log_elapsed", {
+testthat::describe("log_elapsed", {
   it("logs elapsed time as cli message", {
     start <- Sys.time() - 60
     expect_messages(log_elapsed(start), "Pipeline completed in")
@@ -582,7 +582,7 @@ describe("log_elapsed", {
 })
 
 
-describe("get_output_dir", {
+testthat::describe("get_output_dir", {
   it("returns explicit value when provided", {
     expect_identical(get_output_dir("/tmp/my_dir"), "/tmp/my_dir")
   })
@@ -606,7 +606,7 @@ describe("get_output_dir", {
 })
 
 
-describe("get_numeric_option", {
+testthat::describe("get_numeric_option", {
   it("falls back to default when env var is not numeric", {
     withr::local_options(ggseg.extra.tolerance = NULL)
     withr::local_envvar(GGSEG_EXTRA_TOLERANCE = "not_a_number")
@@ -615,7 +615,7 @@ describe("get_numeric_option", {
 })
 
 
-describe("prompt_user", {
+testthat::describe("prompt_user", {
   it("is a function that wraps readline", {
     expect_type(prompt_user, "closure")
   })
@@ -631,7 +631,7 @@ describe("prompt_user", {
 })
 
 
-describe("warn_deprecated_sf_smoothing", {
+testthat::describe("warn_deprecated_sf_smoothing", {
   it("is a no-op when nothing is supplied", {
     expect_no_warning(warn_deprecated_sf_smoothing())
   })
@@ -687,7 +687,7 @@ describe("warn_deprecated_sf_smoothing", {
 })
 
 
-describe("with_safe_plan", {
+testthat::describe("with_safe_plan", {
   it("evaluates the expression under a non-multicore plan", {
     expect_identical(with_safe_plan(1 + 1), 2)
   })
@@ -727,7 +727,7 @@ describe("with_safe_plan", {
 })
 
 
-describe("load_rda", {
+testthat::describe("load_rda", {
   it("loads objects from an rda into the target environment", {
     tmp <- withr::local_tempfile(fileext = ".rda")
     demo_obj <- list(a = 1, b = 2)

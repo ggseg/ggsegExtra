@@ -1,4 +1,4 @@
-describe("package integrity", {
+testthat::describe("package integrity", {
   it("has a non-empty package name in its DESCRIPTION", {
     expect_true(nzchar(utils::packageDescription("ggseg.extra")$Package))
   })

@@ -1,4 +1,4 @@
-describe("detect_hemi", {
+testthat::describe("detect_hemi", {
   it("returns the default for non-scalar input instead of erroring", {
     expect_identical(
       detect_hemi(c("Left-x", "Right-y")),
@@ -47,7 +47,7 @@ describe("detect_hemi", {
 })
 
 
-describe("clean_region_name", {
+testthat::describe("clean_region_name", {
   it("removes hemisphere prefix and normalizes", {
     expect_identical(clean_region_name("Left-Thalamus"), "thalamus")
     expect_identical(clean_region_name("right_Amygdala"), "amygdala")
@@ -134,7 +134,7 @@ describe("clean_region_name", {
 })
 
 
-describe("hemi_to_long", {
+testthat::describe("hemi_to_long", {
   it("converts short to long form", {
     expect_identical(hemi_to_long("lh"), "left")
     expect_identical(hemi_to_long("rh"), "right")
@@ -147,7 +147,7 @@ describe("hemi_to_long", {
 })
 
 
-describe("hemi_to_short", {
+testthat::describe("hemi_to_short", {
   it("converts long to short form", {
     expect_identical(hemi_to_short("left"), "lh")
     expect_identical(hemi_to_short("right"), "rh")
@@ -160,7 +160,7 @@ describe("hemi_to_short", {
 })
 
 
-describe("setup_atlas_dirs", {
+testthat::describe("setup_atlas_dirs", {
   it("creates standard directory structure", {
     tmp <- withr::local_tempdir()
     dirs <- setup_atlas_dirs(tmp, "test_atlas", type = "cortical")
@@ -190,7 +190,7 @@ describe("setup_atlas_dirs", {
 })
 
 
-describe("setup_atlas_dirs with NULL atlas_name", {
+testthat::describe("setup_atlas_dirs with NULL atlas_name", {
   it("uses output_dir directly as base when atlas_name is NULL", {
     tmp <- withr::local_tempdir()
     dirs <- setup_atlas_dirs(tmp, atlas_name = NULL)
@@ -202,7 +202,7 @@ describe("setup_atlas_dirs with NULL atlas_name", {
 })
 
 
-describe("build_atlas_components", {
+testthat::describe("build_atlas_components", {
   it("builds core, palette and vertices from atlas data", {
     atlas_data <- data.frame(
       hemi = c("left", "left", "right"),
@@ -309,7 +309,7 @@ describe("build_atlas_components", {
 })
 
 
-describe("parse_lut_colours", {
+testthat::describe("parse_lut_colours", {
   it("returns NULLs for a NULL lut", {
     result <- parse_lut_colours(NULL)
     expect_null(result$region_names)
@@ -374,7 +374,7 @@ describe("parse_lut_colours", {
 })
 
 
-describe("derive_atlas_name", {
+testthat::describe("derive_atlas_name", {
   it("strips hemisphere prefixes and single extensions", {
     expect_identical(derive_atlas_name("lh.aparc.annot"), "aparc")
   })
@@ -395,7 +395,7 @@ describe("derive_atlas_name", {
 })
 
 
-describe("finalize_atlas", {
+testthat::describe("finalize_atlas", {
   it("converts an sf-backed atlas to a polygon atlas", {
     sf_obj <- sf::st_sf(
       label = "test",
