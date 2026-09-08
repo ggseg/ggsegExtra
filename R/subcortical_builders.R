@@ -273,7 +273,7 @@ aseg_punch_white_matter <- function(atlas, cortex, white_matter, sf_labels) {
   # On a subcortical atlas it is the single largest label, so leaving it
   # roughly doubles the silhouette's cost for something nobody can see
   # except as a doubled edge.
-  spent <- setdiff(unique(sf_labels[grepl(cortex, sf_labels)]), "cortex")
+  spent <- setdiff(unique(grep(cortex, sf_labels, value = TRUE)), "cortex")
   if (length(spent)) {
     atlas <- atlas_region_remove(
       atlas,
