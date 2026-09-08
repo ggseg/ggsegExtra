@@ -22,7 +22,29 @@ rebuild.
   as an unused argument always was. The notice for the smoothing arguments is
   the one they already had; only `dilate`'s is new.
 
+- `atlas_smooth()` and `atlas_simplify()` now do one thing each.
+  `atlas_smooth()` decides how round an outline is; `atlas_simplify()`
+  decides how many vertices it costs. `keep` is gone from `atlas_smooth()`,
+  and `atlas_simplify()` is no longer deprecated: it takes `labels` and
+  `exclude` like the others.
+
+  Having both in one function meant `atlas_smooth()` simplified to
+  `keep = 0.05` unless told otherwise, so a call that asked only for
+  smoothing quietly threw away 95% of the vertices - and a second call
+  quietly threw away 95% of what the first left. That is how the bundled
+  cortex silhouettes ended up as blobs. Run them in that order, too:
+  simplifying a rounded outline replaces its curves with straight chords,
+  putting the stair-step back.
+
 ## Minor improvements and fixes
+
+- Test `describe()` calls are namespace-qualified.
+  `local_mocked_bindings(.package = "terra")` attaches terra, and terra
+  exports a `describe()` of its own, which then masked testthat's - turning
+  later `describe()` blocks into GDAL calls on filenames that do not exist.
+  The error aborted the file, so its remaining blocks never ran. Which files
+  were hit depended on run order, which is why a helper-level pin did not
+  hold; the call sites are qualified instead.
 
 - The sagittal context slice is now the *thinnest* section of cortex in the
   slab, not the densest. Sagittal is the one view where picking the slice

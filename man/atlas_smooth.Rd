@@ -2,34 +2,25 @@
 % Please edit documentation in R/atlas_geometry.R
 \name{atlas_smooth}
 \alias{atlas_smooth}
-\alias{atlas_simplify}
 \title{Smooth and simplify atlas 2D contours}
 \usage{
 atlas_smooth(
   atlas,
-  keep = 0.05,
-  smoothness = 0,
+  smoothness = 0.4,
   labels = NULL,
   exclude = NULL,
   method = c("close", "chaikin", "ksmooth", "spline")
 )
-
-atlas_simplify(atlas, keep = 0.05)
 }
 \arguments{
 \item{atlas}{A \code{ggseg_atlas} object with sf data.}
 
-\item{keep}{Proportion of vertices to retain (0--1), or \code{NULL} to skip
-vertex simplification. Lower values produce simpler shapes; values
-near 1 are an effective no-op. Default 0.05.}
-
-\item{smoothness}{Smoothing strength between 0 and 1, applied after
-simplification. 0 (the default) skips smoothing. The scale is shared by
+\item{smoothness}{Smoothing strength between 0 and 1. The scale is shared by
 every \code{method}, so the same value means a comparable amount of smoothing
 whichever one you pick; each method's native parameter is derived from it.
-Around 0.4--0.6 rounds off voxel-edge stair-steps on millimetre voxel
-grids without distorting shapes; 1 is the most smoothing a method applies
-before shapes stop resembling their input.}
+Around 0.4--0.6, the default, rounds off voxel-edge stair-steps on
+millimetre voxel grids without distorting shapes; 1 is the most smoothing
+a method applies before shapes stop resembling their input.}
 
 \item{labels}{Optional regex pattern. Only labels matching this pattern
 are smoothed; others are left unchanged.}
@@ -49,7 +40,7 @@ cutting), \code{"ksmooth"} (kernel smoothing) and \code{"spline"}. Choose
 others when the geometry has holes worth keeping.}
 }
 \value{
-A modified \code{ggseg_atlas} with simplified sf geometry.
+The \code{ggseg_atlas}, with its geometry rounded off.
 }
 \description{
 Topology-preserving simplification of atlas sf geometry via
@@ -67,32 +58,31 @@ Only one of \code{labels} or \code{exclude} may be specified.
 }
 \examples{
 \dontrun{
-# Vertex reduction only (legacy behaviour).
-atlas <- atlas_smooth(my_atlas, keep = 0.05)
+# Round off the voxel staircase.
+atlas <- atlas_smooth(my_atlas, smoothness = 0.4)
 
-# Keep cortex outline detailed, simplify everything else.
-atlas <- atlas_smooth(my_atlas, keep = 0.2, exclude = "cortex_|Cortex")
-
-# Round off jagged voxel edges without dropping vertices.
-atlas <- atlas_smooth(my_atlas, keep = NULL, smoothness = 0.6)
-
-# Per-region tuning: hard simplification for tiny nuclei, gentle
-# closing for the brain outline.
-atlas <- atlas_smooth(my_atlas, keep = 0.05, exclude = "cortex_")
-atlas <- atlas_smooth(
-  atlas,
-  keep = NULL,
-  smoothness = 0.6,
-  labels = "cortex_"
-)
+# Leave the brain outline alone.
+atlas <- atlas_smooth(my_atlas, smoothness = 0.4, exclude = "^cortex")
 
 # Round a cortical ribbon without closing its sulci.
 atlas <- atlas_smooth(
   my_atlas,
-  keep = NULL,
   smoothness = 0.4,
   method = "chaikin",
-  labels = "cortex_"
+  labels = "^cortex"
 )
 }
 }
+\seealso{
+\code{\link[=atlas_simplify]{atlas_simplify()}} to reduce the vertex count, and
+\code{\link[=atlas_dilate]{atlas_dilate()}} to grow or shrink regions. Each does one thing: how
+round a shape is, how many vertices it costs, and how big it is, are
+separate questions and get tuned at separate times. Simplify before
+smoothing, not after - dropping vertices from a rounded outline replaces
+its curves with straight chords, putting the stair-step back.
+
+Other atlas geometry: 
+\code{\link{atlas_dilate}()},
+\code{\link{atlas_simplify}()}
+}
+\concept{atlas geometry}

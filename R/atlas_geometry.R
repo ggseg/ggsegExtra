@@ -16,16 +16,12 @@
 #' Only one of `labels` or `exclude` may be specified.
 #'
 #' @param atlas A `ggseg_atlas` object with sf data.
-#' @param keep Proportion of vertices to retain (0--1), or `NULL` to skip
-#'   vertex simplification. Lower values produce simpler shapes; values
-#'   near 1 are an effective no-op. Default 0.05.
-#' @param smoothness Smoothing strength between 0 and 1, applied after
-#'   simplification. 0 (the default) skips smoothing. The scale is shared by
+#' @param smoothness Smoothing strength between 0 and 1. The scale is shared by
 #'   every `method`, so the same value means a comparable amount of smoothing
 #'   whichever one you pick; each method's native parameter is derived from it.
-#'   Around 0.4--0.6 rounds off voxel-edge stair-steps on millimetre voxel
-#'   grids without distorting shapes; 1 is the most smoothing a method applies
-#'   before shapes stop resembling their input.
+#'   Around 0.4--0.6, the default, rounds off voxel-edge stair-steps on
+#'   millimetre voxel grids without distorting shapes; 1 is the most smoothing
+#'   a method applies before shapes stop resembling their input.
 #' @param method Smoothing method. `"close"` (the default) is a
 #'   morphological closing: a positive then negative [sf::st_buffer()].
 #'   It rounds outlines but **fills holes narrower than the smoothing
@@ -41,44 +37,36 @@
 #' @param exclude Optional regex pattern. Labels matching this pattern are
 #'   left unchanged; all others are smoothed.
 #'
-#' @return A modified `ggseg_atlas` with simplified sf geometry.
+#' @return The `ggseg_atlas`, with its geometry rounded off.
+#' @family atlas geometry
+#' @seealso [atlas_simplify()] to reduce the vertex count, and
+#'   [atlas_dilate()] to grow or shrink regions. Each does one thing: how
+#'   round a shape is, how many vertices it costs, and how big it is, are
+#'   separate questions and get tuned at separate times. Simplify before
+#'   smoothing, not after - dropping vertices from a rounded outline replaces
+#'   its curves with straight chords, putting the stair-step back.
 #' @export
 #' @importFrom sf st_make_valid
 #'
 #' @examples
 #' \dontrun{
-#' # Vertex reduction only (legacy behaviour).
-#' atlas <- atlas_smooth(my_atlas, keep = 0.05)
+#' # Round off the voxel staircase.
+#' atlas <- atlas_smooth(my_atlas, smoothness = 0.4)
 #'
-#' # Keep cortex outline detailed, simplify everything else.
-#' atlas <- atlas_smooth(my_atlas, keep = 0.2, exclude = "cortex_|Cortex")
-#'
-#' # Round off jagged voxel edges without dropping vertices.
-#' atlas <- atlas_smooth(my_atlas, keep = NULL, smoothness = 0.6)
-#'
-#' # Per-region tuning: hard simplification for tiny nuclei, gentle
-#' # closing for the brain outline.
-#' atlas <- atlas_smooth(my_atlas, keep = 0.05, exclude = "cortex_")
-#' atlas <- atlas_smooth(
-#'   atlas,
-#'   keep = NULL,
-#'   smoothness = 0.6,
-#'   labels = "cortex_"
-#' )
+#' # Leave the brain outline alone.
+#' atlas <- atlas_smooth(my_atlas, smoothness = 0.4, exclude = "^cortex")
 #'
 #' # Round a cortical ribbon without closing its sulci.
 #' atlas <- atlas_smooth(
 #'   my_atlas,
-#'   keep = NULL,
 #'   smoothness = 0.4,
 #'   method = "chaikin",
-#'   labels = "cortex_"
+#'   labels = "^cortex"
 #' )
 #' }
 atlas_smooth <- function(
   atlas,
-  keep = 0.05,
-  smoothness = 0,
+  smoothness = 0.4,
   labels = NULL,
   exclude = NULL,
   method = c("close", "chaikin", "ksmooth", "spline")
@@ -97,9 +85,7 @@ atlas_smooth <- function(
     )
   }
 
-  do_simplify <- !is.null(keep) && !is.na(keep)
-  do_close <- isTRUE(smoothness > 0)
-  if (!do_simplify && !do_close) {
+  if (!isTRUE(smoothness > 0)) {
     return(atlas)
   }
 
@@ -108,27 +94,13 @@ atlas_smooth <- function(
   was_polygon <- ggseg.formats::is_atlas_polygon(atlas)
   sf_data <- ggseg.formats::atlas_geom(ggseg.formats::as_sf_atlas(atlas))
 
-  if (!is.null(labels) || !is.null(exclude)) {
-    sf_data <- smooth_sf_subset(
-      sf_data,
-      labels,
-      exclude,
-      do_simplify,
-      do_close,
-      keep,
-      smoothness,
-      method
-    )
-  } else {
-    sf_data <- apply_smooth_ops(
-      sf_data,
-      do_simplify,
-      do_close,
-      keep,
-      smoothness,
-      method
-    )
-  }
+  sf_data <- geometry_op_subset(
+    sf_data,
+    labels,
+    exclude,
+    function(d) smooth_sf_light(d, smoothness = smoothness, method = method),
+    what = "smooth"
+  )
 
   rehydrate_smoothed_atlas(atlas, sf_data, was_polygon)
 }
@@ -193,15 +165,65 @@ atlas_dilate <- function(atlas, amount, labels = NULL, exclude = NULL) {
 }
 
 
-#' @rdname atlas_smooth
+#' Reduce an atlas's vertex count
+#'
+#' @description
+#' Drops vertices from region geometry while keeping its topology, so an
+#' atlas costs less to store and to draw.
+#'
+#' @details
+#' This is about size, not shape. The silhouette an atlas draws behind its
+#' structures usually carries the bulk of the vertices, so it is the part
+#' worth simplifying; tiny deep structures have few to spare. Use `labels` or
+#' `exclude` to say which.
+#'
+#' @param atlas A `ggseg_atlas` object with 2D geometry.
+#' @param keep Proportion of vertices to retain, between 0 and 1. Lower is
+#'   smaller and blockier; near 1 is an effective no-op.
+#' @param labels,exclude Regex selecting which labels to simplify, or which
+#'   to leave alone. Give at most one.
+#'
+#' @return The `ggseg_atlas`, in the representation it arrived in.
+#' @family atlas geometry
+#' @seealso [atlas_smooth()] to round shapes off, and [atlas_dilate()] to
+#'   grow or shrink them. Simplify first and smooth afterwards, so the
+#'   smoothing has the last word on the outline.
 #' @export
-atlas_simplify <- function(atlas, keep = 0.05) {
-  lifecycle::deprecate_warn(
-    "1.9.9.9003",
-    "atlas_simplify()",
-    "atlas_smooth()"
+#' @examples
+#' \dontrun{
+#' # Halve the atlas, sparing the structures.
+#' atlas <- atlas_simplify(my_atlas, keep = 0.5, labels = "^cortex")
+#' }
+atlas_simplify <- function(atlas, keep = 0.05, labels = NULL, exclude = NULL) {
+  if (!is.numeric(keep) || length(keep) != 1L || is.na(keep)) {
+    cli::cli_abort("{.arg keep} must be a single number between 0 and 1.")
+  }
+  if (keep <= 0 || keep > 1) {
+    cli::cli_abort("{.arg keep} must be between 0 and 1, not {keep}.")
+  }
+  if (!is.null(labels) && !is.null(exclude)) {
+    cli::cli_abort(
+      "Specify only one of {.arg labels} or {.arg exclude}, not both."
+    )
+  }
+
+  if (is.null(ggseg.formats::atlas_geom(atlas))) {
+    cli::cli_warn("Atlas has no 2D geometry, nothing to simplify")
+    return(atlas)
+  }
+
+  was_polygon <- ggseg.formats::is_atlas_polygon(atlas)
+  sf_data <- ggseg.formats::atlas_geom(ggseg.formats::as_sf_atlas(atlas))
+
+  sf_data <- geometry_op_subset(
+    sf_data,
+    labels,
+    exclude,
+    function(d) simplify_sf_topology(d, keep = keep),
+    what = "simplify"
   )
-  atlas_smooth(atlas, keep = keep)
+
+  rehydrate_smoothed_atlas(atlas, sf_data, was_polygon)
 }
 
 
@@ -443,67 +465,35 @@ filter_valid_geometries <- function(sf_obj) {
 
 # Atlas geometry post-processing ----
 
-#' Apply the configured simplify/close operations to an sf data.frame
+#' Apply a geometry operation to some rows, leaving the rest alone
+#'
+#' Shared by [atlas_smooth()] and [atlas_simplify()], which rebuild whole
+#' rows and so have to put them back in order. [atlas_dilate()] assigns into
+#' the geometry column instead and keeps row order for free; the three still
+#' share `dilate_mask()`, so `labels` and `exclude` select the same way.
+#'
+#' Row order is draw order, so an operation that reshuffled it would change
+#' which region is painted over which.
 #' @noRd
-apply_smooth_ops <- function(
-  d,
-  do_simplify,
-  do_close,
-  keep,
-  smoothness,
-  method = "close"
-) {
-  if (do_simplify) {
-    d <- simplify_sf_topology(d, keep = keep)
+geometry_op_subset <- function(sf_data, labels, exclude, op, what) {
+  if (is.null(labels) && is.null(exclude)) {
+    return(sf::st_make_valid(op(sf_data)))
   }
-  if (do_close) {
-    d <- smooth_sf_light(d, smoothness = smoothness, method = method)
+
+  mask <- dilate_mask(sf_data$label, labels, exclude)
+  if (!any(mask)) {
+    cli::cli_warn("No labels matched, nothing to {what}")
+    return(sf_data)
   }
-  d
-}
 
-
-#' Smooth only the masked subset of rows, preserving caller row order
-#' @noRd
-#' @importFrom sf st_make_valid
-smooth_sf_subset <- function(
-  sf_data,
-  labels,
-  exclude,
-  do_simplify,
-  do_close,
-  keep,
-  smoothness,
-  method = "close"
-) {
-  sf_labels <- sf_data$label
-  if (!is.null(labels)) {
-    mask <- grepl(labels, sf_labels, ignore.case = TRUE)
-  } else {
-    mask <- !grepl(exclude, sf_labels, ignore.case = TRUE)
-  }
-  mask[is.na(sf_labels)] <- FALSE
-
-  # Preserve the caller's row order: smoothing must not change which
-  # regions draw on top (e.g. context regions placed behind core regions
-  # by atlas_region_contextual()). Tag rows, process the target subset,
-  # reassemble, then restore the original order.
-  sf_data$.smooth_order <- seq_len(nrow(sf_data))
-  target <- sf_data[mask, , drop = FALSE]
+  sf_data$.op_order <- seq_len(nrow(sf_data))
+  target <- op(sf_data[mask, , drop = FALSE])
   rest <- sf_data[!mask, , drop = FALSE]
 
-  target <- apply_smooth_ops(
-    target,
-    do_simplify,
-    do_close,
-    keep,
-    smoothness,
-    method
-  )
-  sf_data <- rbind(target, rest)
-  sf_data <- sf_data[order(sf_data$.smooth_order), , drop = FALSE]
-  sf_data$.smooth_order <- NULL
-  sf::st_make_valid(sf_data)
+  out <- rbind(target, rest)
+  out <- out[order(out$.op_order), , drop = FALSE]
+  out$.op_order <- NULL
+  sf::st_make_valid(out)
 }
 
 

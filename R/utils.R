@@ -397,7 +397,7 @@ warn_deprecated_sf_smoothing <- function(
   details <- c(
     i = paste(
       "Atlas creation no longer smooths or simplifies sf geometry.",
-      "Call `atlas_smooth(atlas, keep = ...)` on the returned atlas",
+      "Call `atlas_simplify(atlas, keep = ...)` on the returned atlas",
       "instead. Use `exclude = \"cortex_\"` to keep the brain outline",
       "crisp."
     )
@@ -547,7 +547,7 @@ warn_if_large_atlas <- function(atlas, max_vertices = 10000, per_region = 50) {
     cli::cli_warn(c(
       "Atlas has {.val {n_vertices}} vertices (threshold: {.val {threshold}})",
       "i" = "Large atlases may be slow to plot and increase package size",
-      "i" = "Call {.code atlas_smooth(atlas, keep = 0.2, exclude = \"cortex_\")}
+      "i" = "Call {.code atlas_simplify(atlas, keep = 0.2, exclude = \"cortex_\")}
       to reduce vertices"
     ))
     # nolint end

@@ -23,5 +23,5 @@
     Condition
       Warning:
       The `tolerance` argument of `create_tract_from_tractography()` is deprecated as of ggseg.extra 1.9.9.9005.
-      i Atlas creation no longer smooths or simplifies sf geometry. Call `atlas_smooth(atlas, keep = ...)` on the returned atlas instead. Use `exclude = "cortex_"` to keep the brain outline crisp.
+      i Atlas creation no longer smooths or simplifies sf geometry. Call `atlas_simplify(atlas, keep = ...)` on the returned atlas instead. Use `exclude = "cortex_"` to keep the brain outline crisp.
 
