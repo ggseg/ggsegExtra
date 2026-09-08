@@ -40,7 +40,8 @@ rebuild.
 
 - Test `describe()` calls are namespace-qualified.
   `local_mocked_bindings(.package = "terra")` attaches terra, and terra
-  exports a `describe()` of its own, which then masked testthat's - turning
+  exports a `describe()` of its own, which then masked `testthat`'s -
+  turning
   later `describe()` blocks into GDAL calls on filenames that do not exist.
   The error aborted the file, so its remaining blocks never ran. Which files
   were hit depended on run order, which is why a helper-level pin did not
