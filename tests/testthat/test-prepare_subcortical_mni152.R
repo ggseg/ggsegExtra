@@ -1,4 +1,4 @@
-describe("aseg_subcortical_labels", {
+testthat::describe("aseg_subcortical_labels", {
   it("returns the 14 lumped subcortical aseg ids as integers", {
     ids <- aseg_subcortical_labels()
     expect_type(ids, "integer")
@@ -10,7 +10,7 @@ describe("aseg_subcortical_labels", {
   })
 })
 
-describe("embed_labels_in_aseg", {
+testthat::describe("embed_labels_in_aseg", {
   it("blanks replaced structures and stamps parcels, keeping other context", {
     # 10, 49 = replaced subcortical; 42 = cortex, 2 = white matter (context)
     aseg <- array(c(10L, 42L, 49L, 2L), dim = c(2, 2, 1))
@@ -42,7 +42,7 @@ describe("embed_labels_in_aseg", {
   })
 })
 
-describe("prepare_subcortical_mni152", {
+testthat::describe("prepare_subcortical_mni152", {
   it("embeds MNI152 parcels into the fsaverage5 aseg context", {
     skip_if(!freesurfer::have_fs(), "FreeSurfer not available")
 

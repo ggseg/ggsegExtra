@@ -1,4 +1,4 @@
-describe("to_coords", {
+testthat::describe("to_coords", {
   it("converts sf geometry to coordinate tibble", {
     sf_obj <- sf::st_sf(
       id = "a",
@@ -34,7 +34,7 @@ describe("to_coords", {
 })
 
 
-describe("coords2sf", {
+testthat::describe("coords2sf", {
   it("converts coordinates back to sf polygons", {
     coords <- data.frame(
       .long = c(0, 1, 1, 0, 0),
@@ -83,7 +83,7 @@ describe("coords2sf", {
 })
 
 
-describe("center_coord", {
+testthat::describe("center_coord", {
   it("returns center of coordinates", {
     sf_obj <- sf::st_sf(
       id = "a",
@@ -104,7 +104,7 @@ describe("center_coord", {
 })
 
 
-describe("range_coord", {
+testthat::describe("range_coord", {
   it("returns coordinate ranges", {
     sf_obj <- sf::st_sf(
       id = "a",
@@ -127,7 +127,7 @@ describe("range_coord", {
 })
 
 
-describe("gather_geometry", {
+testthat::describe("gather_geometry", {
   it("centers geometry around origin", {
     df <- sf::st_sf(
       id = "a",
@@ -149,7 +149,7 @@ describe("gather_geometry", {
 })
 
 
-describe("restack", {
+testthat::describe("restack", {
   it("arranges geometries horizontally", {
     df1 <- sf::st_sf(
       id = "a",
@@ -185,7 +185,7 @@ describe("restack", {
 })
 
 
-describe("correct_coords_sf", {
+testthat::describe("correct_coords_sf", {
   it("applies horizontal offset", {
     df <- sf::st_sf(
       id = "a",
@@ -224,7 +224,7 @@ describe("correct_coords_sf", {
 })
 
 
-describe("count_vertices", {
+testthat::describe("count_vertices", {
   it("counts vertices in each geometry", {
     sf_obj <- sf::st_sf(
       id = c("a", "b"),
@@ -251,7 +251,7 @@ describe("count_vertices", {
 })
 
 
-describe("coords2sf", {
+testthat::describe("coords2sf", {
   it("handles empty result when all filtered out", {
     coords <- data.frame(
       .long = c(0, 1, 0, 0),
@@ -286,7 +286,7 @@ describe("coords2sf", {
 })
 
 
-describe("layout_cortical_views", {
+testthat::describe("layout_cortical_views", {
   it("arranges hemi/view combinations horizontally", {
     make_view_df <- function(hemi_val, view_val, x_offset) {
       sf::st_sf(
@@ -346,7 +346,7 @@ describe("layout_cortical_views", {
 })
 
 
-describe("layout_volumetric_views", {
+testthat::describe("layout_volumetric_views", {
   it("arranges views horizontally", {
     df <- sf::st_sf(
       view = c("axial", "coronal"),
@@ -372,7 +372,7 @@ describe("layout_volumetric_views", {
 })
 
 
-describe("coords2sf polygon closing", {
+testthat::describe("coords2sf polygon closing", {
   it("closes unclosed polygon by appending first point", {
     coords <- data.frame(
       .long = c(0, 1, 1, 0),
@@ -391,7 +391,7 @@ describe("coords2sf polygon closing", {
 })
 
 
-describe("coords2sf() ring hierarchy", {
+testthat::describe("coords2sf() ring hierarchy", {
   # A square with a square hole. `.subid` is the ring index within a polygon
   # (1 = exterior, 2+ = holes); treating each ring as its own polygon fills the
   # hole, which turns thin ribbons (a cortical slice) into solid blobs.

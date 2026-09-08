@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("build_contour_sf", {
+testthat::describe("build_contour_sf", {
   it("produces sf with label and view columns", {
     contours_file <- withr::local_tempfile(fileext = ".rda")
 
@@ -216,7 +216,7 @@ describe("build_contour_sf", {
 })
 
 
-describe("extract_contours", {
+testthat::describe("extract_contours", {
   it("scans for max value and processes regions", {
     input_dir <- withr::local_tempdir("masks_")
     output_dir <- withr::local_tempdir("output_")
@@ -320,7 +320,7 @@ describe("extract_contours", {
 })
 
 
-describe("filter_valid_geometries", {
+testthat::describe("filter_valid_geometries", {
   it("removes empty geometries", {
     sf_obj <- sf::st_sf(
       id = c("a", "b"),
@@ -487,7 +487,7 @@ describe("filter_valid_geometries", {
 })
 
 
-describe("combine_region_contours", {
+testthat::describe("combine_region_contours", {
   it("aborts clearly when no region produced contours", {
     expect_error(
       combine_region_contours(list(a = NULL, b = NULL)),
@@ -497,7 +497,7 @@ describe("combine_region_contours", {
 })
 
 
-describe("probe_raster_max", {
+testthat::describe("probe_raster_max", {
   it("skips all-NA rasters instead of erroring", {
     skip_if_not_installed("terra")
     blank <- withr::local_tempfile(fileext = ".tif")
@@ -520,7 +520,7 @@ describe("probe_raster_max", {
 })
 
 
-describe("smooth_contours", {
+testthat::describe("smooth_contours", {
   it("smooths contour geometry", {
     outdir <- withr::local_tempdir("smooth_test_")
 
@@ -568,7 +568,7 @@ describe("smooth_contours", {
 })
 
 
-describe("reduce_vertex", {
+testthat::describe("reduce_vertex", {
   it("passes contour geometry through unchanged", {
     outdir <- withr::local_tempdir("reduce_test_")
 
@@ -629,7 +629,7 @@ describe("reduce_vertex", {
 })
 
 
-describe("make_multipolygon", {
+testthat::describe("make_multipolygon", {
   it("combines contours into multipolygons", {
     outdir <- withr::local_tempdir("multipoly_test_")
 
@@ -665,7 +665,7 @@ describe("make_multipolygon", {
 })
 
 
-describe("smooth_contours verbose output", {
+testthat::describe("smooth_contours verbose output", {
   it("emits progress message when verbose is TRUE", {
     outdir <- withr::local_tempdir("smooth_verbose_")
 
@@ -688,7 +688,7 @@ describe("smooth_contours verbose output", {
 })
 
 
-describe("reduce_vertex verbose output", {
+testthat::describe("reduce_vertex verbose output", {
   it("is silent now that simplification has moved post-creation", {
     outdir <- withr::local_tempdir("reduce_verbose_")
 
@@ -711,7 +711,7 @@ describe("reduce_vertex verbose output", {
 })
 
 
-describe("simplify_sf_topology", {
+testthat::describe("simplify_sf_topology", {
   it("reduces vertices while preserving shared boundaries", {
     angles_a <- seq(0, 2 * pi, length.out = 21)[-21]
     coords_a <- cbind(cos(angles_a), sin(angles_a))
@@ -833,7 +833,7 @@ describe("simplify_sf_topology", {
 })
 
 
-describe("smooth_sf_light", {
+testthat::describe("smooth_sf_light", {
   it("returns the input unchanged when smoothness is zero or negative", {
     poly <- sf::st_polygon(list(matrix(
       c(0, 0, 1, 0, 1, 1, 0, 0),
@@ -862,7 +862,38 @@ describe("smooth_sf_light", {
 })
 
 
-describe("atlas_smooth", {
+two_region_atlas <- function(label_order = c("region_a", "region_b")) {
+  jagged <- sf::st_polygon(list(matrix(
+    c(0, 0, 0.5, 0.01, 1, 0, 1, 1, 0.5, 0.99, 0, 1, 0, 0),
+    ncol = 2,
+    byrow = TRUE
+  )))
+  square <- sf::st_polygon(list(matrix(
+    c(10, 10, 11, 10, 11, 11, 10, 11, 10, 10),
+    ncol = 2,
+    byrow = TRUE
+  )))
+  polys <- list(region_a = jagged, region_b = square)[label_order]
+
+  sf_obj <- sf::st_sf(
+    label = label_order,
+    view = "v1",
+    geometry = sf::st_sfc(polys[[1]], polys[[2]])
+  )
+  ggseg.formats::ggseg_atlas(
+    atlas = "t",
+    type = "subcortical",
+    palette = c(region_a = "#000000", region_b = "#111111"),
+    core = data.frame(
+      label = label_order,
+      region = label_order,
+      stringsAsFactors = FALSE
+    ),
+    data = ggseg.formats::ggseg_data_subcortical(geom = sf_obj)
+  )
+}
+
+testthat::describe("atlas_smooth", {
   it("warns when atlas has no 2D geometry", {
     atlas <- ggseg.formats::ggseg_atlas(
       atlas = "t",
@@ -906,13 +937,13 @@ describe("atlas_smooth", {
       data = ggseg.formats::ggseg_data_subcortical(geom = sf_obj)
     )
 
-    result <- atlas_smooth(atlas, keep = 0.5)
+    result <- atlas_simplify(atlas, keep = 0.5)
 
     expect_s3_class(ggseg.formats::atlas_geom(result), "sf")
     expect_true(all(sf::st_is_valid(ggseg.formats::atlas_geom(result))))
   })
 
-  it("smooths a polygon-backed atlas and preserves the representation", {
+  it("simplifies a polygon-backed atlas and preserves the representation", {
     poly <- sf::st_polygon(list(matrix(
       c(0, 0, 0.5, 0.01, 1, 0, 1, 1, 0.5, 0.99, 0, 1, 0, 0),
       ncol = 2,
@@ -930,7 +961,7 @@ describe("atlas_smooth", {
     )
     expect_true(ggseg.formats::is_atlas_polygon(atlas))
 
-    result <- atlas_smooth(atlas, keep = 0.5)
+    result <- atlas_simplify(atlas, keep = 0.5)
 
     # representation round-trips back to polygons, not sf
     expect_true(ggseg.formats::is_atlas_polygon(result))
@@ -938,7 +969,7 @@ describe("atlas_smooth", {
     expect_identical(ggseg.formats::atlas_geom(result)$label, "a")
   })
 
-  it("smooths a legacy sf-slot atlas into a compliant sf atlas", {
+  it("simplifies a legacy sf-slot atlas into a compliant sf atlas", {
     poly <- sf::st_polygon(list(matrix(
       c(0, 0, 0.5, 0.01, 1, 0, 1, 1, 0.5, 0.99, 0, 1, 0, 0),
       ncol = 2,
@@ -956,44 +987,13 @@ describe("atlas_smooth", {
     atlas$data$sf <- atlas$data$geom
     atlas$data$geom <- NULL
 
-    result <- atlas_smooth(atlas, keep = 0.5)
+    result <- atlas_simplify(atlas, keep = 0.5)
 
     expect_true(ggseg.formats::is_ggseg_atlas(result))
     expect_true(ggseg.formats::is_atlas_sf(result))
     expect_identical(ggseg.formats::atlas_geom(result)$label, "a")
     expect_true(all(sf::st_is_valid(ggseg.formats::atlas_sf(result))))
   })
-
-  two_region_atlas <- function(label_order = c("region_a", "region_b")) {
-    jagged <- sf::st_polygon(list(matrix(
-      c(0, 0, 0.5, 0.01, 1, 0, 1, 1, 0.5, 0.99, 0, 1, 0, 0),
-      ncol = 2,
-      byrow = TRUE
-    )))
-    square <- sf::st_polygon(list(matrix(
-      c(10, 10, 11, 10, 11, 11, 10, 11, 10, 10),
-      ncol = 2,
-      byrow = TRUE
-    )))
-    polys <- list(region_a = jagged, region_b = square)[label_order]
-
-    sf_obj <- sf::st_sf(
-      label = label_order,
-      view = "v1",
-      geometry = sf::st_sfc(polys[[1]], polys[[2]])
-    )
-    ggseg.formats::ggseg_atlas(
-      atlas = "t",
-      type = "subcortical",
-      palette = c(region_a = "#000000", region_b = "#111111"),
-      core = data.frame(
-        label = label_order,
-        region = label_order,
-        stringsAsFactors = FALSE
-      ),
-      data = ggseg.formats::ggseg_data_subcortical(geom = sf_obj)
-    )
-  }
 
   it("errors when both labels and exclude are specified", {
     atlas <- two_region_atlas()
@@ -1003,14 +1003,14 @@ describe("atlas_smooth", {
     )
   })
 
-  it("closes jagged edges with smoothness, independent of simplification", {
+  it("closes jagged edges", {
     atlas <- two_region_atlas()
     before <- ggseg.formats::atlas_geom(atlas)
     n_before <- nrow(sf::st_coordinates(
       before$geometry[before$label == "region_a"]
     ))
 
-    result <- atlas_smooth(atlas, keep = NULL, smoothness = 0.6)
+    result <- atlas_smooth(atlas, smoothness = 0.6)
     geom <- ggseg.formats::atlas_geom(result)
 
     expect_true(all(sf::st_is_valid(geom)))
@@ -1022,11 +1022,11 @@ describe("atlas_smooth", {
     )
   })
 
-  it("only smooths labels matched by `labels`, leaving the rest untouched", {
+  it("only simplifies labels matched by `labels`, leaving the rest untouched", {
     atlas <- two_region_atlas()
     before <- ggseg.formats::atlas_geom(atlas)
 
-    result <- atlas_smooth(atlas, keep = 0.3, labels = "region_a")
+    result <- atlas_simplify(atlas, keep = 0.3, labels = "region_a")
     geom <- ggseg.formats::atlas_geom(result)
 
     n_before_a <- nrow(sf::st_coordinates(
@@ -1044,11 +1044,11 @@ describe("atlas_smooth", {
     )[1, 1]))
   })
 
-  it("only smooths labels not matched by `exclude`", {
+  it("only simplifies labels not matched by `exclude`", {
     atlas <- two_region_atlas()
     before <- ggseg.formats::atlas_geom(atlas)
 
-    result <- atlas_smooth(atlas, keep = 0.3, exclude = "region_b")
+    result <- atlas_simplify(atlas, keep = 0.3, exclude = "region_b")
     geom <- ggseg.formats::atlas_geom(result)
 
     n_before_a <- nrow(sf::st_coordinates(
@@ -1069,38 +1069,59 @@ describe("atlas_smooth", {
   it("preserves the caller's row order when subsetting by label", {
     atlas <- two_region_atlas(label_order = c("region_b", "region_a"))
 
-    result <- atlas_smooth(atlas, keep = 0.3, exclude = "region_a")
+    result <- atlas_simplify(atlas, keep = 0.3, exclude = "region_a")
     geom <- ggseg.formats::atlas_geom(result)
 
     expect_identical(geom$label, c("region_b", "region_a"))
   })
 
-  it("returns the atlas unchanged when keep is NULL and smoothness is 0", {
+  it("returns the atlas unchanged when smoothness is 0", {
     atlas <- two_region_atlas()
-    result <- atlas_smooth(atlas, keep = NULL, smoothness = 0)
+    result <- atlas_smooth(atlas, smoothness = 0)
     expect_identical(result, atlas)
+  })
+
+  it("warns rather than silently doing nothing when no label matches", {
+    atlas <- two_region_atlas()
+
+    expect_warning(
+      result <- atlas_smooth(atlas, labels = "no_such_region"),
+      "No labels matched"
+    )
+    expect_identical(
+      ggseg.formats::atlas_geom(result),
+      ggseg.formats::atlas_geom(atlas)
+    )
   })
 })
 
 
-describe("atlas_simplify (deprecated)", {
-  it("warns about deprecation and delegates to atlas_smooth", {
-    atlas <- ggseg.formats::ggseg_atlas(
-      atlas = "t",
-      type = "cortical",
-      palette = c(a = "#000000"),
-      core = data.frame(label = "a", region = "a", stringsAsFactors = FALSE),
-      data = ggseg.formats::ggseg_data_cortical(
-        vertices = data.frame(
-          stringsAsFactors = FALSE,
-          label = "a",
-          vertices = I(list(1:3))
-        )
-      )
-    )
+testthat::describe("atlas_simplify", {
+  it("rejects a keep outside 0-1", {
+    atlas <- two_region_atlas()
+    expect_error(atlas_simplify(atlas, keep = 0), "between 0 and 1")
+    expect_error(atlas_simplify(atlas, keep = 1.5), "between 0 and 1")
+    expect_error(atlas_simplify(atlas, keep = "half"), "single number")
+  })
 
-    lifecycle::expect_deprecated(
-      expect_warning(atlas_simplify(atlas), "no 2D geometry")
+  it("rejects labels and exclude together", {
+    atlas <- two_region_atlas()
+    expect_error(
+      atlas_simplify(atlas, keep = 0.3, labels = "a", exclude = "b"),
+      "only one of"
+    )
+  })
+
+  it("warns rather than silently doing nothing when no label matches", {
+    atlas <- two_region_atlas()
+
+    expect_warning(
+      result <- atlas_simplify(atlas, keep = 0.3, labels = "no_such_region"),
+      "No labels matched"
+    )
+    expect_identical(
+      ggseg.formats::atlas_geom(result),
+      ggseg.formats::atlas_geom(atlas)
     )
   })
 })
@@ -1145,14 +1166,13 @@ testthat::describe("atlas_smooth(method =)", {
   }
 
   it("closes narrow holes with the default method", {
-    result <- atlas_smooth(ring_atlas(), keep = NULL, smoothness = 0.6)
+    result <- atlas_smooth(ring_atlas(), smoothness = 0.6)
     expect_false(hole_open(result))
   })
 
   it("keeps holes open with chaikin", {
     result <- atlas_smooth(
       ring_atlas(),
-      keep = NULL,
       smoothness = 0.6,
       method = "chaikin"
     )
@@ -1163,7 +1183,6 @@ testthat::describe("atlas_smooth(method =)", {
     skip_if_not_installed("smoothr")
     result <- atlas_smooth(
       ring_atlas(),
-      keep = NULL,
       smoothness = 0.4,
       method = "ksmooth"
     )
@@ -1172,10 +1191,9 @@ testthat::describe("atlas_smooth(method =)", {
 
   it("defaults to close for backwards compatibility", {
     expect_identical(
-      atlas_smooth(ring_atlas(), keep = NULL, smoothness = 0.6),
+      atlas_smooth(ring_atlas(), smoothness = 0.6),
       atlas_smooth(
         ring_atlas(),
-        keep = NULL,
         smoothness = 0.6,
         method = "close"
       )
@@ -1192,7 +1210,7 @@ testthat::describe("atlas_smooth(method =)", {
   it("is a no-op when smoothness is 0 regardless of method", {
     a <- ring_atlas()
     expect_identical(
-      atlas_smooth(a, keep = NULL, smoothness = 0, method = "chaikin"),
+      atlas_smooth(a, smoothness = 0, method = "chaikin"),
       a
     )
   })

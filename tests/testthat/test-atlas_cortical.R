@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("create_cortical_from_annotation", {
+testthat::describe("create_cortical_from_annotation", {
   it("validates annotation files exist", {
     expect_error(
       create_cortical_from_annotation(
@@ -71,7 +71,7 @@ describe("create_cortical_from_annotation", {
 })
 
 
-describe("cortical_project_and_build", {
+testthat::describe("cortical_project_and_build", {
   it("runs projection and returns atlas", {
     do.call(local_mocked_bindings, mock_cortical_pipeline_bindings())
 
@@ -103,7 +103,7 @@ describe("cortical_project_and_build", {
 })
 
 
-describe("create_cortical_from_annotation pipeline flow", {
+testthat::describe("create_cortical_from_annotation pipeline flow", {
   it("passes input_annot to read_annotation_data", {
     .cap$captured <- list()
     local_mocked_bindings(
@@ -152,7 +152,7 @@ describe("create_cortical_from_annotation pipeline flow", {
 })
 
 
-describe("read_annotation_data", {
+testthat::describe("read_annotation_data", {
   it("reads annotation data from files", {
     skip_if_not_installed("freesurferformats")
 
@@ -220,7 +220,7 @@ describe("read_annotation_data", {
 })
 
 
-describe("create_cortical_from_labels", {
+testthat::describe("create_cortical_from_labels", {
   it("creates atlas from label files", {
     skip_if_not_installed("freesurferformats")
 
@@ -315,7 +315,7 @@ describe("create_cortical_from_labels", {
 })
 
 
-describe("read_label_vertices", {
+testthat::describe("read_label_vertices", {
   it("reads vertex indices from label file", {
     label_file <- test_label_files()$lh_region1
     vertices <- read_label_vertices(label_file)
@@ -342,7 +342,7 @@ describe("read_label_vertices", {
 })
 
 
-describe("cortical_read_data", {
+testthat::describe("cortical_read_data", {
   it("loads cached data when files exist and skip_existing is TRUE", {
     tmp_dir <- withr::local_tempdir()
     mock_atlas <- structure(list(atlas = "test"), class = "ggseg_atlas")
@@ -378,7 +378,7 @@ describe("cortical_read_data", {
 })
 
 
-describe("cortical_finalize", {
+testthat::describe("cortical_finalize", {
   it("returns atlas and logs when verbose", {
     local_mocked_bindings(
       log_elapsed = function(...) NULL,
@@ -453,7 +453,7 @@ describe("cortical_finalize", {
 })
 
 
-describe("cortical_project_and_build verbose and cleanup paths", {
+testthat::describe("cortical_project_and_build verbose and cleanup paths", {
   it("logs verbose messages for each step", {
     do.call(local_mocked_bindings, mock_cortical_pipeline_bindings())
 
@@ -518,7 +518,7 @@ describe("cortical_project_and_build verbose and cleanup paths", {
 })
 
 
-describe("create_cortical_from_annotation verbose output", {
+testthat::describe("create_cortical_from_annotation verbose output", {
   it("prints atlas name and paths when verbose is TRUE", {
     local_mocked_bindings(
       read_annotation_data = function(annot_files) {
@@ -569,7 +569,7 @@ describe("create_cortical_from_annotation verbose output", {
 })
 
 
-describe("create_cortical_from_annotation full pipeline path", {
+testthat::describe("create_cortical_from_annotation full pipeline path", {
   it("passes correct components and config to cortical_project_and_build", {
     .cap$captured_pipeline_args <- NULL
     local_mocked_bindings(
@@ -624,7 +624,7 @@ describe("create_cortical_from_annotation full pipeline path", {
 })
 
 
-describe("cortical_read_data verbose paths", {
+testthat::describe("cortical_read_data verbose paths", {
   it("prints progress step when verbose is TRUE and step runs", {
     local_mocked_bindings(
       ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
@@ -715,7 +715,7 @@ describe("cortical_read_data verbose paths", {
 })
 
 
-describe("create_cortical_from_labels verbose and LUT paths", {
+testthat::describe("create_cortical_from_labels verbose and LUT paths", {
   it("prints verbose output when verbose is TRUE", {
     local_mocked_bindings(
       ggseg_atlas = function(...) structure(list(...), class = "ggseg_atlas"),
@@ -843,7 +843,7 @@ describe("create_cortical_from_labels verbose and LUT paths", {
 })
 
 
-describe("create_cortical_from_labels hemi fallback", {
+testthat::describe("create_cortical_from_labels hemi fallback", {
   it("defaults to both hemispheres when all hemi values are NA", {
     .cap$captured_hemisphere <- NULL
     local_mocked_bindings(
@@ -883,7 +883,7 @@ describe("create_cortical_from_labels hemi fallback", {
 })
 
 
-describe("create_cortical_from_gifti verbose", {
+testthat::describe("create_cortical_from_gifti verbose", {
   it("emits 'from GIFTI' message when verbose", {
     skip_if_not_installed("freesurferformats")
 
@@ -930,7 +930,7 @@ describe("create_cortical_from_gifti verbose", {
 })
 
 
-describe("create_cortical_from_cifti verbose", {
+testthat::describe("create_cortical_from_cifti verbose", {
   it("emits 'from CIFTI' message when verbose", {
     skip_if_not_installed("ciftiTools")
 
@@ -983,7 +983,7 @@ describe("create_cortical_from_cifti verbose", {
 })
 
 
-describe("create_cortical_from_neuromaps verbose", {
+testthat::describe("create_cortical_from_neuromaps verbose", {
   it("emits 'Fetching neuromaps' and 'from neuromaps' messages", {
     skip_if_not_installed("neuromapr")
     skip_if_not(
@@ -1079,7 +1079,7 @@ describe("create_cortical_from_neuromaps verbose", {
 })
 
 
-describe("create_cortical_from_annotation input validation", {
+testthat::describe("create_cortical_from_annotation input validation", {
   it("aborts when input_annot is empty", {
     expect_error(
       create_cortical_from_annotation(input_annot = character(0)),
@@ -1089,7 +1089,7 @@ describe("create_cortical_from_annotation input validation", {
 })
 
 
-describe("create_cortical_from_gifti input validation", {
+testthat::describe("create_cortical_from_gifti input validation", {
   it("aborts when gifti_files is empty", {
     expect_error(
       create_cortical_from_gifti(gifti_files = character(0)),
@@ -1118,7 +1118,7 @@ describe("create_cortical_from_gifti input validation", {
 })
 
 
-describe("create_cortical_from_cifti input validation", {
+testthat::describe("create_cortical_from_cifti input validation", {
   it("aborts when the CIFTI file does not exist", {
     expect_error(
       create_cortical_from_cifti(cifti_file = "/nonexistent/file.dlabel.nii"),

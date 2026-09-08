@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("has_magick", {
+testthat::describe("has_magick", {
   it("returns logical", {
     result <- has_magick()
     expect_type(result, "logical")
@@ -9,7 +9,7 @@ describe("has_magick", {
 })
 
 
-describe("process_and_mask_images", {
+testthat::describe("process_and_mask_images", {
   it("calls process_snapshot_image for each png then extract_alpha_mask", {
     snap_dir <- withr::local_tempdir("snap_")
     processed_dir <- withr::local_tempdir("proc_")
@@ -76,7 +76,7 @@ describe("process_and_mask_images", {
 })
 
 
-describe("make_view_chunks", {
+testthat::describe("make_view_chunks", {
   it("creates correct number of chunks", {
     result <- make_view_chunks(85, 152, 10, "axial")
     expect_s3_class(result, "data.frame")
@@ -103,7 +103,7 @@ describe("make_view_chunks", {
 })
 
 
-describe("create_cortex_slices picking by content", {
+testthat::describe("create_cortex_slices picking by content", {
   # 8x8x8 volume: cortex (label 1001) only on sagittal slice 3, coronal slice
   # 6 and axial slice 2, none of which is its slab's midpoint.
   make_vol <- function() {
@@ -179,7 +179,7 @@ describe("create_cortex_slices picking by content", {
 })
 
 
-describe("create_cortex_slices", {
+testthat::describe("create_cortex_slices", {
   it("creates slices matching views", {
     views <- data.frame(
       name = c("axial_1", "coronal_1", "sagittal"),
@@ -296,7 +296,7 @@ describe("create_cortex_slices", {
 })
 
 
-describe("detect_cortex_labels", {
+testthat::describe("detect_cortex_labels", {
   it("detects aparc labels when present", {
     vol <- array(0L, dim = c(10, 10, 10))
     vol[1:5, , ] <- 1001L
@@ -323,7 +323,7 @@ describe("detect_cortex_labels", {
 })
 
 
-describe("extract_hemi_from_view", {
+testthat::describe("extract_hemi_from_view", {
   it("returns NULL for non-sagittal views", {
     expect_null(extract_hemi_from_view("axial", "axial_3"))
     expect_null(extract_hemi_from_view("coronal", "coronal_1"))
@@ -357,7 +357,7 @@ describe("extract_hemi_from_view", {
 })
 
 
-describe("process_snapshot_image", {
+testthat::describe("process_snapshot_image", {
   it("returns early when skip_existing is TRUE and file exists", {
     input <- withr::local_tempfile(fileext = ".png")
     output <- withr::local_tempfile(fileext = ".png")
@@ -469,7 +469,7 @@ describe("process_snapshot_image", {
 })
 
 
-describe("extract_alpha_mask", {
+testthat::describe("extract_alpha_mask", {
   it("returns early when skip_existing is TRUE and file exists", {
     input <- withr::local_tempfile(fileext = ".png")
     output <- withr::local_tempfile(fileext = ".png")
@@ -509,7 +509,7 @@ describe("extract_alpha_mask", {
 })
 
 
-describe("run_cmd", {
+testthat::describe("run_cmd", {
   it("runs commands successfully", {
     skip_on_os("windows")
     local_mocked_bindings(
@@ -536,7 +536,7 @@ describe("run_cmd", {
 })
 
 
-describe("get_contours", {
+testthat::describe("get_contours", {
   it("returns NULL when max value < max_val", {
     local_mocked_bindings(
       global = function(x, ...) data.frame(max = 100),
@@ -602,7 +602,7 @@ describe("get_contours", {
 })
 
 
-describe("magick_version", {
+testthat::describe("magick_version", {
   it("returns a character string", {
     skip_if_not(has_magick(), "ImageMagick not available")
 
@@ -614,7 +614,7 @@ describe("magick_version", {
 })
 
 
-describe("get_contours full processing path", {
+testthat::describe("get_contours full processing path", {
   it("returns sf result when contours are non-empty", {
     mock_sf <- sf::st_sf(
       id = 1,
@@ -758,7 +758,7 @@ describe("get_contours full processing path", {
 })
 
 
-describe("detect_context_labels", {
+testthat::describe("detect_context_labels", {
   it("returns the subcortical structures present in the volume", {
     vol <- array(c(16L, 10L, 49L, 0L), dim = c(2, 2, 1))
     expect_setequal(detect_context_labels(vol), c(16, 10, 49))
@@ -786,7 +786,7 @@ describe("detect_context_labels", {
     expect_length(detect_context_labels(vol), 0)
   })
 })
-describe("thinnest_cortex_slice", {
+testthat::describe("thinnest_cortex_slice", {
   # A sagittal slab across a hemisphere: cortex area peaks at both tangential
   # extremes and dips where the slice cuts the sheet properly.
   vol <- array(0L, dim = c(11, 6, 6))

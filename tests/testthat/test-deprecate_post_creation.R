@@ -1,4 +1,4 @@
-describe("post-creation tweaks passed to a pipeline", {
+testthat::describe("post-creation tweaks passed to a pipeline", {
   it("points dilate at atlas_dilate()", {
     lifecycle::expect_deprecated(
       check_post_creation_dots("create_subcortical_from_volume", dilate = 2)

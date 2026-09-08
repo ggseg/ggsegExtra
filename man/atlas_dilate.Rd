@@ -42,5 +42,9 @@ atlas <- atlas_dilate(atlas, 0.5, exclude = "^cortex")
 \seealso{
 \code{\link[=atlas_smooth]{atlas_smooth()}} and \code{\link[=atlas_simplify]{atlas_simplify()}}, the other post-creation
 geometry steps.
+
+Other atlas geometry: 
+\code{\link{atlas_simplify}()},
+\code{\link{atlas_smooth}()}
 }
 \concept{atlas geometry}

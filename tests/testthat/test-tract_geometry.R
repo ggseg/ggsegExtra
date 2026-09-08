@@ -52,7 +52,7 @@ make_test_tract_atlas_geom <- function() {
   )
 }
 
-describe("generate_tube_mesh", {
+testthat::describe("generate_tube_mesh", {
   it("creates valid mesh from centerline", {
     centerline <- matrix(
       c(
@@ -137,7 +137,7 @@ describe("generate_tube_mesh", {
 })
 
 
-describe("extract_centerline", {
+testthat::describe("extract_centerline", {
   it("returns input for single streamline", {
     streamline <- matrix(c(1:10, rep(0, 20)), ncol = 3)
     colnames(streamline) <- c("x", "y", "z")
@@ -180,7 +180,7 @@ describe("extract_centerline", {
 })
 
 
-describe("compute_parallel_transport_frames", {
+testthat::describe("compute_parallel_transport_frames", {
   it("returns orthonormal frames", {
     curve <- matrix(
       c(
@@ -230,7 +230,7 @@ describe("compute_parallel_transport_frames", {
 })
 
 
-describe("resample_streamline", {
+testthat::describe("resample_streamline", {
   it("resamples to exact number of points", {
     streamline <- matrix(c(1:100, rep(0, 200)), ncol = 3)
     colnames(streamline) <- c("x", "y", "z")
@@ -257,7 +257,7 @@ describe("resample_streamline", {
 })
 
 
-describe("cross_product", {
+testthat::describe("cross_product", {
   it("computes correct cross product", {
     a <- c(1, 0, 0)
     b <- c(0, 1, 0)
@@ -288,7 +288,7 @@ describe("cross_product", {
 })
 
 
-describe("rotate_vector", {
+testthat::describe("rotate_vector", {
   it("rotates vector 90 degrees around z-axis", {
     v <- c(1, 0, 0)
     axis <- c(0, 0, 1)
@@ -321,7 +321,7 @@ describe("rotate_vector", {
 })
 
 
-describe("compute_streamline_density", {
+testthat::describe("compute_streamline_density", {
   it("computes density at each centerline point", {
     streamlines <- list(
       matrix(c(1:5, rep(0, 10)), ncol = 3),
@@ -357,7 +357,7 @@ describe("compute_streamline_density", {
 })
 
 
-describe("center_meshes", {
+testthat::describe("center_meshes", {
   it("centers multiple meshes around origin", {
     meshes <- list(
       mesh1 = list(
@@ -414,7 +414,7 @@ describe("center_meshes", {
 })
 
 
-describe("coord_to_voxel", {
+testthat::describe("coord_to_voxel", {
   it("adds 1 when coords_are_voxels is TRUE", {
     result <- coord_to_voxel(c(10, 20, 30), c(256, 256, 256), NULL, TRUE)
     expect_identical(result, c(11, 21, 31))
@@ -435,7 +435,7 @@ describe("coord_to_voxel", {
 })
 
 
-describe("set_sphere_voxels", {
+testthat::describe("set_sphere_voxels", {
   it("sets voxels within sphere", {
     vol <- array(0L, dim = c(10, 10, 10))
     result <- set_sphere_voxels(vol, c(5, 5, 5), 1, 1L, c(10, 10, 10))
@@ -454,7 +454,7 @@ describe("set_sphere_voxels", {
 })
 
 
-describe("detect_coords_are_voxels", {
+testthat::describe("detect_coords_are_voxels", {
   it("detects positive-only coordinates as voxel space", {
     streamlines <- list(
       matrix(c(50:60, rep(70, 11), rep(80, 11)), ncol = 3)
@@ -485,7 +485,7 @@ describe("detect_coords_are_voxels", {
 })
 
 
-describe("detect_tract_coord_space", {
+testthat::describe("detect_tract_coord_space", {
   it("detects voxel space from a list of bare matrices (in-memory input)", {
     voxel_tracts <- list(
       cst = matrix(c(10, 20, 30, 11, 21, 31), ncol = 3, byrow = TRUE),
@@ -510,7 +510,7 @@ describe("detect_tract_coord_space", {
 })
 
 
-describe("extract_centerline medoid", {
+testthat::describe("extract_centerline medoid", {
   it("selects the most representative streamline", {
     streamlines <- list(
       matrix(c(1:5, rep(0, 10)), ncol = 3),
@@ -529,7 +529,7 @@ describe("extract_centerline medoid", {
 })
 
 
-describe("load_vox2ras_matrix", {
+testthat::describe("load_vox2ras_matrix", {
   it("returns NULL when coords_are_voxels is TRUE", {
     result <- load_vox2ras_matrix("any_file.mgz", TRUE)
     expect_null(result)
@@ -545,7 +545,7 @@ describe("load_vox2ras_matrix", {
 })
 
 
-describe("extract_centerline", {
+testthat::describe("extract_centerline", {
   it("returns resampled single streamline from list", {
     sl <- list(matrix(c(1:10, rep(0, 20)), ncol = 3))
     result <- extract_centerline(sl, n_points = 5)
@@ -563,7 +563,7 @@ describe("extract_centerline", {
 })
 
 
-describe("resample_streamline", {
+testthat::describe("resample_streamline", {
   it("handles 2-point streamline where some segments have zero length", {
     streamline <- matrix(c(0, 0, 0, 0, 0, 5), ncol = 3, byrow = TRUE)
     result <- resample_streamline(streamline, 3)
@@ -601,7 +601,7 @@ describe("resample_streamline", {
 })
 
 
-describe("generate_tube_mesh", {
+testthat::describe("generate_tube_mesh", {
   it("errors with wrong radius length", {
     centerline <- matrix(c(0, 0, 0, 1, 0, 0, 2, 0, 0), ncol = 3, byrow = TRUE)
     colnames(centerline) <- c("x", "y", "z")
@@ -625,7 +625,7 @@ describe("generate_tube_mesh", {
 })
 
 
-describe("compute_streamline_density", {
+testthat::describe("compute_streamline_density", {
   it("skips invalid streamlines", {
     streamlines <- list(
       "not a matrix",
@@ -645,7 +645,7 @@ describe("compute_streamline_density", {
 })
 
 
-describe("load_vox2ras_matrix", {
+testthat::describe("load_vox2ras_matrix", {
   it("warns and falls back when the mgz header lacks RAS info", {
     skip_if_not_installed("freesurferformats")
     expect_warning(
@@ -722,7 +722,7 @@ describe("load_vox2ras_matrix", {
 })
 
 
-describe("streamlines_to_volume", {
+testthat::describe("streamlines_to_volume", {
   it("errors when template file doesn't exist", {
     expect_error(
       streamlines_to_volume(
@@ -805,7 +805,7 @@ describe("streamlines_to_volume", {
 })
 
 
-describe("detect_coords_are_voxels", {
+testthat::describe("detect_coords_are_voxels", {
   it("returns FALSE when min_coord less than -10", {
     streamlines <- list(
       matrix(c(-15:0, rep(0, 32)), ncol = 3)
@@ -822,7 +822,7 @@ describe("detect_coords_are_voxels", {
 })
 
 
-describe("streamlines_to_volume orientation", {
+testthat::describe("streamlines_to_volume orientation", {
   # An LIA template, the layout FreeSurfer's aseg.mgz uses: voxel axes 2 and 3
   # are swapped relative to RAS. It must be .mgz, not .nii: read_volume()
   # returns a bare array for .mgz (no affine attached), so RNifti::orientation()
@@ -898,7 +898,7 @@ describe("streamlines_to_volume orientation", {
 })
 
 
-describe("center_meshes offset bookkeeping", {
+testthat::describe("center_meshes offset bookkeeping", {
   two_meshes <- function() {
     mk <- function(shift) {
       list(

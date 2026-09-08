@@ -47,7 +47,7 @@ make_test_atlas <- function() {
   )
 }
 
-describe("subcortical_slabs", {
+testthat::describe("subcortical_slabs", {
   vol <- array(0L, dim = c(20, 20, 20))
   vol[8:12, 6:14, 9:11] <- 17L
 
@@ -126,7 +126,7 @@ describe("subcortical_slabs", {
 })
 
 
-describe("subcortical_views (deprecated)", {
+testthat::describe("subcortical_views (deprecated)", {
   it("warns about deprecation and delegates to subcortical_slabs", {
     vol <- array(0L, dim = c(20, 20, 20))
     vol[8:12, 6:14, 9:11] <- 17L
@@ -139,7 +139,7 @@ describe("subcortical_views (deprecated)", {
   })
 })
 
-describe("aseg_context", {
+testthat::describe("aseg_context", {
   it("keeps focus as core and demotes everything else", {
     a <- aseg_context(
       make_test_atlas(),
@@ -203,7 +203,7 @@ describe("aseg_context", {
   })
 })
 
-describe("aseg_context input validation and white-matter punch", {
+testthat::describe("aseg_context input validation and white-matter punch", {
   it("errors when atlas is not a ggseg_atlas", {
     expect_error(
       aseg_context(list(x = 1), focus = "hypothalamus"),
@@ -226,7 +226,7 @@ describe("aseg_context input validation and white-matter punch", {
   })
 })
 
-describe("aseg_punch_white_matter", {
+testthat::describe("aseg_punch_white_matter", {
   it("skips with an info message when cortex/white matter not both present", {
     atlas <- make_test_atlas()
     out <- expect_messages(
@@ -253,7 +253,7 @@ describe("aseg_punch_white_matter", {
   })
 })
 
-describe("lut_add / lut_combine", {
+testthat::describe("lut_add / lut_combine", {
   base <- data.frame(
     stringsAsFactors = FALSE,
     idx = 0L,
@@ -349,7 +349,7 @@ describe("lut_add / lut_combine", {
   })
 })
 
-describe("aseg_hidden_labels", {
+testthat::describe("aseg_hidden_labels", {
   it("returns the standard set of stripped aseg patterns", {
     out <- aseg_hidden_labels()
     expect_type(out, "character")
@@ -370,7 +370,7 @@ describe("aseg_hidden_labels", {
   })
 })
 
-describe("create_subcortical_from_volume slab/context specs", {
+testthat::describe("create_subcortical_from_volume slab/context specs", {
   it("exposes slabs and context as formals (whole-brain forwards them)", {
     fmls <- names(formals(create_subcortical_from_volume))
     expect_true(all(c("slabs", "context") %in% fmls))
@@ -438,7 +438,7 @@ describe("create_subcortical_from_volume slab/context specs", {
 })
 
 
-describe("aseg_context with a mesh-only atlas", {
+testthat::describe("aseg_context with a mesh-only atlas", {
   it("falls back to empty sf labels when there is no 2D geometry", {
     local_mocked_bindings(
       atlas_geom = function(...) NULL,

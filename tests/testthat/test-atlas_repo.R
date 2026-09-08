@@ -1,6 +1,6 @@
 .cap <- new.env()
 
-describe("setup_atlas_repo", {
+testthat::describe("setup_atlas_repo", {
   # Mock download to always use fallback for consistent testing
   use_fallback <- function() {
     local_mocked_bindings(
@@ -131,7 +131,7 @@ describe("setup_atlas_repo", {
 })
 
 
-describe("setup_atlas_repo template files", {
+testthat::describe("setup_atlas_repo template files", {
   tmp <- withr::local_tempdir("atlas_template_test_")
   local_mocked_bindings(
     download_atlas_template = function(url = NULL) {
@@ -396,7 +396,7 @@ describe("setup_atlas_repo template files", {
 })
 
 
-describe("setup_atlas_repo github actions", {
+testthat::describe("setup_atlas_repo github actions", {
   fake_template <- function(env = parent.frame()) {
     src <- withr::local_tempdir(.local_envir = env)
     dir.create(file.path(src, "R"), recursive = TRUE)
@@ -472,7 +472,7 @@ describe("setup_atlas_repo github actions", {
 })
 
 
-describe("download_atlas_template", {
+testthat::describe("download_atlas_template", {
   it("falls back to bundled template on download failure", {
     local_mocked_bindings(
       template_url = function() "https://invalid.example.com/nonexistent.tar.gz"
@@ -492,7 +492,7 @@ describe("download_atlas_template", {
 })
 
 
-describe("setup_atlas_repo .Rproj file", {
+testthat::describe("setup_atlas_repo .Rproj file", {
   it("contains correct package build settings", {
     tmp <- withr::local_tempdir("atlas_rproj_test_")
 
@@ -521,7 +521,7 @@ describe("setup_atlas_repo .Rproj file", {
 })
 
 
-describe("setup_atlas_repo lowercase ggseg prefix", {
+testthat::describe("setup_atlas_repo lowercase ggseg prefix", {
   it("derives atlas name from lowercase ggseg prefix path", {
     parent <- withr::local_tempdir()
     tmp <- file.path(parent, paste0("ggsegfoo", Sys.getpid()))
@@ -577,7 +577,7 @@ describe("setup_atlas_repo lowercase ggseg prefix", {
 })
 
 
-describe("open_rstudio_project", {
+testthat::describe("open_rstudio_project", {
   it("returns FALSE when rstudioapi not available", {
     local_mocked_bindings(
       rstudioapi_available = function() FALSE
@@ -625,7 +625,7 @@ describe("open_rstudio_project", {
 })
 
 
-describe("rstudioapi_available", {
+testthat::describe("rstudioapi_available", {
   it("returns FALSE when rstudioapi is not installed", {
     local_mocked_bindings(
       requireNamespace = function(pkg, ...) FALSE,
@@ -637,7 +637,7 @@ describe("rstudioapi_available", {
 })
 
 
-describe("replace_template_placeholders", {
+testthat::describe("replace_template_placeholders", {
   it("skips files under .git", {
     tmp <- withr::local_tempdir()
     dir.create(file.path(tmp, ".git"))
@@ -655,7 +655,7 @@ describe("replace_template_placeholders", {
 })
 
 
-describe("rename_package_doc", {
+testthat::describe("rename_package_doc", {
   it("renames the current PKGNAME-package.R name", {
     tmp <- withr::local_tempdir()
     dir.create(file.path(tmp, "R"))
@@ -683,7 +683,7 @@ describe("rename_package_doc", {
 })
 
 
-describe("template_replace error handling", {
+testthat::describe("template_replace error handling", {
   it("returns NULL and warns for unreadable files", {
     result <- expect_warnings(
       template_replace("/nonexistent/path/file.txt", "test"),
@@ -695,7 +695,7 @@ describe("template_replace error handling", {
 })
 
 
-describe("new_project_setup_atlas_repo", {
+testthat::describe("new_project_setup_atlas_repo", {
   it("delegates to setup_atlas_repo with correct parameters", {
     tmp <- withr::local_tempdir("wizard_test_")
     .cap$called_args <- NULL
@@ -738,7 +738,7 @@ describe("new_project_setup_atlas_repo", {
 })
 
 
-describe("template_replace", {
+testthat::describe("template_replace", {
   it("replaces both atlas and package placeholders", {
     tmp <- withr::local_tempfile(fileext = ".txt")
     writeLines(

@@ -88,7 +88,7 @@ create_mock_suit_labels <- function(n_vertices = 4) {
 
 # Tests ----
 
-describe("suit_flatmap_path", {
+testthat::describe("suit_flatmap_path", {
   it("returns a valid file path", {
     path <- suit_flatmap_path()
     expect_true(file.exists(path))
@@ -97,7 +97,7 @@ describe("suit_flatmap_path", {
 })
 
 
-describe("suit_3d_path", {
+testthat::describe("suit_3d_path", {
   it("returns a valid file path", {
     path <- suit_3d_path()
     expect_true(file.exists(path))
@@ -106,7 +106,7 @@ describe("suit_3d_path", {
 })
 
 
-describe("read_suit_flatmap", {
+testthat::describe("read_suit_flatmap", {
   it("extracts 2D coordinates and faces from GIFTI surface", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
 
@@ -152,7 +152,7 @@ describe("read_suit_flatmap", {
 })
 
 
-describe("cerebellar_build_sf_flatmap", {
+testthat::describe("cerebellar_build_sf_flatmap", {
   it("errors when no vertices match the flatmap", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
 
@@ -181,7 +181,7 @@ describe("cerebellar_build_sf_flatmap", {
 })
 
 
-describe("build_vertex_label_vector_cerebellum", {
+testthat::describe("build_vertex_label_vector_cerebellum", {
   it("assigns all labels without hemisphere filtering", {
     vertices_df <- data.frame(
       label = c("left_I-IV", "right_I-IV", "vermis_VI"),
@@ -211,7 +211,7 @@ describe("build_vertex_label_vector_cerebellum", {
 })
 
 
-describe("flatmap_triangles_to_polygons", {
+testthat::describe("flatmap_triangles_to_polygons", {
   it("produces valid sf polygons from uniform triangles", {
     verts <- matrix(
       c(
@@ -297,7 +297,7 @@ describe("flatmap_triangles_to_polygons", {
 })
 
 
-describe("detect_cerebellar_hemi", {
+testthat::describe("detect_cerebellar_hemi", {
   it("detects Left prefix", {
     expect_identical(detect_cerebellar_hemi("Left I-IV"), "left")
     expect_identical(detect_cerebellar_hemi("Left Crus I"), "left")
@@ -328,7 +328,7 @@ describe("detect_cerebellar_hemi", {
 })
 
 
-describe("clean_cerebellar_region", {
+testthat::describe("clean_cerebellar_region", {
   it("removes Left/Right/Vermis prefix", {
     expect_identical(clean_cerebellar_region("Left I-IV"), "I-IV")
     expect_identical(clean_cerebellar_region("Right Crus I"), "Crus I")
@@ -341,7 +341,7 @@ describe("clean_cerebellar_region", {
 })
 
 
-describe("read_suit_parcellation", {
+testthat::describe("read_suit_parcellation", {
   it("errors on missing files", {
     expect_error(
       read_suit_parcellation("nonexistent.label.gii"),
@@ -364,7 +364,7 @@ describe("read_suit_parcellation", {
 })
 
 
-describe("extract_gifti_label_table", {
+testthat::describe("extract_gifti_label_table", {
   it("returns NULL for GIFTI without labels", {
     gii <- list(label = NULL, data = list())
     expect_null(extract_gifti_label_table(gii))
@@ -405,7 +405,7 @@ describe("extract_gifti_label_table", {
 })
 
 
-describe("create_cerebellar_from_gifti", {
+testthat::describe("create_cerebellar_from_gifti", {
   it("errors on empty gifti_files", {
     expect_error(
       create_cerebellar_from_gifti(gifti_files = character()),
@@ -438,7 +438,7 @@ describe("create_cerebellar_from_gifti", {
 })
 
 
-describe("create_cerebellar_from_annotation", {
+testthat::describe("create_cerebellar_from_annotation", {
   it("errors on empty input_annot", {
     expect_error(
       create_cerebellar_from_annotation(input_annot = character()),
@@ -448,7 +448,7 @@ describe("create_cerebellar_from_annotation", {
 })
 
 
-describe("create_cerebellar_from_volume", {
+testthat::describe("create_cerebellar_from_volume", {
   it("errors on missing volume", {
     expect_error(
       create_cerebellar_from_volume(),
@@ -474,7 +474,7 @@ describe("create_cerebellar_from_volume", {
 })
 
 
-describe("read_cerebellar_annotation", {
+testthat::describe("read_cerebellar_annotation", {
   it("errors on missing files", {
     expect_error(
       read_cerebellar_annotation("nonexistent.annot"),
@@ -550,7 +550,7 @@ describe("read_cerebellar_annotation", {
 })
 
 
-describe("resolve_cerebellar_lut", {
+testthat::describe("resolve_cerebellar_lut", {
   it("auto-generates labels when no LUT provided", {
     vol <- array(c(0L, 1L, 2L, 0L, 1L, 2L, 0L, 0L), dim = c(2, 2, 2))
     vertex_labels <- c(1L, 2L, 0L, 1L)
@@ -612,7 +612,7 @@ describe("resolve_cerebellar_lut", {
 })
 
 
-describe("read_suit_parcellation edge cases", {
+testthat::describe("read_suit_parcellation edge cases", {
   it("handles labels without LUT entry", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
     skip_if_not_installed("base64enc") # nolint: object_usage_linter.
@@ -742,7 +742,7 @@ describe("read_suit_parcellation edge cases", {
 })
 
 
-describe("extract_gifti_label_table edge cases", {
+testthat::describe("extract_gifti_label_table edge cases", {
   it("handles lowercase key/label format", {
     gii <- list(
       label = data.frame(
@@ -793,7 +793,7 @@ describe("extract_gifti_label_table edge cases", {
 })
 
 
-describe("clean_cerebellar_region edge cases", {
+testthat::describe("clean_cerebellar_region edge cases", {
   it("returns original name when prefix removal leaves empty string", {
     expect_identical(clean_cerebellar_region("Left"), "Left")
     expect_identical(clean_cerebellar_region("Right"), "Right")
@@ -801,7 +801,7 @@ describe("clean_cerebellar_region edge cases", {
 })
 
 
-describe("read_cerebellar_volume", {
+testthat::describe("read_cerebellar_volume", {
   it("samples volume onto surface and returns atlas data", {
     skip_if_not_installed("RNifti")
 
@@ -845,7 +845,7 @@ describe("read_cerebellar_volume", {
 })
 
 
-describe("sample_volume_at_surface", {
+testthat::describe("sample_volume_at_surface", {
   it("maps surface vertices to volume voxels", {
     skip_if_not_installed("RNifti")
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
@@ -884,7 +884,7 @@ describe("sample_volume_at_surface", {
 })
 
 
-describe("cerebellar pipeline orchestration", {
+testthat::describe("cerebellar pipeline orchestration", {
   it("create_cerebellar_from_gifti derives atlas_name from file", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
     skip_if_not_installed("base64enc") # nolint: object_usage_linter.
@@ -957,7 +957,7 @@ describe("cerebellar pipeline orchestration", {
 })
 
 
-describe("cerebellar_build_sf_flatmap smoothing and simplification", {
+testthat::describe("cerebellar_build_sf_flatmap smoothing and simplification", {
   it("applies topology-preserving simplification", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
 
@@ -1028,7 +1028,7 @@ describe("cerebellar_build_sf_flatmap smoothing and simplification", {
 })
 
 
-describe("transform_mni_to_suit", {
+testthat::describe("transform_mni_to_suit", {
   it("errors on missing input volume", {
     expect_error(
       transform_mni_to_suit("nonexistent.nii.gz", "xfm.nii"),
@@ -1150,7 +1150,7 @@ describe("transform_mni_to_suit", {
 })
 
 
-describe("suit_deformation_field", {
+testthat::describe("suit_deformation_field", {
   it("errors without internet when not cached", {
     local_mocked_bindings(can_reach_github = function() FALSE)
 
@@ -1182,7 +1182,7 @@ describe("suit_deformation_field", {
 })
 
 
-describe("download_suit_xfm", {
+testthat::describe("download_suit_xfm", {
   it("never leaves a partial download at the cached path", {
     tmp <- withr::local_tempdir()
     cached <- as.character(fs::path(tmp, "xfm.nii"))
@@ -1248,7 +1248,7 @@ describe("download_suit_xfm", {
 })
 
 
-describe("can_reach_github", {
+testthat::describe("can_reach_github", {
   it("returns TRUE or FALSE", {
     result <- can_reach_github()
     expect_type(result, "logical")
@@ -1257,7 +1257,7 @@ describe("can_reach_github", {
 })
 
 
-describe("fill_unlabelled_from_voxel_neighbors", {
+testthat::describe("fill_unlabelled_from_voxel_neighbors", {
   it("fills unlabelled vertices from nearest non-zero voxel neighbor", {
     vol <- array(0L, dim = c(5, 5, 5))
     vol[2, 2, 2] <- 1L
@@ -1339,7 +1339,7 @@ describe("fill_unlabelled_from_voxel_neighbors", {
 })
 
 
-describe("fill_unlabelled_from_mesh_neighbors", {
+testthat::describe("fill_unlabelled_from_mesh_neighbors", {
   it("propagates labels along mesh edges using majority vote", {
     faces <- matrix(
       c(
@@ -1386,7 +1386,7 @@ describe("fill_unlabelled_from_mesh_neighbors", {
 })
 
 
-describe("rescue_orphaned_region", {
+testthat::describe("rescue_orphaned_region", {
   it("finds nearest unassigned vertices to orphaned voxel centroid", {
     skip_if_not_installed("RNifti")
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
@@ -1506,7 +1506,7 @@ describe("rescue_orphaned_region", {
 })
 
 
-describe("read_cerebellar_volume deep nucleus and orphan branches", {
+testthat::describe("read_cerebellar_volume deep nucleus and orphan branches", {
   it("marks Dentate as deep nucleus when no surface vertices found", {
     skip_if_not_installed("RNifti")
 
@@ -1634,7 +1634,7 @@ describe("read_cerebellar_volume deep nucleus and orphan branches", {
 })
 
 
-describe("clean_cerebellar_region with whitespace collapsing", {
+testthat::describe("clean_cerebellar_region with whitespace collapsing", {
   it("collapses multiple internal spaces", {
     expect_identical(
       clean_cerebellar_region("Left  Crus   I"),
@@ -1644,7 +1644,7 @@ describe("clean_cerebellar_region with whitespace collapsing", {
 })
 
 
-describe("cerebellar_read_data", {
+testthat::describe("cerebellar_read_data", {
   it("returns cached data when skip_existing and files exist", {
     dirs <- list(base = withr::local_tempdir())
 
@@ -1802,7 +1802,7 @@ describe("cerebellar_read_data", {
 })
 
 
-describe("cerebellar_project_and_build", {
+testthat::describe("cerebellar_project_and_build", {
   it("builds atlas without deep nuclei when deep_data is NULL", {
     components <- list(
       core = data.frame(
@@ -1843,7 +1843,7 @@ describe("cerebellar_project_and_build", {
 })
 
 
-describe("cerebellar_process_deep_nuclei", {
+testthat::describe("cerebellar_process_deep_nuclei", {
   it("returns NULL sf/meshes when vol_idx column missing", {
     skip_if_not_installed("terra")
 
@@ -1985,7 +1985,7 @@ describe("cerebellar_process_deep_nuclei", {
 })
 
 
-describe("get_tkras_to_world", {
+testthat::describe("get_tkras_to_world", {
   it("computes the correct transform matrix from FreeSurfer mri_info", {
     skip_if_no_freesurfer()
     skip_if_not_installed("RNifti")
@@ -2009,7 +2009,7 @@ describe("get_tkras_to_world", {
   })
 })
 
-describe("mri_info_matrix", {
+testthat::describe("mri_info_matrix", {
   it("shell-quotes the volume path so spaces don't split arguments", {
     .cap$captured_args <- NULL
     local_mocked_bindings(
@@ -2086,7 +2086,7 @@ describe("mri_info_matrix", {
 })
 
 
-describe("run_cerebellar_creation verbose output", {
+testthat::describe("run_cerebellar_creation verbose output", {
   it("prints header and input files when verbose", {
     dirs_tmp <- withr::local_tempdir()
 
@@ -2145,7 +2145,7 @@ describe("run_cerebellar_creation verbose output", {
 })
 
 
-describe("read_suit_parcellation vertex overlap warning", {
+testthat::describe("read_suit_parcellation vertex overlap warning", {
   it("warns when vertices assigned to multiple regions across files", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
     skip_if_not_installed("base64enc") # nolint: object_usage_linter.
@@ -2229,7 +2229,7 @@ describe("read_suit_parcellation vertex overlap warning", {
 })
 
 
-describe("create_cerebellar_from_volume integration", {
+testthat::describe("create_cerebellar_from_volume integration", {
   it("runs the full pipeline with a real NIfTI volume", {
     skip_if_not_installed("RNifti")
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
@@ -2275,7 +2275,7 @@ describe("create_cerebellar_from_volume integration", {
 
 # Coverage: error, verbose, and edge branches ----
 
-describe("suit_deformation_field default cache dir", {
+testthat::describe("suit_deformation_field default cache dir", {
   it("uses tools::R_user_dir when cache_dir is NULL", {
     tmp <- withr::local_tempdir()
     local_mocked_bindings(R_user_dir = function(...) tmp, .package = "tools")
@@ -2289,7 +2289,7 @@ describe("suit_deformation_field default cache dir", {
 })
 
 
-describe("download_suit_xfm download failure", {
+testthat::describe("download_suit_xfm download failure", {
   it("aborts when the download itself errors", {
     tmp <- withr::local_tempdir()
     cached <- as.character(fs::path(tmp, "xfm.nii"))
@@ -2307,7 +2307,7 @@ describe("download_suit_xfm download failure", {
 })
 
 
-describe("resample_trilinear", {
+testthat::describe("resample_trilinear", {
   it("skips NaN voxel coordinates instead of erroring", {
     result <- numeric(2)
     vox_coords <- rbind(c(NaN, NaN, NaN), c(2, 2, 2))
@@ -2324,7 +2324,7 @@ describe("resample_trilinear", {
 })
 
 
-describe("prepare_suit_resample", {
+testthat::describe("prepare_suit_resample", {
   it("errors when the input volume is not 3D", {
     skip_if_not_installed("RNifti")
     xfm <- array(0, dim = c(2, 2, 2, 1, 3))
@@ -2334,7 +2334,7 @@ describe("prepare_suit_resample", {
 })
 
 
-describe("create_cerebellar_from_volume atlas_name derivation", {
+testthat::describe("create_cerebellar_from_volume atlas_name derivation", {
   it("derives atlas_name from the volume filename when not provided", {
     skip_if_not_installed("RNifti")
     vol_file <- withr::local_tempfile(fileext = ".nii.gz")
@@ -2352,7 +2352,7 @@ describe("create_cerebellar_from_volume atlas_name derivation", {
 })
 
 
-describe("cerebellar_read_data verbose and error branches", {
+testthat::describe("cerebellar_read_data verbose and error branches", {
   it("prints success when verbose and cached data present", {
     dirs <- list(base = withr::local_tempdir())
     mock_components <- list(
@@ -2428,7 +2428,7 @@ describe("cerebellar_read_data verbose and error branches", {
 })
 
 
-describe("split_cerebellar_surface_deep", {
+testthat::describe("split_cerebellar_surface_deep", {
   it("reports the deep nuclei count when verbose", {
     atlas_data <- tibble(
       hemi = c("left", "midline"),
@@ -2455,7 +2455,7 @@ describe("split_cerebellar_surface_deep", {
 })
 
 
-describe("cerebellar_project_and_build with deep nuclei", {
+testthat::describe("cerebellar_project_and_build with deep nuclei", {
   it("processes deep nuclei, merges views, and gathers when present", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
 
@@ -2536,7 +2536,7 @@ describe("cerebellar_project_and_build with deep nuclei", {
 })
 
 
-describe("merge_deep_nuclei_sf", {
+testthat::describe("merge_deep_nuclei_sf", {
   it("appends deep nuclei geometry to the flatmap sf", {
     flat <- sf::st_sf(
       label = "a",
@@ -2576,7 +2576,7 @@ describe("merge_deep_nuclei_sf", {
 })
 
 
-describe("extract_deep_meshes", {
+testthat::describe("extract_deep_meshes", {
   it("returns the mesh data frame when it has rows", {
     df <- data.frame(label = "a", stringsAsFactors = FALSE)
     df$mesh <- list(list())
@@ -2595,7 +2595,7 @@ describe("extract_deep_meshes", {
 })
 
 
-describe("build_deep_nucleus_sf polygonisation failure", {
+testthat::describe("build_deep_nucleus_sf polygonisation failure", {
   it("warns and returns NULL when terra::as.polygons yields no polygons", {
     skip_if_not_installed("terra")
     vol <- array(0L, dim = c(5, 5, 5))
@@ -2610,7 +2610,7 @@ describe("build_deep_nucleus_sf polygonisation failure", {
 })
 
 
-describe("build_deep_nuclei_meshes without FreeSurfer", {
+testthat::describe("build_deep_nuclei_meshes without FreeSurfer", {
   it("warns and returns NULL when FreeSurfer is unavailable and verbose", {
     deep_data <- tibble(label = "midline_Dentate", vol_idx = 1L)
     dirs <- mock_dirs()
@@ -2631,7 +2631,7 @@ describe("build_deep_nuclei_meshes without FreeSurfer", {
 })
 
 
-describe("read_suit_parcellation empty data array", {
+testthat::describe("read_suit_parcellation empty data array", {
   it("warns and skips a GIFTI whose first data array is empty", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
     skip_if_not_installed("base64enc") # nolint: object_usage_linter.
@@ -2651,7 +2651,7 @@ describe("read_suit_parcellation empty data array", {
 })
 
 
-describe("read_cerebellar_annotation no matching vertices", {
+testthat::describe("read_cerebellar_annotation no matching vertices", {
   it("errors when annotation regions have no matching vertices", {
     skip_if_not_installed("freesurferformats")
     mock_annot <- list(
@@ -2681,14 +2681,14 @@ describe("read_cerebellar_annotation no matching vertices", {
 })
 
 
-describe("clean_cerebellar_region prefix-only with separator", {
+testthat::describe("clean_cerebellar_region prefix-only with separator", {
   it("restores original when only a prefix plus separator remains", {
     expect_identical(clean_cerebellar_region("Left_"), "Left_")
   })
 })
 
 
-describe("build_cerebellar_volume_row missing region", {
+testthat::describe("build_cerebellar_volume_row missing region", {
   it("returns a NULL row when a LUT id has neither voxels nor vertices", {
     vol <- array(0L, dim = c(3, 3, 3))
     colortable <- data.frame(
@@ -2710,7 +2710,7 @@ describe("build_cerebellar_volume_row missing region", {
 })
 
 
-describe("sample_volume_at_surface invalid surface", {
+testthat::describe("sample_volume_at_surface invalid surface", {
   it("errors when the GIFTI surface has no pointset", {
     skip_if_not_installed("gifti") # nolint: object_usage_linter.
     local_mocked_bindings(
@@ -2726,7 +2726,7 @@ describe("sample_volume_at_surface invalid surface", {
 })
 
 
-describe("resolve_provided_lut fallback", {
+testthat::describe("resolve_provided_lut fallback", {
   it("returns NULL when input_lut is neither a path nor a data.frame", {
     expect_null(resolve_provided_lut(42, c(1L, 2L)))
     expect_null(resolve_provided_lut(list(1, 2), c(1L, 2L)))
