@@ -238,20 +238,37 @@ aseg_context <- function(
 #' Subtract the cerebral white matter from the brain silhouette
 #' @noRd
 aseg_punch_white_matter <- function(atlas, cortex, white_matter, sf_labels) {
-  if (any(grepl(cortex, sf_labels)) && any(grepl(white_matter, sf_labels))) {
-    atlas <- atlas_region_op(
-      atlas,
-      x = cortex,
-      y = white_matter,
-      action = "difference",
-      into = "cortex"
-    )
-  } else {
+  if (!(any(grepl(cortex, sf_labels)) && any(grepl(white_matter, sf_labels)))) {
     cli::cli_alert_info(
       "Skipping white-matter punch: {.val {cortex}} and
       {.val {white_matter}} not both present."
     )
+    return(atlas)
   }
+
+  atlas <- atlas_region_op(
+    atlas,
+    x = cortex,
+    y = white_matter,
+    action = "difference",
+    into = "cortex"
+  )
+
+  # atlas_region_op() keeps its operands - it only replaces rows already
+  # named `into` - so the un-punched silhouette this was derived from is
+  # still there, drawn behind the ribbon as a second full-brain outline.
+  # On a subcortical atlas it is the single largest label, so leaving it
+  # roughly doubles the silhouette's cost for something nobody can see
+  # except as a doubled edge.
+  spent <- setdiff(unique(sf_labels[grepl(cortex, sf_labels)]), "cortex")
+  if (length(spent)) {
+    atlas <- atlas_region_remove(
+      atlas,
+      paste0("^(", paste(rx_escape(spent), collapse = "|"), ")$"),
+      match_on = "label"
+    )
+  }
+
   atlas
 }
 

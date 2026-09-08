@@ -224,6 +224,32 @@ testthat::describe("aseg_context input validation and white-matter punch", {
       "Left-Cerebral-White-Matter" %in% ggseg.formats::atlas_geom(a)$label
     )
   })
+
+  it("leaves one silhouette, not the punched one plus its operand", {
+    # The pipelines name their silhouette `cortex_`, not `cortex`. That one
+    # character is the whole bug: atlas_region_op() writes the punched
+    # result to `cortex` and only drops rows already named that, so an
+    # operand called `cortex_` survives and draws behind the ribbon as a
+    # second full-brain outline - the single largest label in a subcortical
+    # atlas.
+    atlas <- make_test_atlas()
+    geom <- ggseg.formats::atlas_geom(atlas)
+    geom$label[geom$label == "cortex"] <- "cortex_"
+    atlas$data$geom <- geom
+
+    a <- aseg_context(
+      atlas,
+      focus = "hypothalamus",
+      punch_white_matter = TRUE
+    )
+    silhouettes <- grep(
+      "^cortex",
+      ggseg.formats::atlas_geom(a)$label,
+      value = TRUE
+    )
+
+    expect_identical(unique(silhouettes), "cortex")
+  })
 })
 
 testthat::describe("aseg_punch_white_matter", {

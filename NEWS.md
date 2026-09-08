@@ -36,6 +36,19 @@ rebuild.
   simplifying a rounded outline replaces its curves with straight chords,
   putting the stair-step back.
 
+- `aseg_context()` no longer leaves two brain silhouettes behind. The
+  white-matter punch subtracts the white matter from the silhouette and
+  writes the result to `cortex`, but `atlas_region_op()` only replaces rows
+  already named that - so the operand it was derived from, which the
+  pipelines call `cortex_`, survived and drew behind the ribbon as a second
+  full-brain outline. One character apart, which is why it went unnoticed.
+
+  It is the largest label in a subcortical atlas, so the duplicate was also
+  the single biggest thing in the file: dropping it takes ggsegHO's `ho_sub`
+  silhouette from 26,336 vertices to 6,470. Every atlas built through
+  `aseg_context()` is affected, including the bundled `aseg`, and all of
+  them need rebuilding to benefit.
+
 ## Minor improvements and fixes
 
 - Test `describe()` calls are namespace-qualified.
