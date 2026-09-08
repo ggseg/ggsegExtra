@@ -36,18 +36,29 @@ rebuild.
   simplifying a rounded outline replaces its curves with straight chords,
   putting the stair-step back.
 
-- `aseg_context()` no longer leaves two brain silhouettes behind. The
-  white-matter punch subtracts the white matter from the silhouette and
-  writes the result to `cortex`, but `atlas_region_op()` only replaces rows
-  already named that - so the operand it was derived from, which the
-  pipelines call `cortex_`, survived and drew behind the ribbon as a second
-  full-brain outline. One character apart, which is why it went unnoticed.
+- `aseg_context()` no longer leaves two brain silhouettes behind, and no
+  longer punches a silhouette that does not need it.
 
-  It is the largest label in a subcortical atlas, so the duplicate was also
-  the single biggest thing in the file: dropping it takes ggsegHO's `ho_sub`
-  silhouette from 26,336 vertices to 6,470. Every atlas built through
-  `aseg_context()` is affected, including the bundled `aseg`, and all of
-  them need rebuilding to benefit.
+  The white-matter punch writes its result to `cortex`, but
+  `atlas_region_op()` only replaces rows already named that - so the operand
+  it was derived from, which the pipelines call `cortex_`, survived and drew
+  behind the ribbon as a second full-brain outline. One character apart,
+  which is why it went unnoticed. The punch now consumes its operand.
+
+  The punch is also skipped when the silhouette is already hollow. It exists
+  to hollow out a solid outline; snapshot pipelines that trace the
+  grey-matter ribbon hand over one that is already hollow, and differencing
+  the white matter out of that removes about a quarter of the mantle,
+  because the white matter abuts the ribbon rather than sitting inside it.
+  Whole sections of outline went missing. Interior rings tell the two apart:
+  a solid outline has none, a ribbon has hundreds.
+
+  The silhouette is the largest label in a subcortical atlas, so this is
+  also the biggest single thing in the file. Together with per-label
+  simplification it takes the `ho_sub` atlas in ggsegHO from 89,657 vertices to
+  34,103.
+  Every atlas built through `aseg_context()` is affected, the bundled `aseg`
+  included, and each needs rebuilding to benefit.
 
 ## Minor improvements and fixes
 

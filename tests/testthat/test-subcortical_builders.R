@@ -11,6 +11,10 @@ mk_square <- function(x0, y0, s = 2) {
 # Minimal subcortical atlas: a focus region whose name is a superstring of a
 # context region (hypothalamus / Thalamus), a hidden white-matter label, and a
 # cortex silhouette. A second view carries only context.
+# An interior ring must wind opposite to its shell for sf to read it as a
+# hole rather than an invalid self-intersection.
+rev_ring <- function(m) m[rev(seq_len(nrow(m))), , drop = FALSE]
+
 make_test_atlas <- function() {
   labels <- c(
     "L_hypothalamus_anterior_inferior",
@@ -249,6 +253,35 @@ testthat::describe("aseg_context input validation and white-matter punch", {
     )
 
     expect_identical(unique(silhouettes), "cortex")
+  })
+
+  it("skips the punch when the silhouette is already hollow", {
+    # Snapshot pipelines that trace the grey-matter ribbon hand us a
+    # silhouette that is already hollow. Punching that removes a quarter of
+    # the mantle, because the white matter abuts the ribbon rather than
+    # sitting inside it - whole sections of outline go missing.
+    atlas <- make_test_atlas()
+    geom <- ggseg.formats::atlas_geom(atlas)
+    geom$label[geom$label == "cortex"] <- "cortex_"
+
+    ring <- which(geom$label == "cortex_")[1]
+    outer <- sf::st_coordinates(geom$geometry[[ring]])[, c("X", "Y")]
+    hole <- mk_square(0, 0, 4)
+    geom$geometry[[ring]] <- sf::st_polygon(list(
+      outer,
+      rev_ring(sf::st_coordinates(hole)[, c("X", "Y")])
+    ))
+    atlas$data$geom <- geom
+
+    a <- aseg_context(
+      atlas,
+      focus = "hypothalamus",
+      punch_white_matter = TRUE
+    )
+
+    expect_true(
+      "cortex_" %in% ggseg.formats::atlas_geom(a)$label
+    )
   })
 })
 

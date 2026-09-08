@@ -246,6 +246,19 @@ aseg_punch_white_matter <- function(atlas, cortex, white_matter, sf_labels) {
     return(atlas)
   }
 
+  # The punch exists to hollow out a solid silhouette. Snapshot pipelines
+  # that trace the grey-matter ribbon directly hand us one that is already
+  # hollow, and punching that removes a quarter of the mantle - the white
+  # matter label abuts the ribbon, so the difference eats into it and leaves
+  # whole sections of outline missing. Interior rings are what tells the two
+  # apart: a solid outline has none, a ribbon has hundreds.
+  if (silhouette_is_hollow(atlas, cortex)) {
+    cli::cli_alert_info(
+      "Skipping white-matter punch: {.val {cortex}} is already hollow."
+    )
+    return(atlas)
+  }
+
   atlas <- atlas_region_op(
     atlas,
     x = cortex,
@@ -271,6 +284,41 @@ aseg_punch_white_matter <- function(atlas, cortex, white_matter, sf_labels) {
 
   atlas
 }
+
+#' Does the silhouette already have holes punched in it?
+#'
+#' Counts interior rings across the cortex geometry. A solid outline traced
+#' round the outside of the brain has none; a grey-matter ribbon has one per
+#' enclosed sulcus or ventricle, so in practice hundreds.
+#' @noRd
+silhouette_is_hollow <- function(atlas, cortex) {
+  if (is.null(ggseg.formats::atlas_geom(atlas))) {
+    return(FALSE)
+  }
+
+  # A pipeline atlas arrives as polygons; interior rings are an sf notion,
+  # so ask sf.
+  geom <- ggseg.formats::atlas_geom(ggseg.formats::as_sf_atlas(atlas))
+  rows <- geom[grepl(cortex, geom$label), , drop = FALSE]
+  if (nrow(rows) == 0) {
+    return(FALSE)
+  }
+
+  rings <- vapply(
+    sf::st_geometry(rows),
+    function(g) {
+      if (inherits(g, "MULTIPOLYGON")) {
+        sum(vapply(g, function(part) length(part) - 1L, integer(1)))
+      } else {
+        length(g) - 1L
+      }
+    },
+    integer(1)
+  )
+
+  sum(rings) > 0L
+}
+
 
 #' Demote every core region not matched by `focus` to grey context
 #' @noRd
