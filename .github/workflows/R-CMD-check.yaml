@@ -15,5 +15,5 @@ jobs:
     with:
       extra-packages: |
         any::rcmdcheck
-        github::drmowinckels/freesurfer@refactor
+        github::muschellij2/freesurfer
       install-spatial-deps: true

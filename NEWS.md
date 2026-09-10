@@ -1,3 +1,9 @@
+# ggseg.extra 1.9.9.9017
+
+- The README and CI now install freesurfer from `muschellij2/freesurfer`:
+  the refactor it needed has been merged upstream, so the
+  `drmowinckels/freesurfer@refactor` fork is no longer required (#72, #98).
+
 # ggseg.extra 1.9.9.9016
 
 ## Post-creation geometry
