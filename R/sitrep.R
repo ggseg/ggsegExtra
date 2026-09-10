@@ -43,20 +43,22 @@ setup_sitrep <- function(detail = c("simple", "minimal", "full")) {
 
 
 check_freesurfer <- function(detail = "simple") {
-  if (!rlang::is_installed("freesurfer")) {
+  min_version <- freesurfer_min_version()
+  if (!rlang::is_installed("freesurfer", version = min_version)) {
     if (detail != "minimal") {
-      cli::cli_alert_danger("freesurfer R package not installed")
+      cli::cli_alert_danger(
+        "freesurfer R package (>= {min_version}) not installed"
+      )
       if (detail == "full") {
-        cli::cli_bullets(c(
-          "i" = 'Install with: {.code install.packages("freesurfer")}'
-        ))
+        install_hint <- 'remotes::install_github("muschellij2/freesurfer")'
+        cli::cli_bullets(c("i" = "Install with: {.code {install_hint}}"))
       }
     }
     return(list(available = FALSE))
   }
   has_fs <- freesurfer::have_fs()
 
-  if (detail == "full" && has_fs_sitrep()) {
+  if (detail == "full") {
     freesurfer::fs_sitrep()
   } else if (detail != "minimal") {
     if (has_fs) {
@@ -67,15 +69,6 @@ check_freesurfer <- function(detail = "simple") {
   }
 
   list(available = has_fs)
-}
-
-
-# `fs_sitrep()` is only exported by newer `freesurfer` versions; guard so the
-# diagnostic degrades gracefully on older/CRAN installs rather than aborting.
-# `check_freesurfer()` only reaches here once `freesurfer` is installed.
-#' @noRd
-has_fs_sitrep <- function() {
-  "fs_sitrep" %in% getNamespaceExports("freesurfer")
 }
 
 
@@ -124,7 +117,11 @@ check_other_system_deps <- function(detail = "simple") {
 check_fsaverage <- function(detail = "simple") {
   results <- list()
 
-  subj_dir <- if (rlang::is_installed("freesurfer")) {
+  has_freesurfer <- rlang::is_installed(
+    "freesurfer",
+    version = freesurfer_min_version()
+  )
+  subj_dir <- if (has_freesurfer) {
     tryCatch(freesurfer::fs_subj_dir(), error = function(e) "")
   } else {
     ""

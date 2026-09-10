@@ -37,7 +37,10 @@ skip_if_not_installed <- function(pkg) {
 # parallel native geometry stack there).
 skip_if_no_freesurfer <- function() {
   testthat::skip_on_os("windows")
-  testthat::skip_if_not_installed("freesurfer")
+  testthat::skip_if_not_installed(
+    "freesurfer",
+    minimum_version = freesurfer_min_version()
+  )
   # have_fs() only checks for the FreeSurfer directory; it returns TRUE even
   # when the binaries are not on PATH. Also require a representative binary to
   # be resolvable so tests that shell out (e.g. mri_info) skip instead of error.

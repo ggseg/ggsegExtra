@@ -56,7 +56,7 @@ Suggests:
     base64enc,
     chromote,
     ciftiTools,
-    freesurfer,
+    freesurfer (>= 1.8.1.902),
     freesurferformats,
     ggplot2,
     gifti,

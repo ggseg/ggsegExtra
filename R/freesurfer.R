@@ -79,6 +79,19 @@ mri_surf2surf_rereg <- function(
   run_cmd(cmd, verbose = verbose)
 }
 
+# The CRAN release lacks what the pipelines use (`fs_sitrep()`,
+# `fs_cmd(validate_inputs = )`), so a bare presence check passes on it and the
+# pipeline fails later. CRAN is also why installs go through r-universe.
+#' @noRd
+freesurfer_min_version <- function() {
+  "1.8.1.902"
+}
+
+#' @noRd
+freesurfer_repos <- function() {
+  c(ggsegverse = "https://ggsegverse.r-universe.dev", getOption("repos"))
+}
+
 #' Check if FS can be run
 #' @param abort logical. If function should error
 #'     if Freesurfer is not installed. Defaults to FALSE.
@@ -86,7 +99,14 @@ mri_surf2surf_rereg <- function(
 #' @keywords internal
 #' @noRd
 check_fs <- function(abort = FALSE) {
-  rlang::check_installed("freesurfer", reason = "to interact with FreeSurfer")
+  rlang::check_installed(
+    "freesurfer",
+    version = freesurfer_min_version(),
+    reason = "to interact with FreeSurfer",
+    action = function(...) {
+      utils::install.packages("freesurfer", repos = freesurfer_repos())
+    }
+  )
   x <- freesurfer::have_fs()
 
   if (!x) {

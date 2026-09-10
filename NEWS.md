@@ -4,6 +4,13 @@
   the refactor it needed has been merged upstream, so the
   `drmowinckels/freesurfer@refactor` fork is no longer required (#72, #98).
 
+- freesurfer is now required at `>= 1.8.1.902`. The CRAN release lacks
+  `fs_sitrep()` and `fs_cmd(validate_inputs = )`, so an older install used to
+  pass the installed-check and then fail mid-pipeline. Accepting the install
+  prompt now installs from the ggsegverse r-universe instead of CRAN, whose
+  release could never satisfy the check. `setup_sitrep()` reports an outdated
+  freesurfer as missing and points at `muschellij2/freesurfer`.
+
 # ggseg.extra 1.9.9.9016
 
 ## Post-creation geometry
