@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg.extra</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9.9016</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.9.9.9017</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,11 @@
       <small>Source: <a href="https://github.com/ggsegverse/ggseg.extra/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.9.9.9017" id="ggsegextra-1999017">ggseg.extra 1.9.9.9017<a class="anchor" aria-label="anchor" href="#ggsegextra-1999017"></a></h2>
+<ul><li><p>The README and CI now install freesurfer from <code>muschellij2/freesurfer</code>: the refactor it needed has been merged upstream, so the <code>drmowinckels/freesurfer@refactor</code> fork is no longer required (<a href="https://github.com/ggsegverse/ggseg.extra/issues/72" class="external-link">#72</a>, <a href="https://github.com/ggsegverse/ggseg.extra/issues/98" class="external-link">#98</a>). DESCRIPTION declares <code>Remotes: muschellij2/freesurfer</code>, so <code>pak</code> and <code>remotes</code> resolve the required version without extra steps.</p></li>
+<li><p>freesurfer is now required at <code>&gt;= 1.8.1.902</code>. The CRAN release lacks <code>fs_sitrep()</code> and <code>fs_cmd(validate_inputs = )</code>, so an older install used to pass the installed-check and then fail mid-pipeline. Accepting the install prompt now installs from the ggsegverse r-universe instead of CRAN, whose release could never satisfy the check. <code><a href="../reference/setup_sitrep.html">setup_sitrep()</a></code> reports an outdated freesurfer as missing and points at <code>muschellij2/freesurfer</code>.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.9.9.9016" id="ggsegextra-1999016">ggseg.extra 1.9.9.9016<a class="anchor" aria-label="anchor" href="#ggsegextra-1999016"></a></h2>
 <div class="section level3">
