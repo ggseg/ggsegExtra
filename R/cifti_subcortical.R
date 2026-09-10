@@ -41,17 +41,11 @@ read_cifti_subcortical <- function(
   cifti_file,
   output_file = tempfile(fileext = ".nii.gz")
 ) {
-  rlang::check_installed(
-    c("ciftiTools", "RNifti"),
-    version = c(ciftitools_min_version(), NA),
+  rlang::check_installed("RNifti", reason = "to write NIfTI label volumes")
+  cii <- read_cifti_file(
+    cifti_file,
     reason = "to extract subcortical labels from CIFTI files"
   )
-
-  if (!file.exists(cifti_file)) {
-    cli::cli_abort("CIFTI file not found: {.path {cifti_file}}")
-  }
-
-  cii <- ciftiTools::read_cifti(cifti_file)
 
   if (is.null(cii$data$subcort)) {
     cli::cli_abort(c(
@@ -60,13 +54,13 @@ read_cifti_subcortical <- function(
     ))
   }
 
-  volume <- cifti_subcortical_volume(cii)
-  write_cifti_label_volume(volume, cii$meta$subcort$trans_mat, output_file)
-
-  list(
-    volume = output_file,
-    lut = cifti_subcortical_lut(cii, unique(volume[volume != 0L]))
+  write_cifti_label_volume(
+    cifti_subcortical_volume(cii),
+    cii$meta$subcort$trans_mat,
+    output_file
   )
+
+  list(volume = output_file, lut = cifti_subcortical_lut(cii))
 }
 
 # Before 0.17.4, read_cifti() did not default to reading every brain structure
@@ -103,20 +97,21 @@ write_cifti_label_volume <- function(volume, trans_mat, output_file) {
   RNifti::qform(image) <- xform
   RNifti::sform(image) <- xform
   RNifti::writeNifti(image, output_file, datatype = "int32")
-  invisible(output_file)
 }
 
 #' @noRd
-cifti_subcortical_lut <- function(cii, keys) {
-  label_table <- cifti_label_table(cii)
-  label_table <- label_table[label_table$key %in% keys, ]
+cifti_subcortical_lut <- function(cii) {
+  keys <- setdiff(unique(as.integer(cii$data$subcort[, 1])), 0L)
+  regions <- cifti_label_regions(cii)
+  regions <- regions[regions$code %in% keys, ]
+  rgb_values <- col2rgb(regions$colour)
 
   data.frame(
-    idx = label_table$key,
-    label = label_table$name,
-    R = as.integer(round(label_table$red * 255)),
-    G = as.integer(round(label_table$green * 255)),
-    B = as.integer(round(label_table$blue * 255)),
+    idx = regions$code,
+    label = regions$name,
+    R = rgb_values["red", ],
+    G = rgb_values["green", ],
+    B = rgb_values["blue", ],
     A = 0L
   )
 }
@@ -124,11 +119,8 @@ cifti_subcortical_lut <- function(cii, keys) {
 #' @noRd
 warn_dropped_cifti_subcortex <- function(cii, cifti_file) {
   subcort <- cii$data$subcort
-  if (is.null(subcort)) {
-    return(invisible(0L))
-  }
+  n_labelled <- if (is.null(subcort)) 0L else sum(subcort[, 1] != 0)
 
-  n_labelled <- sum(subcort[, 1] != 0)
   if (n_labelled > 0) {
     cli::cli_warn(c(
       "{.path {cifti_file}} has {n_labelled} labelled subcortical \\
@@ -137,5 +129,4 @@ warn_dropped_cifti_subcortex <- function(cii, cifti_file) {
              subcortical atlas with {.fn create_subcortical_from_volume}."
     ))
   }
-  invisible(n_labelled)
 }

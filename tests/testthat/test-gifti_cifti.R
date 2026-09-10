@@ -167,13 +167,12 @@ testthat::describe("read_cifti_annotation", {
       meta = list(
         cifti = list(
           labels = list(
-            data.frame(
-              Key = c(1, 2),
-              Red = c(1, 0),
-              Green = c(0, 1),
-              Blue = c(0, 0),
-              Alpha = c(1, 1),
-              row.names = c("region_a", "region_b")
+            mock_cifti_label_table(
+              names = c("region_a", "region_b"),
+              keys = c(1, 2),
+              red = c(1, 0),
+              green = c(0, 1),
+              blue = c(0, 0)
             )
           )
         )
@@ -210,13 +209,12 @@ testthat::describe("read_cifti_annotation", {
       meta = list(
         cifti = list(
           labels = list(
-            data.frame(
-              Key = 1,
-              Red = 1.0,
-              Green = 0.0,
-              Blue = 0.0,
-              Alpha = 1,
-              row.names = "test_region"
+            mock_cifti_label_table(
+              names = "test_region",
+              keys = 1,
+              red = 1.0,
+              green = 0.0,
+              blue = 0.0
             )
           )
         )
@@ -246,13 +244,12 @@ testthat::describe("read_cifti_annotation", {
       meta = list(
         cifti = list(
           labels = list(
-            data.frame(
-              Key = 1,
-              Red = 1.0,
-              Green = 0.0,
-              Blue = 0.0,
-              Alpha = 1,
-              row.names = "test"
+            mock_cifti_label_table(
+              names = "test",
+              keys = 1,
+              red = 1.0,
+              green = 0.0,
+              blue = 0.0
             )
           )
         )
@@ -536,13 +533,12 @@ testthat::describe("create_cortical_from_cifti", {
       meta = list(
         cifti = list(
           labels = list(
-            data.frame(
-              Key = c(1, 2),
-              Red = c(1, 0),
-              Green = c(0, 1),
-              Blue = c(0, 0),
-              Alpha = c(1, 1),
-              row.names = c("region_a", "region_b")
+            mock_cifti_label_table(
+              names = c("region_a", "region_b"),
+              keys = c(1, 2),
+              red = c(1, 0),
+              green = c(0, 1),
+              blue = c(0, 0)
             )
           )
         )
@@ -591,13 +587,12 @@ testthat::describe("create_cortical_from_cifti", {
       meta = list(
         cifti = list(
           labels = list(
-            data.frame(
-              Key = c(1, 2),
-              Red = c(1, 0),
-              Green = c(0, 1),
-              Blue = c(0, 0),
-              Alpha = c(1, 1),
-              row.names = c("a", "b")
+            mock_cifti_label_table(
+              names = c("a", "b"),
+              keys = c(1, 2),
+              red = c(1, 0),
+              green = c(0, 1),
+              blue = c(0, 0)
             )
           )
         )
@@ -640,13 +635,12 @@ testthat::describe("create_cortical_from_cifti", {
       meta = list(
         cifti = list(
           labels = list(
-            data.frame(
-              Key = 1,
-              Red = 1,
-              Green = 0,
-              Blue = 0,
-              Alpha = 1,
-              row.names = "a"
+            mock_cifti_label_table(
+              names = "a",
+              keys = 1,
+              red = 1,
+              green = 0,
+              blue = 0
             )
           )
         )
@@ -759,5 +753,26 @@ testthat::describe("create_cortical_from_gifti", {
       verbose = FALSE
     )
     expect_true(.cap$pipeline_called)
+  })
+})
+
+
+testthat::describe("read_cifti_annotation with subcortical voxels", {
+  it("warns that the subcortical voxels are skipped", {
+    skip_if_not_installed("ciftiTools")
+    cii <- mock_subcortical_cii()
+    cii$data$cortex_left <- matrix(rep(101L, 10242L), ncol = 1)
+    local_mocked_bindings(
+      read_cifti = function(...) cii,
+      .package = "ciftiTools"
+    )
+    cifti_file <- withr::local_tempfile(fileext = ".dlabel.nii")
+    writeLines("mock", cifti_file)
+
+    expect_warning(
+      result <- read_cifti_annotation(cifti_file),
+      "read_cifti_subcortical"
+    )
+    expect_true("lh_Thalamus-L" %in% result$label)
   })
 })

@@ -113,14 +113,32 @@ prepare_subcortical_mni152 <- function(
   }
   labels <- sort(as.integer(labels))
 
+  fs_verbose <- isTRUE(verbose) || (is.numeric(verbose) && verbose >= 2L)
+
+  aseg_nii <- tempfile(fileext = ".nii.gz")
+  on.exit(unlink(aseg_nii), add = TRUE)
+  # Convert the .mgz aseg the registration targets to NIfTI so RNifti can read
+  # it below. `validate_inputs = FALSE` skips neurobase::checkimg(), which
+  # cannot parse FreeSurfer .mgz input.
+  freesurfer::fs_cmd(
+    func = "mri_convert",
+    file = aseg_mgz,
+    outfile = aseg_nii,
+    retimg = FALSE,
+    validate_inputs = FALSE,
+    verbose = fs_verbose,
+    intern = TRUE
+  )
+  aseg_img <- RNifti::readNifti(aseg_nii)
+  aseg <- as.array(aseg_img)
+  validate_labels_clear_of_aseg(labels, aseg, replace_labels)
+
   parcels_mni <- tempfile(fileext = ".nii.gz")
   on.exit(unlink(parcels_mni), add = TRUE)
   keep <- array(0L, dim = dim(arr))
   sel <- arr %in% labels
   keep[sel] <- as.integer(arr[sel])
   RNifti::writeNifti(RNifti::asNifti(keep, reference = vol), parcels_mni)
-
-  fs_verbose <- isTRUE(verbose) || (is.numeric(verbose) && verbose >= 2L)
 
   registered <- tempfile(fileext = ".nii.gz")
   on.exit(unlink(registered), add = TRUE)
@@ -142,24 +160,8 @@ prepare_subcortical_mni152 <- function(
     intern = TRUE
   )
 
-  aseg_nii <- tempfile(fileext = ".nii.gz")
-  on.exit(unlink(aseg_nii), add = TRUE)
-  # Convert the .mgz aseg the registration targets to NIfTI so RNifti can read
-  # it below. `validate_inputs = FALSE` skips neurobase::checkimg(), which
-  # cannot parse FreeSurfer .mgz input.
-  freesurfer::fs_cmd(
-    func = "mri_convert",
-    file = aseg_mgz,
-    outfile = aseg_nii,
-    retimg = FALSE,
-    validate_inputs = FALSE,
-    verbose = fs_verbose,
-    intern = TRUE
-  )
-  aseg_img <- RNifti::readNifti(aseg_nii)
-  validate_labels_clear_of_aseg(labels, as.array(aseg_img), replace_labels)
   merged <- embed_labels_in_aseg(
-    as.array(aseg_img),
+    aseg,
     as.array(RNifti::readNifti(registered)),
     replace_labels
   )
@@ -217,7 +219,6 @@ embed_labels_in_aseg <- function(aseg, parcels, replace_labels) {
 #' @param labels Integer parcel ids to embed.
 #' @param aseg Integer array of aseg labels.
 #' @param replace_labels Integer aseg ids blanked before stamping.
-#' @return `TRUE`, invisibly.
 #' @noRd
 validate_labels_clear_of_aseg <- function(labels, aseg, replace_labels) {
   context_ids <- setdiff(
@@ -228,11 +229,10 @@ validate_labels_clear_of_aseg <- function(labels, aseg, replace_labels) {
   n <- length(collide)
   if (n > 0L) {
     cli::cli_abort(c(
-      "{cli::qty(n)}Parcel id{?s} {.val {collide}} {cli::qty(n)}{?is/are} \\
+      "{cli::qty(n)}Parcel id{?s} {.val {collide}} {?is/are} \\
        also kept as aseg context.",
       "i" = "Shift the parcel ids (in the volume and {.arg lut}) clear of the \\
              aseg ids, or add them to {.arg replace_labels}."
     ))
   }
-  invisible(TRUE)
 }

@@ -55,15 +55,17 @@ testthat::describe("validate_labels_clear_of_aseg", {
   it("accepts parcel ids clear of the aseg context", {
     aseg <- array(c(0L, 16L, 42L, 10L), dim = c(2, 2, 1))
 
-    expect_true(
-      validate_labels_clear_of_aseg(c(1001L, 1002L), aseg, c(10L, 49L))
-    )
+    expect_no_error(validate_labels_clear_of_aseg(
+      c(1001L, 1002L),
+      aseg,
+      c(10L, 49L)
+    ))
   })
 
   it("accepts parcel ids that reuse a replaced aseg id", {
     aseg <- array(c(0L, 16L, 42L, 10L), dim = c(2, 2, 1))
 
-    expect_true(validate_labels_clear_of_aseg(10L, aseg, c(10L, 49L)))
+    expect_no_error(validate_labels_clear_of_aseg(10L, aseg, c(10L, 49L)))
   })
 })
 
