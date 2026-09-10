@@ -168,12 +168,12 @@ testthat::describe("read_cifti_annotation", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = c(1L, 2L),
-              Label = c("region_a", "region_b"),
+              Key = c(1, 2),
               Red = c(1, 0),
               Green = c(0, 1),
               Blue = c(0, 0),
-              stringsAsFactors = FALSE
+              Alpha = c(1, 1),
+              row.names = c("region_a", "region_b")
             )
           )
         )
@@ -211,12 +211,12 @@ testthat::describe("read_cifti_annotation", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = 1L,
-              Label = "test_region",
+              Key = 1,
               Red = 1.0,
               Green = 0.0,
               Blue = 0.0,
-              stringsAsFactors = FALSE
+              Alpha = 1,
+              row.names = "test_region"
             )
           )
         )
@@ -247,12 +247,12 @@ testthat::describe("read_cifti_annotation", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = 1L,
-              Label = "test",
+              Key = 1,
               Red = 1.0,
               Green = 0.0,
               Blue = 0.0,
-              stringsAsFactors = FALSE
+              Alpha = 1,
+              row.names = "test"
             )
           )
         )
@@ -537,12 +537,12 @@ testthat::describe("create_cortical_from_cifti", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = c(1L, 2L),
-              Label = c("region_a", "region_b"),
+              Key = c(1, 2),
               Red = c(1, 0),
               Green = c(0, 1),
               Blue = c(0, 0),
-              stringsAsFactors = FALSE
+              Alpha = c(1, 1),
+              row.names = c("region_a", "region_b")
             )
           )
         )
@@ -592,12 +592,12 @@ testthat::describe("create_cortical_from_cifti", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = c(1L, 2L),
-              Label = c("a", "b"),
+              Key = c(1, 2),
               Red = c(1, 0),
               Green = c(0, 1),
               Blue = c(0, 0),
-              stringsAsFactors = FALSE
+              Alpha = c(1, 1),
+              row.names = c("a", "b")
             )
           )
         )
@@ -641,12 +641,12 @@ testthat::describe("create_cortical_from_cifti", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = 1L,
-              Label = "a",
+              Key = 1,
               Red = 1,
               Green = 0,
               Blue = 0,
-              stringsAsFactors = FALSE
+              Alpha = 1,
+              row.names = "a"
             )
           )
         )

@@ -944,12 +944,12 @@ testthat::describe("create_cortical_from_cifti verbose", {
         cifti = list(
           labels = list(
             data.frame(
-              Key = c(1L, 2L),
-              Label = c("region_a", "region_b"),
+              Key = c(1, 2),
               Red = c(1, 0),
               Green = c(0, 1),
               Blue = c(0, 0),
-              stringsAsFactors = FALSE
+              Alpha = c(1, 1),
+              row.names = c("region_a", "region_b")
             )
           )
         )

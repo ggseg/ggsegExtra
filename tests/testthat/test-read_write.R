@@ -544,11 +544,12 @@ testthat::describe("extract_vertex_regions", {
 testthat::describe("cifti_label_regions", {
   it("warns and uses the first map when several are present", {
     map <- data.frame(
-      Key = 0:1,
-      Label = c("a", "b"),
+      Key = c(0, 1),
       Red = c(0, 1),
       Green = c(0, 1),
-      Blue = c(0, 1)
+      Blue = c(0, 1),
+      Alpha = c(0, 1),
+      row.names = c("a", "b")
     )
     cii <- list(meta = list(cifti = list(labels = list(map, map))))
 
@@ -754,13 +755,12 @@ testthat::describe("read_cifti_annotation", {
           meta = list(
             cifti = list(
               labels = list(data.frame(
-                Key = c(1L, 2L, 999L),
-                Label = c("region_a", "region_b", "ghost"),
+                Key = c(1, 2, 999),
                 Red = c(1, 0, 0.5),
                 Green = c(0, 1, 0.5),
                 Blue = c(0, 0, 0.5),
                 Alpha = c(1, 1, 1),
-                stringsAsFactors = FALSE
+                row.names = c("region_a", "region_b", "ghost")
               ))
             )
           )
@@ -792,13 +792,12 @@ testthat::describe("read_cifti_annotation", {
           meta = list(
             cifti = list(
               labels = list(data.frame(
-                Key = 1L,
-                Label = "region_a",
+                Key = 1,
                 Red = 1,
                 Green = 0,
                 Blue = 0,
                 Alpha = 1,
-                stringsAsFactors = FALSE
+                row.names = "region_a"
               ))
             )
           )
