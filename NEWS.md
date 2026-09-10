@@ -3,7 +3,15 @@
 - New `read_cifti_subcortical()` extracts the subcortical voxels of a CIFTI
   dense label file (such as fsLR 91k grayordinates) into a NIfTI label volume
   and colour table, ready for `prepare_subcortical_mni152()` or
-  `create_subcortical_from_volume()` (#85).
+  `create_subcortical_from_volume()` (#85). The volume carries the CIFTI
+  voxel size in both qform and sform, so FreeSurfer places it correctly.
+
+- `prepare_subcortical_mni152()` aborts when a parcel id is also an aseg id
+  kept as context. The colour table used to drop that context id silently,
+  so the aseg structure took the parcel's name and colour.
+
+- ciftiTools is now required at `>= 0.17.4`, the first release whose
+  `read_cifti()` reads every brain structure in the file by default.
 
 - `read_cifti_annotation()` and `create_cortical_from_cifti()` work on real
   CIFTI files again. ciftiTools keeps label names as the row names of the label

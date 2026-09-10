@@ -432,7 +432,11 @@ read_gifti_annotation <- function(gifti_files) {
 #' atlas_data <- read_cifti_annotation("parcellation.dlabel.nii")
 #' }
 read_cifti_annotation <- function(cifti_file) {
-  rlang::check_installed("ciftiTools", reason = "to read CIFTI files")
+  rlang::check_installed(
+    "ciftiTools",
+    version = ciftitools_min_version(),
+    reason = "to read CIFTI files"
+  )
 
   if (!file.exists(cifti_file)) {
     cli::cli_abort("CIFTI file not found: {.path {cifti_file}}")

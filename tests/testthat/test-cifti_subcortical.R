@@ -54,6 +54,13 @@ testthat::describe("cifti_subcortical_volume", {
     expect_identical(volume[c(1, 3, 6, 8)], c(0L, 101L, 102L, 101L))
     expect_identical(sum(volume != 0L), 3L)
   })
+
+  it("errors when the data and mask sizes differ", {
+    expect_error(
+      cifti_subcortical_volume(mock_subcortical_cii(subcort = c(101L, 102L))),
+      "2 voxels but its mask has 4"
+    )
+  })
 })
 
 
@@ -118,6 +125,11 @@ testthat::describe("read_cifti_subcortical", {
       cifti_trans_mat,
       ignore_attr = TRUE
     )
+    header <- RNifti::niftiHeader(image)
+    expect_equal(header$pixdim[2:4], c(2, 2, 2))
+    expect_identical(as.integer(header$qform_code), 4L)
+    expect_identical(as.integer(header$sform_code), 4L)
+    expect_identical(RNifti::pixunits(image)[[1]], "mm")
     expect_identical(result$lut$idx, c(101L, 102L))
     expect_identical(result$lut$label, c("Thalamus-L", "Caudate-R"))
   })
@@ -174,5 +186,18 @@ testthat::describe("read_cifti_annotation with subcortical voxels", {
       "read_cifti_subcortical"
     )
     expect_true("lh_Thalamus-L" %in% result$label)
+  })
+})
+
+
+testthat::describe("ciftitools_min_version", {
+  it("matches the Suggests constraint in DESCRIPTION", {
+    suggests <- utils::packageDescription("ggseg.extra", fields = "Suggests")
+
+    expect_match(
+      suggests,
+      paste0("ciftiTools (>= ", ciftitools_min_version(), ")"),
+      fixed = TRUE
+    )
   })
 })

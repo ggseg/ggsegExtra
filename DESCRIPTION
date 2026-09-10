@@ -55,7 +55,7 @@ Imports:
 Suggests:
     base64enc,
     chromote,
-    ciftiTools,
+    ciftiTools (>= 0.17.4),
     freesurfer (>= 1.8.1.902),
     freesurferformats,
     ggplot2,
