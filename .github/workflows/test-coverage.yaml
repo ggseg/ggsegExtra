@@ -18,4 +18,4 @@ jobs:
     secrets: inherit
     with:
       install-spatial-deps: true
-      extra-packages: any::covr, github::drmowinckels/freesurfer@refactor
+      extra-packages: any::covr, github::muschellij2/freesurfer

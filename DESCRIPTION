@@ -1,6 +1,6 @@
 Package: ggseg.extra
 Title: Create Brain Atlases for the 'ggsegverse' Plotting Ecosystem
-Version: 1.9.9.9016
+Version: 1.9.9.9017
 Authors@R: c(
     person(
         given = "Athanasia Mo",
@@ -56,7 +56,7 @@ Suggests:
     base64enc,
     chromote,
     ciftiTools,
-    freesurfer,
+    freesurfer (>= 1.8.1.902),
     freesurferformats,
     ggplot2,
     gifti,
@@ -78,6 +78,8 @@ Suggests:
     quarto,
     withr,
     princurve
+Remotes:
+    muschellij2/freesurfer
 VignetteBuilder:
     knitr,
     quarto

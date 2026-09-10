@@ -89,16 +89,6 @@ testthat::describe("check_freesurfer", {
     )
     expect_messages(check_freesurfer("simple"), "not configured")
   })
-
-  it("degrades gracefully in full mode when fs_sitrep is unavailable", {
-    local_mocked_bindings(
-      have_fs = function() TRUE,
-      .package = "freesurfer"
-    )
-    local_mocked_bindings(has_fs_sitrep = function() FALSE)
-    # older/CRAN `freesurfer` has no `fs_sitrep`: must fall back, not abort.
-    expect_messages(check_freesurfer("full"), "FreeSurfer")
-  })
 })
 
 
@@ -239,8 +229,22 @@ testthat::describe("check_freesurfer when freesurfer package absent", {
     )
     expect_messages(
       check_freesurfer("full"),
-      "install.packages"
+      "muschellij2"
     )
+  })
+
+  it("treats a freesurfer older than the minimum version as not installed", {
+    local_mocked_bindings(
+      is_installed = function(pkg, version = NULL) is.null(version),
+      .package = "rlang"
+    )
+    expect_messages(
+      {
+        result <- check_freesurfer("simple")
+      },
+      freesurfer_min_version()
+    )
+    expect_false(result$available)
   })
 })
 
@@ -258,6 +262,29 @@ testthat::describe("check_fsaverage additional branches", {
       "not found"
     )
     expect_false(result$fsaverage5)
+  })
+
+  it("does not query an outdated freesurfer for the subjects dir", {
+    local_mocked_bindings(
+      is_installed = function(pkg, version = NULL) is.null(version),
+      .package = "rlang"
+    )
+    .cap$queried <- FALSE
+    local_mocked_bindings(
+      fs_subj_dir = function() {
+        .cap$queried <- TRUE
+        ""
+      },
+      .package = "freesurfer"
+    )
+    expect_messages(
+      {
+        result <- check_fsaverage("simple")
+      },
+      "not found"
+    )
+    expect_false(result$fsaverage5)
+    expect_false(.cap$queried)
   })
 
   it("shows path in full detail when fsaverage5 exists", {

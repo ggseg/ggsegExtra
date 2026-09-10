@@ -34,6 +34,38 @@ testthat::describe("check_fs", {
     result <- check_fs(abort = FALSE)
     expect_type(result, "logical")
   })
+
+  it("errors when freesurfer is older than the minimum version", {
+    local_mocked_bindings(freesurfer_min_version = function() "999.0.0")
+
+    expect_error(check_fs(), class = "rlib_error_package_not_found")
+  })
+})
+
+testthat::describe("freesurfer_repos", {
+  it("puts the ggsegverse r-universe ahead of the configured repos", {
+    withr::local_options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+    expect_identical(
+      freesurfer_repos(),
+      c(
+        ggsegverse = "https://ggsegverse.r-universe.dev",
+        CRAN = "https://cloud.r-project.org"
+      )
+    )
+  })
+})
+
+testthat::describe("freesurfer_min_version", {
+  it("matches the Suggests constraint in DESCRIPTION", {
+    suggests <- utils::packageDescription("ggseg.extra", fields = "Suggests")
+
+    expect_match(
+      suggests,
+      paste0("freesurfer (>= ", freesurfer_min_version(), ")"),
+      fixed = TRUE
+    )
+  })
 })
 
 
