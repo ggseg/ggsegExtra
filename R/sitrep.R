@@ -50,8 +50,12 @@ check_freesurfer <- function(detail = "simple") {
         "freesurfer R package (>= {min_version}) not installed"
       )
       if (detail == "full") {
-        install_hint <- 'remotes::install_github("muschellij2/freesurfer")'
-        cli::cli_bullets(c("i" = "Install with: {.code {install_hint}}"))
+        cli::cli_bullets(c(
+          "i" = paste(
+            "Install with:",
+            '{.code remotes::install_github("muschellij2/freesurfer")}'
+          )
+        ))
       }
     }
     return(list(available = FALSE))

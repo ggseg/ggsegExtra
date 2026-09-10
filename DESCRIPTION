@@ -78,6 +78,8 @@ Suggests:
     quarto,
     withr,
     princurve
+Remotes:
+    muschellij2/freesurfer
 VignetteBuilder:
     knitr,
     quarto

@@ -3,6 +3,8 @@
 - The README and CI now install freesurfer from `muschellij2/freesurfer`:
   the refactor it needed has been merged upstream, so the
   `drmowinckels/freesurfer@refactor` fork is no longer required (#72, #98).
+  DESCRIPTION declares `Remotes: muschellij2/freesurfer`, so `pak` and
+  `remotes` resolve the required version without extra steps.
 
 - freesurfer is now required at `>= 1.8.1.902`. The CRAN release lacks
   `fs_sitrep()` and `fs_cmd(validate_inputs = )`, so an older install used to
